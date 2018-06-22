@@ -108,11 +108,10 @@ eaps[[SC]][[domain]][[wave]][["cross"]] <- mod$person
 # LONGITUDINAL
 ind <- which(apply(resp, 2, max, na.rm = TRUE) > 1) # to catch only 'after-collapse' pc items
 Q <- matrix(1, nrow = ncol(resp), ncol = 1)
-B <- TAM::designMatrices(modeltype = 'PCM', Q = Q, resp = resp)$B
-B[ind, , ] <- 0.5 * B[ind, , ]
+Q[ind, ] <- 0.5 * Q[ind, ]
 mod_l <- TAM::tam.mml(resp = resp
                       , irtmodel = 'PCM2'
-                      , B = B
+                      , Q = Q
                       , verbose = FALSE
 )
 # add difficulties to out object
@@ -131,18 +130,17 @@ resp <- read[, names(read) %in% item_labels[[SC]][[domain]][[wave]]]
 # model estimation
 ind <- which(apply(resp, 2, max, na.rm = TRUE) > 1) # to catch only 'after-collapse' pc items
 Q <- matrix(1, nrow = ncol(resp), ncol = 1)
-B <- TAM::designMatrices(modeltype = 'PCM', Q = Q, resp = resp)$B
-B[ind, , ] <- 0.5 * B[ind, , ]
+Q[ind, ] <- 0.5 * Q[ind, ]
 mod <- TAM::tam.mml(resp = resp
-                    , irtmodel = 'PCM2'
-                    , B = B
-                    , verbose = FALSE
+                      , irtmodel = 'PCM2'
+                      , Q = Q
+                      , verbose = FALSE
 )
 # add difficulties to out object
 item_difficulties[[SC]][[domain]][[wave]][["cross"]] <- mod$xsi.fixed.estimated
 item_difficulties[[SC]][[domain]][[wave]][["long"]] <- mod$xsi.fixed.estimated
 # clear environment
-rm(mod, read, resp, B, Q, ind, wave)
+rm(mod, read, resp, Q, ind, wave)
 
 
 # NOT YET IN SUF
@@ -179,11 +177,10 @@ mod <- TAM::tam.mml(resp = resp2
 # estimation model
 ind <- which(apply(resp, 2, max, na.rm = TRUE) > 1) # to catch only 'after-collapse' pc items
 Q <- matrix(1, nrow = ncol(resp), ncol = 1)
-B <- TAM::designMatrices(modeltype = 'PCM', Q = Q, resp = resp)$B
-B[ind, , ] <- 0.5 * B[ind, , ]
+Q[ind, ] <- 0.5 * Q[ind, ]
 mod_l <- TAM::tam.mml(resp = resp
                       , irtmodel = 'PCM2'
-                      , B = B
+                      , Q = Q
                       , verbose = FALSE
 )
 # rotation design: correction for change
@@ -231,6 +228,7 @@ mod <- TAM::tam.mml.mfr(resp = resp
 )
 # add difficulties to out object
 item_difficulties[[SC]][[domain]][[wave]][["cross"]] <- mod$xsi.fixed.estimated
+eaps[[SC]][[domain]][[wave]][["cross"]] <- mod$person
 # LONGITUDINAL
 mod_l <- TAM::tam.mml(resp = resp
                       , irtmodel = '1PL'
@@ -238,7 +236,6 @@ mod_l <- TAM::tam.mml(resp = resp
 )
 # add difficulties to out object
 item_difficulties[[SC]][[domain]][[wave]][["long"]] <- mod_l$xsi.fixed.estimated
-eaps[[SC]][[domain]][[wave]][["cross"]] <- mod$person
 eaps[[SC]][[domain]][[wave]][["long"]] <- mod_l$person
 # clear environment
 rm(mod, math, resp, wave, domain, position, formulaA, mod_l)
@@ -326,19 +323,18 @@ mod <- TAM::tam.mml(resp = resp2
 )
 # add difficulties to out object
 item_difficulties[[SC]][[domain]][[wave]][["cross"]] <- mod$xsi.fixed.estimated
+eaps[[SC]][[domain]][[wave]][["cross"]] <- mod$person
 # LONGITUDINAL
 ind <- which(apply(resp, 2, max, na.rm = TRUE) > 1) # to catch only 'after-collapse' pc items
 Q <- matrix(1, nrow = ncol(resp), ncol = 1)
-B <- TAM::designMatrices(modeltype = 'PCM', Q = Q, resp = resp)$B
-B[ind, , ] <- 0.5 * B[ind, , ]
+Q[ind, ] <- 0.5 * Q[ind, ]
 mod_l <- TAM::tam.mml(resp = resp
                       , irtmodel = 'PCM2'
-                      , B = B
+                      , Q = Q
                       , verbose = FALSE
 )
 # add difficulties to out object
 item_difficulties[[SC]][[domain]][[wave]][["long"]] <- mod_l$xsi.fixed.estimated
-eaps[[SC]][[domain]][[wave]][["cross"]] <- mod$person
 eaps[[SC]][[domain]][[wave]][["long"]] <- mod_l$person
 # clear environment
 rm(design, mod, position, ict, resp, resp2, xsi.elim, A, B, ind, wave, domain, formulaA, mod_l, Q)
@@ -394,19 +390,18 @@ mod <- TAM::tam.mml(resp = resp2
 )
 # add difficulties to out object
 item_difficulties[[SC]][[domain]][[wave]][["cross"]] <- mod$xsi.fixed.estimated
+eaps[[SC]][[domain]][[wave]][["cross"]] <- mod$person
 # LONGITUDINAL
 ind <- which(apply(resp, 2, max, na.rm = TRUE) > 1) # to catch only 'after-collapse' pc items
 Q <- matrix(1, nrow = ncol(resp), ncol = 1)
-B <- TAM::designMatrices(modeltype = 'PCM', Q = Q, resp = resp)$B
-B[ind, , ] <- 0.5 * B[ind, , ]
+Q[ind, ] <- 0.5 * Q[ind, ]
 mod_l <- TAM::tam.mml(resp = resp
                       , irtmodel = 'PCM2'
-                      , B = B
+                      , Q = Q
                       , verbose = FALSE
 )
 # add difficulties to out object
 item_difficulties[[SC]][[domain]][[wave]][["long"]] <- mod_l$xsi.fixed.estimated
-eaps[[SC]][[domain]][[wave]][["cross"]] <- mod$person
 eaps[[SC]][[domain]][[wave]][["long"]] <- mod_l$person
 # clear environment
 rm(design, mod, position, scie, resp, resp2, xsi.elim, A, B, ind, wave, domain, formulaA, mod_l, Q)

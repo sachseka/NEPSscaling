@@ -64,10 +64,12 @@ plausible_values_mglrm <- function(
   cartctrl1 = 5,
   cartctrl2 = 1e-04
 ){
-  X <- data.frame(X)
+  if (!is.null(X)) {
+    X <- data.frame(X)
+    ID_t <- X$ID_t
+    X <- data.matrix(X[, -which(names(X)=='ID_t')])
+  }
   Y <- data.frame(Y)
-  ID_t <- X$ID_t
-  X <- data.matrix(X[, -which(names(X)=='ID_t')])
   YPL1 <- Y + 1
   YPL2 <- Y + 2
   N <- nrow(Y)
@@ -83,6 +85,7 @@ plausible_values_mglrm <- function(
   THETA <- rnorm(N)
   if(is.null(X)){
     XDM <- matrix(rep(1, N))
+    ANYXMIS <- FALSE
   } else {
     ANYXMIS <- any(is.na(X))
     if(ANYXMIS){
@@ -211,7 +214,10 @@ plausible_values_mglrm <- function(
     # save MCMC draws
     if (ii %in% savepvs) {
       sel <- which(names(datalist) == paste0('Iteration', ii))
-      datalist[[sel]] <- data.frame(ID_t = ID_t, X, PV = THETA)
+      if (!is.null(X))
+        datalist[[sel]] <- data.frame(ID_t = ID_t, X, PV = THETA)
+      else
+        datalist[[sel]] <- data.frame(PV = THETA)
     }
   }
   names(datalist) <- NULL

@@ -10,22 +10,20 @@ plausible_values(SC, domain = c("MA", "RE", "SC", "IC", "LI", "EF", "NR",
   path, filetype = c("SPSS", "Stata"), bgdata = NULL, npv = 10L,
   longitudinal = FALSE, rotation = TRUE, nvalid = 3L, control = list(EAP
   = FALSE, WLE = FALSE, IND = list(varex = 0.9, pca.data = FALSE, vars = NULL),
-  MMI = list(nmi = 10L, method = vector("character", length = ncol(bgdata) - 1),
-  predictorMatrix = (1 - diag(1, ncol(bgdata) - 1)), visitSequence = NULL, form
-  = vector("character", length = ncol(bgdata) - 1), post = vector("character",
-  length = ncol(bgdata) - 1), defaultMethod = c("pmm", "logreg", "polyreg",
-  "polr"), maxit = 10, diagnostics = TRUE, printFlag = FALSE, seed = NA,
-  imputationMethod = NULL, defaultImputationMethod = NULL,      data.init =
-  NULL), CART = list(itermcmc = 10000, burnin = 2000, thin = 1, tdf = 10,
-  cartctrl1 = 5, cartctrl2 = 1e-04), TAM = list(ntheta = 2000, normal.approx =
-  FALSE, samp.regr = FALSE, theta.model = FALSE, np.adj = 8, na.grid = 5)))
+  MMI = list(nmi = 10L, method = NULL, where = NULL, predictorMatrix = NULL,
+  visitSequence = NULL, post = NULL, blocks = NULL, formulas = NULL,
+  defaultMethod = c("pmm", "logreg", "polyreg", "polr"), maxit = 10, printFlag =
+  FALSE, seed = NA, blots = NULL, data.init = NULL), CART = list(itermcmc =
+  10000, burnin = 2000, thin = 1, tdf = 10, cartctrl1 = 5, cartctrl2 = 1e-04),
+  TAM = list(ntheta = 2000, normal.approx = FALSE,      samp.regr = FALSE,
+  theta.model = FALSE, np.adj = 8, na.grid = 5)))
 }
 \arguments{
 \item{SC}{numeric. The starting cohort used for the analysis is
 indicated by an integer value (e.g., starting cohort one = 1).}
 
 \item{domain}{string. The competence domain of interest is indicated
-by the domain abbreviation as used in the variable names (see Fuß, D., Gnambs, 
+by the domain abbreviation as used in the variable names (see Fuß, D., Gnambs,
 T., Lockl, K., & Attig, M., 2016).}
 
 \item{wave}{numeric. The wave of competence testing is indicated by
@@ -40,8 +38,8 @@ classification and regression trees).}
 \item{filetype}{filetype of competence data (the NEPS RDC provides SPSS
 and Stata data files)}
 
-\item{bgdata}{data frame containing background variables. Categorical 
-variables have to be specified as factors. If \code{bgdata = NULL}, plausible 
+\item{bgdata}{data frame containing background variables. Categorical
+variables have to be specified as factors. If \code{bgdata = NULL}, plausible
 values are estimated without a background model.}
 
 \item{npv}{number of plausible values to be estimated; it defaults

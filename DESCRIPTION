@@ -5,7 +5,7 @@ Authors@R: person("Anna", "Scharl", email = "anna.scharl@lifbi.de", role = c("au
 Description: The package provides NEPS data users with a series of tools; 
              among others to estimate plausible values for competence data.
 Depends: R (>= 3.5.0),
-         mice (>= 3.0.0),
+         mice (>= 3.1.0),
 Imports:
     mvtnorm,
     ucminf,

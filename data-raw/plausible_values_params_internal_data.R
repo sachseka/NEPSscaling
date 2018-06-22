@@ -144,11 +144,10 @@ data <- data[data$wave_w3 == 0 & data$wave_w5 == 1, ]
 data <- data[, names(data) %in% rownames(item_difficulties$SC6$RE$w5$cross)]
 ind <- which(apply(data, 2, max, na.rm = TRUE) > 1)
 Q <- matrix(1, nrow = ncol(data), ncol = 1)
-B <- TAM::designMatrices(modeltype = 'PCM', Q = Q, resp = data)$B
-B[ind, , ] <- 0.5 * B[ind, , ]
+Q[ind, ] <- 0.5 * Q[ind, ]
 mod <- TAM::tam.mml(resp = data
                     , irtmodel = 'PCM2'
-                    , B = B
+                    , Q = Q
                     , xsi.fixed = item_difficulties$SC6$RE$w5$cross
                     , verbose = FALSE
 )
