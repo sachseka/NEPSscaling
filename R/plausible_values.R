@@ -196,7 +196,7 @@ plausible_values <- function(SC,
         if (!missingInbgdata & method == 'MMI') {
             method <- 'COM'
             changedFrom <- 'MMI'
-            warning("method == 'MMI': no missing data in bgdata. No multiple imputation performed. Method changed to 'COM'.")
+            message("method == 'MMI': no missing data in bgdata. No multiple imputation performed. Method changed to 'COM'.")
         } else {
             changedFrom <- 'NULL'
         }
@@ -220,7 +220,8 @@ plausible_values <- function(SC,
     n.valid$valid <- rowSums(!is.na(data[, names(data) %in% rownames(xsi)]))
 
     if (longitudinal) {
-        if (rotation) message('Longitudinal competence estimates are not corrected for item position. rotation = FALSE')
+        if (rotation)
+            message('Longitudinal competence estimates are not corrected for item position. rotation = FALSE')
         rotation <- FALSE
     } else {
         if (rotation) {
@@ -237,7 +238,15 @@ plausible_values <- function(SC,
             } else if (SC == 'SC4') {
                 stop('Sorry, not yet implemented.')
             } else if (SC == 'SC5') {
-                stop('Sorry, not yet implemented.')
+                if (wave == 'w1') {
+                    position[, 'position'] <- data[, 'tx80211_w1']
+                    position[!is.na(position$position) & (position$position == 126), 'position'] <- 0 # reading first
+                    position[!is.na(position$position) & (position$position == 127), 'position'] <- 1 # maths first
+                } else if (wave == 'w5') {
+                    position[, 'position'] <- data[, 'tx80211_w5']
+                    position[!is.na(position$position) & (position$position %in% c(330,332,334)), 'position'] <- 0 # sc first
+                    position[!is.na(position$position) & (position$position %in% c(331,333,335)), 'position'] <- 1 # ict first
+                }
             } else if (SC == 'SC6') {
                 if (wave == 'w3') {
                     position[, 'position'] <- data[, 'tx80211_w3']
@@ -273,7 +282,8 @@ plausible_values <- function(SC,
     if (method == 'IND') {
         # prepare criterion scaling
         wle <- all.wle[[SC]][[wave]][[type]][[domain]]
-        if (is.null(wle)) stop(paste('There is no competence data for:', SC, domain, wave))
+        if (is.null(wle))
+            stop(paste('There is no competence data for:', SC, domain, wave))
         wle.data <- data[, c('ID_t', wle)]
     }
     rm(data)
@@ -283,7 +293,8 @@ plausible_values <- function(SC,
 
     # complement control lists
     res <- complement_control_lists(control$EAP, control$WLE, control$IND,
-                                    control$MMI, control$CART, control$TAM, ncol(bgdata))
+                                    control$MMI, control$CART, control$TAM,
+                                    ncol(bgdata))
     control$EAP <- res$EAP
     control$WLE <- res$WLE
     control$IND <- res$IND
@@ -344,10 +355,11 @@ plausible_values <- function(SC,
                 stop('control$IND$vars: specified variable not in background data.')
             }
         }
-        wle <- wle.data <- categorical <- for_pca <- NULL
+        rm(wle,wle.data,categorical,for_pca)
 
         # pca
-        bgdata.pc <- prcomp(x = bgdata[, -which(names(bgdata) == 'ID_t')], retx = TRUE, center = TRUE, scale. = TRUE)
+        bgdata.pc <- prcomp(x = bgdata[, -which(names(bgdata) == 'ID_t')],
+                            retx = TRUE, center = TRUE, scale. = TRUE)
         # choose components until criterion (variance explained) is met
         pc.varex <- (bgdata.pc$sdev^2)/sum(bgdata.pc$sdev^2)
         npc <- 1
@@ -362,7 +374,7 @@ plausible_values <- function(SC,
         if (!is.null(control$IND$vars)) {
             bgdata.pca <- cbind(bgdata.pca, bgdata.vars[, -which(names(bgdata.vars) == 'ID_t')])
         }
-        bgdata.pc <- pc.varex <- npc <- bgdata.vars <- NULL
+        rm(bgdata.pc,pc.varex,npc,bgdata.vars)
 
         if (!control$IND$pca.data) {
 
@@ -401,9 +413,13 @@ plausible_values <- function(SC,
                 wle <- cbind(ID_t, wle, wmod$error)
                 colnames(wle) <- c('ID_t', 'wle', 'se')
             }
-            pmod <- TAM::tam.pv(mod, nplausible = npv, ntheta = control$TAM$ntheta, normal.approx = control$TAM$normal.approx,
-                                samp.regr = control$TAM$samp.regr, theta.model = control$TAM$theta.model,
-                                np.adj = control$TAM$np.adj, na.grid = control$TAM$na.grid)
+            pmod <- TAM::tam.pv(mod, nplausible = npv,
+                                ntheta = control$TAM$ntheta,
+                                normal.approx = control$TAM$normal.approx,
+                                samp.regr = control$TAM$samp.regr,
+                                theta.model = control$TAM$theta.model,
+                                np.adj = control$TAM$np.adj,
+                                na.grid = control$TAM$na.grid)
             datalist <- TAM::tampv2datalist(pmod, Y = bgdata, pvnames = 'PV')
             for (d in seq(length(datalist))) {
                 datalist[[d]] <- datalist[[d]][, -which(colnames(datalist[[d]]) %in% c('pid', 'pweights'))]
@@ -424,7 +440,8 @@ plausible_values <- function(SC,
         # multiple imputation of missing covariate data
         ID_t <- bgdata[, 'ID_t', drop = FALSE]
         bgdata <- bgdata[, -which(names(bgdata) == 'ID_t')]
-        imp <- mice::mice(bgdata, m = control$MMI$nmi, maxit = control$MMI$maxit, printFlag = control$MMI$printFlag,
+        imp <- mice::mice(bgdata, m = control$MMI$nmi, maxit = control$MMI$maxit,
+                          printFlag = control$MMI$printFlag,
                           method = control$MMI$method, where = control$MMI$where,
                           visitSequence = control$MMI$visitSequence,
                           post = control$MMI$post, defaultMethod = control$MMI$defaultMethod,
@@ -450,7 +467,8 @@ plausible_values <- function(SC,
 
         pvs <- list()
         EAP.rel <- list()
-        if (control$EAP) eap <- matrix(0, ncol = 2*control$MMI$nmi, nrow = nrow(resp))
+        if (control$EAP)
+            eap <- matrix(0, ncol = 2*control$MMI$nmi, nrow = nrow(resp))
         icol <- 1
         for (i in 1:control$MMI$nmi) {
             bgdatacom <- mice::complete(imp, i)
@@ -515,11 +533,11 @@ plausible_values <- function(SC,
             pmod <- TAM::tam.pv(mod, nplausible = npv, ntheta = control$TAM$ntheta, normal.approx = control$TAM$normal.approx,
                                 samp.regr = control$TAM$samp.regr, theta.model = control$TAM$theta.model,
                                 np.adj = control$TAM$np.adj, na.grid = control$TAM$na.grid)
-            if (control$EAP) {
+            if (control$EAP)
                 eap[, icol:(icol+1)] <- as.matrix(mod$person[, c('EAP', 'SD.EAP')])
-            }
             icol <- icol + 2
-            pvs[[i]] <- TAM::tampv2datalist(pmod, Y = cbind(ID_t, bgdatacom), pvnames = 'PV')
+            pvs[[i]] <- TAM::tampv2datalist(pmod, Y = cbind(ID_t, bgdatacom),
+                                            pvnames = 'PV')
             EAP.rel[[i]] <- mod$EAP.rel
         }
         rm(icol,imp,bgdata,bgdatacom,resp,xsi)
@@ -531,7 +549,8 @@ plausible_values <- function(SC,
         }
         if (control$EAP) {
             eap <- cbind(ID_t, eap)
-            colnames(eap) <- c('ID_t', paste0(rep(c('eap.','se.'), control$MMI$nmi), rep(seq(1,control$MMI$nmi), each = 2)))
+            colnames(eap) <- c('ID_t', paste0(rep(c('eap.','se.'), control$MMI$nmi),
+                                              rep(seq(1,control$MMI$nmi), each = 2)))
         }
         datalist <- list()
         d <- 1
@@ -569,10 +588,11 @@ plausible_values <- function(SC,
 
         if (!is.null(bgdata)) bgdata <- data.frame(bgdata)
         resp <- data.frame(resp)
-        datalist <- plausible_values_mglrm(Y = resp, X = bgdata, S = S, npv = npv
-                          , itermcmc = control$CART$itermcmc, burnin = control$CART$burnin
-                          , thin = control$CART$thin, tdf = control$CART$tdf
-                          , cartctrl1 = control$CART$cartctrl1, cartctrl2 = control$CART$cartctrl2)
+        datalist <- plausible_values_mglrm(Y = resp, X = bgdata, S = S, npv = npv,
+                        itermcmc = control$CART$itermcmc, burnin = control$CART$burnin,
+                        thin = control$CART$thin, tdf = control$CART$tdf,
+                        cartctrl1 = control$CART$cartctrl1,
+                        cartctrl2 = control$CART$cartctrl2)
         if (is.null(bgdata)) {
             for (i in seq(length(datalist)))
                 datalist[[i]] <- data.frame(ID_t = ID_t, PV = datalist[[i]]$PV)
@@ -631,13 +651,17 @@ plausible_values <- function(SC,
             wle <- cbind(ID_t, wle, wmod$error)
             colnames(wle) <- c('ID_t', 'wle', 'se')
         }
-        pmod <- TAM::tam.pv(mod, nplausible = npv, ntheta = control$TAM$ntheta, normal.approx = control$TAM$normal.approx,
-                            samp.regr = control$TAM$samp.regr, theta.model = control$TAM$theta.model,
-                            np.adj = control$TAM$np.adj, na.grid = control$TAM$na.grid)
+        pmod <- TAM::tam.pv(mod, nplausible = npv, ntheta = control$TAM$ntheta,
+                            normal.approx = control$TAM$normal.approx,
+                            samp.regr = control$TAM$samp.regr,
+                            theta.model = control$TAM$theta.model,
+                            np.adj = control$TAM$np.adj,
+                            na.grid = control$TAM$na.grid)
         if (!is.null(bgdata)) {
-            datalist <- TAM::tampv2datalist(pmod, Y = cbind(ID_t, bgdata), pvnames = 'PV')
+            datalist <- TAM::tampv2datalist(pmod, Y = cbind(ID_t, bgdata),
+                                            pvnames = 'PV')
         } else {
-            datalist <- TAM::tampv2datalist(pmod, pvnames = 'PV')
+            datalist <- TAM::tampv2datalist(pmod, Y = ID_t, pvnames = 'PV')
         }
         if (control$EAP) {
             eap <- cbind(ID_t, mod$person[, c('EAP', 'SD.EAP')])
@@ -658,7 +682,8 @@ plausible_values <- function(SC,
     if (changedFrom != "NULL")
         res[["changedFrom"]] <- changedFrom
     res[['type']] <- type
-    res[['rotation']] <- ifelse(rotation, 'Corrected For Test Position', 'No Correction For Test Position')
+    res[['rotation']] <- ifelse(rotation, 'Corrected For Test Position',
+                                'No Correction For Test Position')
     res[['nvalid']] <- nvalid
     res[['model']] <- ifelse(PCM, 'Partical Credit Model', 'Rasch Model')
     res[['n.valid']] <- n.valid

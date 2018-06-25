@@ -10,7 +10,7 @@ pv_impl <- function(){
 == SC2 ==\n--\n
 == SC3 ==\n--\n
 == SC4 ==\n--\n
-== SC5 ==\n--\n
+== SC5 ==\nReading: waves 1 and 12\nMath: waves 1 and 12\nICT: wave 5\nScience: wave 5\n
 == SC6 ==\nReading: waves 3/5 and 9\nMath: waves 3 and 9\nICT: wave 5\nScience: wave 5\n"
 )
 }
