@@ -247,16 +247,21 @@ plausible_values <- function(SC,
                     position[, 'position'] <- data[, 'tx80211_w5']
                     position[!is.na(position$position) & position$position == 247, 'position'] <- 0 # science first
                     position[!is.na(position$position) & position$position == 248, 'position'] <- 1 # ict first
-                    position[is.na(position$position), 'position'] <- 2 # reading first (should be: 249 -- all NA in SUF v.8)
-                    if (domain %in% c('IC', 'SC')) {
-                        # keep only cases with valid position indicator (some sc/ict test takers also had a missing on this variable)
-                        position[position$position == 2, 'position'] <- NA
-                    }
+                    # reading first (i.e. "new" SC6 sample) should be marked with 249 (not found in SUF)
+                    if (domain == "RE")
+                        position[is.na(position$position), 'position'] <- 2 # reading first; should not occur for IC/SC tests
+                    # assumption: all missing cases after filtering for valid cases on IC/SC variables actually belong to original sample
                 }
             }
-            if (sum(is.na(position[, 2])) > 0) {
-                position[is.na(position$position), 'position'] <-
-                    sample(position[, 2], length(position[is.na(position$position), 'position']), replace = T)
+            # if (any(is.na(position$position))) { # distribute missing persons randomly
+            #     position[is.na(position$position), 'position'] <-
+            #         sample(unique(position$position[!is.na(position$position)]), sum(is.na(position$position)), replace = T)
+            # }
+            if (any(is.na(position$position))) {
+                position <- position[!is.na(position$position), ]
+                data <- data[data$ID_t %in% position$ID_t, ]
+                if (!is.null(bgdata))
+                    bgdata <- bgdata[bgdata$ID_t %in% position$ID_t, ]
             }
 
             # format position effect information
