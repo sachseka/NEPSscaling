@@ -271,6 +271,7 @@ plausible_values <- function(SC,
                 data <- data[data$ID_t %in% position$ID_t, ]
                 if (!is.null(bgdata))
                     bgdata <- bgdata[bgdata$ID_t %in% position$ID_t, ]
+                else ID_t <- ID_t[ID_t$ID_t %in% position$ID_t, ]
             }
 
             # format position effect information
