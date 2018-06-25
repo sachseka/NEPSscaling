@@ -170,5 +170,5 @@ rm(path, nvalid, files, data, mod, ind, Q, B)
 
 
 rm(l)
-setwd('Z:/Projektgruppen_(08)/Kompetenzen_BA_(p000011)/Methoden/Anna/02_Anleitung_Plausible_Values/R Code/')
+setwd('../')
 devtools::use_data(all.wle, item_difficulties, eaps, pkg = 'NEPStools', internal = TRUE, overwrite = TRUE)
