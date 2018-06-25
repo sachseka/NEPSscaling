@@ -103,7 +103,6 @@
 #' The function will only work with NEPS data. To access NEPS data see
 #' https://www.neps-data.de/en-us/datacenter/dataaccess.aspx.
 #'
-#' @import mice
 #' @importFrom stats prcomp
 #'
 #' @export
@@ -121,10 +120,8 @@ plausible_values <- function(SC,
     nvalid = 3L,
     control = list(EAP = FALSE, WLE = FALSE,
                    IND = list(varex = 0.90, pca.data = FALSE, vars = NULL),
-                   MMI = list(nmi = 10L, method = NULL,
-                              where = NULL, predictorMatrix = NULL,
-                              visitSequence = NULL,
-                              post = NULL, blocks = NULL, formulas = NULL,
+                   MMI = list(nmi = 10L, method = NULL, where = NULL,
+                              visitSequence = NULL, post = NULL,
                               defaultMethod = c("pmm", "logreg", "polyreg", "polr"),
                               maxit = 10, printFlag = FALSE, seed = NA,
                               blots = NULL, data.init = NULL),
@@ -202,77 +199,6 @@ plausible_values <- function(SC,
             warning("method == 'MMI': no missing data in bgdata. No multiple imputation performed. Method changed to 'COM'.")
         } else {
             changedFrom <- 'NULL'
-            if (method == "MMI") {
-                # determine input combination: predictorMatrix, blocks, formulas
-                np <- is.null(control$MMI$predictorMatrix)
-                nb <- is.null(control$MMI$blocks)
-                nf <- is.null(control$MMI$formulas)
-
-                # case A
-                if (np & nb & nf) {
-                    # blocks lead
-                    control$MMI$blocks <- mice:::make.blocks(colnames(bgdata[, -which(colnames(bgdata) == "ID_t")]))
-                    control$MMI$predictorMatrix <- mice:::make.predictorMatrix(bgdata[, -which(colnames(bgdata) == "ID_t")], control$MMI$blocks)
-                    control$MMI$formulas <- mice:::make.formulas(bgdata[, -which(colnames(bgdata) == "ID_t")], control$MMI$blocks)
-                }
-                # case B
-                if (!np & nb & nf) {
-                    # predictorMatrix leads
-                    control$MMI$predictorMatrix <- mice:::check.predictorMatrix(control$MMI$predictorMatrix, bgdata[, -which(colnames(bgdata) == "ID_t")])
-                    control$MMI$blocks <- mice:::make.blocks(colnames(control$MMI$predictorMatrix), partition = "scatter")
-                    control$MMI$formulas <- mice:::make.formulas(bgdata[, -which(colnames(bgdata) == "ID_t")], control$MMI$blocks, predictorMatrix = control$MMI$predictorMatrix)
-                }
-
-                # case C
-                if (np & !nb & nf) {
-                    # blocks leads
-                    control$MMI$blocks <- mice:::check.blocks(control$MMI$blocks, bgdata[, -which(colnames(bgdata) == "ID_t")])
-                    control$MMI$predictorMatrix <- mice:::make.predictorMatrix(bgdata[, -which(colnames(bgdata) == "ID_t")], control$MMI$blocks)
-                    control$MMI$formulas <- mice:::make.formulas(bgdata[, -which(colnames(bgdata) == "ID_t")], control$MMI$blocks)
-                }
-
-                # case D
-                if (np & nb & !nf) {
-                    # formulas leads
-                    control$MMI$formulas <- mice:::check.formulas(control$MMI$formulas, bgdata[, -which(colnames(bgdata) == "ID_t")])
-                    control$MMI$blocks <- mice:::construct.blocks(control$MMI$formulas)
-                    control$MMI$predictorMatrix <- mice:::make.predictorMatrix(bgdata[, -which(colnames(bgdata) == "ID_t")], control$MMI$blocks)
-                }
-
-                # case E
-                if (!np & !nb & nf) {
-                    # predictor leads
-                    control$MMI$blocks <- mice:::check.blocks(control$MMI$blocks, bgdata[, -which(colnames(bgdata) == "ID_t")])
-                    z <- mice:::check.predictorMatrix(control$MMI$predictorMatrix, bgdata[, -which(colnames(bgdata) == "ID_t")], control$MMI$blocks)
-                    control$MMI$predictorMatrix <- z$predictorMatrix
-                    control$MMI$blocks <- z$blocks
-                    control$MMI$formulas <- mice:::make.formulas(bgdata[, -which(colnames(bgdata) == "ID_t")], control$MMI$blocks, predictorMatrix = control$MMI$predictorMatrix)
-                }
-
-                # case F
-                if (!np & nb & !nf) {
-                    # formulas lead
-                    control$MMI$formulas <- mice:::check.formulas(control$MMI$formulas, bgdata[, -which(colnames(bgdata) == "ID_t")])
-                    control$MMI$predictorMatrix <- mice:::check.predictorMatrix(control$MMI$predictorMatrix, bgdata[, -which(colnames(bgdata) == "ID_t")])
-                    control$MMI$blocks <- mice:::construct.blocks(control$MMI$formulas, control$MMI$predictorMatrix)
-                }
-
-                # case G
-                if (np & !nb & !nf) {
-                    # blocks lead
-                    control$MMI$blocks <- mice:::check.blocks(control$MMI$blocks, bgdata[, -which(colnames(bgdata) == "ID_t")], calltype = "formula")
-                    control$MMI$formulas <- mice:::check.formulas(control$MMI$formulas, blocks)
-                    control$MMI$predictorMatrix <- mice:::make.predictorMatrix(bgdata[, -which(colnames(bgdata) == "ID_t")], control$MMI$blocks)
-                }
-
-                # case H
-                if (!np & !nb & !nf) {
-                    # blocks lead
-                    control$MMI$blocks <- mice:::check.blocks(control$MMI$blocks, bgdata[, -which(colnames(bgdata) == "ID_t")])
-                    control$MMI$formulas <- mice:::check.formulas(control$MMI$formulas, bgdata[, -which(colnames(bgdata) == "ID_t")])
-                    control$MMI$predictorMatrix <- mice:::check.predictorMatrix(control$MMI$predictorMatrix, bgdata[, -which(colnames(bgdata) == "ID_t")], control$MMI$blocks)
-                }
-            }
         }
 
         if (nvalid > 0) {
@@ -282,7 +208,7 @@ plausible_values <- function(SC,
         } else {
             # append subjects in background data that did not take the competence tests
             data <- data[data$ID_t %in% bgdata$ID_t, ]
-            data <- dplyr::bind_rows(data, bgdata[!(bgdata$ID_t %in% data$ID_t), 'ID_t', drop = FALSE])
+            data <- suppressWarnings(dplyr::bind_rows(data, bgdata[!(bgdata$ID_t %in% data$ID_t), 'ID_t', drop = FALSE]))
             data <- data[order(data$ID_t), ]
         }
 
@@ -501,9 +427,6 @@ plausible_values <- function(SC,
         imp <- mice::mice(bgdata, m = control$MMI$nmi, maxit = control$MMI$maxit, printFlag = control$MMI$printFlag,
                           method = control$MMI$method, where = control$MMI$where,
                           visitSequence = control$MMI$visitSequence,
-                          blocks = control$MMI$blocks,#
-                          # predictorMatrix = control$MMI$predictorMatrix, # Error in apply(predictorMatrix == -2, 2, any) : (list) object cannot be coerced to type 'double'
-                          formulas = control$MMI$formulas,#
                           post = control$MMI$post, defaultMethod = control$MMI$defaultMethod,
                           blots = control$MMI$blots, seed = control$MMI$seed,
                           data.init = control$MMI$data.init)
@@ -522,7 +445,7 @@ plausible_values <- function(SC,
                 Q <- matrix(1, nrow = ncol(resp), ncol = 1)
                 Q[ind, ] <- 0.5*Q[ind, ]
             }
-            rm(ind)
+            rm(ind,res)
         }
 
         pvs <- list()
@@ -572,13 +495,10 @@ plausible_values <- function(SC,
                     }
                 }
 
-                if(is.na(mod)) {
-                    bgdatacom <- mice::complete(mice::mice(bgdata, m = control$MMI$nmi, maxit = control$MMI$maxit, printFlag = control$MMI$printFlag,
+                if(any(is.na(mod))) {
+                    bgdatacom <- mice::complete(mice::mice(bgdata, m = 1, maxit = control$MMI$maxit, printFlag = control$MMI$printFlag,
                                                            method = control$MMI$method, where = control$MMI$where,
                                                            visitSequence = control$MMI$visitSequence,
-                                                           blocks = control$MMI$blocks,#
-                                                           # predictorMatrix = control$MMI$predictorMatrix, # Error in apply(predictorMatrix == -2, 2, any) : (list) object cannot be coerced to type 'double'
-                                                           formulas = control$MMI$formulas,#
                                                            post = control$MMI$post, defaultMethod = control$MMI$defaultMethod,
                                                            blots = control$MMI$blots, seed = control$MMI$seed,
                                                            data.init = control$MMI$data.init))

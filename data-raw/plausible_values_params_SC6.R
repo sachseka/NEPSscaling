@@ -414,4 +414,3 @@ rm(design, mod, position, scie, resp, resp2, xsi.elim, A, B, ind, wave, domain, 
 save(item_difficulties, file = 'data-raw/item_difficulties.RData')
 save(eaps, file = 'data-raw/eaps.RData')
 rm(list = ls())
-

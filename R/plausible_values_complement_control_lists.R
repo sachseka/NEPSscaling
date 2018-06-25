@@ -10,16 +10,17 @@ complement_control_lists <- function (c_EAP, c_WLE, c_I, c_M, c_C, c_T, nc) {
     if (!is.null(nc)) {
         control_IND <- list(vars = NULL, pca.data = FALSE, varex = 0.90)
         control_MMI <- list(nmi = 10L, method = NULL, where = NULL,
-                            visitSequence = NULL,
-                            post = NULL, blots = NULL,
+                            visitSequence = NULL, post = NULL, blots = NULL,
                             defaultMethod = c("pmm", "logreg", "polyreg", "polr"),
                             maxit = 10, printFlag = FALSE, seed = NA,
                             data.init = NULL)
     } else {
         control_IND <- control_MMI <- NULL
     }
-    control_CART = list(itermcmc = 10000, burnin = 2000, thin = 1, tdf = 10, cartctrl1 = 5, cartctrl2 = 0.0001)
-    control_TAM = list(ntheta = 2000, normal.approx = FALSE, samp.regr = FALSE, theta.model=FALSE, np.adj=8, na.grid = 5)
+    control_CART = list(itermcmc = 10000, burnin = 2000, thin = 1, tdf = 10,
+                        cartctrl1 = 5, cartctrl2 = 0.0001)
+    control_TAM = list(ntheta = 2000, normal.approx = FALSE, samp.regr = FALSE,
+                       theta.model=FALSE, np.adj=8, na.grid = 5)
 
     if (!is.null(c_EAP)) control_EAP <- c_EAP
     if (!is.null(c_WLE)) control_WLE <- c_WLE
