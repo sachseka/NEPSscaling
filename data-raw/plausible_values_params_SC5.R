@@ -332,12 +332,8 @@ scie$scs3061s_c[scie$scs3061s_c == 4] <- 1
 # rotation variable
 position <- data.frame(ID_t = scie$ID_t, position = rep(NA, nrow(scie)))
 position[position$ID_t %in% scie$ID_t, 'position'] <- scie[, 'tx80211_w5']
-position[!is.na(position$position) & (position$position == 330), 'position'] <- 0 # sc first
-position[!is.na(position$position) & (position$position == 331), 'position'] <- 1 # ict first
-position[!is.na(position$position) & (position$position == 332), 'position'] <- 0 # sc first
-position[!is.na(position$position) & (position$position == 333), 'position'] <- 1 # ict first
-position[!is.na(position$position) & (position$position == 334), 'position'] <- 0 # sc first
-position[!is.na(position$position) & (position$position == 335), 'position'] <- 1 # ict first
+position[!is.na(position$position) & (position$position %in% c(330,332,334)), 'position'] <- 0 # sc first
+position[!is.na(position$position) & (position$position %in% c(331,333,335)), 'position'] <- 1 # ict first
 position <- position[, 2, drop = FALSE]
 # test data
 resp <- scie[, names(scie) %in% item_labels[[SC]][[domain]][[wave]]]
