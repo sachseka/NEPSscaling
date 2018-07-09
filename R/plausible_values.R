@@ -110,7 +110,7 @@
 plausible_values <- function(SC,
     domain = c('MA','RE','SC','IC','LI','EF','NR','NT','OR','ST','BA','CD', 'GR'),
     wave,
-    method = c('IND','MMI','CART'),
+    method = c("ML","Bayes"),
     path,
     filetype = c('SPSS','Stata'),
     bgdata = NULL,
@@ -118,13 +118,7 @@ plausible_values <- function(SC,
     longitudinal = FALSE,
     rotation = TRUE,
     nvalid = 3L,
-    control = list(EAP = FALSE, WLE = FALSE,
-                   IND = list(varex = 0.90, pca.data = FALSE, vars = NULL),
-                   MMI = list(nmi = 10L, method = NULL, where = NULL,
-                              visitSequence = NULL, post = NULL,
-                              defaultMethod = c("pmm", "logreg", "polyreg", "polr"),
-                              maxit = 10, printFlag = FALSE, seed = NA,
-                              blots = NULL, data.init = NULL),
+    control = list(EAP = FALSE, WLE = FALSE, nmi = 10L,
                    CART = list(itermcmc = 10000, burnin = 2000, thin = 1, tdf = 10,
                                cartctrl1 = 5, cartctrl2 = 0.0001),
                    TAM = list(ntheta = 2000, normal.approx = FALSE, samp.regr = FALSE,
@@ -134,18 +128,13 @@ plausible_values <- function(SC,
     SC <- paste0("SC", SC)
     wave <- paste0("w", wave)
     domain <- toupper(domain)
-    method <- toupper(method)
+    domain <- match.arg(domain)
     method <- match.arg(method)
     filetype <- match.arg(filetype)
     if (!is.character(path) || !grepl("/$",path)) stop("Path must be a character string and end in '/'.")
     if(longitudinal) {type <- 'long'} else {type <- 'cross'}
     if(nvalid < 0) stop("nvalid must be non-negative.")
-
-    # get item difficulties for respective starting cohort and domain
-    xsi <- item_difficulties[[SC]][[domain]][[wave]][[type]]
-    if (is.null(xsi)) {stop(paste('\nItem difficulties cannot be retrieved for', SC, domain, wave,
-                                  '\nPlease check function arguments or see pv_impl()',
-                                  '\nfor further information on implementation.'))}
+    if(is.null(item_labels[[SC]][[domain]][[wave]])) stop(paste("No competence data availabe for", SC, domain, wave,"."))
 
     # get competence data for SC and domain
     files <- list.files(path = path)
@@ -164,7 +153,7 @@ plausible_values <- function(SC,
     data <- data[order(data$ID_t), ]
 
     # selection of test takers
-    data <- data[rowSums(!is.na(data[, names(data) %in% rownames(xsi)])) >= nvalid, ]
+    data <- data[rowSums(!is.na(data[, names(data) %in% item_labels[[SC]][[domain]][[wave]]])) >= nvalid, ]
     # reading has been tested twice for different samples in SC6:
     # estimating simultaneously might cause problems because of different
     # information available for background model (large quantities of missing data)
@@ -177,10 +166,6 @@ plausible_values <- function(SC,
     }
 
     if(is.null(bgdata)) {
-        if (method != 'CART') {
-            changedFrom <- method
-            method <- 'COM'
-        }
         ID_t <- data[, 'ID_t', drop = FALSE]
     } else {
         if (!is.data.frame(bgdata)) {
@@ -190,16 +175,6 @@ plausible_values <- function(SC,
             stop('ID_t must be included in bgdata.')
         }
         bgdata <- bgdata[order(bgdata$ID_t), ]
-
-        # change to appropriate missing data method
-        missingInbgdata <- any(is.na(bgdata))
-        if (!missingInbgdata & method == 'MMI') {
-            method <- 'COM'
-            changedFrom <- 'MMI'
-            message("method == 'MMI': no missing data in bgdata. No multiple imputation performed. Method changed to 'COM'.")
-        } else {
-            changedFrom <- 'NULL'
-        }
 
         if (nvalid > 0) {
             bgdata <- bgdata[bgdata$ID_t %in% data$ID_t, ]
@@ -211,6 +186,7 @@ plausible_values <- function(SC,
             data <- suppressWarnings(dplyr::bind_rows(data, bgdata[!(bgdata$ID_t %in% data$ID_t), 'ID_t', drop = FALSE]))
             data <- data[order(data$ID_t), ]
         }
+        ID_t <- bgdata$ID_t
 
         # list of categorical variables
         fac <- unlist(lapply(bgdata, is.factor))
@@ -258,22 +234,11 @@ plausible_values <- function(SC,
                     position[!is.na(position$position) & position$position == 248, 'position'] <- 1 # ict first
                     # reading first (i.e. "new" SC6 sample) should be marked with 249 (not found in SUF)
                     if (domain == "RE")
-                        position[is.na(position$position), 'position'] <- 2 # reading first; should not occur for IC/SC tests
-                    # assumption: all missing cases after filtering for valid cases on IC/SC variables actually belong to original sample
+                        position[is.na(position$position), 'position'] <- 3 # reading first; should not occur for IC/SC tests
                 }
             }
-            # if (any(is.na(position$position))) { # distribute missing persons randomly
-            #     position[is.na(position$position), 'position'] <-
-            #         sample(unique(position$position[!is.na(position$position)]), sum(is.na(position$position)), replace = T)
-            # }
-            if (any(is.na(position$position))) {
-                position <- position[!is.na(position$position), ]
-                data <- data[data$ID_t %in% position$ID_t, ]
-                if (!is.null(bgdata))
-                    bgdata <- bgdata[bgdata$ID_t %in% position$ID_t, ]
-                else ID_t <- ID_t[ID_t$ID_t %in% position$ID_t, ]
-            }
-
+            # possible NAs in position variable treated as third group
+            position[is.na(position$position), "position"] <- 2
             # format position effect information
             position <- position[, 2, drop = FALSE]
             rotation <- length(unique(position$position)) > 1 # T: with rotation, F: without rotation
@@ -284,7 +249,8 @@ plausible_values <- function(SC,
     }
 
     # test data
-    resp <- data[, names(data) %in% rownames(xsi)]
+    resp <- data[, names(data) %in% item_labels[[SC]][[domain]][[wave]]]
+    # TODO: andere Domänen als HG-Modell für Imputation
     if (method == 'IND') {
         # prepare criterion scaling
         wle <- all.wle[[SC]][[wave]][[type]][[domain]]
@@ -298,161 +264,29 @@ plausible_values <- function(SC,
     PCM <- max(apply(resp, 2, max, na.rm = TRUE)) > 1
 
     # complement control lists
-    res <- complement_control_lists(control$EAP, control$WLE, control$IND,
-                                    control$MMI, control$CART, control$TAM,
-                                    ncol(bgdata))
+    res <- complement_control_lists(control$EAP, control$WLE, control$nmi,
+                                    control$CART, control$TAM)
     control$EAP <- res$EAP
     control$WLE <- res$WLE
-    control$IND <- res$IND
-    control$MMI <- res$MMI
+    control$nmi <- res$nmi
     control$CART <- res$CART
     control$TAM <- res$TAM
     rm(res)
 
-    # estimation with missing indicator
-    if (method == 'IND') {
-
-        ID_t <- bgdata[, 'ID_t', drop = FALSE]
-
-        # coding
-        # all variables subjected to PCA
-        if (is.null(control$IND$vars)) {
-            bgdatac <- criterion_scaling(bgdata, wle, SC, wave, wle.data, categorical)
-            if (length(categorical) > 0) {
-                bgdatad <- dummy_coding(bgdata, categorical, ID_t)
-                bgdata <- merge(bgdatac[, -which(names(bgdatac) == wle)], bgdatad)
-                rm(bgdatac,bgdatad)
-            } else {
-                bgdata <- bgdatac[, -which(names(bgdatac) == wle)]
-                rm(bgdatac)
-            }
-            # specified variables treated separately
-        } else {
-            if (all(control$IND$vars %in% names(bgdata))) {
-                # prepare variables for PCA
-                for_pca <- categorical[!(categorical %in% control$IND$vars)]
-                bgdata.pca <- bgdata[, !(names(bgdata) %in% control$IND$vars)]
-                if (length(for_pca) > 0) {
-                    bgdatac <- criterion_scaling(bgdata.pca, wle, SC, wave, wle.data, for_pca)
-                    bgdatad <- dummy_coding(bgdata.pca, for_pca, ID_t)
-                    bgdata.pca <- merge(bgdatac[, -which(names(bgdatac) == wle)], bgdatad)
-                    bgdatad <- bgdatac <- NULL
-                } else {
-                    bgdatac <- criterion_scaling(bgdata.pca, wle, SC, wave, wle.data, NULL)
-                    bgdata.pca <- bgdatac[, -which(names(bgdatac) == wle)]
-                    bgdatac <- NULL
-                }
-                # prepare specified variables
-                categorical <- categorical[categorical %in% control$IND$vars]
-                bgdata.vars <- bgdata[, c('ID_t', control$IND$vars)]
-                if (length(categorical) > 0) {
-                    bgdata.vars.c <- criterion_scaling(bgdata.vars, wle, SC, wave, wle.data, categorical)
-                    bgdata.vars.d <- dummy_coding(bgdata.vars, categorical, ID_t)
-                    bgdata.vars <- merge(bgdata.vars.c[, -which(names(bgdata.vars.c) == wle)], bgdata.vars.d)
-                    bgdata.vars.c <- bgdata.vars.d <- NULL
-                } else {
-                    bgdata.vars.c <- criterion_scaling(bgdata.vars, wle, SC, wave, wle.data, NULL)
-                    bgdata.vars <- bgdata.vars.c[, -which(names(bgdata.vars.c) == wle)]
-                    bgdata.vars.c <- NULL
-                }
-                bgdata <- bgdata.pca
-                bgdata.pca <- NULL
-            } else {
-                stop('control$IND$vars: specified variable not in background data.')
-            }
-        }
-        rm(wle,wle.data,categorical,for_pca)
-
-        # pca
-        bgdata.pc <- prcomp(x = bgdata[, -which(names(bgdata) == 'ID_t')],
-                            retx = TRUE, center = TRUE, scale. = TRUE)
-        # choose components until criterion (variance explained) is met
-        pc.varex <- (bgdata.pc$sdev^2)/sum(bgdata.pc$sdev^2)
-        npc <- 1
-        while (npc <= length(pc.varex)) {
-            if (sum(pc.varex[1:npc]) >= control$IND$varex) {
-                break
-            }
-            npc <- npc + 1
-        }
-        bgdata.pca <- bgdata.pc$x[, 1:npc]
-
-        if (!is.null(control$IND$vars)) {
-            bgdata.pca <- cbind(bgdata.pca, bgdata.vars[, -which(names(bgdata.vars) == 'ID_t')])
-        }
-        rm(bgdata.pc,pc.varex,npc,bgdata.vars)
-
-        if (!control$IND$pca.data) {
-
-            if(PCM) {
-                res <- adjustments_PCM(resp, SC, wave, domain)
-                resp <- res$resp
-                ind <- res$ind
-
-                if (rotation) {
-                    mod <- PCM_with_rotation(xsi, resp, bgdata.pca, position, ind)
-                } else {
-                    Q <- matrix(1, nrow = ncol(resp), ncol = 1)
-                    Q[ind, ] <- 0.5 * Q[ind, ]
-                    mod <- TAM::tam.mml(resp = resp, Y = bgdata.pca,
-                                        irtmodel = 'PCM2', xsi.fixed = xsi,
-                                        Q = Q, verbose = FALSE)
-                }
-            } else {
-                if (rotation) {
-                    mod <- TAM::tam.mml.mfr(resp = resp, irtmodel = '1PL',
-                                            formulaA = ~ 0 + item + position,
-                                            Y = bgdata.pca, xsi.fixed = xsi,
-                                            facets = position, verbose = FALSE)
-                } else {
-                    mod <- TAM::tam.mml(resp = resp, Y = bgdata.pca,
-                                        irtmodel = '1PL', xsi.fixed = xsi,
-                                        verbose = FALSE)
-                }
-            }
-            rm(resp, xsi, position)
-            bgdata.pca <- cbind(ID_t, bgdata.pca)
-
-            if (control$WLE) {
-                wmod <- TAM::tam.mml.wle2(mod, WLE = TRUE, progress = FALSE)
-                wle <- matrix(wmod$theta, nrow = length(wmod$theta), ncol = 1)
-                wle <- cbind(ID_t, wle, wmod$error)
-                colnames(wle) <- c('ID_t', 'wle', 'se')
-            }
-            pmod <- TAM::tam.pv(mod, nplausible = npv,
-                                ntheta = control$TAM$ntheta,
-                                normal.approx = control$TAM$normal.approx,
-                                samp.regr = control$TAM$samp.regr,
-                                theta.model = control$TAM$theta.model,
-                                np.adj = control$TAM$np.adj,
-                                na.grid = control$TAM$na.grid)
-            datalist <- TAM::tampv2datalist(pmod, Y = bgdata, pvnames = 'PV')
-            for (d in seq(length(datalist))) {
-                datalist[[d]] <- datalist[[d]][, -which(colnames(datalist[[d]]) %in% c('pid', 'pweights'))]
-            }
-            if (control$EAP) {
-                eap <- cbind(ID_t, mod$person[, c('EAP', 'SD.EAP')])
-                colnames(eap) <- c('ID_t', 'eap', 'se')
-            }
-            EAP.rel <- mod$EAP.rel
-        }
-    }
 
 
-
-    # estimation with MI as missing data handling
-    if (method == 'MMI') {
+    # estimation with ML
+    if (method == "ML") {
 
         # multiple imputation of missing covariate data
-        ID_t <- bgdata[, 'ID_t', drop = FALSE]
-        bgdata <- bgdata[, -which(names(bgdata) == 'ID_t')]
-        imp <- mice::mice(bgdata, m = control$MMI$nmi, maxit = control$MMI$maxit,
-                          printFlag = control$MMI$printFlag,
-                          method = control$MMI$method, where = control$MMI$where,
-                          visitSequence = control$MMI$visitSequence,
-                          post = control$MMI$post, defaultMethod = control$MMI$defaultMethod,
-                          blots = control$MMI$blots, seed = control$MMI$seed,
-                          data.init = control$MMI$data.init)
+        # TODO: position als weiteren Prädiktor hinzufügen?
+        if (!is.null(bgdata) && any(is.na(bgdata)))
+            imp <- CART(X = bgdata, itermcmc = control$CART$itermcmc,
+                        burnin = control$CART$itermcmc, nmi = control$nmi,
+                        thin = control$CART$thin, cartctrl1 = control$CART$cartctrl1,
+                        cartctrl2 = control$CART$cartctrl2)
+        else
+            imp <- NULL
 
         if(PCM) {
             res <- adjustments_PCM(resp, SC, wave, domain)
@@ -474,29 +308,30 @@ plausible_values <- function(SC,
         pvs <- list()
         EAP.rel <- list()
         if (control$EAP)
-            eap <- matrix(0, ncol = 2*control$MMI$nmi, nrow = nrow(resp))
+            eap <- matrix(0, ncol = 2*control$nmi, nrow = nrow(resp))
         icol <- 1
-        for (i in 1:control$MMI$nmi) {
-            bgdatacom <- mice::complete(imp, i)
-            if (length(categorical) > 0) {
-                bgdatacom.d <- dummy_coding(bgdatacom, categorical, ID_t)
-                bgdatacom <- cbind(bgdatacom[, -which(names(bgdatacom) %in% categorical)], bgdatacom.d)
+        for (i in 1:control$nmi) {
+            if (!is.null(imp)) {
+                bgdatacom <- imp[[i]]
+                bgdatacom$ID_t <- NULL
+                bgdatacom <- apply(bgdatacom, 2, as.numeric)
             }
-            bgdatacom$ID_t <- NULL
-            bgdatacom <- apply(bgdatacom, 2, as.numeric)
 
             repeat {
 
                 if (PCM) {
                     if (rotation) {
-                        mod <- tryCatch(TAM::tam.mml(resp = resp, Y = bgdatacom, xsi.fixed = xsi,
+                        mod <- tryCatch(TAM::tam.mml(resp = resp,
+                                                     Y = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
                                                      A = A, B = B, verbose = FALSE),
                                         error=function(e){
                                             return(NA)
                                         })
                     } else {
-                        mod <- tryCatch(TAM::tam.mml(resp = resp, Y = bgdatacom, irtmodel = 'PCM2',
-                                                     xsi.fixed = xsi, Q = Q, verbose = FALSE),
+                        mod <- tryCatch(TAM::tam.mml(resp = resp,
+                                                     Y = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
+                                                     irtmodel = 'PCM2',
+                                                     Q = Q, verbose = FALSE),
                                         error=function(e){
                                             return(NA)
                                         })
@@ -504,15 +339,18 @@ plausible_values <- function(SC,
                 } else {
                     if (rotation) {
                         mod <- tryCatch(TAM::tam.mml.mfr(resp = resp, irtmodel = '1PL',
-                                                         formulaA = ~ 0 + item + position, Y = bgdatacom,
-                                                         xsi.fixed = xsi, facets = position,
+                                                         formulaA = ~ 0 + item + position,
+                                                         Y = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
+                                                         facets = position,
                                                          verbose = FALSE),
                                         error=function(e){
                                             return(NA)
                                         })
                     } else {
-                        mod <- tryCatch(TAM::tam.mml(resp = resp, Y = bgdatacom, irtmodel = '1PL',
-                                                     xsi.fixed = xsi, verbose = FALSE),
+                        mod <- tryCatch(TAM::tam.mml(resp = resp,
+                                                     Y = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
+                                                     irtmodel = '1PL',
+                                                     verbose = FALSE),
                                         error=function(e){
                                             return(NA)
                                         })
@@ -520,16 +358,10 @@ plausible_values <- function(SC,
                 }
 
                 if(any(is.na(mod))) {
-                    bgdatacom <- mice::complete(mice::mice(bgdata, m = 1, maxit = control$MMI$maxit, printFlag = control$MMI$printFlag,
-                                                           method = control$MMI$method, where = control$MMI$where,
-                                                           visitSequence = control$MMI$visitSequence,
-                                                           post = control$MMI$post, defaultMethod = control$MMI$defaultMethod,
-                                                           blots = control$MMI$blots, seed = control$MMI$seed,
-                                                           data.init = control$MMI$data.init))
-                    if (length(categorical) > 0) {
-                        bgdatacom.d <- dummy_coding(bgdatacom, categorical, ID_t)
-                        bgdatacom <- cbind(bgdatacom[, -which(names(bgdatacom) %in% categorical)], bgdatacom.d)
-                    }
+                    bgdatacom <- CART(X = bgdata, itermcmc = control$CART$itermcmc,
+                                      burnin = control$CART$itermcmc, nmi = 1,
+                                      thin = control$CART$thin, cartctrl1 = control$CART$cartctrl1,
+                                      cartctrl2 = control$CART$cartctrl2)[[1]]
                     bgdatacom$ID_t <- NULL
                     bgdatacom <- apply(bgdatacom, 2, as.numeric)
                 } else {
@@ -542,7 +374,8 @@ plausible_values <- function(SC,
             if (control$EAP)
                 eap[, icol:(icol+1)] <- as.matrix(mod$person[, c('EAP', 'SD.EAP')])
             icol <- icol + 2
-            pvs[[i]] <- TAM::tampv2datalist(pmod, Y = cbind(ID_t, bgdatacom),
+            pvs[[i]] <- TAM::tampv2datalist(pmod,
+                                            Y = if (is.null(bgdata) || is.null(imp)) ID_t else cbind(ID_t, bgdatacom),
                                             pvnames = 'PV')
             EAP.rel[[i]] <- mod$EAP.rel
         }
@@ -555,12 +388,12 @@ plausible_values <- function(SC,
         }
         if (control$EAP) {
             eap <- cbind(ID_t, eap)
-            colnames(eap) <- c('ID_t', paste0(rep(c('eap.','se.'), control$MMI$nmi),
-                                              rep(seq(1,control$MMI$nmi), each = 2)))
+            colnames(eap) <- c('ID_t', paste0(rep(c('eap.','se.'), control$nmi),
+                                              rep(seq(1,control$nmi), each = 2)))
         }
         datalist <- list()
         d <- 1
-        for (i in 1:control$MMI$nmi) {
+        for (i in 1:control$nmi) {
             for (j in 1:npv) {
                 datalist[[d]] <- pvs[[i]][[j]]
                 d <- d + 1
@@ -577,8 +410,8 @@ plausible_values <- function(SC,
 
 
 
-    # estimation using sequential CART and GRM
-    if (method == 'CART') {
+    # estimation using MCMC
+    if (method == "Bayes") {
 
         # collapse categories with N < 200
         if(PCM) {
@@ -603,80 +436,7 @@ plausible_values <- function(SC,
             for (i in seq(length(datalist)))
                 datalist[[i]] <- data.frame(ID_t = ID_t, PV = datalist[[i]]$PV)
         }
-        rm(bgdata,S,position,resp)
-    }
-
-
-
-    # estimation with complete background data, without coding
-    if (method == 'COM') {
-
-        if (!is.null(bgdata)) {
-            ID_t <- bgdata[, 'ID_t', drop = FALSE]
-            if (changedFrom == 'MMI') {
-                if (length(categorical) > 0) {
-                    bgdata.d <- dummy_coding(bgdata, categorical, ID_t)
-                    bgdata <- cbind(bgdata[, -which(names(bgdata) %in% categorical)], bgdata.d)
-                }
-            }
-            bgdata <- bgdata[, -which(names(bgdata) == 'ID_t')]
-            bgdata <- apply(bgdata, 2, as.numeric)
-        }
-
-        if(PCM) {
-            res <- adjustments_PCM(resp, SC, wave, domain)
-            resp <- res$resp
-            ind <- res$ind
-
-            if (rotation) {
-                mod <- PCM_with_rotation(xsi, resp, bgdata, position, ind)
-            } else {
-                Q <- matrix(1, nrow = ncol(resp), ncol = 1)
-                Q[ind, ] <- 0.5 * Q[ind, ]
-                mod <- TAM::tam.mml(resp = resp, Y = bgdata,
-                                    irtmodel = 'PCM2', xsi.fixed = xsi,
-                                    Q = Q, verbose = FALSE)
-            }
-        } else {
-            if (rotation) {
-                mod <- TAM::tam.mml.mfr(resp = resp, irtmodel = '1PL',
-                                        formulaA = ~ 0 + item + position,
-                                        Y = bgdata, xsi.fixed = xsi,
-                                        facets = position, verbose = FALSE)
-            } else {
-                mod <- TAM::tam.mml(resp = resp, Y = bgdata,
-                                    irtmodel = '1PL', xsi.fixed = xsi,
-                                    verbose = FALSE)
-            }
-        }
-        rm(resp, xsi, position)
-
-        if(control$WLE) {
-            wmod <- TAM::tam.mml.wle2(mod, WLE = TRUE, progress = FALSE)
-            wle <- matrix(wmod$theta, nrow = length(wmod$theta), ncol = 1)
-            wle <- cbind(ID_t, wle, wmod$error)
-            colnames(wle) <- c('ID_t', 'wle', 'se')
-        }
-        pmod <- TAM::tam.pv(mod, nplausible = npv, ntheta = control$TAM$ntheta,
-                            normal.approx = control$TAM$normal.approx,
-                            samp.regr = control$TAM$samp.regr,
-                            theta.model = control$TAM$theta.model,
-                            np.adj = control$TAM$np.adj,
-                            na.grid = control$TAM$na.grid)
-        if (!is.null(bgdata)) {
-            datalist <- TAM::tampv2datalist(pmod, Y = cbind(ID_t, bgdata),
-                                            pvnames = 'PV')
-        } else {
-            datalist <- TAM::tampv2datalist(pmod, Y = ID_t, pvnames = 'PV')
-        }
-        if (control$EAP) {
-            eap <- cbind(ID_t, mod$person[, c('EAP', 'SD.EAP')])
-            colnames(eap) <- c('ID_t', 'eap', 'se')
-        }
-        for (d in seq(length(datalist))) {
-            datalist[[d]] <- datalist[[d]][, -which(colnames(datalist[[d]]) %in% c('pid', 'pweights'))]
-        }
-        EAP.rel <- mod$EAP.rel
+        rm(bgdata,S,resp)
     }
 
     # output
@@ -685,8 +445,6 @@ plausible_values <- function(SC,
     res[['domain']] <- domain
     res[['wave']] <- wave
     res[['method']] <- method
-    if (changedFrom != "NULL")
-        res[["changedFrom"]] <- changedFrom
     res[['type']] <- type
     res[['rotation']] <- ifelse(rotation, 'Corrected For Test Position',
                                 'No Correction For Test Position')
@@ -695,27 +453,11 @@ plausible_values <- function(SC,
     res[['n.valid']] <- n.valid
     res[['npv']] <- npv
     res[['control']] <- control
+    res[['position']] <- data.frame(ID_t, position)
 
-    if (method == 'IND') {
-        if (control$IND$pca.data) {
-            bgdata.pca <- cbind(ID_t, bgdata.pca)
-            res[['pca.data']] <- bgdata.pca
-            res[['coded.data']] <- bgdata
-        } else {
-            if (control$EAP) {
-                res[['eap']] <- eap
-                res[['eap.uncorrected']] <- eaps[[SC]][[domain]][[wave]][[type]]
-            }
-            if (control$WLE) {
-                res[['wle']] <- wle
-            }
-            res[['pv']] <- datalist
-            res[['pca.data']] <- bgdata.pca
-            res[['EAP.rel']] <- EAP.rel
-        }
-    } else if (method == 'CART') {
+    if (method == "Bayes") {
         res[['pv']] <- datalist
-    } else if (method %in% c('MMI', 'COM')) {
+    } else if (method == "ML") {
         if (control$EAP) {
             res[['eap']] <- eap
             res[['eap.uncorrected']] <- eaps[[SC]][[domain]][[wave]][[type]]

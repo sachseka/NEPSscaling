@@ -29,11 +29,13 @@
 #' @details \code{mglrm} uses a fully Bayesian estimation approach. Independent conjugate prior
 #' distributions are chosen to develop a Metropolis-within-Gibbs sampling algorithm based on
 #' the device of data augmentation (Tanner & Wong, 1987). The function generates a sample from
-#' the posterior distribution of a one dimensional two-parameter normal ogive IRT model
-#' (Albert, 1992) \deqn{y_{ij}^*=\alpha_j \theta_i - \beta_j + \varepsilon_{ij}} including a
+#' the posterior distribution of a one dimensional one-parameter normal ogive IRT model
+#' (adapted from Albert, 1992) \deqn{y_{ij}^*=\alpha_j \theta_i - \beta_j + \varepsilon_{ij}} including a
 #' (multivariate) regression equation of person level predictors on the mean vector of latent
 #' abilities \deqn{\theta_i=x_i\gamma_{S_i} + e_i.} Regression parameters are allowed to vary
-#' across observed groups. Partially observed person-level covariates are imputed in each
+#' across observed groups. The discrimination parameter is set to 1 for binary items; for
+#' ordinal items, the parameters are either fixed to 0.5 or estimated freely. Partially observed
+#' person-level covariates are imputed in each
 #' sampling iteration. Sequential CART (Burgette & Reiter, 2010) are utilized as approximations
 #' to the full conditional distributions of missing values in \code{X}.
 #' @return list with elements \code{MCMCdraws} and \code{M-Hacc} containing a list of posterior
