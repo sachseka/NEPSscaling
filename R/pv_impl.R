@@ -5,7 +5,7 @@
 
 pv_impl <- function(){
     cat(
-"Plausible_values() is implemented for the following \nstarting cohorts, domains and waves; \nall competence scores are available for \ncross-sectional and longitudinal research.\n
+"Plausible_values() is implemented for the following \nstarting cohorts, domains and waves; \nall competence scores are available for \ncross-sectional and longitudinal research\n(if multiple waves are implemented).\n
 == SC1 ==\n--\n
 == SC2 ==\n--\n
 == SC3 ==\n--\n

@@ -119,19 +119,28 @@ plausible_values <- function(SC,
     rotation = TRUE,
     nvalid = 3L,
     control = list(EAP = FALSE, WLE = FALSE, nmi = 10L,
-                   CART = list(itermcmc = 10000, burnin = 2000, thin = 1, tdf = 10,
+                   Bayes = list(itermcmc = 10000, burnin = 2000, thin = 1, tdf = 10,
                                cartctrl1 = 5, cartctrl2 = 0.0001),
-                   TAM = list(ntheta = 2000, normal.approx = FALSE, samp.regr = FALSE,
+                   ML = list(ntheta = 2000, normal.approx = FALSE, samp.regr = FALSE,
                               theta.model=FALSE, np.adj=8, na.grid = 5))
 ){
     # check and prepare arguments
+    if (missing(SC)) stop("Starting cohort must be specified.")
     SC <- paste0("SC", SC)
-    wave <- paste0("w", wave)
+    if (!longitudinal && missing(wave)) {
+        stop("Wave must be specified for cross-sectional modeling.")
+    } else
+        wave <- paste0("w", wave)
     domain <- toupper(domain)
     domain <- match.arg(domain)
     method <- match.arg(method)
     filetype <- match.arg(filetype)
+    if (missing(path)) stop("Path must be specified.")
     if (!is.character(path) || !grepl("/$",path)) stop("Path must be a character string and end in '/'.")
+    if ((SC == "SC6" | SC == "SC5") & domain %in% c("IC", "SC", "BA", "EF")){
+        longitudinal <- FALSE
+        message(paste("No longitudinal data for:", SC, domain,"."))
+        }
     if(longitudinal) {type <- 'long'} else {type <- 'cross'}
     if(nvalid < 0) stop("nvalid must be non-negative.")
     if(is.null(item_labels[[SC]][[domain]][[wave]])) stop(paste("No competence data availabe for", SC, domain, wave,"."))
@@ -153,15 +162,24 @@ plausible_values <- function(SC,
     data <- data[order(data$ID_t), ]
 
     # selection of test takers
-    data <- data[rowSums(!is.na(data[, names(data) %in% item_labels[[SC]][[domain]][[wave]]])) >= nvalid, ]
-    # reading has been tested twice for different samples in SC6:
-    # estimating simultaneously might cause problems because of different
-    # information available for background model (large quantities of missing data)
-    if (SC == 'SC6' & domain == 'RE') {
-        if (wave == 'w3') {
-            data <- data[data$wave_w3 == 1, ]
-        } else if (wave == 'w5') {
-            data <- data[data$wave_w3 == 0 & data$wave_w5 == 1, ]
+    if (longitudinal) {
+        # taking part in waves xy: alle waves in & aufnehmen? über wave_w und ||?
+        if (SC == "SC6" & domain %in% c("RE", "MA"))
+            sel <- names(data) %in% c(item_labels[[SC]][[domain]][["w3"]], item_labels[[SC]][[domain]][["w9"]])
+        if (SC == "SC5" & domain %in% c("RE", "MA"))
+            sel <- names(data) %in% c(item_labels[[SC]][[domain]][["w1"]], item_labels[[SC]][[domain]][["w12"]])
+        data <- data[rowSums(!is.na(data[, sel])) >= nvalid, ]
+    } else {
+        data <- data[rowSums(!is.na(data[, names(data) %in% item_labels[[SC]][[domain]][[wave]]])) >= nvalid, ]
+        # reading has been tested twice for different samples in SC6:
+        # estimating simultaneously might cause problems because of different
+        # information available for background model (large quantities of missing data)
+        if (SC == 'SC6' & domain == 'RE') {
+            if (wave == 'w3') {
+                data <- data[data$wave_w3 == 1, ]
+            } else if (wave == 'w5') {
+                data <- data[data$wave_w3 == 0 & data$wave_w5 == 1, ]
+            }
         }
     }
 
@@ -193,12 +211,14 @@ plausible_values <- function(SC,
         categorical <- names(bgdata)[fac]
     }
     n.valid <- dplyr::bind_cols(data[, 'ID_t', drop = FALSE], data.frame(valid = rep(0, nrow(data))))
-    n.valid$valid <- rowSums(!is.na(data[, names(data) %in% rownames(xsi)]))
+    n.valid$valid <- rowSums(!is.na(data[, names(data) %in% item_labels[[SC]][[domain]][[wave]]]))
 
     if (longitudinal) {
         if (rotation)
             message('Longitudinal competence estimates are not corrected for item position. rotation = FALSE')
         rotation <- FALSE
+        if (method == "ML")
+            Q <- qmat(SC, domain)
     } else {
         if (rotation) {
 
@@ -249,15 +269,20 @@ plausible_values <- function(SC,
     }
 
     # test data
-    resp <- data[, names(data) %in% item_labels[[SC]][[domain]][[wave]]]
-    # TODO: andere Domänen als HG-Modell für Imputation
-    if (method == 'IND') {
-        # prepare criterion scaling
-        wle <- all.wle[[SC]][[wave]][[type]][[domain]]
-        if (is.null(wle))
-            stop(paste('There is no competence data for:', SC, domain, wave))
-        wle.data <- data[, c('ID_t', wle)]
-    }
+    if (longitudinal) {
+        `%>%` <- dplyr::`%>%`
+        resp <- list()
+        if (SC == "SC6" & domain == "RE") {
+            resp[[1]] <- data[, names(data) %in% c("ID_t", item_labels[[SC]][[domain]][[1]])]
+            resp[[2]] <- data[, names(data) %in% c("ID_t", item_labels[[SC]][[domain]][[3]])]
+        } else {
+            for (i in seq(length(item_labels[[SC]][[domain]])))
+                resp[[i]] <- data[, names(data) %in% c("ID_t", item_labels[[SC]][[domain]][[i]])]
+        }
+        resp <- resp %>% Reduce(function(df1,df2) dplyr::full_join(df1,df2,by="ID_t"), .)
+        resp$ID_t <- NULL
+    } else
+        resp <- data[, names(data) %in% item_labels[[SC]][[domain]][[wave]]]
     rm(data)
 
     # check for Partial Credit Items
@@ -265,12 +290,12 @@ plausible_values <- function(SC,
 
     # complement control lists
     res <- complement_control_lists(control$EAP, control$WLE, control$nmi,
-                                    control$CART, control$TAM)
+                                    control$Bayes, control$ML)
     control$EAP <- res$EAP
     control$WLE <- res$WLE
     control$nmi <- res$nmi
-    control$CART <- res$CART
-    control$TAM <- res$TAM
+    control$Bayes <- res$Bayes
+    control$ML <- res$ML
     rm(res)
 
 
@@ -279,14 +304,12 @@ plausible_values <- function(SC,
     if (method == "ML") {
 
         # multiple imputation of missing covariate data
-        # TODO: position als weiteren Prädiktor hinzufügen?
-        if (!is.null(bgdata) && any(is.na(bgdata)))
-            imp <- CART(X = bgdata, itermcmc = control$CART$itermcmc,
-                        burnin = control$CART$itermcmc, nmi = control$nmi,
-                        thin = control$CART$thin, cartctrl1 = control$CART$cartctrl1,
-                        cartctrl2 = control$CART$cartctrl2)
-        else
-            imp <- NULL
+        if (!is.null(bgdata) && any(is.na(bgdata))){
+            imp <- CART(X = bgdata, itermcmc = control$Bayes$itermcmc,
+                        burnin = control$Bayes$itermcmc, nmi = control$nmi,
+                        thin = control$Bayes$thin, cartctrl1 = control$Bayes$cartctrl1,
+                        cartctrl2 = control$Bayes$cartctrl2)
+        } else imp <- NULL
 
         if(PCM) {
             res <- adjustments_PCM(resp, SC, wave, domain)
@@ -323,6 +346,7 @@ plausible_values <- function(SC,
                     if (rotation) {
                         mod <- tryCatch(TAM::tam.mml(resp = resp,
                                                      Y = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
+                                                     xsi.fixed = if (SC == "SC6" && domain == "RE" && wave == "w5") item_diff_SC6_RE_w3[[type]] else NULL,
                                                      A = A, B = B, verbose = FALSE),
                                         error=function(e){
                                             return(NA)
@@ -331,6 +355,7 @@ plausible_values <- function(SC,
                         mod <- tryCatch(TAM::tam.mml(resp = resp,
                                                      Y = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
                                                      irtmodel = 'PCM2',
+                                                     xsi.fixed = if (SC == "SC6" && domain == "RE" && wave == "w5") item_diff_SC6_RE_w3[[type]] else NULL,
                                                      Q = Q, verbose = FALSE),
                                         error=function(e){
                                             return(NA)
@@ -342,6 +367,7 @@ plausible_values <- function(SC,
                                                          formulaA = ~ 0 + item + position,
                                                          Y = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
                                                          facets = position,
+                                                         xsi.fixed = if (SC == "SC6" && domain == "RE" && wave == "w5") item_diff_SC6_RE_w3[[type]] else NULL,
                                                          verbose = FALSE),
                                         error=function(e){
                                             return(NA)
@@ -350,6 +376,7 @@ plausible_values <- function(SC,
                         mod <- tryCatch(TAM::tam.mml(resp = resp,
                                                      Y = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
                                                      irtmodel = '1PL',
+                                                     xsi.fixed = if (SC == "SC6" && domain == "RE" && wave == "w5") item_diff_SC6_RE_w3[[type]] else NULL,
                                                      verbose = FALSE),
                                         error=function(e){
                                             return(NA)
@@ -358,19 +385,19 @@ plausible_values <- function(SC,
                 }
 
                 if(any(is.na(mod))) {
-                    bgdatacom <- CART(X = bgdata, itermcmc = control$CART$itermcmc,
-                                      burnin = control$CART$itermcmc, nmi = 1,
-                                      thin = control$CART$thin, cartctrl1 = control$CART$cartctrl1,
-                                      cartctrl2 = control$CART$cartctrl2)[[1]]
+                    bgdatacom <- CART(X = bgdata, itermcmc = control$Bayes$itermcmc,
+                                      burnin = control$Bayes$itermcmc, nmi = 1,
+                                      thin = control$Bayes$thin, cartctrl1 = control$Bayes$cartctrl1,
+                                      cartctrl2 = control$Bayes$cartctrl2)[[1]]
                     bgdatacom$ID_t <- NULL
                     bgdatacom <- apply(bgdatacom, 2, as.numeric)
                 } else {
                     break
                 }
             }
-            pmod <- TAM::tam.pv(mod, nplausible = npv, ntheta = control$TAM$ntheta, normal.approx = control$TAM$normal.approx,
-                                samp.regr = control$TAM$samp.regr, theta.model = control$TAM$theta.model,
-                                np.adj = control$TAM$np.adj, na.grid = control$TAM$na.grid)
+            pmod <- TAM::tam.pv(mod, nplausible = npv, ntheta = control$ML$ntheta, normal.approx = control$ML$normal.approx,
+                                samp.regr = control$ML$samp.regr, theta.model = control$ML$theta.model,
+                                np.adj = control$ML$np.adj, na.grid = control$ML$na.grid)
             if (control$EAP)
                 eap[, icol:(icol+1)] <- as.matrix(mod$person[, c('EAP', 'SD.EAP')])
             icol <- icol + 2
@@ -404,7 +431,7 @@ plausible_values <- function(SC,
         datalist <- datalist[ind]
         for (i in 1:npv) {
             names(datalist[[i]])[length(datalist[[i]])] <- 'PV'
-            datalist[[i]] <- datalist[[i]][, -which(colnames(datalist[[i]]) %in% c('pid', 'pweights'))]
+            datalist[[i]] <- datalist[[i]][, -which(colnames(datalist[[i]]) %in% c('pid', 'pweights', 'test_position'))]
         }
     }
 
@@ -428,10 +455,10 @@ plausible_values <- function(SC,
         if (!is.null(bgdata)) bgdata <- data.frame(bgdata)
         resp <- data.frame(resp)
         datalist <- plausible_values_mglrm(Y = resp, X = bgdata, S = S, npv = npv,
-                        itermcmc = control$CART$itermcmc, burnin = control$CART$burnin,
-                        thin = control$CART$thin, tdf = control$CART$tdf,
-                        cartctrl1 = control$CART$cartctrl1,
-                        cartctrl2 = control$CART$cartctrl2)
+                        itermcmc = control$Bayes$itermcmc, burnin = control$Bayes$burnin,
+                        thin = control$Bayes$thin, tdf = control$Bayes$tdf,
+                        cartctrl1 = control$Bayes$cartctrl1,
+                        cartctrl2 = control$Bayes$cartctrl2)
         if (is.null(bgdata)) {
             for (i in seq(length(datalist)))
                 datalist[[i]] <- data.frame(ID_t = ID_t, PV = datalist[[i]]$PV)
@@ -449,7 +476,7 @@ plausible_values <- function(SC,
     res[['rotation']] <- ifelse(rotation, 'Corrected For Test Position',
                                 'No Correction For Test Position')
     res[['nvalid']] <- nvalid
-    res[['model']] <- ifelse(PCM, 'Partical Credit Model', 'Rasch Model')
+    res[['model']] <- if (method == "ML") ifelse(PCM, 'Partical Credit Model', 'Rasch Model') else "Graded Response Model"
     res[['n.valid']] <- n.valid
     res[['npv']] <- npv
     res[['control']] <- control
@@ -462,9 +489,8 @@ plausible_values <- function(SC,
             res[['eap']] <- eap
             res[['eap.uncorrected']] <- eaps[[SC]][[domain]][[wave]][[type]]
         }
-        if (control$WLE) {
+        if (control$WLE)
             res[['wle']] <- wle
-        }
         res[['pv']] <- datalist
         res[['EAP.rel']] <- EAP.rel
     }

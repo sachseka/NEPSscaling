@@ -17,7 +17,7 @@
 #' @param cartctrl2 complexity parameter. Any CART split that does not decrease the overall
 #' lack of fit by a factor of \code{control2} is not attempted during covariates imputation
 #' cycles.
-#' @details Partially observed person-level covariates are imputed in each
+#' @details Partially observed variables are imputed in each
 #' sampling iteration. Sequential CART (Burgette & Reiter, 2010) are utilized as approximations
 #' to the full conditional distributions of missing values in \code{X}.
 #' @return list with \code{nmi} imputed data sets.
