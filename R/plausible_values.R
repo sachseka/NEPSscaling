@@ -119,7 +119,7 @@ plausible_values <- function(SC,
     rotation = TRUE,
     nvalid = 3L,
     control = list(EAP = FALSE, WLE = FALSE, nmi = 10L,
-                   Bayes = list(itermcmc = 10000, burnin = 2000, thin = 1, tdf = 10,
+                   Bayes = list(itermcmc = 10000, burnin = 2000, est.alpha = TRUE, thin = 1, tdf = 10,
                                cartctrl1 = 5, cartctrl2 = 0.0001),
                    ML = list(ntheta = 2000, normal.approx = FALSE, samp.regr = FALSE,
                               theta.model=FALSE, np.adj=8, na.grid = 5))
@@ -222,6 +222,7 @@ plausible_values <- function(SC,
     } else {
         if (rotation) {
 
+            # TODO: position auf Mehr-Dim- und >2-Kategorien-Fälle anpassen
             position <- data.frame(ID_t = data$ID_t, position = rep(NA, nrow(data)))
 
             # construct facet to correct for rotation design
@@ -316,6 +317,7 @@ plausible_values <- function(SC,
             resp <- res$resp
             ind <- res$ind
 
+            # TODO: Rotationsdesign etc. im Mehr-Dim-Fall anpassen
             if (rotation) {
                 res <- matrices_with_rotation(resp, position, ind)
                 A <- res$A
@@ -330,6 +332,7 @@ plausible_values <- function(SC,
 
         pvs <- list()
         EAP.rel <- list()
+        regr.coeff <- list()
         if (control$EAP)
             eap <- matrix(0, ncol = 2*control$nmi, nrow = nrow(resp))
         icol <- 1
@@ -405,6 +408,7 @@ plausible_values <- function(SC,
                                             Y = if (is.null(bgdata) || is.null(imp)) ID_t else cbind(ID_t, bgdatacom),
                                             pvnames = 'PV')
             EAP.rel[[i]] <- mod$EAP.rel
+            regr.coeff[[i]] <- mod$beta
         }
         rm(icol,imp,bgdata,bgdatacom,resp,xsi)
         if (control$WLE) {
@@ -457,14 +461,21 @@ plausible_values <- function(SC,
         datalist <- plausible_values_mglrm(Y = resp, X = bgdata, S = S, npv = npv,
                         itermcmc = control$Bayes$itermcmc, burnin = control$Bayes$burnin,
                         thin = control$Bayes$thin, tdf = control$Bayes$tdf,
+                        est.alpha = control$Bayes$est.alpha,
                         cartctrl1 = control$Bayes$cartctrl1,
                         cartctrl2 = control$Bayes$cartctrl2)
         if (is.null(bgdata)) {
-            for (i in seq(length(datalist)))
-                datalist[[i]] <- data.frame(ID_t = ID_t, PV = datalist[[i]]$PV)
+            for (i in seq(length(datalist$datalist)))
+                datalist$datalist[[i]] <- data.frame(ID_t = ID_t, PV = datalist$datalist[[i]]$PV)
         }
         rm(bgdata,S,resp)
     }
+
+
+    # TODO: PVs auf richtige Skala verschieben
+    pv <- scale_pv(pv = if (method == "Bayes") datalist$datalist else datalist,
+                   method = method, SC = SC, domain = domain, type = type, wave = wave,
+                   EAP = if (method == "Bayes") datalist$EAPs else rowMeans(eap[, seq(2,2*control$nmi,2)]))
 
     # output
     res <- list()
@@ -481,9 +492,13 @@ plausible_values <- function(SC,
     res[['npv']] <- npv
     res[['control']] <- control
     res[['position']] <- data.frame(ID_t, position)
+    # res[["variance"]] <- variance
+    # res[["mean"]] <- mean
+    res[['pv']] <- pv
 
     if (method == "Bayes") {
-        res[['pv']] <- datalist
+        if (control$EAP) res[["eap"]] <- datalist$EAP
+        res[["regr.coeff"]] <- datalist$regr.coeff
     } else if (method == "ML") {
         if (control$EAP) {
             res[['eap']] <- eap
@@ -491,8 +506,8 @@ plausible_values <- function(SC,
         }
         if (control$WLE)
             res[['wle']] <- wle
-        res[['pv']] <- datalist
         res[['EAP.rel']] <- EAP.rel
+        res[["regr.coeff"]] <- regr.coeff
     }
     class(res) <- "pv.obj"
     return(res)

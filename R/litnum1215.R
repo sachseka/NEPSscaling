@@ -11,7 +11,7 @@
 #' @param itermcmc number of MCMC iterations.
 #' @param burnin number of burnin iterations.
 #' @return list with \code{nopvs} elements, each containing a data frame of the sequential ID, plausible values for
-#' each dimension and, if specified, imputed versions of \code{X}. Resulting plausible values are transformed onto the PIAAC 2012 scale (weighted means and standard deviations based on the SUF). Additionally each list element is saved as a 
+#' each dimension and, if specified, imputed versions of \code{X}. Resulting plausible values are transformed onto the PIAAC 2012 scale (weighted means and standard deviations based on the SUF). Additionally each list element is saved as a
 #' Stata file in the folder specified by \code{path}.
 #' @references Carstensen, C. H., Gaasch, J.-C., & Rothaug, E. (2017). Scaling PIAAC-L cognitive data: technical report.
 #' Manuscript in preparation.
@@ -28,108 +28,8 @@ litnum1215 <- function(
   itermcmc = 22000,
   burnin = 2000
 ){
-  
+
   t0 <- proc.time()
-  files <- list.files(path = path)
-  ZA5845 <- suppressWarnings(read.dta13(file = paste0(path,
-    files[grep("ZA5845", files)])))
-  ZA5989_Persons_15 <- suppressWarnings(read.dta13(file = paste0(path,
-    files[grep("ZA5989_Persons_15", files)])))
-  names(ZA5845)[names(ZA5845) == "SEQID"] <- "seqid"
-  seqid1215 <- ZA5989_Persons_15$seqid[!is.na(ZA5989_Persons_15$seqid)]
-  Lit12 <- ZA5845[which(ZA5845$seqid %in% seqid1215),
-    c("seqid",
-      "C301C05S", "C300C02S", "D302C02S", "D311701S", "C308120S", "E321001S",
-      "E321002S", "C305215S", "C305218S", "C308117S", "C308119S", "C308121S",
-      "C308118S", "D304710S", "D304711S", "D315512S", "E327001S", "E327002S",
-      "E327003S", "E327004S", "C308116S", "C309320S", "C309321S", "D307401S",
-      "D307402S", "C313412S", "C313414S", "C309319S", "C309322S", "E322001S",
-      "E322002S", "E322005S", "E320001S", "E320003S", "E320004S", "C310406S",
-      "C310407S", "E322003S", "E323003S", "E323004S", "E322004S", "D306110S",
-      "D306111S", "C313410S", "C313411S", "C313413S", "E318001S", "E318003S",
-      "E323002S", "E323005S", "E329002S", "E329003S", "M301C05S", "P330001S",
-      "N302C02S", "M300C02S", "N306110S", "N306111S", "M313410S", "M313411S",
-      "M313412S", "M313413S", "M313414S", "P324002S", "P324003S", "M305215S",
-      "M305218S", "P317001S", "P317002S", "P317003S", "M310406S", "M310407S",
-      "M309319S", "M309320S", "M309321S", "M309322S")]
-  Lit12[, 2:77] <- lapply(Lit12[, 2:77], as.integer)
-  Num12 <- ZA5845[which(ZA5845$seqid %in% seqid1215),
-    c("seqid",
-      "C600C04S", "C601C06S", "E645001S", "C615602S", "C615603S", "C624619S",
-      "C624620S", "C604505S", "C605506S", "C605507S", "C605508S", "E650001S",
-      "C623616S", "C623617S", "C619609S", "E657001S", "E646002S", "C620610S",
-      "C620612S", "E632001S", "E632002S", "C607510S", "C614601S", "C618607S",
-      "C618608S", "E635001S", "C613520S", "C608513S", "E655001S", "C602501S",
-      "C602502S", "C602503S", "C611516S", "C611517S", "C606509S", "E665001S",
-      "E665002S", "C622615S", "E636001S", "C617605S", "C617606S", "E641001S",
-      "E661001S", "E661002S", "E660003S", "E660004S", "E634001S", "E634002S",
-      "E651002S", "E664001S", "E644002S", "C612518S", "M600C04S", "P601C06S",
-      "P614601S", "P645001S", "M615602S", "M615603S", "P640001S", "M620610S",
-      "M620612S", "P666001S", "M623616S", "M623617S", "M623618S", "M624619S",
-      "M624620S", "M618607S", "M618608S", "M604505S", "M610515S", "P664001S",
-      "M602501S", "M602502S", "M602503S", "P655001S")]
-  Num12[, 2:77] <- lapply(Num12[, 2:77], as.integer)
-  Lit15 <- ZA5989_Persons_15[which(ZA5989_Persons_15$seqid %in% seqid1215),
-    c("seqid",
-      "C301C05S_15", "C300C02S_15", "D302C02S_15", "D311701S_15", "C308120S_15",
-      "E321001S_15", "E321002S_15", "C305215S_15", "C305218S_15", "C308117S_15",
-      "C308119S_15", "C308121S_15", "C308118S_15", "D304710S_15", "D304711S_15",
-      "D315512S_15", "E327001S_15", "E327002S_15", "E327003S_15", "E327004S_15",
-      "C308116S_15", "C309320S_15", "C309321S_15", "D307401S_15", "D307402S_15",
-      "C313412S_15", "C313414S_15", "C309319S_15", "C309322S_15", "E322001S_15",
-      "E322002S_15", "E322005S_15", "E320001S_15", "E320003S_15", "E320004S_15",
-      "C310406S_15", "C310407S_15", "E322003S_15", "E323003S_15", "E323004S_15",
-      "E322004S_15", "D306110S_15", "D306111S_15", "C313410S_15", "C313411S_15",
-      "C313413S_15", "E318001S_15", "E318003S_15", "E323002S_15", "E323005S_15",
-      "E329002S_15", "E329003S_15", "M301C05S_15", "P330001S_15", "N302C02S_15",
-      "M300C02S_15", "N306110S_15", "N306111S_15", "M313410S_15", "M313411S_15",
-      "M313412S_15", "M313413S_15", "M313414S_15", "P324002S_15", "P324003S_15",
-      "M305215S_15", "M305218S_15", "P317001S_15", "P317002S_15", "P317003S_15",
-      "M310406S_15", "M310407S_15", "M309319S_15", "M309320S_15", "M309321S_15",
-      "M309322S_15")]
-  Lit15[, 2:77] <- lapply(Lit15[, 2:77], as.integer)
-  Num15 <- ZA5989_Persons_15[which(ZA5989_Persons_15$seqid %in% seqid1215),
-    c("seqid",
-      "C600C04S_15", "C601C06S_15", "E645001S_15", "C615602S_15", "C615603S_15",
-      "C624619S_15", "C624620S_15", "C604505S_15", "C605506S_15", "C605507S_15",
-      "C605508S_15", "E650001S_15", "C623616S_15", "C623617S_15", "C619609S_15",
-      "E657001S_15", "E646002S_15", "C620610S_15", "C620612S_15", "E632001S_15",
-      "E632002S_15", "C607510S_15", "C614601S_15", "C618607S_15", "C618608S_15",
-      "E635001S_15", "C613520S_15", "C608513S_15", "E655001S_15", "C602501S_15",
-      "C602502S_15", "C602503S_15", "C611516S_15", "C611517S_15", "C606509S_15",
-      "E665001S_15", "E665002S_15", "C622615S_15", "E636001S_15", "C617605S_15",
-      "C617606S_15", "E641001S_15", "E661001S_15", "E661002S_15", "E660003S_15",
-      "E660004S_15", "E634001S_15", "E634002S_15", "E651002S_15", "E664001S_15",
-      "E644002S_15", "C612518S_15", "M600C04S_15", "P601C06S_15", "P614601S_15",
-      "P645001S_15", "M615602S_15", "M615603S_15", "P640001S_15", "M620610S_15",
-      "M620612S_15", "P666001S_15", "M623616S_15", "M623617S_15", "M623618S_15",
-      "M624619S_15", "M624620S_15", "M618607S_15", "M618608S_15", "M604505S_15",
-      "M610515S_15", "P664001S_15", "M602501S_15", "M602502S_15", "M602503S_15",
-      "P655001S_15")]
-  Num15[, 2:77] <- lapply(Num15[, 2:77], as.integer)
-  Lit12[, -c(1, 71)][Lit12[, -c(1, 71)] == 1] <- NA
-  Lit12[, -c(1, 71)][Lit12[, -c(1, 71)] == 2] <- 1
-  Lit12[, -c(1, 71)][Lit12[, -c(1, 71)] == 3] <- 0
-  Lit12[, 71][Lit12[, 71] == 1] <- NA
-  Lit12[, 71][Lit12[, 71] %in% c(2, 3)] <- 1
-  Lit12[, 71][Lit12[, 71] == 4] <- 0
-  Num12[, -1][Num12[, -1] == 1] <- NA
-  Num12[, -1][Num12[, -1] == 2] <- 1
-  Num12[, -1][Num12[, -1] == 3] <- 0
-  Lit15[, -c(1, 71)][Lit15[, -c(1, 71)] == 2] <- NA
-  Lit15[, -c(1, 71)][Lit15[, -c(1, 71)] == 3] <- NA
-  Lit15[, -c(1, 71)][Lit15[, -c(1, 71)] == 4] <- 1
-  Lit15[, -c(1, 71)][Lit15[, -c(1, 71)] == 5] <- 0
-  Lit15[, 71][Lit15[, 71] %in% c(2, 3)] <- NA
-  Lit15[, 71][Lit15[, 71] %in% c(4, 5)] <- 1
-  Lit15[, 71][Lit15[, 71] == 6] <- 0
-  Num15[, -1][Num15[, -1] == 2] <- NA
-  Num15[, -1][Num15[, -1] == 3] <- NA
-  Num15[, -1][Num15[, -1] == 4] <- 1
-  Num15[, -1][Num15[, -1] == 5] <- 0
-  LN12 <- merge(Lit12, Num12, by = "seqid")
-  LN15 <- merge(Lit15, Num15, by = "seqid")
-  LN1215 <- merge(LN12, LN15, by = "seqid")
   Y <- data.matrix(LN1215[, -1])
   Xid <- LN1215[, 1, drop = FALSE]
   YOBS <- !is.na(Y)
@@ -148,7 +48,7 @@ litnum1215 <- function(
     XDM <- matrix(1, nrow = N)
   }else{
     if(!all(Xid$seqid %in% X$seqid)){
-      stop(paste0("Input argument X must contain the respondent having sequential ID ", 
+      stop(paste0("Input argument X must contain the respondent having sequential ID ",
         paste(Xid$seqid[which(!(Xid$seqid %in% X$seqid))], collapse = ", "), "!"))
     }
     X <- merge(Xid, X, by = "seqid", all.x = TRUE)
@@ -309,5 +209,5 @@ litnum1215 <- function(
       "hours to execute"))
   }
   return(PVs)
-  
+
 }
