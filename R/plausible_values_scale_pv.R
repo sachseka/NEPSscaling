@@ -1,25 +1,33 @@
 # Re-scale plausible values to
 # fit linked distributions
 
-scale_pv <- function(pv, method, SC, domain, type, EAP, wave) {
+scale_pv <- function(pv, SC, domain, type, MEAN, VAR, wave) {
     if (SC == "SC6") {
         if (domain == "RE" & type == "long")
             waves <- c("w3", "w12")
-        else if (domain == "RE" & type == "cross")
-            waves <- wave
+    }
+    if (length(mean) == 1) {
+        for(i in seq(length(pv))) {
+            # TODO: subtract mean of plausible values distribution:
+            # does not work for multi-dim case yet!
+            m <- meanvar[[SC]][[domain]][[wave]][[type]][1]
+            s <- sqrt(meanvar[[SC]][[domain]][[wave]][[type]][2])
+            pv[[i]]$PV <- (pv[[i]]$PV + m - MEAN) / sqrt(VAR) * s
+        }
+        return(pv)
     }
     for(i in seq(length(pv))) {
         # TODO: subtract mean of plausible values distribution:
         # does not work for multi-dim case yet!
-        m <- 0
-        for (w in waves)
-            m <- m + meanvar[[SC]][[domain]][[w]][[type]][1]
-        pv[[i]]$PV <- (pv[[i]]$PV + m - EAP)/
-            sqrt(meanvar[[SC]][[domain]][[wave]][[type]][2])
+        for (w in waves) {
+            # Zuweisung von richtigen M/VAR zu entspr. PVs
+            m <- meanvar[[SC]][[domain]][[w]][[type]][1]
+            s <- sqrt(meanvar[[SC]][[domain]][[w]][[type]][2])
+            pv[[i]][[paste0("PV_",w)]] <- (pv[[i]][[paste0("PV_",w)]] + m - MEAN[[w]]) / sqrt(VAR[[w]]) * s
+        }
     }
     return(pv)
 }
-
 
 # in PVPIAACL
 # finalweight12 <- Xid

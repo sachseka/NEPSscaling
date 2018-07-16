@@ -246,8 +246,9 @@ plausible_values_mglrm <- function(
     }
   }
   names(datalist) <- NULL
-  EAPs <- data.frame(ID_t = ID_t, colMeans(Theta))
-  regr.coeff <- colMeans(Gamma)
-  out <- list(datalist=datalist, EAP = EAPs, regr.coeff = regr.coeff)
+  EAPs <- data.frame(ID_t = ID_t, EAP = colMeans(Theta[-bi, ]))
+  regr.coeff <- colMeans(Gamma[-bi, ])
+  VAR <- mean(apply(Theta[-bi, ], 2, var))
+  out <- list(datalist=datalist, EAP = EAPs, regr.coeff = regr.coeff, VAR = VAR)
   return(out)
 }

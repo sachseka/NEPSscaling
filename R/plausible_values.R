@@ -141,7 +141,15 @@ plausible_values <- function(SC,
         longitudinal <- FALSE
         message(paste("No longitudinal data for:", SC, domain,"."))
         }
-    if(longitudinal) {type <- 'long'} else {type <- 'cross'}
+    if(longitudinal) {
+        type <- 'long'
+        if (SC == "SC6" && domain %in% c("RE", "MA")) {
+            waves <- c("_w3", "_w12")
+        }
+    } else {
+            type <- 'cross'
+            waves <- ""
+            }
     if(nvalid < 0) stop("nvalid must be non-negative.")
     if(is.null(item_labels[[SC]][[domain]][[wave]])) stop(paste("No competence data availabe for", SC, domain, wave,"."))
 
@@ -220,6 +228,7 @@ plausible_values <- function(SC,
         if (method == "ML")
             Q <- qmat(SC, domain)
     } else {
+        Q <- NULL
         if (rotation) {
 
             # TODO: position auf Mehr-Dim- und >2-Kategorien-Fälle anpassen
@@ -324,8 +333,10 @@ plausible_values <- function(SC,
                 B <- res$B
                 resp <- res$resp2
             } else {
-                Q <- matrix(1, nrow = ncol(resp), ncol = 1)
-                Q[ind, ] <- 0.5*Q[ind, ]
+                B <- TAM::designMatrices(modeltype = 'PCM',
+                                         Q = matrix(1, nrow = ncol(resp), ncol = 1),
+                                         resp = resp)$B
+                B[ind, , ] <- 0.5 * B[ind, , ]
             }
             rm(ind,res)
         }
@@ -333,6 +344,7 @@ plausible_values <- function(SC,
         pvs <- list()
         EAP.rel <- list()
         regr.coeff <- list()
+        variance <- list()
         if (control$EAP)
             eap <- matrix(0, ncol = 2*control$nmi, nrow = nrow(resp))
         icol <- 1
@@ -345,48 +357,11 @@ plausible_values <- function(SC,
 
             repeat {
 
-                if (PCM) {
-                    if (rotation) {
-                        mod <- tryCatch(TAM::tam.mml(resp = resp,
-                                                     Y = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
-                                                     xsi.fixed = if (SC == "SC6" && domain == "RE" && wave == "w5") item_diff_SC6_RE_w3[[type]] else NULL,
-                                                     A = A, B = B, verbose = FALSE),
-                                        error=function(e){
-                                            return(NA)
-                                        })
-                    } else {
-                        mod <- tryCatch(TAM::tam.mml(resp = resp,
-                                                     Y = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
-                                                     irtmodel = 'PCM2',
-                                                     xsi.fixed = if (SC == "SC6" && domain == "RE" && wave == "w5") item_diff_SC6_RE_w3[[type]] else NULL,
-                                                     Q = Q, verbose = FALSE),
-                                        error=function(e){
-                                            return(NA)
-                                        })
-                    }
-                } else {
-                    if (rotation) {
-                        mod <- tryCatch(TAM::tam.mml.mfr(resp = resp, irtmodel = '1PL',
-                                                         formulaA = ~ 0 + item + position,
-                                                         Y = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
-                                                         facets = position,
-                                                         xsi.fixed = if (SC == "SC6" && domain == "RE" && wave == "w5") item_diff_SC6_RE_w3[[type]] else NULL,
-                                                         verbose = FALSE),
-                                        error=function(e){
-                                            return(NA)
-                                        })
-                    } else {
-                        mod <- tryCatch(TAM::tam.mml(resp = resp,
-                                                     Y = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
-                                                     irtmodel = '1PL',
-                                                     xsi.fixed = if (SC == "SC6" && domain == "RE" && wave == "w5") item_diff_SC6_RE_w3[[type]] else NULL,
-                                                     verbose = FALSE),
-                                        error=function(e){
-                                            return(NA)
-                                        })
-                    }
-                }
-
+                mod <- tryCatch(TAM::tam.mml(resp = resp,
+                                             Y = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
+                                             xsi.fixed = if (SC == "SC6" && domain == "RE" && wave == "w5") item_diff_SC6_RE_w3[[type]] else NULL,
+                                             A = if (rotation) A else NULL, B = if (PCM) B else NULL, Q = Q, verbose = FALSE),
+                                error=function(e){return(NA)})
                 if(any(is.na(mod))) {
                     bgdatacom <- CART(X = bgdata, itermcmc = control$Bayes$itermcmc,
                                       burnin = control$Bayes$itermcmc, nmi = 1,
@@ -406,9 +381,10 @@ plausible_values <- function(SC,
             icol <- icol + 2
             pvs[[i]] <- TAM::tampv2datalist(pmod,
                                             Y = if (is.null(bgdata) || is.null(imp)) ID_t else cbind(ID_t, bgdatacom),
-                                            pvnames = 'PV')
+                                            pvnames = paste0("PV", waves))
             EAP.rel[[i]] <- mod$EAP.rel
             regr.coeff[[i]] <- mod$beta
+            variance[[i]] <- mod$variance
         }
         rm(icol,imp,bgdata,bgdatacom,resp,xsi)
         if (control$WLE) {
@@ -434,7 +410,6 @@ plausible_values <- function(SC,
         ind <- sample(1:length(datalist), npv)
         datalist <- datalist[ind]
         for (i in 1:npv) {
-            names(datalist[[i]])[length(datalist[[i]])] <- 'PV'
             datalist[[i]] <- datalist[[i]][, -which(colnames(datalist[[i]]) %in% c('pid', 'pweights', 'test_position'))]
         }
     }
@@ -474,8 +449,10 @@ plausible_values <- function(SC,
 
     # TODO: PVs auf richtige Skala verschieben
     pv <- scale_pv(pv = if (method == "Bayes") datalist$datalist else datalist,
-                   method = method, SC = SC, domain = domain, type = type, wave = wave,
-                   EAP = if (method == "Bayes") datalist$EAPs else rowMeans(eap[, seq(2,2*control$nmi,2)]))
+                   SC = SC, domain = domain, type = type, wave = wave,
+                   # TODO: named vector as input for VAR, MEAN (w3 etc.)
+                   VAR = if (method == "Bayes") datalist$VAR else mean(unlist(variance)),
+                   MEAN = if (method == "Bayes") mean(datalist$EAP$EAP) else mean(rowMeans(eap[, seq(2,2*control$nmi,2)])))
 
     # output
     res <- list()
@@ -492,8 +469,11 @@ plausible_values <- function(SC,
     res[['npv']] <- npv
     res[['control']] <- control
     res[['position']] <- data.frame(ID_t, position)
-    # res[["variance"]] <- variance
-    # res[["mean"]] <- mean
+    res[["variance.theta"]] <- meanvar[2]
+    res[["mean.theta"]] <- meanvar[1]
+    # TODO: named vector as input for VAR, MEAN (w3 etc.)
+    res[["variance.PV"]] <- if (method == "Bayes") datalist$VAR else mean(unlist(variance))
+    res[["mean.PV"]] <- if (method == "Bayes") mean(datalist$EAP$EAP) else mean(rowMeans(eap[, seq(2,2*control$nmi,2)]))
     res[['pv']] <- pv
 
     if (method == "Bayes") {
