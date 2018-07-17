@@ -21,9 +21,8 @@
 #' @param SC string, NEPS starting cohort
 #' @param domain string, competence domain
 #' @param waves vector of strings, waves of the competence testings
-#' @return list with \code{nopvs} elements, each containing a data frame of the sequential ID, plausible values for
-#' each dimension and, if specified, imputed versions of \code{X}. Resulting plausible values are transformed onto the PIAAC 2012 scale (weighted means and standard deviations based on the SUF). Additionally each list element is saved as a
-#' Stata file in the folder specified by \code{path}.
+#' @return list with \code{npv} elements, each containing a data frame of the ID, plausible values for
+#' each dimension and, if specified, imputed versions of \code{X}.
 #' @references Carstensen, C. H., Gaasch, J.-C., & Rothaug, E. (2017). Scaling PIAAC-L cognitive data: technical report.
 #' Manuscript in preparation.
 #' @importFrom stats model.matrix runif rnorm pnorm qnorm predict
