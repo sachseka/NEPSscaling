@@ -1,12 +1,11 @@
-#' Plausible values imputation using the PIAAC 2012 and PIAAC-L 2015 assessment data in the domains of literacy and numeracy
+#' Plausible values imputation for longitudinal data
 #'
-#' This function estimates a four-dimensional latent regression item response model (first dimension: PIAAC 2012 literacy,
-#' second dimension: PIAAC 2012 numeracy, third dimension: PIAAC-L 2015 literacy, fourth dimension: PIAAC-L 2015 numeracy)
-#' for binary item response data considering partially missing covariate data. For more detailed information on the statistical
-#' model and the estimation algorithm, see the PIAAC-L technical report on scaling (Carstensen, Gaasch & Rothaug, 2017).
+#' This function estimates a multidimensional item response model (nominal and
+#' ordinal data). Missing values in the response data are ignored, CART is used
+#' to impute missing values in the covariate data.
 #' @param Y test responses
 #' @param X covariates
-#' @param npvs number of plausible values to draw for each respondent.
+#' @param npv number of plausible values to draw for each respondent.
 #' @param itermcmc number of MCMC iterations.
 #' @param burnin number of burnin iterations.
 #' @param est.alpha logical, should alphas be estimated or fixed to 0.5 for ordinal items
@@ -23,8 +22,6 @@
 #' @param waves vector of strings, waves of the competence testings
 #' @return list with \code{npv} elements, each containing a data frame of the ID, plausible values for
 #' each dimension and, if specified, imputed versions of \code{X}.
-#' @references Carstensen, C. H., Gaasch, J.-C., & Rothaug, E. (2017). Scaling PIAAC-L cognitive data: technical report.
-#' Manuscript in preparation.
 #' @importFrom stats model.matrix runif rnorm pnorm qnorm predict
 #' @importFrom MASS mvrnorm
 #' @importFrom mvtnorm rmvt dmvt dmvnorm
