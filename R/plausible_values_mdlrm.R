@@ -216,7 +216,7 @@ plausible_values_mdlrm <- function(
             if(ANYXMIS){
                 # (7)
                 X2IMP[, XcolsTHETA] <- THETA
-                X <- seqcart(X2IMP, xmisord, XOBS, XMIS, 5, 1e-04)
+                X <- seqcart(X2IMP, xmisord, XOBS, XMIS, cartctrl1, cartctrl2)
                 X <- X[, -XcolsTHETA]
                 XDM <- model.matrix(~., X)
                 XDMt <- t(XDM)
