@@ -4,27 +4,37 @@
 #' second dimension: PIAAC 2012 numeracy, third dimension: PIAAC-L 2015 literacy, fourth dimension: PIAAC-L 2015 numeracy)
 #' for binary item response data considering partially missing covariate data. For more detailed information on the statistical
 #' model and the estimation algorithm, see the PIAAC-L technical report on scaling (Carstensen, Gaasch & Rothaug, 2017).
-#' @param path full path of the folder containing the data files ZA5845 and ZA5989_Persons_15 in Stata format.
-#' @param X data frame containing the sequential ID (named \code{seqid}) and background variable from the PIAAC and PIAAC-L
-#' Scientific Use Files. They can be numeric or factor variables and contain missing values coded as \code{NA}. With \code{X} set to \code{NULL} (default) an empty population model is estimated.
-#' @param nopvs number of plausible values to draw for each respondent.
+#' @param Y test responses
+#' @param X covariates
+#' @param npvs number of plausible values to draw for each respondent.
 #' @param itermcmc number of MCMC iterations.
 #' @param burnin number of burnin iterations.
+#' @param est.alpha logical, should alphas be estimated or fixed to 0.5 for ordinal items
+#' @param thin numeric, thinning interval
+#' @param tdf degrees of freedom of multivariate-t proposal distribution for category cutoff
+#' parameters for ordinal items.
+#' @param cartctrl1 minimum number of observations in any terminal CART node during covariates
+#' imputation cycles.
+#' @param cartctrl2 complexity parameter. Any CART split that does not decrease the overall
+#' lack of fit by a factor of \code{cartctrl2} is not attempted during covariates imputation
+#' cycles.
+#' @param SC string, NEPS starting cohort
+#' @param domain string, competence domain
+#' @param waves vector of strings, waves of the competence testings
 #' @return list with \code{nopvs} elements, each containing a data frame of the sequential ID, plausible values for
 #' each dimension and, if specified, imputed versions of \code{X}. Resulting plausible values are transformed onto the PIAAC 2012 scale (weighted means and standard deviations based on the SUF). Additionally each list element is saved as a
 #' Stata file in the folder specified by \code{path}.
 #' @references Carstensen, C. H., Gaasch, J.-C., & Rothaug, E. (2017). Scaling PIAAC-L cognitive data: technical report.
 #' Manuscript in preparation.
-#' @importFrom readstata13 read.dta13 save.dta13
 #' @importFrom stats model.matrix runif rnorm pnorm qnorm predict
 #' @importFrom MASS mvrnorm
+#' @importFrom mvtnorm rmvt dmvt dmvnorm
+#' @importFrom ucminf ucminf
 #' @importFrom rpart rpart rpart.control
-#' @importFrom Hmisc wtd.mean wtd.var
 #' @export
 plausible_values_mdlrm <- function(
     Y,
     X = NULL,
-    S = NULL,
     npv = 10,
     est.alpha = TRUE,
     itermcmc,
@@ -32,7 +42,10 @@ plausible_values_mdlrm <- function(
     thin = 1,
     tdf = 10,
     cartctrl1 = 5,
-    cartctrl2 = 1e-04
+    cartctrl2 = 1e-04,
+    SC,
+    domain,
+    waves
 ){
     if (!is.null(X)) {
         X <- data.frame(X)
@@ -48,16 +61,15 @@ plausible_values_mdlrm <- function(
     if (SC == "SC6") {
         if (domain == "RE") {
             DIM <- 2
-            Jdim <- c()
-            jdim <- list()
-            jdim2 <- c()
+            Jdim <- c(30, 35)
+            jdim <- list(1:30, 31:65)
+            jdim2 <- c(rep(1, 30), rep(2, 35))
         } else if (domain == "MA") {
             DIM <- 2
-            Jdim <- c()
-            jdim <- list()
-            jdim2 <- c()
+            Jdim <- c(21, 63)
+            jdim <- list(1:21, 22:84)
+            jdim2 <- c(rep(1, 21), rep(2, 63))
         }
-
     }
     Jdiminv <- 1/Jdim
 
@@ -85,14 +97,8 @@ plausible_values_mdlrm <- function(
             for(k in xmisord){
                 X[XMIS[, k], k] <- sample(X[XOBS[, k], k], sum(XMIS[, k]), replace = TRUE)
             }
-            # TODO: S für mehrdim!!!
-            if(is.null(S)){
-                X2IMP <- data.frame(X, THETA)
-                XcolsTHETA <- (ncol(X2IMP) - DIM + 1):ncol(X2IMP)
-            } else {
-                X2IMP <- data.frame(X, THETA, S = as.factor(S))
-                XcolsTHETA <- (ncol(X2IMP) - DIM + 1):(ncol(X2IMP)-1)
-            }
+            X2IMP <- data.frame(X, THETA)
+            XcolsTHETA <- (ncol(X2IMP) - DIM + 1):ncol(X2IMP)
         }
         XDM <- model.matrix(~., X)
     }
@@ -100,23 +106,9 @@ plausible_values_mdlrm <- function(
     XDMt <- t(XDM)
     XX <- crossprod(XDM)
 
-    # TODO: S für mehrdim!!! S als Matrix
-    if(is.null(S)){
-        S <- rep(1, N)
-    }
-    G <- length(unique(S))
-    Ng <- table(S)
-    INDG <- matrix(nrow = G, ncol = N)
-    for(g in 1:G){
-        INDG[g, ] <- ifelse(S == g, TRUE, FALSE)
-    }
-
-
-
     GAMMA <- matrix(rep(0, K1X*DIM), nrow = K1X)
     XGAMMA <- XDM%*%GAMMA
-    # TODO: S für mehrdim!!! Gruppenvarianzen je DIM: Muss in der Summe d. Gruppen je MZP sein!
-    SIGMA <- diag(G*DIM)
+    SIGMA <- diag(DIM)
     ALPHA <- matrix(0, nrow = J, ncol = DIM)
     for(dim in 1:DIM){
         ALPHA[jdim[[dim]], dim] <- 1
@@ -139,8 +131,7 @@ plausible_values_mdlrm <- function(
     })
 
     Gamma <- matrix(0, nrow = itermcmc, ncol = G*K1X)
-    # TODO: S für mehrdim!!!
-    Sigma2 <- matrix(0, nrow = itermcmc, ncol = G)
+    Sigma2 <- vector("numeric", itermcmc)
     Alpha <- array(0, c(itermcmc, J, DIM))
     Beta <- matrix(0, nrow = itermcmc, ncol = J)
     Kappa <- matrix(0, nrow = itermcmc, ncol = sum(QMI2))
@@ -214,30 +205,14 @@ plausible_values_mdlrm <- function(
                 THETA[i, ] <- mvrnorm(1, mutheta, Covtheta)
             }
             # (5)
-            # TODO: ANFANG
-            for (g in 1:G) {
-                Covgamma <- solve(crossprod(XDM[INDG[g, ], , drop = FALSE])/SIGMA[g] + PrecGamma0)
-
-                mugamma <- Covgamma%*%(t(XDM[INDG[g,], , drop = FALSE]))
-                    crossprod(XDM[INDG[g, ], , drop = FALSE], THETA[INDG[g, ]])/
-                    SIGMA[g]
-
-                GAMMA[, g] <- matrix(mvrnorm(1, mugamma, Covgamma), nrow = K1X)
-
-                scaleSigma2 <- 0.5*crossprod(THETA[INDG[g, ]] -
-                                                 XDM[INDG[g, ], , drop = F]%*%GAMMA[, g]) + scaleSigma20inv
-
-                SIGMA[g] <- 1/rgamma(1, shape = shapeSigma2[g], rate = scaleSigma2)
-            }
-
             Covgamma <- solve(solve(SIGMA)%x%XX + PrecGamma0)
             mugamma <- Covgamma%*%((solve(SIGMA)%x%diag(K1X))%*%matrix(XDMt%*%THETA))
-            # GAMMA <- matrix(mvrnorm(1, mugamma, Covgamma), nrow = K1X)
+            GAMMA <- matrix(mvrnorm(1, mugamma, Covgamma), nrow = K1X)
             XGAMMA <- XDM%*%GAMMA
-            # TODO: ENDE
             # (6)
             VSigma <- crossprod(THETA - XGAMMA) + diag(DIM)
             SIGMA <- rwishart(NuSigma, chol2inv(chol(VSigma)))
+
             if(ANYXMIS){
                 # (7)
                 X2IMP[, XcolsTHETA] <- THETA
@@ -252,7 +227,7 @@ plausible_values_mdlrm <- function(
             }
 
             Gamma[ii, ] <- c(GAMMA)
-            Sigma2[ii, ] <- SIGMA
+            Sigma2[ii] <- SIGMA
             Alpha[ii, , ] <- ALPHA
             Beta[ii, ] <- BETA
             Kappa[ii, ] <- unlist(lapply(KAPPA[!ITEMBIN], function(x){
@@ -262,10 +237,17 @@ plausible_values_mdlrm <- function(
             # save MCMC draws
             if (ii %in% savepvs) {
                 sel <- which(names(datalist) == paste0('Iteration', ii))
-                if (!is.null(X))
-                    datalist[[sel]] <- data.frame(ID_t = ID_t, X, PV = THETA)
-                else
-                    datalist[[sel]] <- data.frame(PV = THETA)
+                if (!is.null(X)) {
+                    datalist[[sel]] <- data.frame(ID_t = ID_t, X)
+                    for (w in seq(length(waves))) {
+                        datalist[[sel]][[paste0("PV", waves[w])]] <- THETA[, w]
+                    }
+                } else {
+                    datalist[[sel]] <- data.frame(paste0("PV", waves[1]) = THETA[, 1])
+                    for (w in seq(2, length(waves))) {
+                        datalist[[sel]][[paste0("PV", waves[w])]] <- THETA[, w]
+                    }
+                }
             }
         }
     }

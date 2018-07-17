@@ -246,6 +246,7 @@ plausible_values_mglrm <- function(
     }
   }
   names(datalist) <- NULL
+  bi <- 1:burnin
   EAPs <- data.frame(ID_t = ID_t, EAP = colMeans(Theta[-bi, ]))
   regr.coeff <- colMeans(Gamma[-bi, ])
   VAR <- mean(apply(Theta[-bi, ], 2, var))

@@ -144,14 +144,18 @@ plausible_values <- function(SC,
     if(longitudinal) {
         type <- 'long'
         if (SC == "SC6" && domain %in% c("RE", "MA")) {
-            waves <- c("_w3", "_w12")
+            waves <- c("_w3", "_w9")
+        }
+        if (SC == "SC5" && domain %in% c("RE", "MA")) {
+            waves <- c("_w1", "_w12")
         }
     } else {
             type <- 'cross'
             waves <- ""
             }
     if(nvalid < 0) stop("nvalid must be non-negative.")
-    if(is.null(item_labels[[SC]][[domain]][[wave]])) stop(paste("No competence data availabe for", SC, domain, wave,"."))
+    if(is.null(item_labels[[SC]][[domain]][[wave]]))
+        stop(paste("No competence data availabe for", SC, domain, wave,"."))
 
     # get competence data for SC and domain
     files <- list.files(path = path)
@@ -322,11 +326,10 @@ plausible_values <- function(SC,
         } else imp <- NULL
 
         if(PCM) {
-            res <- adjustments_PCM(resp, SC, wave, domain)
+            res <- adjustments_PCM(resp, SC, if (longitudinal) waves else wave, domain)
             resp <- res$resp
             ind <- res$ind
 
-            # TODO: Rotationsdesign etc. im Mehr-Dim-Fall anpassen
             if (rotation) {
                 res <- matrices_with_rotation(resp, position, ind)
                 A <- res$A
@@ -334,7 +337,7 @@ plausible_values <- function(SC,
                 resp <- res$resp2
             } else {
                 B <- TAM::designMatrices(modeltype = 'PCM',
-                                         Q = matrix(1, nrow = ncol(resp), ncol = 1),
+                                         Q = Q,
                                          resp = resp)$B
                 B[ind, , ] <- 0.5 * B[ind, , ]
             }
@@ -359,7 +362,7 @@ plausible_values <- function(SC,
 
                 mod <- tryCatch(TAM::tam.mml(resp = resp,
                                              Y = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
-                                             xsi.fixed = if (SC == "SC6" && domain == "RE" && wave == "w5") item_diff_SC6_RE_w3[[type]] else NULL,
+                                             xsi.fixed = if (!longitudinal && SC == "SC6" && domain == "RE" && wave == "w5") item_diff_SC6_RE_w3 else NULL,
                                              A = if (rotation) A else NULL, B = if (PCM) B else NULL, Q = Q, verbose = FALSE),
                                 error=function(e){return(NA)})
                 if(any(is.na(mod))) {
@@ -421,7 +424,7 @@ plausible_values <- function(SC,
 
         # collapse categories with N < 200
         if(PCM) {
-            res <- adjustments_PCM(resp, SC, wave, domain)
+            res <- adjustments_PCM(resp, SC, if (longitudinal) waves else wave, domain)
             resp <- res$resp
         }
 
@@ -433,14 +436,25 @@ plausible_values <- function(SC,
 
         if (!is.null(bgdata)) bgdata <- data.frame(bgdata)
         resp <- data.frame(resp)
-        datalist <- plausible_values_mglrm(Y = resp, X = bgdata, S = S, npv = npv,
-                        itermcmc = control$Bayes$itermcmc, burnin = control$Bayes$burnin,
-                        thin = control$Bayes$thin, tdf = control$Bayes$tdf,
-                        est.alpha = control$Bayes$est.alpha,
-                        cartctrl1 = control$Bayes$cartctrl1,
-                        cartctrl2 = control$Bayes$cartctrl2)
+        if (longitudinal){
+            datalist <- plausible_values_mdlrm(Y = resp, X = bgdata, npv = npv,
+                                               itermcmc = control$Bayes$itermcmc, burnin = control$Bayes$burnin,
+                                               thin = control$Bayes$thin, tdf = control$Bayes$tdf,
+                                               est.alpha = control$Bayes$est.alpha,
+                                               cartctrl1 = control$Bayes$cartctrl1,
+                                               cartctrl2 = control$Bayes$cartctrl2,
+                                               SC = SC, domain = domain, waves = waves)
+        } else {
+            datalist <- plausible_values_mglrm(Y = resp, X = bgdata, S = S, npv = npv,
+                            itermcmc = control$Bayes$itermcmc, burnin = control$Bayes$burnin,
+                            thin = control$Bayes$thin, tdf = control$Bayes$tdf,
+                            est.alpha = control$Bayes$est.alpha,
+                            cartctrl1 = control$Bayes$cartctrl1,
+                            cartctrl2 = control$Bayes$cartctrl2)
+        }
         if (is.null(bgdata)) {
             for (i in seq(length(datalist$datalist)))
+                # TODO: für MD-Fall anpassen
                 datalist$datalist[[i]] <- data.frame(ID_t = ID_t, PV = datalist$datalist[[i]]$PV)
         }
         rm(bgdata,S,resp)
