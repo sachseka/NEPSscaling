@@ -27,6 +27,7 @@
 #' @importFrom mvtnorm rmvt dmvt dmvnorm
 #' @importFrom ucminf ucminf
 #' @importFrom rpart rpart rpart.control
+#' @importFrom stats var
 #' @export
 plausible_values_mdlrm <- function(
     Y,
@@ -126,7 +127,7 @@ plausible_values_mdlrm <- function(
         }
     })
 
-    Gamma <- matrix(0, nrow = itermcmc, ncol = G*K1X)
+    Gamma <- matrix(0, nrow = itermcmc, ncol = K1X)
     Sigma2 <- vector("numeric", itermcmc)
     Alpha <- array(0, c(itermcmc, J, DIM))
     Beta <- matrix(0, nrow = itermcmc, ncol = J)
@@ -135,10 +136,6 @@ plausible_values_mdlrm <- function(
     names(accTau) <- colnames(Y)
     Theta <- array(0, c(itermcmc, N, DIM))
 
-    shapeSigma20 <- 1
-    scaleSigma20 <- 1
-    scaleSigma20inv <- 1/scaleSigma20
-    shapeSigma2 <- Ng/2 + shapeSigma20
     CovXi0 <- 100*diag(2)
     PrecXi0 <- solve(CovXi0)
     CovGamma0 <- 100*diag(K1X*DIM)
@@ -150,6 +147,7 @@ plausible_values_mdlrm <- function(
     datalist <- vector('list', npv)
     names(datalist) <- paste0('Iteration', savepvs)
 
+    pb <- txtProgressBar(min = 0, max = itermcmc, style = 3)
     for(ii in 1:itermcmc){
         for(iii in 1:thin){
             # (1)
@@ -217,9 +215,6 @@ plausible_values_mdlrm <- function(
                 XDM <- model.matrix(~., X)
                 XDMt <- t(XDM)
                 XX <- crossprod(XDM)
-                if(saveiter){
-                    PVs[[whichpv]] <- cbind(PVs[[whichpv]], X)
-                }
             }
 
             Gamma[ii, ] <- c(GAMMA)
@@ -236,22 +231,25 @@ plausible_values_mdlrm <- function(
                 if (!is.null(X)) {
                     datalist[[sel]] <- data.frame(ID_t = ID_t, X)
                     for (w in seq(length(waves))) {
-                        datalist[[sel]][[paste0("PV", waves[w])]] <- THETA[, w]
+                        datalist[[sel]][[paste0("PV", waves[[w]])]] <- THETA[, w]
                     }
                 } else {
-                    datalist[[sel]] <- data.frame(paste0("PV", waves[1]) = THETA[, 1])
+                    datalist[[sel]] <- data.frame(THETA[, 1])
+                    names(datalist[[sel]]) <- paste0("PV", waves[[1]])
                     for (w in seq(2, length(waves))) {
-                        datalist[[sel]][[paste0("PV", waves[w])]] <- THETA[, w]
+                        datalist[[sel]][[paste0("PV", waves[[w]])]] <- THETA[, w]
                     }
                 }
             }
         }
+        setTxtProgressBar(pb, ii)
     }
+    close(pb)
     bi <- 1:burnin
     names(datalist) <- NULL
     EAPs <- data.frame(ID_t = ID_t, EAP = t(apply(Theta[-bi, ,], 1, colMeans)))
     regr.coeff <- colMeans(Gamma[-bi,])
-    VAR <- mean(apply(Theta[-bi, ,], 1, function(x) apply(x, 2, var)))
+    VAR <- rowMeans(apply(Theta[-bi, ,], 1, function(x) apply(x, 2, var)))
 
     out <- list(datalist = datalist, EAP = EAPs, regr.coeff = regr.coeff, VAR = VAR)
 

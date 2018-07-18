@@ -6,6 +6,10 @@ scale_pv <- function(pv, SC, domain, type, MEAN, VAR, wave) {
         if (domain == "RE" & type == "long")
             waves <- c("w3", "w12")
     }
+    if (SC == "SC4") {
+        if (domain == "RE" & type == "long")
+            waves <- c("w1", "w7")
+    }
     if (length(mean) == 1) {
         for(i in seq(length(pv))) {
             # TODO: subtract mean of plausible values distribution:
@@ -19,11 +23,11 @@ scale_pv <- function(pv, SC, domain, type, MEAN, VAR, wave) {
     for(i in seq(length(pv))) {
         # TODO: subtract mean of plausible values distribution:
         # does not work for multi-dim case yet!
-        for (w in waves) {
+        for (w in seq(length(waves))) {
             # Zuweisung von richtigen M/VAR zu entspr. PVs
-            m <- meanvar[[SC]][[domain]][[w]][[type]][1]
-            s <- sqrt(meanvar[[SC]][[domain]][[w]][[type]][2])
-            pv[[i]][[paste0("PV_",w)]] <- (pv[[i]][[paste0("PV_",w)]] + m - MEAN[[w]]) / sqrt(VAR[[w]]) * s
+            m <- meanvar[[SC]][[domain]][[waves[w]]][[type]][1]
+            s <- sqrt(meanvar[[SC]][[domain]][[waves[w]]][[type]][2])
+            pv[[i]][[paste0("PV_",waves[w])]] <- (pv[[i]][[paste0("PV_",waves[w])]] + m - MEAN[[waves[w]]]) / sqrt(VAR[[waves[w]]]) * s
         }
     }
     return(pv)

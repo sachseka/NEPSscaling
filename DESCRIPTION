@@ -13,7 +13,7 @@ Imports:
     haven (>= 1.1.1),
     TAM (>= 2.12-18),
     dplyr,
-    mice (>= 3.1.0),
+    MASS,
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

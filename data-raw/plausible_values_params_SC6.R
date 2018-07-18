@@ -11,9 +11,11 @@ rm(list = ls())
 path <- '../../SUFs/SC6/'
 nvalid <- 3
 
-files <- list.files(path = path)
-data <- haven::read_spss(file = paste0(path, files[grep('xTargetCompetencies', files)]))
-rm(files)
+# files <- list.files(path = path)
+# data <- haven::read_spss(file = paste0(path, files[grep('xTargetCompetencies', files)]))
+# rm(files)
+
+data <- haven::read_sav("Z:/Projektgruppen_(08)/Kompetenzen_BA_(p000011)/Methoden/Anna/02_Anleitung_Plausible_Values/SUFs/SC6/SC6_xTargetCompetencies_D_8-0-0.sav")
 
 item_labels <- list(SC6 = list(RE = list(w3 = c('rea30110_c', 'rea3012s_c', 'rea30130_c', 'rea30140_c', 'rea3015s_c', 'rea30210_c'
                                                 , 'rea30220_c', 'rea30230_c', 'rea30240_c', 'rea30250_c', 'rea3028s_c', 'rea30310_c'
@@ -46,16 +48,64 @@ item_labels <- list(SC6 = list(RE = list(w3 = c('rea30110_c', 'rea3012s_c', 'rea
 data <- data[order(data$ID_t), ]
 
 # output object
-eaps <- list()
-load(file = 'data-raw/eaps.RData')
 meanvar <- list()
 load(file = "data-raw/meanvar.RData")
 
 # starting cohort
 SC <- 'SC6'
 
+# Reading
+meanvar[[SC]][["RE"]][["w3"]][["cross"]] <- c(mean(data$rea3_sc1, na.rm = TRUE), 1.390)
+meanvar[[SC]][["RE"]][["w3"]][["long"]] <- c(mean(data$rea3_sc1, na.rm = TRUE), 1.390)
+meanvar[[SC]][["RE"]][["w9"]][["cross"]] <- c(0, 1)
+meanvar[[SC]][["RE"]][["w9"]][["long"]] <- c(0, 1)
+
+# Mathematics
+
+# Information and Communication Technology literacy
+
+# Science
+
+# Native Russian
+
+# Native Turkish
+
+# Enlish as a foreign language
+
+# Scientific thinking
+save(meanvar, file = "data-raw/meanvar.RData")
 
 
+# Item difficulties for reading w3 (to be reused in w5)
+domain <- 'RE'; wave <- 'w3'
+read <- data[rowSums(!is.na(data[, names(data) %in% item_labels[[SC]][[domain]][[wave]]])) >= nvalid, ]
+read <- read[read$wave_w3 == 1, ]
+resp <- read[, names(read) %in% item_labels[[SC]][[domain]][[wave]]]
+ind <- which(apply(resp, 2, max, na.rm = TRUE) > 1) # to catch only 'after-collapse' pc items
+Q <- matrix(1, nrow = ncol(resp), ncol = 1)
+Q[ind, ] <- 0.5 * Q[ind, ]
+mod <- TAM::tam.mml(resp = resp, irtmodel = 'PCM2',
+                      Q = Q, verbose = FALSE
+)
+item_diff_SC6_RE_w3 <- mod$xsi.fixed.estimated # == wave 5 reading model
+# clear environment
+rm(mod, read, resp, ind, wave, Q)
+save(item_diff_SC6_RE_w3, file = 'data-raw/item_diff_SC6_RE_w3.RData')
+
+
+# -------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------------------------------------
 
 # Reading

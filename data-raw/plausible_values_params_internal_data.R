@@ -4,9 +4,6 @@
 ## corrections for test design changes, dropout etc. are applied
 rm(list = ls())
 
-# EAPs without background model
-load(file = 'data-raw/eaps.RData')
-
 # fixed item parameters for SC6 reading wave 5
 load(file = "data-raw/item_diff_SC6_RE_w3.RData")
 
@@ -183,4 +180,4 @@ item_labels <- list(SC4 = list(RE = list(w2 = c("reg90110_c", "reg90120_c", "reg
 
 
 setwd('../')
-devtools::use_data(item_labels, eaps, item_diff_SC6_RE_w3, meanvar, pkg = 'NEPStools', internal = TRUE, overwrite = TRUE)
+devtools::use_data(item_labels, item_diff_SC6_RE_w3, meanvar, pkg = 'NEPStools', internal = TRUE, overwrite = TRUE)

@@ -6,16 +6,13 @@
 scaled item parameters}
 \usage{
 plausible_values(SC, domain = c("MA", "RE", "SC", "IC", "LI", "EF", "NR",
-  "NT", "OR", "ST", "BA", "CD", "GR"), wave, method = c("IND", "MMI", "CART"),
-  path, filetype = c("SPSS", "Stata"), bgdata = NULL, npv = 10L,
+  "NT", "OR", "ST", "BA", "CD", "GR"), wave, method = c("ML", "Bayes"), path,
+  filetype = c("SPSS", "Stata"), bgdata = NULL, npv = 10L,
   longitudinal = FALSE, rotation = TRUE, nvalid = 3L, control = list(EAP
-  = FALSE, WLE = FALSE, IND = list(varex = 0.9, pca.data = FALSE, vars = NULL),
-  MMI = list(nmi = 10L, method = NULL, where = NULL, visitSequence = NULL, post
-  = NULL, defaultMethod = c("pmm", "logreg", "polyreg", "polr"), maxit = 10,
-  printFlag = FALSE, seed = NA, blots = NULL, data.init = NULL), CART =
-  list(itermcmc = 10000, burnin = 2000, thin = 1, tdf = 10, cartctrl1 = 5,
-  cartctrl2 = 1e-04), TAM = list(ntheta = 2000, normal.approx = FALSE, samp.regr
-  = FALSE, theta.model = FALSE, np.adj = 8,      na.grid = 5)))
+  = FALSE, WLE = FALSE, nmi = 10L, Bayes = list(itermcmc = 10000, burnin = 2000,
+  est.alpha = TRUE, thin = 1, tdf = 10, cartctrl1 = 5, cartctrl2 = 1e-04), ML =
+  list(ntheta = 2000, normal.approx = FALSE, samp.regr = FALSE, theta.model =
+  FALSE, np.adj = 8, na.grid = 5)))
 }
 \arguments{
 \item{SC}{numeric. The starting cohort used for the analysis is

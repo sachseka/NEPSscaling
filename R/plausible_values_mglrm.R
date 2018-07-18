@@ -16,6 +16,7 @@
 #' @param npv number of plausible values; defaults to 10.
 #' @param itermcmc number of MCMC iterations.
 #' @param burnin number of burnin iterations.
+#' @param est.alpha logical, should alphas be estimated or fixed to 0.5 for ordinal items
 #' @param thin thinning interval, i.e., retain only every \code{thin}th iteration (if argument
 #' \code{thin} is used, \code{itermcmc*thin} and \code{burnin*thin} yield the total number of
 #' MCMC and burnin iterations).
@@ -54,6 +55,7 @@
 #' @importFrom mvtnorm rmvnorm dmvnorm rmvt dmvt
 #' @importFrom ucminf ucminf
 #' @importFrom rpart rpart rpart.control
+#' @importFrom stats var
 plausible_values_mglrm <- function(
   Y,
   X = NULL,
@@ -157,6 +159,7 @@ plausible_values_mglrm <- function(
   datalist <- vector('list', npv)
   names(datalist) <- paste0('Iteration', savepvs)
   # MCMC
+  pb <- txtProgressBar(min = 0, max = itermcmc, style = 3)
   for(ii in 1:itermcmc){
     for(iii in 1:thin){
       # (1)
@@ -244,7 +247,9 @@ plausible_values_mglrm <- function(
       else
         datalist[[sel]] <- data.frame(PV = THETA)
     }
+    setTxtProgressBar(pb, ii)
   }
+  close(pb)
   names(datalist) <- NULL
   bi <- 1:burnin
   EAPs <- data.frame(ID_t = ID_t, EAP = colMeans(Theta[-bi, ]))

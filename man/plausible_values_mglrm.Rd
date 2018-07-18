@@ -5,8 +5,9 @@
 \title{Multigroup Latent Regression Item Response Model
 adapted from package LaRA by J.-C. Gaasch (2017)}
 \usage{
-plausible_values_mglrm(Y, X = NULL, S = NULL, npv = 10, itermcmc, burnin,
-  thin = 1, tdf = 10, cartctrl1 = 5, cartctrl2 = 1e-04)
+plausible_values_mglrm(Y, X = NULL, S = NULL, npv = 10,
+  est.alpha = TRUE, itermcmc, burnin, thin = 1, tdf = 10, cartctrl1 = 5,
+  cartctrl2 = 1e-04)
 }
 \arguments{
 \item{Y}{data frame containing item responses. They can be binary or ordinal items. The
@@ -23,6 +24,8 @@ stratifying the sample will be estimated. The most simple latent regression item
 model without grouping results from \code{S} set to \code{NULL} (default).}
 
 \item{npv}{number of plausible values; defaults to 10.}
+
+\item{est.alpha}{logical, should alphas be estimated or fixed to 0.5 for ordinal items}
 
 \item{itermcmc}{number of MCMC iterations.}
 
@@ -56,11 +59,13 @@ considering partially missing covariate data.
 \code{mglrm} uses a fully Bayesian estimation approach. Independent conjugate prior
 distributions are chosen to develop a Metropolis-within-Gibbs sampling algorithm based on
 the device of data augmentation (Tanner & Wong, 1987). The function generates a sample from
-the posterior distribution of a one dimensional two-parameter normal ogive IRT model
-(Albert, 1992) \deqn{y_{ij}^*=\alpha_j \theta_i - \beta_j + \varepsilon_{ij}} including a
+the posterior distribution of a one dimensional one-parameter normal ogive IRT model
+(adapted from Albert, 1992) \deqn{y_{ij}^*=\alpha_j \theta_i - \beta_j + \varepsilon_{ij}} including a
 (multivariate) regression equation of person level predictors on the mean vector of latent
 abilities \deqn{\theta_i=x_i\gamma_{S_i} + e_i.} Regression parameters are allowed to vary
-across observed groups. Partially observed person-level covariates are imputed in each
+across observed groups. The discrimination parameter is set to 1 for binary items; for
+ordinal items, the parameters are either fixed to 0.5 or estimated freely. Partially observed
+person-level covariates are imputed in each
 sampling iteration. Sequential CART (Burgette & Reiter, 2010) are utilized as approximations
 to the full conditional distributions of missing values in \code{X}.
 }

@@ -61,6 +61,7 @@ CART <- function(
     datalist <- vector('list', nmi)
     names(datalist) <- paste0('Iteration', savemis)
     # CART
+    pb <- txtProgressBar(min = 0, max = itermcmc, style = 3)
     for(ii in 1:itermcmc){
         for(iii in 1:thin){
             X <- seqcart(X, xmisord, XOBS, XMIS, cartctrl1, cartctrl2)
@@ -72,7 +73,9 @@ CART <- function(
             sel <- which(names(datalist) == paste0('Iteration', ii))
             datalist[[sel]] <- data.frame(ID_t = ID_t, X)
         }
+        setTxtProgressBar(pb, ii)
     }
+    close(pb)
     names(datalist) <- NULL
     return(datalist)
 }

@@ -124,6 +124,7 @@ plausible_values <- function(SC,
                    ML = list(ntheta = 2000, normal.approx = FALSE, samp.regr = FALSE,
                               theta.model=FALSE, np.adj=8, na.grid = 5))
 ){
+    .<-NULL
     # check and prepare arguments
     if (missing(SC)) stop("Starting cohort must be specified.")
     SC <- paste0("SC", SC)
@@ -149,10 +150,13 @@ plausible_values <- function(SC,
         if (SC == "SC5" && domain %in% c("RE", "MA")) {
             waves <- c("_w1", "_w12")
         }
+        if (SC == "SC4" && domain %in% c("RE", "MA", "IC")) {
+            waves <- c("_w1", "_w7")
+        }
     } else {
-            type <- 'cross'
-            waves <- ""
-            }
+        type <- 'cross'
+        waves <- ""
+    }
     if(nvalid < 0) stop("nvalid must be non-negative.")
     if(is.null(item_labels[[SC]][[domain]][[wave]]))
         stop(paste("No competence data availabe for", SC, domain, wave,"."))
@@ -175,11 +179,13 @@ plausible_values <- function(SC,
 
     # selection of test takers
     if (longitudinal) {
-        # taking part in waves xy: alle waves in & aufnehmen? über wave_w und ||?
+        # taking part in waves xy
         if (SC == "SC6" & domain %in% c("RE", "MA"))
             sel <- names(data) %in% c(item_labels[[SC]][[domain]][["w3"]], item_labels[[SC]][[domain]][["w9"]])
         if (SC == "SC5" & domain %in% c("RE", "MA"))
             sel <- names(data) %in% c(item_labels[[SC]][[domain]][["w1"]], item_labels[[SC]][[domain]][["w12"]])
+        if (SC == "SC4" & domain %in% c("RE", "MA", "IC"))
+            sel <- names(data) %in% c(item_labels[[SC]][[domain]][["w1"]], item_labels[[SC]][[domain]][["w7"]])
         data <- data[rowSums(!is.na(data[, sel])) >= nvalid, ]
     } else {
         data <- data[rowSums(!is.na(data[, names(data) %in% item_labels[[SC]][[domain]][[wave]]])) >= nvalid, ]
@@ -246,7 +252,7 @@ plausible_values <- function(SC,
             } else if (SC == 'SC3') {
                 stop('Sorry, not yet implemented.')
             } else if (SC == 'SC4') {
-                stop('Sorry, not yet implemented.')
+                stop('Sorry, cross-sectional is not yet implemented.')
             } else if (SC == 'SC5') {
                 if (wave == 'w1') {
                     position[, 'position'] <- data[, 'tx80211_w1']
@@ -320,7 +326,7 @@ plausible_values <- function(SC,
         # multiple imputation of missing covariate data
         if (!is.null(bgdata) && any(is.na(bgdata))){
             imp <- CART(X = bgdata, itermcmc = control$Bayes$itermcmc,
-                        burnin = control$Bayes$itermcmc, nmi = control$nmi,
+                        burnin = control$Bayes$burnin, nmi = control$nmi,
                         thin = control$Bayes$thin, cartctrl1 = control$Bayes$cartctrl1,
                         cartctrl2 = control$Bayes$cartctrl2)
         } else imp <- NULL
@@ -348,9 +354,13 @@ plausible_values <- function(SC,
         EAP.rel <- list()
         regr.coeff <- list()
         variance <- list()
-        if (control$EAP)
-            eap <- matrix(0, ncol = 2*control$nmi, nrow = nrow(resp))
-        icol <- 1
+        if (control$EAP) {
+            eap <- replicate(control$nmi,
+                             matrix(c(ID_t, rep(0, 2*length(waves)*nrow(resp))),
+                                    ncol = (1 + 2*length(waves)),
+                                    nrow = nrow(resp)),
+                             simplify = FALSE)
+        }
         for (i in 1:control$nmi) {
             if (!is.null(imp)) {
                 bgdatacom <- imp[[i]]
@@ -365,9 +375,9 @@ plausible_values <- function(SC,
                                              xsi.fixed = if (!longitudinal && SC == "SC6" && domain == "RE" && wave == "w5") item_diff_SC6_RE_w3 else NULL,
                                              A = if (rotation) A else NULL, B = if (PCM) B else NULL, Q = Q, verbose = FALSE),
                                 error=function(e){return(NA)})
-                if(any(is.na(mod))) {
+                if(any(is.na(mod)) && !is.null(bgdata)) {
                     bgdatacom <- CART(X = bgdata, itermcmc = control$Bayes$itermcmc,
-                                      burnin = control$Bayes$itermcmc, nmi = 1,
+                                      burnin = control$Bayes$burnin, nmi = 1,
                                       thin = control$Bayes$thin, cartctrl1 = control$Bayes$cartctrl1,
                                       cartctrl2 = control$Bayes$cartctrl2)[[1]]
                     bgdatacom$ID_t <- NULL
@@ -379,9 +389,10 @@ plausible_values <- function(SC,
             pmod <- TAM::tam.pv(mod, nplausible = npv, ntheta = control$ML$ntheta, normal.approx = control$ML$normal.approx,
                                 samp.regr = control$ML$samp.regr, theta.model = control$ML$theta.model,
                                 np.adj = control$ML$np.adj, na.grid = control$ML$na.grid)
-            if (control$EAP)
-                eap[, icol:(icol+1)] <- as.matrix(mod$person[, c('EAP', 'SD.EAP')])
-            icol <- icol + 2
+            if (control$EAP) {
+                eap[[i]][, -1] <- as.matrix(mod$person[, grep("EAP", names(mod$person))])
+                colnames(eap[[i]]) <- c('ID_t',  paste0(rep(c('eap','se'), length(waves)), rep(waves, each = 2)))
+            }
             pvs[[i]] <- TAM::tampv2datalist(pmod,
                                             Y = if (is.null(bgdata) || is.null(imp)) ID_t else cbind(ID_t, bgdatacom),
                                             pvnames = paste0("PV", waves))
@@ -389,17 +400,18 @@ plausible_values <- function(SC,
             regr.coeff[[i]] <- mod$beta
             variance[[i]] <- mod$variance
         }
-        rm(icol,imp,bgdata,bgdatacom,resp,xsi)
-        if (control$WLE) {
+        rm(imp,bgdata,bgdatacom,resp)
+        if (control$WLE && !longitudinal) {
             wmod <- TAM::tam.mml.wle2(mod, WLE = TRUE, progress = FALSE)
             wle <- matrix(wmod$theta, nrow = length(wmod$theta), ncol = 1)
             wle <- cbind(ID_t, wle, wmod$error)
             colnames(wle) <- c('ID_t', 'wle', 'se')
-        }
-        if (control$EAP) {
-            eap <- cbind(ID_t, eap)
-            colnames(eap) <- c('ID_t', paste0(rep(c('eap.','se.'), control$nmi),
-                                              rep(seq(1,control$nmi), each = 2)))
+        } else if (control$WLE && longitudinal) {
+            wmod <- TAM::tam.mml.wle2(mod, WLE = TRUE, progress = FALSE)
+            # TODO: Auswahl auf wle$theta.DIM01 /error.DIM01 etc. anpassen
+            wle <- do.call(cbind, wmod[grep("theta|error")])
+            wle <- cbind(ID_t, wle)
+            # colnames(wle) <- c('ID_t', 'wle', 'se')
         }
         datalist <- list()
         d <- 1
@@ -462,11 +474,29 @@ plausible_values <- function(SC,
 
 
     # TODO: PVs auf richtige Skala verschieben
+    if (longitudinal) {
+        # TODO: named vector as input for VAR, MEAN (w3 etc.)
+        if (method == "Bayes") {
+            VAR <- datalist$VAR
+            MEAN <- colMeans(datalist$EAP[[grep("EAP", names(datalist$EAP), value = TRUE)]])
+        } else {
+            VAR <- colMeans(do.call(rbind, unlist(variance)))
+            MEAN <- colMeans(do.call(rbind, lapply(eap, FUN = function (x) colMeans(x[, seq(2, (1+2*length(waves)), 2)]))))
+        }
+        names(VAR) <- gsub("_", "", waves)
+        names(MEAN) <- gsub("_", "", waves)
+    } else {
+        if (method == "Bayes") {
+            VAR <- datalist$VAR
+            MEAN <- mean(datalist$EAP$EAP)
+        } else {
+            VAR <- mean(unlist(variance))
+            MEAN <- mean(sapply(eap, FUN = function(x) mean(x[, 2])))
+        }
+    }
     pv <- scale_pv(pv = if (method == "Bayes") datalist$datalist else datalist,
                    SC = SC, domain = domain, type = type, wave = wave,
-                   # TODO: named vector as input for VAR, MEAN (w3 etc.)
-                   VAR = if (method == "Bayes") datalist$VAR else mean(unlist(variance)),
-                   MEAN = if (method == "Bayes") mean(datalist$EAP$EAP) else mean(rowMeans(eap[, seq(2,2*control$nmi,2)])))
+                   VAR = VAR, MEAN = MEAN)
 
     # output
     res <- list()
@@ -486,8 +516,8 @@ plausible_values <- function(SC,
     res[["variance.theta"]] <- meanvar[2]
     res[["mean.theta"]] <- meanvar[1]
     # TODO: named vector as input for VAR, MEAN (w3 etc.)
-    res[["variance.PV"]] <- if (method == "Bayes") datalist$VAR else mean(unlist(variance))
-    res[["mean.PV"]] <- if (method == "Bayes") mean(datalist$EAP$EAP) else mean(rowMeans(eap[, seq(2,2*control$nmi,2)]))
+    res[["variance.PV"]] <- VAR
+    res[["mean.PV"]] <- MEAN
     res[['pv']] <- pv
 
     if (method == "Bayes") {
@@ -496,7 +526,6 @@ plausible_values <- function(SC,
     } else if (method == "ML") {
         if (control$EAP) {
             res[['eap']] <- eap
-            res[['eap.uncorrected']] <- eaps[[SC]][[domain]][[wave]][[type]]
         }
         if (control$WLE)
             res[['wle']] <- wle
