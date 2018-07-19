@@ -26,6 +26,12 @@ qmat <- function(SC, domain) {
         } else if (domain %in% c("SC","IC","BA","EF")) {
             Q <- matrix(data = 1, nrow = length(item_labels[[SC]][[domain]][[1]]), ncol = 1)
         }
+    } else if (SC == "SC4") {
+        if (domain == "RE") {
+            Q <- matrix(data = 0, nrow = (length(item_labels[[SC]][[domain]][[1]])+length(item_labels[[SC]][[domain]][[2]])), ncol = 2)
+            Q[1:length(item_labels[[SC]][[domain]][[1]]), 1] <- 1
+            Q[(length(item_labels[[SC]][[domain]][[1]])+1):nrow(Q), 2] <- 1
+        }
     }
     return(Q)
 }

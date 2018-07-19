@@ -56,6 +56,7 @@
 #' @importFrom ucminf ucminf
 #' @importFrom rpart rpart rpart.control
 #' @importFrom stats var
+#' @importFrom utils setTxtProgressBar txtProgressBar
 plausible_values_mglrm <- function(
   Y,
   X = NULL,
@@ -142,6 +143,7 @@ plausible_values_mglrm <- function(
     }
   })
   Gamma <- matrix(0, nrow = itermcmc, ncol = G*KX)
+  colnames(Gamma) <- c(outer(colnames(XDM), 1:G, paste, sep = ""))
   Sigma2 <- matrix(0, nrow = itermcmc, ncol = G)
   Alpha <- matrix(0, nrow = itermcmc, ncol = J)
   Beta <- matrix(0, nrow = itermcmc, ncol = J)
@@ -252,7 +254,10 @@ plausible_values_mglrm <- function(
   close(pb)
   names(datalist) <- NULL
   bi <- 1:burnin
-  EAPs <- data.frame(ID_t = ID_t, EAP = colMeans(Theta[-bi, ]))
+  if (!is.null(X))
+      EAPs <- data.frame(ID_t = ID_t, EAP = colMeans(Theta[-bi, ]))
+  else
+      EAPs <- data.frame(EAP = colMeans(Theta[-bi, ]))
   regr.coeff <- colMeans(Gamma[-bi, ])
   VAR <- mean(apply(Theta[-bi, ], 2, var))
   out <- list(datalist=datalist, EAP = EAPs, regr.coeff = regr.coeff, VAR = VAR)

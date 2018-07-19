@@ -28,6 +28,7 @@
 #' @importFrom ucminf ucminf
 #' @importFrom rpart rpart rpart.control
 #' @importFrom stats var
+#' @importFrom utils setTxtProgressBar txtProgressBar
 #' @export
 plausible_values_mdlrm <- function(
     Y,
@@ -66,6 +67,14 @@ plausible_values_mdlrm <- function(
             Jdim <- c(21, 63)
             jdim <- list(1:21, 22:84)
             jdim2 <- c(rep(1, 21), rep(2, 63))
+        }
+    }
+    if (SC == "SC4") {
+        if (domain == "RE") {
+            DIM <- 2
+            Jdim <- c(31, 41)
+            jdim <- list(1:31, 32:72)
+            jdim2 <- c(rep(1, 31), rep(2, 41))
         }
     }
     Jdiminv <- 1/Jdim
@@ -128,6 +137,7 @@ plausible_values_mdlrm <- function(
     })
 
     Gamma <- matrix(0, nrow = itermcmc, ncol = K1X)
+    colnames(Gamma) <- colnames(XDM)
     Sigma2 <- vector("numeric", itermcmc)
     Alpha <- array(0, c(itermcmc, J, DIM))
     Beta <- matrix(0, nrow = itermcmc, ncol = J)
@@ -247,7 +257,10 @@ plausible_values_mdlrm <- function(
     close(pb)
     bi <- 1:burnin
     names(datalist) <- NULL
-    EAPs <- data.frame(ID_t = ID_t, EAP = t(apply(Theta[-bi, ,], 1, colMeans)))
+    if (!is.null(X))
+        EAPs <- data.frame(ID_t = ID_t, EAP = t(apply(Theta[-bi, ,], 1, colMeans)))
+    else
+        EAPs <- data.frame(EAP = t(apply(Theta[-bi, ,], 1, colMeans)))
     regr.coeff <- colMeans(Gamma[-bi,])
     VAR <- rowMeans(apply(Theta[-bi, ,], 1, function(x) apply(x, 2, var)))
 

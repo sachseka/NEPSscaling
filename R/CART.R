@@ -27,6 +27,7 @@
 #' @importFrom stats model.matrix runif rgamma rnorm pnorm qnorm predict
 #' @importFrom ucminf ucminf
 #' @importFrom rpart rpart rpart.control
+#' @importFrom utils setTxtProgressBar txtProgressBar
 #'
 #' @export
 CART <- function(

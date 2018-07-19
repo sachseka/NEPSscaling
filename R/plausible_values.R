@@ -138,7 +138,7 @@ plausible_values <- function(SC,
     filetype <- match.arg(filetype)
     if (missing(path)) stop("Path must be specified.")
     if (!is.character(path) || !grepl("/$",path)) stop("Path must be a character string and end in '/'.")
-    if ((SC == "SC6" | SC == "SC5") & domain %in% c("IC", "SC", "BA", "EF")){
+    if (longitudinal && (SC == "SC6" | SC == "SC5") & domain %in% c("IC", "SC", "BA", "EF")){
         longitudinal <- FALSE
         message(paste("No longitudinal data for:", SC, domain,"."))
         }
@@ -151,7 +151,7 @@ plausible_values <- function(SC,
             waves <- c("_w1", "_w12")
         }
         if (SC == "SC4" && domain %in% c("RE", "MA", "IC")) {
-            waves <- c("_w1", "_w7")
+            waves <- c("_w2", "_w7")
         }
     } else {
         type <- 'cross'
@@ -174,7 +174,6 @@ plausible_values <- function(SC,
                              stop(paste0("Path '", path, "' does not lead to competence files OR wrong file formats!"))
                          })
     }
-    rm(files)
     data <- data[order(data$ID_t), ]
 
     # selection of test takers
@@ -184,7 +183,11 @@ plausible_values <- function(SC,
             sel <- names(data) %in% c(item_labels[[SC]][[domain]][["w3"]], item_labels[[SC]][[domain]][["w9"]])
         if (SC == "SC5" & domain %in% c("RE", "MA"))
             sel <- names(data) %in% c(item_labels[[SC]][[domain]][["w1"]], item_labels[[SC]][[domain]][["w12"]])
-        if (SC == "SC4" & domain %in% c("RE", "MA", "IC"))
+        if (SC == "SC4" & domain == "RE")
+            sel <- names(data) %in% c(item_labels[[SC]][[domain]][["w2"]], item_labels[[SC]][[domain]][["w7"]])
+        if (SC == "SC4" & domain == "MA")
+            sel <- names(data) %in% c(item_labels[[SC]][[domain]][["w1"]], item_labels[[SC]][[domain]][["w7"]])
+        if (SC == "SC4" & domain == "IC")
             sel <- names(data) %in% c(item_labels[[SC]][[domain]][["w1"]], item_labels[[SC]][[domain]][["w7"]])
         data <- data[rowSums(!is.na(data[, sel])) >= nvalid, ]
     } else {
@@ -232,8 +235,6 @@ plausible_values <- function(SC,
     n.valid$valid <- rowSums(!is.na(data[, names(data) %in% item_labels[[SC]][[domain]][[wave]]]))
 
     if (longitudinal) {
-        if (rotation)
-            message('Longitudinal competence estimates are not corrected for item position. rotation = FALSE')
         rotation <- FALSE
         if (method == "ML")
             Q <- qmat(SC, domain)
@@ -282,9 +283,6 @@ plausible_values <- function(SC,
             # format position effect information
             position <- position[, 2, drop = FALSE]
             rotation <- length(unique(position$position)) > 1 # T: with rotation, F: without rotation
-            if (!rotation) {message('There is no rotation design.')}
-        } else {
-            message("Cross-sectional IRT model without test position correction corresponds to longitudinal model.")
         }
     }
 
@@ -303,7 +301,6 @@ plausible_values <- function(SC,
         resp$ID_t <- NULL
     } else
         resp <- data[, names(data) %in% item_labels[[SC]][[domain]][[wave]]]
-    rm(data)
 
     # check for Partial Credit Items
     PCM <- max(apply(resp, 2, max, na.rm = TRUE)) > 1
@@ -316,7 +313,6 @@ plausible_values <- function(SC,
     control$nmi <- res$nmi
     control$Bayes <- res$Bayes
     control$ML <- res$ML
-    rm(res)
 
 
 
@@ -347,20 +343,17 @@ plausible_values <- function(SC,
                                          resp = resp)$B
                 B[ind, , ] <- 0.5 * B[ind, , ]
             }
-            rm(ind,res)
         }
 
         pvs <- list()
         EAP.rel <- list()
         regr.coeff <- list()
         variance <- list()
-        if (control$EAP) {
-            eap <- replicate(control$nmi,
-                             matrix(c(ID_t, rep(0, 2*length(waves)*nrow(resp))),
-                                    ncol = (1 + 2*length(waves)),
-                                    nrow = nrow(resp)),
-                             simplify = FALSE)
-        }
+        eap <- replicate(control$nmi,
+                         matrix(c(ID_t$ID_t, rep(0, 2*length(waves)*nrow(resp))),
+                                ncol = (1 + 2*length(waves)),
+                                nrow = nrow(resp)),
+                         simplify = FALSE)
         for (i in 1:control$nmi) {
             if (!is.null(imp)) {
                 bgdatacom <- imp[[i]]
@@ -389,10 +382,8 @@ plausible_values <- function(SC,
             pmod <- TAM::tam.pv(mod, nplausible = npv, ntheta = control$ML$ntheta, normal.approx = control$ML$normal.approx,
                                 samp.regr = control$ML$samp.regr, theta.model = control$ML$theta.model,
                                 np.adj = control$ML$np.adj, na.grid = control$ML$na.grid)
-            if (control$EAP) {
-                eap[[i]][, -1] <- as.matrix(mod$person[, grep("EAP", names(mod$person))])
-                colnames(eap[[i]]) <- c('ID_t',  paste0(rep(c('eap','se'), length(waves)), rep(waves, each = 2)))
-            }
+            eap[[i]][, -1] <- as.matrix(mod$person[, grep("EAP", names(mod$person))])
+            colnames(eap[[i]]) <- c('ID_t',  paste0(rep(c('eap','se'), length(waves)), rep(waves, each = 2)))
             pvs[[i]] <- TAM::tampv2datalist(pmod,
                                             Y = if (is.null(bgdata) || is.null(imp)) ID_t else cbind(ID_t, bgdatacom),
                                             pvnames = paste0("PV", waves))
@@ -400,7 +391,6 @@ plausible_values <- function(SC,
             regr.coeff[[i]] <- mod$beta
             variance[[i]] <- mod$variance
         }
-        rm(imp,bgdata,bgdatacom,resp)
         if (control$WLE && !longitudinal) {
             wmod <- TAM::tam.mml.wle2(mod, WLE = TRUE, progress = FALSE)
             wle <- matrix(wmod$theta, nrow = length(wmod$theta), ncol = 1)
@@ -408,10 +398,8 @@ plausible_values <- function(SC,
             colnames(wle) <- c('ID_t', 'wle', 'se')
         } else if (control$WLE && longitudinal) {
             wmod <- TAM::tam.mml.wle2(mod, WLE = TRUE, progress = FALSE)
-            # TODO: Auswahl auf wle$theta.DIM01 /error.DIM01 etc. anpassen
-            wle <- do.call(cbind, wmod[grep("theta|error")])
-            wle <- cbind(ID_t, wle)
-            # colnames(wle) <- c('ID_t', 'wle', 'se')
+            wle <- do.call(cbind, list(ID_t, wmod[grep("theta|error", colnames(wmod))]))
+            colnames(wle) <- c('ID_t',  paste0(rep(c('wle','se'), length(waves)), rep(waves, each = 2)))
         }
         datalist <- list()
         d <- 1
@@ -469,7 +457,6 @@ plausible_values <- function(SC,
                 # TODO: für MD-Fall anpassen
                 datalist$datalist[[i]] <- data.frame(ID_t = ID_t, PV = datalist$datalist[[i]]$PV)
         }
-        rm(bgdata,S,resp)
     }
 
 
@@ -480,7 +467,7 @@ plausible_values <- function(SC,
             VAR <- datalist$VAR
             MEAN <- colMeans(datalist$EAP[[grep("EAP", names(datalist$EAP), value = TRUE)]])
         } else {
-            VAR <- colMeans(do.call(rbind, unlist(variance)))
+            VAR <- colMeans(do.call(rbind, lapply(variance, FUN = function (x) c(x[1,1], x[2,2]))))#unlist(variance)))
             MEAN <- colMeans(do.call(rbind, lapply(eap, FUN = function (x) colMeans(x[, seq(2, (1+2*length(waves)), 2)]))))
         }
         names(VAR) <- gsub("_", "", waves)
@@ -512,9 +499,10 @@ plausible_values <- function(SC,
     res[['n.valid']] <- n.valid
     res[['npv']] <- npv
     res[['control']] <- control
-    res[['position']] <- data.frame(ID_t, position)
-    res[["variance.theta"]] <- meanvar[2]
-    res[["mean.theta"]] <- meanvar[1]
+    if (rotation)
+        res[['position']] <- data.frame(ID_t, position)
+    res[["variance.theta"]] <- meanvar[[SC]][[domain]][[wave]][[type]][2]
+    res[["mean.theta"]] <- meanvar[[SC]][[domain]][[wave]][[type]][1]
     # TODO: named vector as input for VAR, MEAN (w3 etc.)
     res[["variance.PV"]] <- VAR
     res[["mean.PV"]] <- MEAN

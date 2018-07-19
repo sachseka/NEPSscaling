@@ -8,9 +8,9 @@ scale_pv <- function(pv, SC, domain, type, MEAN, VAR, wave) {
     }
     if (SC == "SC4") {
         if (domain == "RE" & type == "long")
-            waves <- c("w1", "w7")
+            waves <- c("w2", "w7")
     }
-    if (length(mean) == 1) {
+    if (length(MEAN) == 1) {
         for(i in seq(length(pv))) {
             # TODO: subtract mean of plausible values distribution:
             # does not work for multi-dim case yet!
