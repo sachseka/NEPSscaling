@@ -136,9 +136,9 @@ plausible_values_mdlrm <- function(
         }
     })
 
-    Gamma <- matrix(0, nrow = itermcmc, ncol = K1X)
+    Gamma <- matrix(0, nrow = itermcmc, ncol = K1X*DIM)
     colnames(Gamma) <- colnames(XDM)
-    Sigma2 <- vector("numeric", itermcmc)
+    Sigma2 <- matrix(0, nrow = itermcmc, ncol = DIM)
     Alpha <- array(0, c(itermcmc, J, DIM))
     Beta <- matrix(0, nrow = itermcmc, ncol = J)
     Kappa <- matrix(0, nrow = itermcmc, ncol = sum(QMI2))
@@ -228,7 +228,7 @@ plausible_values_mdlrm <- function(
             }
 
             Gamma[ii, ] <- c(GAMMA)
-            Sigma2[ii] <- SIGMA
+            Sigma2[ii, ] <- diag(SIGMA)
             Alpha[ii, , ] <- ALPHA
             Beta[ii, ] <- BETA
             Kappa[ii, ] <- unlist(lapply(KAPPA[!ITEMBIN], function(x){
@@ -261,10 +261,14 @@ plausible_values_mdlrm <- function(
         EAPs <- data.frame(ID_t = ID_t, EAP = t(apply(Theta[-bi, ,], 1, colMeans)))
     else
         EAPs <- data.frame(EAP = t(apply(Theta[-bi, ,], 1, colMeans)))
-    regr.coeff <- colMeans(Gamma[-bi,])
+    alpha <- apply(Alpha[-bi, ,], c(2,3), mean)
+    if (ncol(Gamma) > 1)
+        regr.coeff <- colMeans(Gamma[-bi, ])
+    else
+        regr.coeff <- mean(Gamma[-bi, ])
     VAR <- rowMeans(apply(Theta[-bi, ,], 1, function(x) apply(x, 2, var)))
 
-    out <- list(datalist = datalist, EAP = EAPs, regr.coeff = regr.coeff, VAR = VAR)
+    out <- list(datalist = datalist, EAP = EAPs, regr.coeff = regr.coeff, VAR = VAR, alpha = alpha)
 
     return(out)
 

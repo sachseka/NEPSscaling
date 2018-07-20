@@ -124,7 +124,7 @@ plausible_values <- function(SC,
                    ML = list(ntheta = 2000, normal.approx = FALSE, samp.regr = FALSE,
                               theta.model=FALSE, np.adj=8, na.grid = 5))
 ){
-    .<-NULL
+    # .<-NULL
     # check and prepare arguments
     if (missing(SC)) stop("Starting cohort must be specified.")
     SC <- paste0("SC", SC)
@@ -287,12 +287,12 @@ plausible_values <- function(SC,
     }
 
     # test data
+    `%>%` <- dplyr::`%>%`
     if (longitudinal) {
-        `%>%` <- dplyr::`%>%`
         resp <- list()
         if (SC == "SC6" & domain == "RE") {
-            resp[[1]] <- data[, names(data) %in% c("ID_t", item_labels[[SC]][[domain]][[1]])]
-            resp[[2]] <- data[, names(data) %in% c("ID_t", item_labels[[SC]][[domain]][[3]])]
+            resp[[1]] <- data[, names(data) %in% c("ID_t", item_labels[[SC]][[domain]][["w3"]])]
+            resp[[2]] <- data[, names(data) %in% c("ID_t", item_labels[[SC]][[domain]][["w9"]])]
         } else {
             for (i in seq(length(item_labels[[SC]][[domain]])))
                 resp[[i]] <- data[, names(data) %in% c("ID_t", item_labels[[SC]][[domain]][[i]])]
@@ -414,6 +414,7 @@ plausible_values <- function(SC,
         datalist <- datalist[ind]
         for (i in 1:npv) {
             datalist[[i]] <- datalist[[i]][, -which(colnames(datalist[[i]]) %in% c('pid', 'pweights', 'test_position'))]
+            datalist[[i]] <- datalist[[i]] %>% dplyr::select(ID_t, dplyr::everything())
         }
     }
 
@@ -453,9 +454,10 @@ plausible_values <- function(SC,
                             cartctrl2 = control$Bayes$cartctrl2)
         }
         if (is.null(bgdata)) {
-            for (i in seq(length(datalist$datalist)))
-                # TODO: für MD-Fall anpassen
-                datalist$datalist[[i]] <- data.frame(ID_t = ID_t, PV = datalist$datalist[[i]]$PV)
+            for (i in seq(length(datalist$datalist))) {
+                datalist$datalist[[i]]$ID_t <- ID_t$ID_t
+                datalist$datalist[[i]] <- datalist$datalist[[i]] %>% dplyr::select(ID_t, dplyr::everything())
+            }
         }
     }
 
@@ -467,7 +469,7 @@ plausible_values <- function(SC,
             VAR <- datalist$VAR
             MEAN <- colMeans(datalist$EAP[[grep("EAP", names(datalist$EAP), value = TRUE)]])
         } else {
-            VAR <- colMeans(do.call(rbind, lapply(variance, FUN = function (x) c(x[1,1], x[2,2]))))#unlist(variance)))
+            VAR <- colMeans(do.call(rbind, lapply(variance, FUN = function (x) diag(x))))
             MEAN <- colMeans(do.call(rbind, lapply(eap, FUN = function (x) colMeans(x[, seq(2, (1+2*length(waves)), 2)]))))
         }
         names(VAR) <- gsub("_", "", waves)
@@ -495,14 +497,19 @@ plausible_values <- function(SC,
     res[['rotation']] <- ifelse(rotation, 'Corrected For Test Position',
                                 'No Correction For Test Position')
     res[['nvalid']] <- nvalid
-    res[['model']] <- if (method == "ML") ifelse(PCM, 'Partical Credit Model', 'Rasch Model') else "Graded Response Model"
+    res[['model']] <- if (method == "ML") ifelse(PCM, 'Partial Credit Model', 'Rasch Model') else "Graded Response Model"
     res[['n.valid']] <- n.valid
     res[['npv']] <- npv
     res[['control']] <- control
     if (rotation)
         res[['position']] <- data.frame(ID_t, position)
-    res[["variance.theta"]] <- meanvar[[SC]][[domain]][[wave]][[type]][2]
-    res[["mean.theta"]] <- meanvar[[SC]][[domain]][[wave]][[type]][1]
+    if (longitudinal){
+        res[["variance.theta"]] <- sapply(meanvar[[SC]][[domain]], FUN = function(x) x[[type]][[2]])
+        res[["mean.theta"]] <- sapply(meanvar[[SC]][[domain]], FUN = function(x) x[[type]][[1]])
+    } else {
+        res[["variance.theta"]] <- meanvar[[SC]][[domain]][[wave]][[type]][2]
+        res[["mean.theta"]] <- meanvar[[SC]][[domain]][[wave]][[type]][1]
+    }
     # TODO: named vector as input for VAR, MEAN (w3 etc.)
     res[["variance.PV"]] <- VAR
     res[["mean.PV"]] <- MEAN
@@ -511,6 +518,7 @@ plausible_values <- function(SC,
     if (method == "Bayes") {
         if (control$EAP) res[["eap"]] <- datalist$EAP
         res[["regr.coeff"]] <- datalist$regr.coeff
+        if (control$Bayes$est.alpha) res[["alpha"]] <- datalist$alpha
     } else if (method == "ML") {
         if (control$EAP) {
             res[['eap']] <- eap

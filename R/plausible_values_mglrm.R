@@ -258,8 +258,12 @@ plausible_values_mglrm <- function(
       EAPs <- data.frame(ID_t = ID_t, EAP = colMeans(Theta[-bi, ]))
   else
       EAPs <- data.frame(EAP = colMeans(Theta[-bi, ]))
-  regr.coeff <- colMeans(Gamma[-bi, ])
+  if (ncol(Gamma) > 1)
+      regr.coeff <- colMeans(Gamma[-bi, ])
+  else
+      regr.coeff <- mean(Gamma[-bi, ])
+  alpha <- colMeans(Alpha[-bi, ])
   VAR <- mean(apply(Theta[-bi, ], 2, var))
-  out <- list(datalist=datalist, EAP = EAPs, regr.coeff = regr.coeff, VAR = VAR)
+  out <- list(datalist=datalist, EAP = EAPs, regr.coeff = regr.coeff, VAR = VAR, alpha = alpha)
   return(out)
 }
