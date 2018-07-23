@@ -124,7 +124,7 @@ plausible_values <- function(SC,
                    ML = list(ntheta = 2000, normal.approx = FALSE, samp.regr = FALSE,
                               theta.model=FALSE, np.adj=8, na.grid = 5))
 ){
-    # .<-NULL
+    .<-NULL
     # check and prepare arguments
     if (missing(SC)) stop("Starting cohort must be specified.")
     SC <- paste0("SC", SC)
@@ -225,7 +225,7 @@ plausible_values <- function(SC,
             data <- suppressWarnings(dplyr::bind_rows(data, bgdata[!(bgdata$ID_t %in% data$ID_t), 'ID_t', drop = FALSE]))
             data <- data[order(data$ID_t), ]
         }
-        ID_t <- bgdata$ID_t
+        ID_t <- bgdata[, "ID_t", drop = FALSE]
 
         # list of categorical variables
         fac <- unlist(lapply(bgdata, is.factor))
@@ -343,6 +343,13 @@ plausible_values <- function(SC,
                                          resp = resp)$B
                 B[ind, , ] <- 0.5 * B[ind, , ]
             }
+        } else if (!PCM & rotation) {
+            res <- TAM::designMatrices.mfr(resp = resp, facets = position,
+                                           formulaA = ~ 0 + item + position,
+                                           constraint = "cases", progress = FALSE)
+            A <- res$A$A.3d
+            B <- res$B$B.3d
+            resp <- res$gresp$gresp.noStep
         }
 
         pvs <- list()
@@ -361,24 +368,29 @@ plausible_values <- function(SC,
                 bgdatacom <- apply(bgdatacom, 2, as.numeric)
             }
 
-            repeat {
+            # repeat {
+#
+#                 mod <- tryCatch(TAM::tam.mml(resp = resp,
+#                                              Y = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
+#                                              xsi.fixed = if (!longitudinal && SC == "SC6" && domain == "RE" && wave == "w5") item_diff_SC6_RE_w3 else NULL,
+#                                              A = if (rotation) A else NULL, B = if (PCM) B else NULL, Q = Q, verbose = FALSE),
+#                                 error=function(e){return(NA)})
+#                 if(any(is.na(mod)) && !is.null(bgdata)) {
+#                     bgdatacom <- CART(X = bgdata, itermcmc = control$Bayes$itermcmc,
+#                                       burnin = control$Bayes$burnin, nmi = 1,
+#                                       thin = control$Bayes$thin, cartctrl1 = control$Bayes$cartctrl1,
+#                                       cartctrl2 = control$Bayes$cartctrl2)[[1]]
+#                     bgdatacom$ID_t <- NULL
+#                     bgdatacom <- apply(bgdatacom, 2, as.numeric)
+#                 } else {
+#                     break
+#                 }
+#             }
+            mod <- TAM::tam.mml(resp = resp,
+                                Y = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
+                                xsi.fixed = if (!longitudinal && SC == "SC6" && domain == "RE" && wave == "w5") item_diff_SC6_RE_w3 else NULL,
+                                A = if (rotation) A else NULL, B = if (PCM || rotation) B else NULL, Q = Q, verbose = FALSE)
 
-                mod <- tryCatch(TAM::tam.mml(resp = resp,
-                                             Y = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
-                                             xsi.fixed = if (!longitudinal && SC == "SC6" && domain == "RE" && wave == "w5") item_diff_SC6_RE_w3 else NULL,
-                                             A = if (rotation) A else NULL, B = if (PCM) B else NULL, Q = Q, verbose = FALSE),
-                                error=function(e){return(NA)})
-                if(any(is.na(mod)) && !is.null(bgdata)) {
-                    bgdatacom <- CART(X = bgdata, itermcmc = control$Bayes$itermcmc,
-                                      burnin = control$Bayes$burnin, nmi = 1,
-                                      thin = control$Bayes$thin, cartctrl1 = control$Bayes$cartctrl1,
-                                      cartctrl2 = control$Bayes$cartctrl2)[[1]]
-                    bgdatacom$ID_t <- NULL
-                    bgdatacom <- apply(bgdatacom, 2, as.numeric)
-                } else {
-                    break
-                }
-            }
             pmod <- TAM::tam.pv(mod, nplausible = npv, ntheta = control$ML$ntheta, normal.approx = control$ML$normal.approx,
                                 samp.regr = control$ML$samp.regr, theta.model = control$ML$theta.model,
                                 np.adj = control$ML$np.adj, na.grid = control$ML$na.grid)
@@ -476,7 +488,7 @@ plausible_values <- function(SC,
         names(MEAN) <- gsub("_", "", waves)
     } else {
         if (method == "Bayes") {
-            VAR <- datalist$VAR
+            VAR <- sum(datalist$VAR)
             MEAN <- mean(datalist$EAP$EAP)
         } else {
             VAR <- mean(unlist(variance))

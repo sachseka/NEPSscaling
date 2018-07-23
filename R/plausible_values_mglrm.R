@@ -73,9 +73,9 @@ plausible_values_mglrm <- function(
   if (!is.null(X)) {
     X <- data.frame(X)
     ID_t <- X$ID_t
-    X <- data.matrix(X[, -which(names(X)=='ID_t')])
+    X <- X[, -which(names(X)=='ID_t')]
   }
-  Y <- data.frame(Y)
+  Y <- data.matrix(Y)
   YPL1 <- Y + 1
   YPL2 <- Y + 2
   N <- nrow(Y)
@@ -145,6 +145,7 @@ plausible_values_mglrm <- function(
   Gamma <- matrix(0, nrow = itermcmc, ncol = G*KX)
   colnames(Gamma) <- c(outer(colnames(XDM), 1:G, paste, sep = ""))
   Sigma2 <- matrix(0, nrow = itermcmc, ncol = G)
+  colnames(Sigma2) <- paste0("group", 1:G)
   Alpha <- matrix(0, nrow = itermcmc, ncol = J)
   Beta <- matrix(0, nrow = itermcmc, ncol = J)
   Kappa <- matrix(0, nrow = itermcmc, ncol = sum(QMI2))
@@ -263,7 +264,7 @@ plausible_values_mglrm <- function(
   else
       regr.coeff <- mean(Gamma[-bi, ])
   alpha <- colMeans(Alpha[-bi, ])
-  VAR <- mean(apply(Theta[-bi, ], 2, var))
+  VAR <- colMeans(Sigma2[-bi,])
   out <- list(datalist=datalist, EAP = EAPs, regr.coeff = regr.coeff, VAR = VAR, alpha = alpha)
   return(out)
 }

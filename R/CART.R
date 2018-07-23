@@ -46,7 +46,7 @@ CART <- function(
 
     X <- data.frame(X)
     ID_t <- X$ID_t
-    X <- data.matrix(X[, -which(names(X)=='ID_t')])
+    X <- X[, -which(names(X)=='ID_t')]#data.matrix(X[, -which(names(X)=='ID_t')])
 
     XOBS <- !is.na(X)
     XMIS <- is.na(X)
@@ -55,7 +55,7 @@ CART <- function(
         X[XMIS[, k], k] <- sample(X[XOBS[, k], k], sum(XMIS[, k]), replace = TRUE)
     }
 
-    XDM <- model.matrix(~., as.data.frame(X))
+    XDM <- model.matrix(~., as.data.frame(X))[,-1]
     KX <- ncol(XDM)
     XX <- crossprod(XDM)
     savemis <- sort(sample((burnin+1):itermcmc, nmi))
@@ -66,7 +66,7 @@ CART <- function(
     for(ii in 1:itermcmc){
         for(iii in 1:thin){
             X <- seqcart(X, xmisord, XOBS, XMIS, cartctrl1, cartctrl2)
-            XDM <- model.matrix(~., as.data.frame(X))
+            XDM <- model.matrix(~., as.data.frame(X))[,-1]
             XX <- crossprod(XDM)
         }
         # save CART draws
