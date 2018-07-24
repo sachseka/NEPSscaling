@@ -9,68 +9,69 @@ plausible_values(SC, domain = c("MA", "RE", "SC", "IC", "LI", "EF", "NR",
   "NT", "OR", "ST", "BA", "CD", "GR"), wave, method = c("ML", "Bayes"), path,
   filetype = c("SPSS", "Stata"), bgdata = NULL, npv = 10L,
   longitudinal = FALSE, rotation = TRUE, nvalid = 3L, control = list(EAP
-  = FALSE, WLE = FALSE, nmi = 10L, Bayes = list(itermcmc = 10000, burnin = 2000,
-  est.alpha = TRUE, thin = 1, tdf = 10, cartctrl1 = 5, cartctrl2 = 1e-04), ML =
-  list(ntheta = 2000, normal.approx = FALSE, samp.regr = FALSE, theta.model =
+  = FALSE, WLE = FALSE, Bayes = list(itermcmc = 10000, burnin = 2000, est.alpha
+  = TRUE, thin = 1, tdf = 10, cartctrl1 = 5, cartctrl2 = 1e-04), ML = list(nmi =
+  10L, ntheta = 2000, normal.approx = FALSE, samp.regr = FALSE, theta.model =
   FALSE, np.adj = 8, na.grid = 5)))
 }
 \arguments{
 \item{SC}{numeric. The starting cohort used for the analysis is
 indicated by an integer value (e.g., starting cohort one = 1).}
 
-\item{domain}{string. The competence domain of interest is indicated
+\item{domain}{character. The competence domain of interest is indicated
 by the domain abbreviation as used in the variable names (see Fuß, D., Gnambs,
 T., Lockl, K., & Attig, M., 2016).}
 
 \item{wave}{numeric. The wave of competence testing is indicated by
 an integer value (e.g., wave one = 1).}
 
-\item{method}{string. The method used for missing data handling in covariates
-(IND: missing indicators, MMI: multiple multiple imputation, CART: sequential
-classification and regression trees).}
+\item{method}{character. Should estimation method be fully Bayesian
+("Bayes") or maximum likelihood-bases ("ML")?}
 
-\item{path}{file path leading to the location of the competence data}
+\item{path}{character; file path leading to the location of the
+competence data}
 
 \item{filetype}{filetype of competence data (the NEPS RDC provides SPSS
 and Stata data files)}
 
 \item{bgdata}{data frame containing background variables. Categorical
 variables have to be specified as factors. If \code{bgdata = NULL}, plausible
-values are estimated without a background model.}
+values are estimated without a background model. Missing data in the covariates
+is imputed using sequential classification and regression trees.}
 
-\item{npv}{number of plausible values to be estimated; it defaults
-to 10.}
+\item{npv}{numeric; number of plausible values to be estimated;
+defaults to 10.}
 
-\item{longitudinal}{logical. TRUE indicating that a model based on linked
-item difficulties (without correction for position effects) is to be
-estimated. Defaults to FALSE.}
+\item{longitudinal}{logical. TRUE indicating that a multidimensional model with
+the measurement points as its dimensions is to be estimated. Defaults to FALSE.}
 
 \item{rotation}{logical. TRUE indicating that the competence scores
 should be corrected for the rotation design of the booklets. Defaults to
 TRUE. If both longitudinal and rotation are TRUE, rotation is set to FALSE
 automatically.}
 
-\item{nvalid}{minimum number of responses test takers had to give for
-inclusion into the estimation process. NEPS default is at least three.}
+\item{nvalid}{numeric; minimum number of responses test takers had to
+give for inclusion into the estimation process. NEPS default is at least three.}
 
 \item{control}{list of additional options. If \code{EAP = TRUE} or
-\code{WLE = TRUE}, the EAPs or WLEs will be returned as well. Furthermore,
-additional control options for IND are \code{varex} (the amount of
-variance explained by the retained PCA factors), \code{pca.data} (a logical;
-if TRUE, no plausible  values are estimated, but the data to estimate them
-is returned) and \code{vars} (a vector of variable names that are not to be
-included in the PCA). Additional control options for MMI consist of \code{nmi}
-(an integer value specifying the number of multiple imputations; 10 by default)
-and further options for mice::mice(). Analogously, CART options and TAM options
-(used for plausible values estimation in methods IND and MMI) can be specified.
-For further information see the documentations of LaRA::mglrm() for CART and
-TAM::tam.pv() for TAM.}
+\code{WLE = TRUE}, the EAPs or WLEs (only for "ML") will be returned as well.
+Furthermore, additional control options for "ML" (again in form of a list)
+are \code{nmi} (the number of multiple imputations if there is missing data
+in the covariates) and arguments concerning the ML estimation given to
+TAM::tam.pv() (therefore, see TAM for further control options). Analogously,
+control options for "Bayes" (in form of a list) are "itermcmc" (number of
+MCMC iterations), "burnin" (number of burn-in iterations), "est.alpha" (wether
+item discriminations for polytomous items are to be fixed or estimated freely),
+"thin" (thinning interval in MCMC), "tdf" (df of multiv. t proposal distr. for
+category cut-offs for ordinal items), "cartctrl1" (min. number of observations
+in any terminal CART node) and "cartctrl2" (min. decrease of overall lack of
+fit by each CART split). NOTE that "Bayes" control options are also applied
+to the CART algorithm for "ML" estimation.}
 }
 \value{
 \code{plausible_values()} returns an object of class \code{pv.obj}
-containing \code{npv} plausible values with the data set used
-for estimating them as well as WLEs and EAPs and their respective standard
-error for the specified domain, wave and starting cohort of the NEPS.
+containing a list of \code{npv} plausible values with the data set used
+for estimating them as well as the specified function arguments.
 }
 \description{
 Function for estimating plausible values with NEPS competence data and NEPS
@@ -97,12 +98,12 @@ data(xTargetCompetencies_sim)
 write.dta(dataframe = xTargetCompetencies_sim, file = 'SC6_xTargetCompetencies_sim.dta')
 ## estimate default number of 10 plausible values
 ## note: the example background data is completely observed!
-result <- plausible_values(SC = 'SC6'
+result <- plausible_values(SC = 6
                            , domain = 'RE'
-                           , wave = 'w3'
+                           , wave = 3
                            , bgdata = bg_data
                            , path = path
-                           , method = 'IND'
+                           , method = 'Bayes'
                            , filetype = 'Stata'
                            )
 }

@@ -2,7 +2,6 @@
 
 export(CART)
 export(plausible_values)
-export(plausible_values_mdlrm)
 export(pv_impl)
 export(write_pv)
 importFrom(MASS,mvrnorm)

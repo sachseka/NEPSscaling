@@ -29,7 +29,7 @@
 #' @importFrom rpart rpart rpart.control
 #' @importFrom stats var
 #' @importFrom utils setTxtProgressBar txtProgressBar
-#' @export
+
 plausible_values_mdlrm <- function(
     Y,
     X = NULL,

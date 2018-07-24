@@ -3,48 +3,49 @@
 #'
 #' @param SC           numeric. The starting cohort used for the analysis is
 #' indicated by an integer value (e.g., starting cohort one = 1).
-#' @param domain       string. The competence domain of interest is indicated
+#' @param domain       character. The competence domain of interest is indicated
 #' by the domain abbreviation as used in the variable names (see Fuß, D., Gnambs,
 #' T., Lockl, K., & Attig, M., 2016).
 #' @param wave         numeric. The wave of competence testing is indicated by
 #' an integer value (e.g., wave one = 1).
-#' @param method       string. The method used for missing data handling in covariates
-#' (IND: missing indicators, MMI: multiple multiple imputation, CART: sequential
-#' classification and regression trees).
-#' @param path         file path leading to the location of the competence data
+#' @param method       character. Should estimation method be fully Bayesian
+#' ("Bayes") or maximum likelihood-bases ("ML")?
+#' @param path         character; file path leading to the location of the
+#' competence data
 #' @param filetype     filetype of competence data (the NEPS RDC provides SPSS
 #' and Stata data files)
 #' @param bgdata       data frame containing background variables. Categorical
 #' variables have to be specified as factors. If \code{bgdata = NULL}, plausible
-#' values are estimated without a background model.
-#' @param npv          number of plausible values to be estimated; it defaults
-#' to 10.
-#' @param nvalid       minimum number of responses test takers had to give for
-#' inclusion into the estimation process. NEPS default is at least three.
-#' @param longitudinal logical. TRUE indicating that a model based on linked
-#' item difficulties (without correction for position effects) is to be
-#' estimated. Defaults to FALSE.
+#' values are estimated without a background model. Missing data in the covariates
+#' is imputed using sequential classification and regression trees.
+#' @param npv          numeric; number of plausible values to be estimated;
+#' defaults to 10.
+#' @param nvalid       numeric; minimum number of responses test takers had to
+#' give for inclusion into the estimation process. NEPS default is at least three.
+#' @param longitudinal logical. TRUE indicating that a multidimensional model with
+#' the measurement points as its dimensions is to be estimated. Defaults to FALSE.
 #' @param rotation     logical. TRUE indicating that the competence scores
 #' should be corrected for the rotation design of the booklets. Defaults to
 #' TRUE. If both longitudinal and rotation are TRUE, rotation is set to FALSE
 #' automatically.
 #' @param control      list of additional options. If \code{EAP = TRUE} or
-#' \code{WLE = TRUE}, the EAPs or WLEs will be returned as well. Furthermore,
-#' additional control options for IND are \code{varex} (the amount of
-#' variance explained by the retained PCA factors), \code{pca.data} (a logical;
-#' if TRUE, no plausible  values are estimated, but the data to estimate them
-#' is returned) and \code{vars} (a vector of variable names that are not to be
-#' included in the PCA). Additional control options for MMI consist of \code{nmi}
-#' (an integer value specifying the number of multiple imputations; 10 by default)
-#' and further options for mice::mice(). Analogously, CART options and TAM options
-#' (used for plausible values estimation in methods IND and MMI) can be specified.
-#' For further information see the documentations of LaRA::mglrm() for CART and
-#' TAM::tam.pv() for TAM.
+#' \code{WLE = TRUE}, the EAPs or WLEs (only for "ML") will be returned as well.
+#' Furthermore, additional control options for "ML" (again in form of a list)
+#' are \code{nmi} (the number of multiple imputations if there is missing data
+#' in the covariates) and arguments concerning the ML estimation given to
+#' TAM::tam.pv() (therefore, see TAM for further control options). Analogously,
+#' control options for "Bayes" (in form of a list) are "itermcmc" (number of
+#' MCMC iterations), "burnin" (number of burn-in iterations), "est.alpha" (wether
+#' item discriminations for polytomous items are to be fixed or estimated freely),
+#' "thin" (thinning interval in MCMC), "tdf" (df of multiv. t proposal distr. for
+#' category cut-offs for ordinal items), "cartctrl1" (min. number of observations
+#' in any terminal CART node) and "cartctrl2" (min. decrease of overall lack of
+#' fit by each CART split). NOTE that "Bayes" control options are also applied
+#' to the CART algorithm for "ML" estimation.
 #'
 #' @return \code{plausible_values()} returns an object of class \code{pv.obj}
-#' containing \code{npv} plausible values with the data set used
-#' for estimating them as well as WLEs and EAPs and their respective standard
-#' error for the specified domain, wave and starting cohort of the NEPS.
+#' containing a list of \code{npv} plausible values with the data set used
+#' for estimating them as well as the specified function arguments.
 #'
 #' @references Albert, J. H. (1992). Bayesian estimation of normal ogive item
 #' response curves using Gibbs sampling. \emph{Journal of Educational
@@ -89,12 +90,12 @@
 #' write.dta(dataframe = xTargetCompetencies_sim, file = 'SC6_xTargetCompetencies_sim.dta')
 #' ## estimate default number of 10 plausible values
 #' ## note: the example background data is completely observed!
-#' result <- plausible_values(SC = 'SC6'
+#' result <- plausible_values(SC = 6
 #'                            , domain = 'RE'
-#'                            , wave = 'w3'
+#'                            , wave = 3
 #'                            , bgdata = bg_data
 #'                            , path = path
-#'                            , method = 'IND'
+#'                            , method = 'Bayes'
 #'                            , filetype = 'Stata'
 #'                            )
 #' }
@@ -118,10 +119,10 @@ plausible_values <- function(SC,
     longitudinal = FALSE,
     rotation = TRUE,
     nvalid = 3L,
-    control = list(EAP = FALSE, WLE = FALSE, nmi = 10L,
+    control = list(EAP = FALSE, WLE = FALSE,
                    Bayes = list(itermcmc = 10000, burnin = 2000, est.alpha = TRUE, thin = 1, tdf = 10,
                                cartctrl1 = 5, cartctrl2 = 0.0001),
-                   ML = list(ntheta = 2000, normal.approx = FALSE, samp.regr = FALSE,
+                   ML = list(nmi = 10L, ntheta = 2000, normal.approx = FALSE, samp.regr = FALSE,
                               theta.model=FALSE, np.adj=8, na.grid = 5))
 ){
     .<-NULL
@@ -267,19 +268,19 @@ plausible_values <- function(SC,
             } else if (SC == 'SC6') {
                 if (wave == 'w3') {
                     position[, 'position'] <- data[, 'tx80211_w3']
-                    position[!is.na(position$position) & (position$position %in% c(122,124)), 'position'] <- 0 # maths first
-                    position[!is.na(position$position) & (position$position %in% c(123,125)), 'position'] <- 1 # reading first
+                    position[!is.na(position$position) & (position$position %in% c(122,124)), 'position'] <- 1 # maths first
+                    position[!is.na(position$position) & (position$position %in% c(123,125)), 'position'] <- 2 # reading first
                 } else if (wave == 'w5') {
                     position[, 'position'] <- data[, 'tx80211_w5']
-                    position[!is.na(position$position) & position$position == 247, 'position'] <- 0 # science first
-                    position[!is.na(position$position) & position$position == 248, 'position'] <- 1 # ict first
+                    position[!is.na(position$position) & position$position == 247, 'position'] <- 1 # science first
+                    position[!is.na(position$position) & position$position == 248, 'position'] <- 2 # ict first
                     # reading first (i.e. "new" SC6 sample) should be marked with 249 (not found in SUF)
                     if (domain == "RE")
                         position[is.na(position$position), 'position'] <- 3 # reading first; should not occur for IC/SC tests
                 }
             }
             # possible NAs in position variable treated as third group
-            position[is.na(position$position), "position"] <- 2
+            position[is.na(position$position), "position"] <- 3
             # format position effect information
             position <- position[, 2, drop = FALSE]
             rotation <- length(unique(position$position)) > 1 # T: with rotation, F: without rotation
@@ -306,11 +307,10 @@ plausible_values <- function(SC,
     PCM <- max(apply(resp, 2, max, na.rm = TRUE)) > 1
 
     # complement control lists
-    res <- complement_control_lists(control$EAP, control$WLE, control$nmi,
+    res <- complement_control_lists(control$EAP, control$WLE,
                                     control$Bayes, control$ML)
     control$EAP <- res$EAP
     control$WLE <- res$WLE
-    control$nmi <- res$nmi
     control$Bayes <- res$Bayes
     control$ML <- res$ML
 
@@ -322,7 +322,7 @@ plausible_values <- function(SC,
         # multiple imputation of missing covariate data
         if (!is.null(bgdata) && any(is.na(bgdata))){
             imp <- CART(X = bgdata, itermcmc = control$Bayes$itermcmc,
-                        burnin = control$Bayes$burnin, nmi = control$nmi,
+                        burnin = control$Bayes$burnin, nmi = control$ML$nmi,
                         thin = control$Bayes$thin, cartctrl1 = control$Bayes$cartctrl1,
                         cartctrl2 = control$Bayes$cartctrl2)
         } else imp <- NULL
@@ -347,7 +347,7 @@ plausible_values <- function(SC,
             if (rotation) {
             res <- TAM::designMatrices.mfr(resp = resp, facets = position,
                                            formulaA = ~ 0 + item + position,
-                                           constraint = "cases", progress = FALSE)
+                                           constraint = "cases")
             A <- res$A$A.3d
             B <- res$B$B.3d
             resp <- res$gresp$gresp.noStep
@@ -358,36 +358,18 @@ plausible_values <- function(SC,
         EAP.rel <- list()
         regr.coeff <- list()
         variance <- list()
-        eap <- replicate(control$nmi,
+        eap <- replicate(control$ML$nmi,
                          matrix(c(ID_t$ID_t, rep(0, 2*length(waves)*nrow(resp))),
                                 ncol = (1 + 2*length(waves)),
                                 nrow = nrow(resp)),
                          simplify = FALSE)
-        for (i in 1:control$nmi) {
+        for (i in 1:control$ML$nmi) {
             if (!is.null(imp)) {
                 bgdatacom <- imp[[i]]
                 bgdatacom$ID_t <- NULL
                 bgdatacom <- apply(bgdatacom, 2, as.numeric)
             }
 
-            # repeat {
-#
-#                 mod <- tryCatch(TAM::tam.mml(resp = resp,
-#                                              Y = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
-#                                              xsi.fixed = if (!longitudinal && SC == "SC6" && domain == "RE" && wave == "w5") item_diff_SC6_RE_w3 else NULL,
-#                                              A = if (rotation) A else NULL, B = if (PCM) B else NULL, Q = Q, verbose = FALSE),
-#                                 error=function(e){return(NA)})
-#                 if(any(is.na(mod)) && !is.null(bgdata)) {
-#                     bgdatacom <- CART(X = bgdata, itermcmc = control$Bayes$itermcmc,
-#                                       burnin = control$Bayes$burnin, nmi = 1,
-#                                       thin = control$Bayes$thin, cartctrl1 = control$Bayes$cartctrl1,
-#                                       cartctrl2 = control$Bayes$cartctrl2)[[1]]
-#                     bgdatacom$ID_t <- NULL
-#                     bgdatacom <- apply(bgdatacom, 2, as.numeric)
-#                 } else {
-#                     break
-#                 }
-#             }
             mod <- TAM::tam.mml(resp = resp,
                                 Y = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
                                 xsi.fixed = if (!longitudinal && SC == "SC6" && domain == "RE" && wave == "w5") item_diff_SC6_RE_w3 else NULL,
@@ -417,7 +399,7 @@ plausible_values <- function(SC,
         }
         datalist <- list()
         d <- 1
-        for (i in 1:control$nmi) {
+        for (i in 1:control$ML$nmi) {
             for (j in 1:npv) {
                 datalist[[d]] <- pvs[[i]][[j]]
                 d <- d + 1
@@ -444,7 +426,7 @@ plausible_values <- function(SC,
         }
 
         if (rotation) {
-            S <- position[, 1] + 1
+            S <- position[, 1]# + 1
         } else {
             S <- NULL
         }
