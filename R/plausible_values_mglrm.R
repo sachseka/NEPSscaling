@@ -148,9 +148,9 @@ plausible_values_mglrm <- function(
   colnames(Sigma2) <- paste0("group", 1:G)
   Alpha <- matrix(0, nrow = itermcmc, ncol = J)
   Beta <- matrix(0, nrow = itermcmc, ncol = J)
-  Kappa <- matrix(0, nrow = itermcmc, ncol = sum(QMI2))
-  accTau <- rep(0, J)
-  names(accTau) <- colnames(Y)
+  # Kappa <- matrix(0, nrow = itermcmc, ncol = sum(QMI2))
+  # accTau <- rep(0, J)
+  # names(accTau) <- colnames(Y)
   Theta <- matrix(0, nrow = itermcmc, ncol = N)
   PrecGamma0 <- solve(100*diag(KX))
   shapeSigma20 <- 1
@@ -203,9 +203,9 @@ plausible_values_mglrm <- function(
         if(runif(1) < ratio){
           TAU[[j]] <- TAUC
           KAPPA[[j]][3:Q[j]] <- cumsum(exp(TAUC))
-          if(ii > burnin){
-              accTau[j] <- accTau[j] + 1
-          }
+          # if(ii > burnin){
+          #     accTau[j] <- accTau[j] + 1
+          # }
         }
       }
       # (4)
@@ -238,9 +238,9 @@ plausible_values_mglrm <- function(
     Sigma2[ii, ] <- SIGMA2
     Alpha[ii, ] <- ALPHA
     Beta[ii, ] <- BETA
-    Kappa[ii, ] <- unlist(lapply(KAPPA[!ITEMBIN], function(x){
-      return(x[-c(1, 2, length(x))])
-    }))
+    # Kappa[ii, ] <- unlist(lapply(KAPPA[!ITEMBIN], function(x){
+    #   return(x[-c(1, 2, length(x))])
+    # }))
     Theta[ii, ] <- THETA
     # save MCMC draws
     if (ii %in% savepvs) {
@@ -264,7 +264,10 @@ plausible_values_mglrm <- function(
   else
       regr.coeff <- mean(Gamma[-bi, ])
   alpha <- colMeans(Alpha[-bi, ])
-  VAR <- colMeans(Sigma2[-bi,])
+  if (ncol(Sigma2) >1)
+      VAR <- colMeans(Sigma2[-bi,])
+  else
+      VAR <- mean(Sigma2[-bi, ])
   out <- list(datalist=datalist, EAP = EAPs, regr.coeff = regr.coeff, VAR = VAR, alpha = alpha)
   return(out)
 }

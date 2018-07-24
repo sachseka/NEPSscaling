@@ -48,7 +48,7 @@ plausible_values_mdlrm <- function(
     if (!is.null(X)) {
         X <- data.frame(X)
         ID_t <- X$ID_t
-        X <- data.matrix(X[, -which(names(X)=='ID_t')])
+        X <- X[, -which(names(X)=='ID_t')]
     }
     Y <- data.frame(Y)
     YPL1 <- Y + 1
@@ -137,13 +137,13 @@ plausible_values_mdlrm <- function(
     })
 
     Gamma <- matrix(0, nrow = itermcmc, ncol = K1X*DIM)
-    colnames(Gamma) <- colnames(XDM)
+    colnames(Gamma) <- paste0(rep(colnames(XDM), DIM), rep(1:DIM, each=ncol(XDM)))
     Sigma2 <- matrix(0, nrow = itermcmc, ncol = DIM)
     Alpha <- array(0, c(itermcmc, J, DIM))
     Beta <- matrix(0, nrow = itermcmc, ncol = J)
-    Kappa <- matrix(0, nrow = itermcmc, ncol = sum(QMI2))
-    accTau <- rep(0, J)
-    names(accTau) <- colnames(Y)
+    # Kappa <- matrix(0, nrow = itermcmc, ncol = sum(QMI2))
+    # accTau <- rep(0, J)
+    # names(accTau) <- colnames(Y)
     Theta <- array(0, c(itermcmc, N, DIM))
 
     CovXi0 <- 100*diag(2)
@@ -173,6 +173,7 @@ plausible_values_mdlrm <- function(
                 for(j in jdim[[dim]]){
                     Covitem <- solve(crossprod(XITEM[YOBS[, j], ]) + PrecXi0)
                     muitem <- Covitem%*%crossprod(XITEM[YOBS[, j], ], YLAT[YOBS[, j], j])
+                    # if (any(is.infinite(muitem)) || any(is.na(muitem))) {muitem <- matrix(c(1,0), 2, 1)}
                     XI[1, j] <- 0
                     while(XI[1, j] <= 0){
                         XI[, j] <- mvrnorm(1, muitem, Covitem)
@@ -231,9 +232,9 @@ plausible_values_mdlrm <- function(
             Sigma2[ii, ] <- diag(SIGMA)
             Alpha[ii, , ] <- ALPHA
             Beta[ii, ] <- BETA
-            Kappa[ii, ] <- unlist(lapply(KAPPA[!ITEMBIN], function(x){
-                return(x[-c(1, 2, length(x))])
-            }))
+            # Kappa[ii, ] <- unlist(lapply(KAPPA[!ITEMBIN], function(x){
+            #     return(x[-c(1, 2, length(x))])
+            # }))
             Theta[ii, , ] <- THETA
             # save MCMC draws
             if (ii %in% savepvs) {
@@ -258,15 +259,15 @@ plausible_values_mdlrm <- function(
     bi <- 1:burnin
     names(datalist) <- NULL
     if (!is.null(X))
-        EAPs <- data.frame(ID_t = ID_t, EAP = t(apply(Theta[-bi, ,], 1, colMeans)))
+        EAPs <- data.frame(ID_t = ID_t, EAP = apply(Theta[-bi,,], c(2,3), mean))
     else
-        EAPs <- data.frame(EAP = t(apply(Theta[-bi, ,], 1, colMeans)))
+        EAPs <- data.frame(EAP = apply(Theta[-bi,,], c(2,3), mean))
     alpha <- apply(Alpha[-bi, ,], c(2,3), mean)
     if (ncol(Gamma) > 1)
         regr.coeff <- colMeans(Gamma[-bi, ])
     else
         regr.coeff <- mean(Gamma[-bi, ])
-    VAR <- rowMeans(apply(Theta[-bi, ,], 1, function(x) apply(x, 2, var)))
+    VAR <- colMeans(Sigma2[-bi, ])
 
     out <- list(datalist = datalist, EAP = EAPs, regr.coeff = regr.coeff, VAR = VAR, alpha = alpha)
 

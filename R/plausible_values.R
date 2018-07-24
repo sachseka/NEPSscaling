@@ -328,7 +328,7 @@ plausible_values <- function(SC,
         } else imp <- NULL
 
         if(PCM) {
-            res <- adjustments_PCM(resp, SC, if (longitudinal) waves else wave, domain)
+            res <- adjustments_PCM(resp, SC, if (longitudinal) gsub("_", "", waves) else wave, domain)
             resp <- res$resp
             ind <- res$ind
 
@@ -343,13 +343,15 @@ plausible_values <- function(SC,
                                          resp = resp)$B
                 B[ind, , ] <- 0.5 * B[ind, , ]
             }
-        } else if (!PCM & rotation) {
+        } else {
+            if (rotation) {
             res <- TAM::designMatrices.mfr(resp = resp, facets = position,
                                            formulaA = ~ 0 + item + position,
                                            constraint = "cases", progress = FALSE)
             A <- res$A$A.3d
             B <- res$B$B.3d
             resp <- res$gresp$gresp.noStep
+            }
         }
 
         pvs <- list()
@@ -437,7 +439,7 @@ plausible_values <- function(SC,
 
         # collapse categories with N < 200
         if(PCM) {
-            res <- adjustments_PCM(resp, SC, if (longitudinal) waves else wave, domain)
+            res <- adjustments_PCM(resp, SC, if (longitudinal) gsub("_", "", waves) else wave, domain)
             resp <- res$resp
         }
 
@@ -474,12 +476,11 @@ plausible_values <- function(SC,
     }
 
 
-    # TODO: PVs auf richtige Skala verschieben
+    # linear transformation of PVs to pre-defined scale
     if (longitudinal) {
-        # TODO: named vector as input for VAR, MEAN (w3 etc.)
         if (method == "Bayes") {
             VAR <- datalist$VAR
-            MEAN <- colMeans(datalist$EAP[[grep("EAP", names(datalist$EAP), value = TRUE)]])
+            MEAN <- colMeans(datalist$EAP[, grep("EAP", names(datalist$EAP))])
         } else {
             VAR <- colMeans(do.call(rbind, lapply(variance, FUN = function (x) diag(x))))
             MEAN <- colMeans(do.call(rbind, lapply(eap, FUN = function (x) colMeans(x[, seq(2, (1+2*length(waves)), 2)]))))
@@ -522,7 +523,6 @@ plausible_values <- function(SC,
         res[["variance.theta"]] <- meanvar[[SC]][[domain]][[wave]][[type]][2]
         res[["mean.theta"]] <- meanvar[[SC]][[domain]][[wave]][[type]][1]
     }
-    # TODO: named vector as input for VAR, MEAN (w3 etc.)
     res[["variance.PV"]] <- VAR
     res[["mean.PV"]] <- MEAN
     res[['pv']] <- pv
