@@ -358,12 +358,12 @@ plausible_values <- function(SC,
         EAP.rel <- list()
         regr.coeff <- list()
         variance <- list()
-        eap <- replicate(control$ML$nmi,
+        eap <- replicate(ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi,
                          matrix(c(ID_t$ID_t, rep(0, 2*length(waves)*nrow(resp))),
                                 ncol = (1 + 2*length(waves)),
                                 nrow = nrow(resp)),
                          simplify = FALSE)
-        for (i in 1:control$ML$nmi) {
+        for (i in 1:ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi) {
             if (!is.null(imp)) {
                 bgdatacom <- imp[[i]]
                 bgdatacom$ID_t <- NULL
