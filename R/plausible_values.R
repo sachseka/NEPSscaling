@@ -243,7 +243,6 @@ plausible_values <- function(SC,
         Q <- NULL
         if (rotation) {
 
-            # TODO: position auf Mehr-Dim- und >2-Kategorien-Fälle anpassen
             position <- data.frame(ID_t = data$ID_t, position = rep(NA, nrow(data)))
 
             # construct facet to correct for rotation design
@@ -358,12 +357,12 @@ plausible_values <- function(SC,
         EAP.rel <- list()
         regr.coeff <- list()
         variance <- list()
-        eap <- replicate(ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi,
+        eap <- replicate(ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi),
                          matrix(c(ID_t$ID_t, rep(0, 2*length(waves)*nrow(resp))),
                                 ncol = (1 + 2*length(waves)),
                                 nrow = nrow(resp)),
                          simplify = FALSE)
-        for (i in 1:ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi) {
+        for (i in 1:ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi)) {
             if (!is.null(imp)) {
                 bgdatacom <- imp[[i]]
                 bgdatacom$ID_t <- NULL
@@ -372,7 +371,7 @@ plausible_values <- function(SC,
 
             mod <- TAM::tam.mml(resp = resp,
                                 Y = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
-                                xsi.fixed = if (!longitudinal && SC == "SC6" && domain == "RE" && wave == "w5") item_diff_SC6_RE_w3 else NULL,
+                                # xsi.fixed = if (!longitudinal && SC == "SC6" && domain == "RE" && wave == "w5") item_diff_SC6_RE_w3 else NULL,
                                 A = if (rotation) A else NULL, B = if (PCM || rotation) B else NULL, Q = Q, verbose = FALSE)
 
             pmod <- TAM::tam.pv(mod, nplausible = npv, ntheta = control$ML$ntheta, normal.approx = control$ML$normal.approx,
@@ -399,7 +398,7 @@ plausible_values <- function(SC,
         }
         datalist <- list()
         d <- 1
-        for (i in 1:control$ML$nmi) {
+        for (i in 1:ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi)) {
             for (j in 1:npv) {
                 datalist[[d]] <- pvs[[i]][[j]]
                 d <- d + 1
