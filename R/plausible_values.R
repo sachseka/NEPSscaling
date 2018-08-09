@@ -232,8 +232,14 @@ plausible_values <- function(SC,
         fac <- unlist(lapply(bgdata, is.factor))
         categorical <- names(bgdata)[fac]
     }
-    n.valid <- dplyr::bind_cols(data[, 'ID_t', drop = FALSE], data.frame(valid = rep(0, nrow(data))))
-    n.valid$valid <- rowSums(!is.na(data[, names(data) %in% item_labels[[SC]][[domain]][[wave]]]))
+    n.valid <- data.frame(ID_t = data[, 'ID_t'])
+    if (!longitudinal) {
+        n.valid$valid <- rowSums(!is.na(data[, names(data) %in% item_labels[[SC]][[domain]][[wave]]]))
+    } else {
+        for(w in waves) {
+            n.valid[[paste0("valid", w)]] <- rowSums(!is.na(data[, names(data) %in% item_labels[[SC]][[domain]][[gsub("_", "", w)]]]))
+        }
+    }
 
     if (longitudinal) {
         rotation <- FALSE
@@ -371,6 +377,7 @@ plausible_values <- function(SC,
 
             mod <- TAM::tam.mml(resp = resp,
                                 Y = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
+                                irtmodel = ifelse(PCM, "PCM2", "1PL"),
                                 # xsi.fixed = if (!longitudinal && SC == "SC6" && domain == "RE" && wave == "w5") item_diff_SC6_RE_w3 else NULL,
                                 A = if (rotation) A else NULL, B = if (PCM || rotation) B else NULL, Q = Q, verbose = FALSE)
 
@@ -458,6 +465,7 @@ plausible_values <- function(SC,
 
 
     # linear transformation of PVs to pre-defined scale
+    # TODO: nur längsschnittliche PVs zentrieren, alle transformieren
     if (longitudinal) {
         if (method == "Bayes") {
             VAR <- datalist$VAR
@@ -468,7 +476,22 @@ plausible_values <- function(SC,
         }
         names(VAR) <- gsub("_", "", waves)
         names(MEAN) <- gsub("_", "", waves)
+        # TODO: Verschiebung anpassen: nur longitudinales Sample zentrieren, auf alle Linkkonstante addieren
+        # longitudinales Sample über n.valid herausfinden
+        longitudinal_IDs <- dplyr::filter_all(n.valid, dplyr::all_vars(. >= nvalid))$ID_t
+        pv <- scale_pv(pv = if (method == "Bayes") datalist$datalist else datalist,
+                       SC = SC, domain = domain, type = type, wave = gsub("_", "", waves)[-1],
+                       VAR = VAR, MEAN = MEAN, ID = longitudinal_IDs)
+        for(p in seq(npv)) {
+            for(w in waves) {
+                pv[[p]][n.valid[[paste0("valid", w)]] < nvalid, paste0("PV", w)] <- NA
+            }
+        }
     } else {
+        pv <- datalist
+        for(p in seq(npv)) {
+            pv[[p]][n.valid$valid < nvalid, "PV"] <- NA
+        }
         if (method == "Bayes") {
             VAR <- sum(datalist$VAR)
             MEAN <- mean(datalist$EAP$EAP)
@@ -477,9 +500,6 @@ plausible_values <- function(SC,
             MEAN <- mean(sapply(eap, FUN = function(x) mean(x[, 2])))
         }
     }
-    pv <- scale_pv(pv = if (method == "Bayes") datalist$datalist else datalist,
-                   SC = SC, domain = domain, type = type, wave = wave,
-                   VAR = VAR, MEAN = MEAN)
 
     # output
     res <- list()
@@ -498,12 +518,13 @@ plausible_values <- function(SC,
     if (rotation)
         res[['position']] <- data.frame(ID_t, position)
     if (longitudinal){
-        res[["variance.theta"]] <- sapply(meanvar[[SC]][[domain]], FUN = function(x) x[[type]][[2]])
-        res[["mean.theta"]] <- sapply(meanvar[[SC]][[domain]], FUN = function(x) x[[type]][[1]])
-    } else {
-        res[["variance.theta"]] <- meanvar[[SC]][[domain]][[wave]][[type]][2]
-        res[["mean.theta"]] <- meanvar[[SC]][[domain]][[wave]][[type]][1]
-    }
+        # res[["variance.theta"]] <- sapply(meanvar[[SC]][[domain]], FUN = function(x) x[[2]])
+        # immer noch nicht genau der WLE-Mittelwert: überhaupt angeben?
+        res[["abs.correction"]] <- sapply(meanvar[[SC]][[domain]], FUN = function(x) x[[1]]) + unlist(sapply(gsub("_", "", waves), FUN = function(x) correction[[SC]][[domain]][[x]]))
+    } # else {
+    #     res[["variance.theta"]] <- meanvar[[SC]][[domain]][[wave]][[type]][2]
+    #     res[["mean.theta"]] <- meanvar[[SC]][[domain]][[wave]][[type]][1]
+    # }
     res[["variance.PV"]] <- VAR
     res[["mean.PV"]] <- MEAN
     res[['pv']] <- pv

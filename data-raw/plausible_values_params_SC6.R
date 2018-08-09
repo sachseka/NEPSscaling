@@ -8,14 +8,9 @@
 rm(list = ls())
 .rs.restartR()
 
-path <- '../../SUFs/SC6/'
 nvalid <- 3
 
-# files <- list.files(path = path)
-# data <- haven::read_spss(file = paste0(path, files[grep('xTargetCompetencies', files)]))
-# rm(files)
-
-data <- haven::read_sav("Z:/Projektgruppen_(08)/Kompetenzen_BA_(p000011)/Methoden/Anna/02_Anleitung_Plausible_Values/SUFs/SC6/SC6_xTargetCompetencies_D_8-0-0.sav")
+data <- haven::read_sav("Z:/Projektgruppen_(08)/Kompetenzen_BA_Hiwi_(p000012)/Methoden/Plausible Values/SUFs/SC6/SC6_xTargetCompetencies_D_8-0-0.sav")
 
 item_labels <- list(SC6 = list(RE = list(w3 = c('rea30110_c', 'rea3012s_c', 'rea30130_c', 'rea30140_c', 'rea3015s_c', 'rea30210_c'
                                                 , 'rea30220_c', 'rea30230_c', 'rea30240_c', 'rea30250_c', 'rea3028s_c', 'rea30310_c'
@@ -55,24 +50,24 @@ load(file = "data-raw/meanvar.RData")
 SC <- 'SC6'
 
 # Reading
-meanvar[[SC]][["RE"]][["w3"]][["cross"]] <- meanvar[[SC]][["RE"]][["w5"]][["cross"]] <- c(mean(data$rea3_sc1, na.rm = TRUE), 1.390)
-meanvar[[SC]][["RE"]][["w3"]][["long"]] <- meanvar[[SC]][["RE"]][["w5"]][["long"]] <- c(mean(data$rea3_sc1, na.rm = TRUE), 1.390)
-meanvar[[SC]][["RE"]][["w9"]][["cross"]] <- c(0, 1)
+# meanvar[[SC]][["RE"]][["w3"]][["cross"]] <- meanvar[[SC]][["RE"]][["w5"]][["cross"]] <- c(mean(data$rea3_sc1, na.rm = TRUE), 1.390)
+meanvar[[SC]][["RE"]][["w3"]][["long"]] <- meanvar[[SC]][["RE"]][["w5"]][["long"]] <- c(mean(data$rea3_sc1u, na.rm = TRUE), 1.390)
+# meanvar[[SC]][["RE"]][["w9"]][["cross"]] <- c(0, 1)
 meanvar[[SC]][["RE"]][["w9"]][["long"]] <- c(0, 1)
 
 # Mathematics
-meanvar[[SC]][["MA"]][["w3"]][["cross"]] <- c(mean(data$maa3_sc1, na.rm = TRUE), 1.679)
-meanvar[[SC]][["MA"]][["w3"]][["long"]] <- c(mean(data$maa3_sc1, na.rm = TRUE), 1.679)
-meanvar[[SC]][["MA"]][["w9"]][["cross"]] <- c(0, 1)
+# meanvar[[SC]][["MA"]][["w3"]][["cross"]] <- c(mean(data$maa3_sc1, na.rm = TRUE), 1.679)
+meanvar[[SC]][["MA"]][["w3"]][["long"]] <- c(mean(data$maa3_sc1u, na.rm = TRUE), 1.679)
+# meanvar[[SC]][["MA"]][["w9"]][["cross"]] <- c(0, 1)
 meanvar[[SC]][["MA"]][["w9"]][["long"]] <- c(0, 1)
 
 # Information and Communication Technology literacy
-meanvar[[SC]][["IC"]][["w5"]][["cross"]] <- c(mean(data$ica5_sc1, na.rm = TRUE), 1.26)
-meanvar[[SC]][["IC"]][["w5"]][["long"]] <- c(mean(data$ica5_sc1, na.rm = TRUE), 1.26)
+# meanvar[[SC]][["IC"]][["w5"]][["cross"]] <- c(mean(data$ica5_sc1, na.rm = TRUE), 1.26)
+meanvar[[SC]][["IC"]][["w5"]][["long"]] <- c(mean(data$ica5_sc1u, na.rm = TRUE), 1.26)
 
 # Science
-meanvar[[SC]][["SC"]][["w5"]][["cross"]] <- c(mean(data$sca5_sc1, na.rm = TRUE), 1.003)
-meanvar[[SC]][["SC"]][["w5"]][["long"]] <- c(mean(data$sca5_sc1, na.rm = TRUE), 1.003)
+# meanvar[[SC]][["SC"]][["w5"]][["cross"]] <- c(mean(data$sca5_sc1, na.rm = TRUE), 1.003)
+meanvar[[SC]][["SC"]][["w5"]][["long"]] <- c(mean(data$sca5_sc1u, na.rm = TRUE), 1.003)
 
 # Scientific thinking
 save(meanvar, file = "data-raw/meanvar.RData")

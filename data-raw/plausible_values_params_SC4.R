@@ -142,10 +142,7 @@ data <- haven::read_sav("Z:/Projektgruppen_(08)/Kompetenzen_BA_(p000011)/Methode
 SC <- 'SC4'
 
 # Reading
-meanvar[[SC]][["RE"]][["w2"]][["cross"]] <- c(mean(data$reg9_sc1, na.rm = TRUE), 1.373)
-meanvar[[SC]][["RE"]][["w2"]][["long"]] <- c(mean(data$reg9_sc1u, na.rm = TRUE), 1.373)
-meanvar[[SC]][["RE"]][["w7"]][["cross"]] <- c(mean(data$reg12_sc1, na.rm = TRUE), 0.829)
-meanvar[[SC]][["RE"]][["w7"]][["long"]] <- c(mean(data$reg12_sc1u, na.rm = TRUE), 0.829)
+meanvar[[SC]][["RE"]][["w7"]] <- c(0.045, 0.829)#c(mean(data$reg12_sc1u, na.rm = TRUE), 0.829)
 
 # Mathematics
 
@@ -157,10 +154,19 @@ meanvar[[SC]][["RE"]][["w7"]][["long"]] <- c(mean(data$reg12_sc1u, na.rm = TRUE)
 
 # Native Turkish
 
-# Enlish as a foreign language
+# English as a foreign language
 
 # Scientific thinking
+
 save(meanvar, file = "data-raw/meanvar.RData")
+
+# Corrections because of dropout etc.
+correction <- list()
+load(file = "data-raw/correction.RData")
+correction[[SC]][["RE"]][["w7"]] <- 0.487882
+correction[[SC]][["RE"]][["w10"]] <- c(0,0)
+
+save(correction, file = "data-raw/correction.RData")
 
 
 

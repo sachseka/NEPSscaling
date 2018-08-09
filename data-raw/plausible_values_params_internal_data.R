@@ -5,7 +5,7 @@
 rm(list = ls())
 
 # fixed item parameters for SC6 reading wave 5
-load(file = "data-raw/item_diff_SC6_RE_w3.RData")
+# load(file = "data-raw/item_diff_SC6_RE_w3.RData")
 
 # latent mean and variance of ability
 load(file = "data-raw/meanvar.RData")
@@ -178,6 +178,9 @@ item_labels <- list(SC4 = list(RE = list(w2 = c("reg90110_c", "reg90120_c", "reg
                                                   ,'icg9119x_sc6a5_c','ica5050s_c','icg9122x_sc6a5_c','ica5047s_c','ica5046x_c','ica5021s_c'
                                                   ,'ica5052s_c','ica5054x_c','ica5057x_c'))))
 
+# corrections
+load(file = "data-raw/correction.RData")
 
 setwd('../')
-devtools::use_data(item_labels, item_diff_SC6_RE_w3, meanvar, pkg = 'NEPStools', internal = TRUE, overwrite = TRUE)
+devtools::use_data(correction, item_labels, meanvar, pkg = 'NEPStools', internal = TRUE, overwrite = TRUE)
+# devtools::use_data(item_labels, item_diff_SC6_RE_w3, meanvar, pkg = 'NEPStools', internal = TRUE, overwrite = TRUE)
