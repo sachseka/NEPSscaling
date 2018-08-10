@@ -9,10 +9,10 @@ plausible_values(SC, domain = c("MA", "RE", "SC", "IC", "LI", "EF", "NR",
   "NT", "OR", "ST", "BA", "CD", "GR"), wave, method = c("ML", "Bayes"), path,
   filetype = c("SPSS", "Stata"), bgdata = NULL, npv = 10L,
   longitudinal = FALSE, rotation = TRUE, nvalid = 3L, control = list(EAP
-  = FALSE, WLE = FALSE, Bayes = list(itermcmc = 10000, burnin = 2000, est.alpha
-  = TRUE, thin = 1, tdf = 10, cartctrl1 = 5, cartctrl2 = 1e-04), ML = list(nmi =
-  10L, ntheta = 2000, normal.approx = FALSE, samp.regr = FALSE, theta.model =
-  FALSE, np.adj = 8, na.grid = 5)))
+  = FALSE, Bayes = list(itermcmc = 10000, burnin = 2000, est.alpha = TRUE, thin
+  = 1, tdf = 10, cartctrl1 = 5, cartctrl2 = 1e-04), ML = list(nmi = 10L, ntheta
+  = 2000, normal.approx = FALSE, samp.regr = FALSE, theta.model = FALSE, np.adj
+  = 8, na.grid = 5)))
 }
 \arguments{
 \item{SC}{numeric. The starting cohort used for the analysis is
@@ -53,20 +53,19 @@ automatically.}
 \item{nvalid}{numeric; minimum number of responses test takers had to
 give for inclusion into the estimation process. NEPS default is at least three.}
 
-\item{control}{list of additional options. If \code{EAP = TRUE} or
-\code{WLE = TRUE}, the EAPs or WLEs (only for "ML") will be returned as well.
-Furthermore, additional control options for "ML" (again in form of a list)
-are \code{nmi} (the number of multiple imputations if there is missing data
-in the covariates) and arguments concerning the ML estimation given to
-TAM::tam.pv() (therefore, see TAM for further control options). Analogously,
-control options for "Bayes" (in form of a list) are "itermcmc" (number of
-MCMC iterations), "burnin" (number of burn-in iterations), "est.alpha" (wether
-item discriminations for polytomous items are to be fixed or estimated freely),
-"thin" (thinning interval in MCMC), "tdf" (df of multiv. t proposal distr. for
-category cut-offs for ordinal items), "cartctrl1" (min. number of observations
-in any terminal CART node) and "cartctrl2" (min. decrease of overall lack of
-fit by each CART split). NOTE that "Bayes" control options are also applied
-to the CART algorithm for "ML" estimation.}
+\item{control}{list of additional options. If \code{EAP = TRUE}, the EAPs
+will be returned as well. Furthermore, additional control options for "ML"
+(again in form of a list) are \code{nmi} (the number of multiple imputations
+if there is missing data in the covariates) and arguments concerning the ML
+estimation given to TAM::tam.pv() (therefore, see TAM for further control
+options). Analogously, control options for "Bayes" (in form of a list) are
+"itermcmc" (number of MCMC iterations), "burnin" (number of burn-in iterations),
+"est.alpha" (wether item discriminations for polytomous items are to be fixed
+or estimated freely), "thin" (thinning interval in MCMC), "tdf" (df of multiv.
+t proposal distr. for category cut-offs for ordinal items), "cartctrl1" (min.
+number of observations in any terminal CART node) and "cartctrl2" (min.
+decrease of overall lack of fit by each CART split). NOTE that "Bayes" control
+options are also applied to the CART algorithm for "ML" estimation.}
 }
 \value{
 \code{plausible_values()} returns an object of class \code{pv.obj}

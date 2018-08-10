@@ -28,20 +28,19 @@
 #' should be corrected for the rotation design of the booklets. Defaults to
 #' TRUE. If both longitudinal and rotation are TRUE, rotation is set to FALSE
 #' automatically.
-#' @param control      list of additional options. If \code{EAP = TRUE} or
-#' \code{WLE = TRUE}, the EAPs or WLEs (only for "ML") will be returned as well.
-#' Furthermore, additional control options for "ML" (again in form of a list)
-#' are \code{nmi} (the number of multiple imputations if there is missing data
-#' in the covariates) and arguments concerning the ML estimation given to
-#' TAM::tam.pv() (therefore, see TAM for further control options). Analogously,
-#' control options for "Bayes" (in form of a list) are "itermcmc" (number of
-#' MCMC iterations), "burnin" (number of burn-in iterations), "est.alpha" (wether
-#' item discriminations for polytomous items are to be fixed or estimated freely),
-#' "thin" (thinning interval in MCMC), "tdf" (df of multiv. t proposal distr. for
-#' category cut-offs for ordinal items), "cartctrl1" (min. number of observations
-#' in any terminal CART node) and "cartctrl2" (min. decrease of overall lack of
-#' fit by each CART split). NOTE that "Bayes" control options are also applied
-#' to the CART algorithm for "ML" estimation.
+#' @param control      list of additional options. If \code{EAP = TRUE}, the EAPs
+#' will be returned as well. Furthermore, additional control options for "ML"
+#' (again in form of a list) are \code{nmi} (the number of multiple imputations
+#' if there is missing data in the covariates) and arguments concerning the ML
+#' estimation given to TAM::tam.pv() (therefore, see TAM for further control
+#' options). Analogously, control options for "Bayes" (in form of a list) are
+#' "itermcmc" (number of MCMC iterations), "burnin" (number of burn-in iterations),
+#' "est.alpha" (wether item discriminations for polytomous items are to be fixed
+#' or estimated freely), "thin" (thinning interval in MCMC), "tdf" (df of multiv.
+#' t proposal distr. for category cut-offs for ordinal items), "cartctrl1" (min.
+#' number of observations in any terminal CART node) and "cartctrl2" (min.
+#' decrease of overall lack of fit by each CART split). NOTE that "Bayes" control
+#' options are also applied to the CART algorithm for "ML" estimation.
 #'
 #' @return \code{plausible_values()} returns an object of class \code{pv.obj}
 #' containing a list of \code{npv} plausible values with the data set used
@@ -119,7 +118,7 @@ plausible_values <- function(SC,
     longitudinal = FALSE,
     rotation = TRUE,
     nvalid = 3L,
-    control = list(EAP = FALSE, WLE = FALSE,
+    control = list(EAP = FALSE, #WLE = FALSE,
                    Bayes = list(itermcmc = 10000, burnin = 2000, est.alpha = TRUE, thin = 1, tdf = 10,
                                cartctrl1 = 5, cartctrl2 = 0.0001),
                    ML = list(nmi = 10L, ntheta = 2000, normal.approx = FALSE, samp.regr = FALSE,
@@ -312,10 +311,10 @@ plausible_values <- function(SC,
     PCM <- max(apply(resp, 2, max, na.rm = TRUE)) > 1
 
     # complement control lists
-    res <- complement_control_lists(control$EAP, control$WLE,
+    res <- complement_control_lists(control$EAP, #control$WLE,
                                     control$Bayes, control$ML)
     control$EAP <- res$EAP
-    control$WLE <- res$WLE
+    #control$WLE <- res$WLE
     control$Bayes <- res$Bayes
     control$ML <- res$ML
 
@@ -393,16 +392,16 @@ plausible_values <- function(SC,
             regr.coeff[[i]] <- mod$beta
             variance[[i]] <- mod$variance
         }
-        if (control$WLE && !longitudinal) {
-            wmod <- TAM::tam.mml.wle2(mod, WLE = TRUE, progress = FALSE)
-            wle <- matrix(wmod$theta, nrow = length(wmod$theta), ncol = 1)
-            wle <- cbind(ID_t, wle, wmod$error)
-            colnames(wle) <- c('ID_t', 'wle', 'se')
-        } else if (control$WLE && longitudinal) {
-            wmod <- TAM::tam.mml.wle2(mod, WLE = TRUE, progress = FALSE)
-            wle <- do.call(cbind, list(ID_t, wmod[grep("theta|error", colnames(wmod))]))
-            colnames(wle) <- c('ID_t',  paste0(rep(c('wle','se'), length(waves)), rep(waves, each = 2)))
-        }
+        # if (control$WLE && !longitudinal) {
+        #     wmod <- TAM::tam.mml.wle2(mod, WLE = TRUE, progress = FALSE)
+        #     wle <- matrix(wmod$theta, nrow = length(wmod$theta), ncol = 1)
+        #     wle <- cbind(ID_t, wle, wmod$error)
+        #     colnames(wle) <- c('ID_t', 'wle', 'se')
+        # } else if (control$WLE && longitudinal) {
+        #     wmod <- TAM::tam.mml.wle2(mod, WLE = TRUE, progress = FALSE)
+        #     wle <- do.call(cbind, list(ID_t, wmod[grep("theta|error", colnames(wmod))]))
+        #     colnames(wle) <- c('ID_t',  paste0(rep(c('wle','se'), length(waves)), rep(waves, each = 2)))
+        # }
         datalist <- list()
         d <- 1
         for (i in 1:ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi)) {
@@ -537,8 +536,8 @@ plausible_values <- function(SC,
         if (control$EAP) {
             res[['eap']] <- eap
         }
-        if (control$WLE)
-            res[['wle']] <- wle
+        # if (control$WLE)
+        #     res[['wle']] <- wle
         res[['EAP.rel']] <- EAP.rel
         res[["regr.coeff"]] <- regr.coeff
     }
