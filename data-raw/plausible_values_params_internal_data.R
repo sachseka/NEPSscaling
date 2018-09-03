@@ -28,7 +28,15 @@ item_labels <- list(SC4 = list(RE = list(w2 = c("reg90110_c", "reg90120_c", "reg
                                                 "reg120610_c", "reg120620_c", "reg120630_c", "reg120640_c", "reg12065s_c",
                                                 "reg120660_c", "reg120670_c", "reg12071s_c", "reg120720_c", "reg120730_c",
                                                 "reg120740_c", "reg12075s_c"),
-                                         w10 = c()),
+                                         w10 = c("rea1001010s_c", "rea1001020s_c", "rea10010300_c", "rea1001040s_c",
+                                                 "rea1001050s_c", "rea1002010s_c", "rea10020200_c", "rea10020300_c",
+                                                 "rea10020400_c", "rea1002050s_c", "rea1002060s_c", "rea10030100_c",
+                                                 "rea10030200_c", "rea10030300_c", "rea10030400_c", "rea1003050s_c",
+                                                 "rea10030600_c", "rea1003070s_c", "rea10040100_c", "rea1004020s_c",
+                                                 "rea1004030s_c", "rea10040400_c", "rea10050100_c", "rea10050200_c",
+                                                 "rea10050300_c", "rea10050400_c", "rea10050500_c", "rea10050600_c",
+                                                 "rea10060100_c", "rea10060200_c", "rea10060300_c", "rea1006040s_c",
+                                                 "rea10070100_c", "rea10070200_c", "rea10070300_c", "rea1007040s_c")),
                                MA = list(w1 = c("mag9q071_c", "mag9v131_c", "mag9v13s_c", "mag9r261_c",
                                                 "mag9r111_c", "mag9d171_c", "mag9d151_c", "mag9r051_c",
                                                 "mag9v011_c", "mag9v012_c", "mag9q161_c", "mag9d201_c",
@@ -120,7 +128,13 @@ item_labels <- list(SC4 = list(RE = list(w2 = c("reg90110_c", "reg90120_c", "reg
                                                 "res1032s_c", "res10330_c", "res10340_c", "res10350_c",
                                                 "res10360_c", "res10370_c", "res10380_c", "res10410_c",
                                                 "res10420_c", "res1043s_c", "res10440_c", "res10450_c"),
-                                         w12 = c()),
+                                         w12 = c("res1202010s_c", "res12020200_c", "res12020300_c",
+                                                 "res1202050s_c", "res1202060s_c", "res12030100_c",
+                                                 "res12030200_c", "res12030300_c", "res12030400_c",
+                                                 "res1203050s_c", "res12030800_c", "res12040100_c",
+                                                 "res1204020s_c", "res12040500_c", "res12060100_c",
+                                                 "res12060200_c", "res12060300_c", "res1206040s_c",
+                                                 "res12070100_c", "res12070200_c", "res1207040s_c")),
                                MA = list(w1 = c("maa2q071_sc5s1_c", "mas1r092_c", "mas1v093_c",
                                                 "mas1v032_c", "maa2d131_sc5s1_c", "maa2d132_sc5s1_c",
                                                 "mas1v062_c", "mas1v063_c", "maa2r081_sc5s1_c",
@@ -161,7 +175,14 @@ item_labels <- list(SC4 = list(RE = list(w2 = c("reg90110_c", "reg90120_c", "reg
                                                   , 'rea30320_c', 'rea30330_c', 'rea30340_c', 'rea30350_c', 'rea30360_c', 'rea30370_c'
                                                   , 'rea3038s_c', 'rea30410_c', 'rea3042s_c', 'rea30430_c', 'rea30440_c', 'rea30450_c'
                                                   , 'rea30460_c', 'rea30510_c', 'rea3052s_c', 'rea30530_c', 'rea3054s_c', 'rea30550_c')
-                                         , w9 = c())
+                                         , w9 = c("rea901010s_c", "rea901020s_c", "rea9010300_c", "rea901040s_c", "rea901050s_c",
+                                                  "rea902010s_c", "rea9020200_c", "rea9020300_c", "rea9020400_c", "rea902050s_c",
+                                                  "rea902060s_c", "rea9030100_c", "rea9030200_c", "rea9030300_c", "rea9030400_c",
+                                                  "rea903050s_c", "rea9030600_c", "rea903070s_c", "rea9040100_c", "rea904020s_c",
+                                                  "rea904030s_c", "rea9040400_c", "rea9050100_c", "rea9050200_c", "rea9050300_c",
+                                                  "rea9050400_c", "rea9050500_c", "rea9050600_c", "rea9060100_c", "rea9060200_c",
+                                                  "rea9060300_c", "rea906040s_c", "rea9070100_c", "rea9070200_c", "rea9070300_c",
+                                                  "rea907040s_c"))
                                , MA = list(w3 = c('maa3q071_c', 'mag9v131_sc6a3_c', 'mag9r261_sc6a3_c', 'mag9r111_sc6a3_c'
                                                   , 'maa3d131_c', 'maa3d132_c', 'mag9r051_sc6a3_c', 'maa3d041_c', 'maa3r081_c'
                                                   , 'maa3v082_c', 'mag9d201_sc6a3_c', 'maa3r091_c', 'mag9v121_sc6a3_c'

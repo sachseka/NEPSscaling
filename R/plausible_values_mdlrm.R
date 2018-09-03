@@ -59,22 +59,36 @@ plausible_values_mdlrm <- function(
     if (SC == "SC6") {
         if (domain == "RE") {
             DIM <- 2
-            Jdim <- c(30, 35)
-            jdim <- list(1:30, 31:65)
-            jdim2 <- c(rep(1, 30), rep(2, 35))
-        } else if (domain == "MA") {
+            Jdim <- c(30, 36)
+            jdim <- list(1:30, 31:66)
+            jdim2 <- c(rep(1, 30), rep(2, 36))
+        } else if (domain == "MA") { #!
             DIM <- 2
             Jdim <- c(21, 63)
             jdim <- list(1:21, 22:84)
             jdim2 <- c(rep(1, 21), rep(2, 63))
         }
     }
-    if (SC == "SC4") {
+    if (SC == "SC5") {
         if (domain == "RE") {
             DIM <- 2
-            Jdim <- c(31, 41)
-            jdim <- list(1:31, 32:72)
-            jdim2 <- c(rep(1, 31), rep(2, 41))
+            Jdim <- c(28, 21)
+            jdim <- list(1:28, 29:49)
+            jdim2 <- c(rep(1, 28), rep(2, 21))
+        }
+        if (domain == "MA") {
+            # do something
+        }
+    }
+    if (SC == "SC4") {
+        if (domain == "RE") {
+            DIM <- 3
+            Jdim <- c(31, 41, 36)
+            jdim <- list(1:31, 32:72, 73:108)
+            jdim2 <- c(rep(1, 31), rep(2, 41), rep(3, 36))
+        }
+        if (domain == "MA") {
+            # do something
         }
     }
     Jdiminv <- 1/Jdim
