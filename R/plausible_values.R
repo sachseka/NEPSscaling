@@ -188,17 +188,7 @@ plausible_values <- function(SC,
 
     # selection of test takers
     if (longitudinal) {
-        # taking part in waves xy
-        if (SC == "SC6" & domain %in% c("RE", "MA"))
-            sel <- names(data) %in% c(item_labels[[SC]][[domain]][["w3"]], item_labels[[SC]][[domain]][["w9"]])
-        if (SC == "SC5" & domain %in% c("RE", "MA"))
-            sel <- names(data) %in% c(item_labels[[SC]][[domain]][["w1"]], item_labels[[SC]][[domain]][["w12"]])
-        if (SC == "SC4" & domain == "RE")
-            sel <- names(data) %in% c(item_labels[[SC]][[domain]][["w2"]], item_labels[[SC]][[domain]][["w7"]])
-        if (SC == "SC4" & domain == "MA")
-            sel <- names(data) %in% c(item_labels[[SC]][[domain]][["w1"]], item_labels[[SC]][[domain]][["w7"]])
-        if (SC == "SC4" & domain == "IC")
-            sel <- names(data) %in% c(item_labels[[SC]][[domain]][["w1"]], item_labels[[SC]][[domain]][["w7"]])
+        sel <- names(data) %in% unique(unlist(item_labels[[SC]][[domain]]))
         data <- data[rowSums(!is.na(data[, sel])) >= nvalid, ]
     } else {
         data <- data[rowSums(!is.na(data[, names(data) %in% item_labels[[SC]][[domain]][[wave]]])) >= nvalid, ]
