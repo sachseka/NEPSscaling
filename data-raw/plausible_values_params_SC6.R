@@ -1,46 +1,6 @@
-## Estimation of item difficulties of SC6 using TAM:
-## Robitzsch, A., Kiefer, T., & Wu, M. (2018). TAM: Test
-## analysis modules. R package version 2.9-35.
-## https://CRAN.R-project.org/package=TAM
-##
-## The item parameters are corrected for test design changes
-## and (if possible) linked to a common scale.
+## Link constants and correction terms for starting cohort 6
+
 rm(list = ls())
-.rs.restartR()
-
-nvalid <- 3
-
-data <- haven::read_sav("Z:/Projektgruppen_(08)/Kompetenzen_BA_Hiwi_(p000012)/Methoden/Plausible Values/SUFs/SC6/SC6_xTargetCompetencies_D_8-0-0.sav")
-
-item_labels <- list(SC6 = list(RE = list(w3 = c('rea30110_c', 'rea3012s_c', 'rea30130_c', 'rea30140_c', 'rea3015s_c', 'rea30210_c'
-                                                , 'rea30220_c', 'rea30230_c', 'rea30240_c', 'rea30250_c', 'rea3028s_c', 'rea30310_c'
-                                                , 'rea30320_c', 'rea30330_c', 'rea30340_c', 'rea30350_c', 'rea30360_c', 'rea30370_c'
-                                                , 'rea3038s_c', 'rea30410_c', 'rea3042s_c', 'rea30430_c', 'rea30440_c', 'rea30450_c'
-                                                , 'rea30460_c', 'rea30510_c', 'rea3052s_c', 'rea30530_c', 'rea3054s_c', 'rea30550_c')
-                                         , w5 = c('rea30110_c', 'rea3012s_c', 'rea30130_c', 'rea30140_c', 'rea3015s_c', 'rea30210_c'
-                                                  , 'rea30220_c', 'rea30230_c', 'rea30240_c', 'rea30250_c', 'rea3028s_c', 'rea30310_c'
-                                                  , 'rea30320_c', 'rea30330_c', 'rea30340_c', 'rea30350_c', 'rea30360_c', 'rea30370_c'
-                                                  , 'rea3038s_c', 'rea30410_c', 'rea3042s_c', 'rea30430_c', 'rea30440_c', 'rea30450_c'
-                                                  , 'rea30460_c', 'rea30510_c', 'rea3052s_c', 'rea30530_c', 'rea3054s_c', 'rea30550_c')
-                                         , w9 = c())
-                               , MA = list(w3 = c('maa3q071_c', 'mag9v131_sc6a3_c', 'mag9r261_sc6a3_c', 'mag9r111_sc6a3_c'
-                                                  , 'maa3d131_c', 'maa3d132_c', 'mag9r051_sc6a3_c', 'maa3d041_c', 'maa3r081_c'
-                                                  , 'maa3v082_c', 'mag9d201_sc6a3_c', 'maa3r091_c', 'mag9v121_sc6a3_c'
-                                                  , 'maa3r121_c', 'maa3d112_c', 'maa3r011_c', 'maa3q101_c', 'mag5v321_sc6a3_c'
-                                                  , 'mag9q021_sc6a3_c', 'maa3v061_c', 'maa3q021_c'),
-                                           w9 = c())
-                               , SC = list(w5 = c('sca56120_c', 'sca56130_c', 'sca51110_c', 'sca51140_c', 'sca50410_c', 'sca5652s_c'
-                                                  , 'sca56540_c', 'sca51430_c', 'sca51440_c', 'sca50210_c', 'sca50220_c', 'sca50710_c'
-                                                  , 'sca50720_c', 'sca56310_c', 'sca56320_c', 'sca5091s_c', 'sca56020_c', 'sca56030_c'
-                                                  , 'sca50520_c', 'sca50530_c', 'sca51020_c','sca51030_c'))
-                               , IC = list(w5 = c('ica5001x_c','ica5003x_c','ica5005x_c','ica5004s_c','ica5006x_c','ica5007x_c','ica5008x_c'
-                                                  ,'ica5010x_c','ica5017s_c','ica5018s_c','ica5015s_c','ica5019x_c','ica5016s_c','ica5020s_c'
-                                                  ,'ica5023x_c','ica5027x_c','ica5026x_c','ica5029x_c','ica5028x_c','ica5030x_c'
-                                                  ,'icg9119x_sc6a5_c','ica5050s_c','icg9122x_sc6a5_c','ica5047s_c','ica5046x_c','ica5021s_c'
-                                                  ,'ica5052s_c','ica5054x_c','ica5057x_c'))))
-
-# select test takers
-data <- data[order(data$ID_t), ]
 
 # output object
 meanvar <- list()
@@ -50,26 +10,18 @@ load(file = "data-raw/meanvar.RData")
 SC <- 'SC6'
 
 # Reading
-# meanvar[[SC]][["RE"]][["w3"]][["cross"]] <- meanvar[[SC]][["RE"]][["w5"]][["cross"]] <- c(mean(data$rea3_sc1, na.rm = TRUE), 1.390)
-meanvar[[SC]][["RE"]][["w3"]][["long"]] <- meanvar[[SC]][["RE"]][["w5"]][["long"]] <- c(mean(data$rea3_sc1u, na.rm = TRUE), 1.390)
-# meanvar[[SC]][["RE"]][["w9"]][["cross"]] <- c(0, 1)
-meanvar[[SC]][["RE"]][["w9"]][["long"]] <- c(0, 1)
+meanvar[[SC]][["RE"]][["w9"]] <- c(-0.104688810504687, 0.8320544)
 
 # Mathematics
-# meanvar[[SC]][["MA"]][["w3"]][["cross"]] <- c(mean(data$maa3_sc1, na.rm = TRUE), 1.679)
-meanvar[[SC]][["MA"]][["w3"]][["long"]] <- c(mean(data$maa3_sc1u, na.rm = TRUE), 1.679)
-# meanvar[[SC]][["MA"]][["w9"]][["cross"]] <- c(0, 1)
-meanvar[[SC]][["MA"]][["w9"]][["long"]] <- c(0, 1)
+meanvar[[SC]][["MA"]][["w9"]] <- c(-0.1109509, 1.16) #! im technical report: pcm$all$mod: 1.23277
 
 # Information and Communication Technology literacy
-# meanvar[[SC]][["IC"]][["w5"]][["cross"]] <- c(mean(data$ica5_sc1, na.rm = TRUE), 1.26)
-meanvar[[SC]][["IC"]][["w5"]][["long"]] <- c(mean(data$ica5_sc1u, na.rm = TRUE), 1.26)
+meanvar[[SC]][["IC"]][["w5"]] <- c(0, 1) #!
 
 # Science
-# meanvar[[SC]][["SC"]][["w5"]][["cross"]] <- c(mean(data$sca5_sc1, na.rm = TRUE), 1.003)
-meanvar[[SC]][["SC"]][["w5"]][["long"]] <- c(mean(data$sca5_sc1u, na.rm = TRUE), 1.003)
+meanvar[[SC]][["SC"]][["w5"]] <- c(0, 1) #!
 
-# Scientific thinking
+# Save output object
 save(meanvar, file = "data-raw/meanvar.RData")
 
 

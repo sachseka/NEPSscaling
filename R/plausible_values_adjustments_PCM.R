@@ -29,11 +29,45 @@ adjustments_PCM <- function (resp, SC, wave, domain) {
               # }
                 if (w == "w9") {
                     # collapse categories
+                    resp$rea901010s_c[resp$rea901010s_c == 1] <- 0
+                    resp$rea901010s_c[resp$rea901010s_c == 2] <- 1
+                    resp$rea901010s_c[resp$rea901010s_c == 3] <- 2
+                    resp$rea901010s_c[resp$rea901010s_c == 4] <- 3
+                    resp$rea902060s_c[resp$rea902060s_c == 4] <- 3
+                    resp$rea904030s_c[resp$rea904030s_c == 1] <- 0
+                    resp$rea904030s_c[resp$rea904030s_c == 2] <- 1
+                    resp$rea904030s_c[resp$rea904030s_c == 3] <- 2
+                    resp$rea904030s_c[resp$rea904030s_c == 4] <- 3
+                    resp$rea904030s_c[resp$rea904030s_c == 5] <- 4
                 }
             }
             if (domain == "MA") {
                 if (w == "w9") {
                     # collapse categories
+                    resp$maa9v28s_c[resp$maa9v28s_c %in% c(0,1,2,3)] <- 0
+                    resp$maa9v28s_c[resp$maa9v28s_c %in% c(4,5,6)] <- 1
+                    resp$maa9v27s_c[resp$maa9v27s_c == 1] <- 0
+                    resp$maa9v27s_c[resp$maa9v27s_c == 2] <- 1
+                    resp$maa9v27s_c[resp$maa9v27s_c == 3] <- 2
+                    resp$maa9r26s_c[resp$maa9r26s_c == 1] <- 0
+                    resp$maa9r26s_c[resp$maa9r26s_c == 2] <- 1
+                    resp$maa9r26s_c[resp$maa9r26s_c == 3] <- 2
+                    resp$maa9r26s_c[resp$maa9r26s_c == 4] <- 3
+                    resp$maa9d23s_c[resp$maa9d23s_c == 1] <- 0
+                    resp$maa9d23s_c[resp$maa9d23s_c == 2] <- 1
+                    resp$maa9r18s_c[resp$maa9r18s_c == 2] <- 1
+                    resp$maa9d13s_c[resp$maa9d13s_c %in% c(1,2,3)] <- 0
+                    resp$maa9d13s_c[resp$maa9d13s_c == 4] <- 1
+                    resp$maa9d13s_c[resp$maa9d13s_c %in% c(5,6)] <- 2
+                    resp$maa9d09s_c[resp$maa9d09s_c == 1] <- 0
+                    resp$maa9d09s_c[resp$maa9d09s_c == 2] <- 1
+                    resp$maa9d09s_c[resp$maa9d09s_c == 3] <- 2
+                    resp$maa9d09s_c[resp$maa9d09s_c == 4] <- 3
+                    resp$maa9d09s_c[resp$maa9d09s_c == 5] <- 4
+                    resp$maa9v07s_c[resp$maa9v07s_c == 2] <- 1
+                    resp$maa9r03s_c[resp$maa9r03s_c == 1] <- 0
+                    resp$maa9r03s_c[resp$maa9r03s_c == 2] <- 1
+                    resp$maa9r03s_c[resp$maa9r03s_c == 3] <- 2
                 }
             }
             if (domain == 'IC') {
@@ -90,6 +124,16 @@ adjustments_PCM <- function (resp, SC, wave, domain) {
             # reading w1 already collapsed in SUF
                 if (w == "w12") {
                     # collapse categories
+                    resp$res1201010s_c[resp$res1201010s_c == 1] <- 0
+                    resp$res1201010s_c[resp$res1201010s_c == 2] <- 1
+                    resp$res1201010s_c[resp$res1201010s_c == 3] <- 2
+                    resp$res1201010s_c[resp$res1201010s_c == 4] <- 3
+                    resp$res1202060s_c[resp$res1202060s_c == 4] <- 3
+                    resp$res1204030s_c[resp$res1204030s_c == 1] <- 0
+                    resp$res1204030s_c[resp$res1204030s_c == 2] <- 1
+                    resp$res1204030s_c[resp$res1204030s_c == 3] <- 2
+                    resp$res1204030s_c[resp$res1204030s_c == 4] <- 3
+                    resp$res1204030s_c[resp$res1204030s_c == 5] <- 4
                 }
             }
             if (domain == 'MA') {
@@ -100,6 +144,30 @@ adjustments_PCM <- function (resp, SC, wave, domain) {
                 }
                 if (w == "w12") {
                     # collapse categories
+                    resp$mas12v28s_c[resp$mas12v28s_c %in% c(0,1,2,3)] <- 0
+                    resp$mas12v28s_c[resp$mas12v28s_c %in% c(4,5,6)] <- 1
+                    resp$mas12v27s_c[resp$mas12v27s_c == 1] <- 0
+                    resp$mas12v27s_c[resp$mas12v27s_c == 2] <- 1
+                    resp$mas12v27s_c[resp$mas12v27s_c == 3] <- 2
+                    resp$mas12r26s_c[resp$mas12r26s_c == 1] <- 0
+                    resp$mas12r26s_c[resp$mas12r26s_c == 2] <- 1
+                    resp$mas12r26s_c[resp$mas12r26s_c == 3] <- 2
+                    resp$mas12r26s_c[resp$mas12r26s_c == 4] <- 3
+                    resp$mas12d23s_c[resp$mas12d23s_c == 1] <- 0
+                    resp$mas12d23s_c[resp$mas12d23s_c == 2] <- 1
+                    resp$mas12r18s_c[resp$mas12r18s_c == 2] <- 1
+                    resp$mas12d13s_c[resp$mas12d13s_c %in% c(1,2,3)] <- 0
+                    resp$mas12d13s_c[resp$mas12d13s_c == 4] <- 1
+                    resp$mas12d13s_c[resp$mas12d13s_c %in% c(5,6)] <- 2
+                    resp$mas12d09s_c[resp$mas12d09s_c == 1] <- 0
+                    resp$mas12d09s_c[resp$mas12d09s_c == 2] <- 1
+                    resp$mas12d09s_c[resp$mas12d09s_c == 3] <- 2
+                    resp$mas12d09s_c[resp$mas12d09s_c == 4] <- 3
+                    resp$mas12d09s_c[resp$mas12d09s_c == 5] <- 4
+                    resp$mas12v07s_c[resp$mas12v07s_c == 2] <- 1
+                    resp$mas12r03s_c[resp$mas12r03s_c == 1] <- 0
+                    resp$mas12r03s_c[resp$mas12r03s_c == 2] <- 1
+                    resp$mas12r03s_c[resp$mas12r03s_c == 3] <- 2
                 }
             } else if (domain == 'IC') {
                 resp$ics3002s_c[resp$ics3002s_c == 1] <- 0
@@ -180,6 +248,18 @@ adjustments_PCM <- function (resp, SC, wave, domain) {
                     resp$reg12075s_c[resp$reg12075s_c == 2] <- 1
                     resp$reg12075s_c[resp$reg12075s_c == 3] <- 2
                 }
+                if (w == "w10") {
+                    resp$rea1001010s_c[resp$rea1001010s_c == 1] <- 0
+                    resp$rea1001010s_c[resp$rea1001010s_c == 2] <- 1
+                    resp$rea1001010s_c[resp$rea1001010s_c == 3] <- 2
+                    resp$rea1001010s_c[resp$rea1001010s_c == 4] <- 3
+                    resp$rea1002060s_c[resp$rea1002060s_c == 4] <- 3
+                    resp$rea1004030s_c[resp$rea1004030s_c == 1] <- 0
+                    resp$rea1004030s_c[resp$rea1004030s_c == 2] <- 1
+                    resp$rea1004030s_c[resp$rea1004030s_c == 3] <- 2
+                    resp$rea1004030s_c[resp$rea1004030s_c == 4] <- 3
+                    resp$rea1004030s_c[resp$rea1004030s_c == 5] <- 4
+                }
             } else if (domain == 'MA') {
                 #math w1 already collapsed in SUF
                 if (w == 'w7') {
@@ -187,6 +267,33 @@ adjustments_PCM <- function (resp, SC, wave, domain) {
                     resp$mas1q02s_sc4g12_c[resp$mas1q02s_sc4g12_c == 2] <- 1
                     resp$mas1q02s_sc4g12_c[resp$mas1q02s_sc4g12_c == 3] <- 2
                     resp$mas1q02s_sc4g12_c[resp$mas1q02s_sc4g12_c == 4] <- 3
+                }
+                if (w == "w10") {
+                    # collapse categories
+                    resp$maa10v28s_c[resp$maa10v28s_c %in% c(0,1,2,3)] <- 0
+                    resp$maa10v28s_c[resp$maa10v28s_c %in% c(4,5,6)] <- 1
+                    resp$maa10v27s_c[resp$maa10v27s_c == 1] <- 0
+                    resp$maa10v27s_c[resp$maa10v27s_c == 2] <- 1
+                    resp$maa10v27s_c[resp$maa10v27s_c == 3] <- 2
+                    resp$maa10r26s_c[resp$maa10r26s_c == 1] <- 0
+                    resp$maa10r26s_c[resp$maa10r26s_c == 2] <- 1
+                    resp$maa10r26s_c[resp$maa10r26s_c == 3] <- 2
+                    resp$maa10r26s_c[resp$maa10r26s_c == 4] <- 3
+                    resp$maa10d23s_c[resp$maa10d23s_c == 1] <- 0
+                    resp$maa10d23s_c[resp$maa10d23s_c == 2] <- 1
+                    resp$maa10r18s_c[resp$maa10r18s_c == 2] <- 1
+                    resp$maa10d13s_c[resp$maa10d13s_c %in% c(1,2,3)] <- 0
+                    resp$maa10d13s_c[resp$maa10d13s_c == 4] <- 1
+                    resp$maa10d13s_c[resp$maa10d13s_c %in% c(5,6)] <- 2
+                    resp$maa10d09s_c[resp$maa10d09s_c == 1] <- 0
+                    resp$maa10d09s_c[resp$maa10d09s_c == 2] <- 1
+                    resp$maa10d09s_c[resp$maa10d09s_c == 3] <- 2
+                    resp$maa10d09s_c[resp$maa10d09s_c == 4] <- 3
+                    resp$maa10d09s_c[resp$maa10d09s_c == 5] <- 4
+                    resp$maa10v07s_c[resp$maa10v07s_c == 2] <- 1
+                    resp$maa10r03s_c[resp$maa10r03s_c == 1] <- 0
+                    resp$maa10r03s_c[resp$maa10r03s_c == 2] <- 1
+                    resp$maa10r03s_c[resp$maa10r03s_c == 3] <- 2
                 }
             } else if (domain == 'IC') {
                 if(w == 'w1') {

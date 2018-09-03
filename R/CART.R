@@ -55,9 +55,6 @@ CART <- function(
         X[XMIS[, k], k] <- sample(X[XOBS[, k], k], sum(XMIS[, k]), replace = TRUE)
     }
 
-    XDM <- model.matrix(~., as.data.frame(X))[,-1]
-    KX <- ncol(XDM)
-    XX <- crossprod(XDM)
     savemis <- sort(sample((burnin+1):itermcmc, nmi))
     datalist <- vector('list', nmi)
     names(datalist) <- paste0('Iteration', savemis)
@@ -66,8 +63,6 @@ CART <- function(
     for(ii in 1:itermcmc){
         for(iii in 1:thin){
             X <- seqcart(X, xmisord, XOBS, XMIS, cartctrl1, cartctrl2)
-            XDM <- model.matrix(~., as.data.frame(X))[,-1]
-            XX <- crossprod(XDM)
         }
         # save CART draws
         if (ii %in% savemis) {

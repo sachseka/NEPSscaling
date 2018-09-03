@@ -127,6 +127,7 @@ plausible_values <- function(SC,
     .<-NULL
     # check and prepare arguments
     if (missing(SC)) stop("Starting cohort must be specified.")
+    if (!is.numeric(SC) || !is.numeric(wave)) stop("Starting cohort and wave must be numeric.")
     SC <- paste0("SC", SC)
     if (!longitudinal && missing(wave)) {
         stop("Wave must be specified for cross-sectional modeling.")
@@ -150,8 +151,17 @@ plausible_values <- function(SC,
         if (SC == "SC5" && domain %in% c("RE", "MA")) {
             waves <- c("_w1", "_w12")
         }
-        if (SC == "SC4" && domain %in% c("RE", "MA", "IC")) {
-            waves <- c("_w2", "_w7")
+        if (SC == "SC4") {
+            if (domain == "RE")
+                waves <- c("_w2", "_w7", "_w10")
+            if (domain == "MA")
+                waves <- c("_w1", "_w7", "_w10")
+            if (domain == "IC")
+                waves <- c("_w1", "_w7")
+            if (domain == "SC")
+                waves <- c("_w1", "_w5")
+            if (domain == "EF")
+                waves <- c("_w3", "_w7")
         }
     } else {
         type <- 'cross'
@@ -463,8 +473,7 @@ plausible_values <- function(SC,
     }
 
 
-    # linear transformation of PVs to pre-defined scale
-    # TODO: nur längsschnittliche PVs zentrieren, alle transformieren
+    # linear transformation of longitudinal PVs to pre-defined scale
     if (longitudinal) {
         if (method == "Bayes") {
             VAR <- datalist$VAR
@@ -475,8 +484,6 @@ plausible_values <- function(SC,
         }
         names(VAR) <- gsub("_", "", waves)
         names(MEAN) <- gsub("_", "", waves)
-        # TODO: Verschiebung anpassen: nur longitudinales Sample zentrieren, auf alle Linkkonstante addieren
-        # longitudinales Sample über n.valid herausfinden
         longitudinal_IDs <- dplyr::filter_all(n.valid, dplyr::all_vars(. >= nvalid))$ID_t
         pv <- scale_pv(pv = if (method == "Bayes") datalist$datalist else datalist,
                        SC = SC, domain = domain, type = type, wave = gsub("_", "", waves)[-1],
@@ -517,13 +524,8 @@ plausible_values <- function(SC,
     if (rotation)
         res[['position']] <- data.frame(ID_t, position)
     if (longitudinal){
-        # res[["variance.theta"]] <- sapply(meanvar[[SC]][[domain]], FUN = function(x) x[[2]])
-        # immer noch nicht genau der WLE-Mittelwert: überhaupt angeben?
         res[["abs.correction"]] <- sapply(meanvar[[SC]][[domain]], FUN = function(x) x[[1]]) + unlist(sapply(gsub("_", "", waves), FUN = function(x) correction[[SC]][[domain]][[x]]))
-    } # else {
-    #     res[["variance.theta"]] <- meanvar[[SC]][[domain]][[wave]][[type]][2]
-    #     res[["mean.theta"]] <- meanvar[[SC]][[domain]][[wave]][[type]][1]
-    # }
+    }
     res[["variance.PV"]] <- VAR
     res[["mean.PV"]] <- MEAN
     res[['pv']] <- pv
