@@ -62,11 +62,11 @@ plausible_values_mdlrm <- function(
             Jdim <- c(30, 36)
             jdim <- list(1:30, 31:66)
             jdim2 <- c(rep(1, 30), rep(2, 36))
-        } else if (domain == "MA") { #!
+        } else if (domain == "MA") {
             DIM <- 2
-            Jdim <- c(21, 63)
-            jdim <- list(1:21, 22:84)
-            jdim2 <- c(rep(1, 21), rep(2, 63))
+            Jdim <- c(21, 64)
+            jdim <- list(1:21, 22:85)
+            jdim2 <- c(rep(1, 21), rep(2, 64))
         }
     }
     if (SC == "SC5") {

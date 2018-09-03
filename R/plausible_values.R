@@ -281,6 +281,10 @@ plausible_values <- function(SC,
                     # reading first (i.e. "new" SC6 sample) should be marked with 249 (not found in SUF)
                     if (domain == "RE")
                         position[is.na(position$position), 'position'] <- 3 # reading first; should not occur for IC/SC tests
+                } else if (wave == "w9") {
+                    position[, 'position'] <- data[, 'tx80211_w9']
+                    position[!is.na(position$position) & position$position %in% c(444,445,448,449,452:455), 'position'] <- 1 # reading first
+                    position[!is.na(position$position) & position$position %in% c(446,447,450,451,456,457), 'position'] <- 2 # math first
                 }
             }
             # possible NAs in position variable treated as third group
