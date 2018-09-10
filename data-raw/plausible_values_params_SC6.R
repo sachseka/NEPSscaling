@@ -10,7 +10,9 @@ load(file = "data-raw/meanvar.RData")
 SC <- 'SC6'
 
 # Reading
-meanvar[[SC]][["RE"]][["w9"]] <- c(-0.104688810504687, 0.8320544)
+# meanvar[[SC]][["RE"]][["w9"]] <- c(-0.104688810504687, 0.8320544)
+meanvar[[SC]][["RE"]][["w9"]][["B67"]] <- c(-0.1628752, 0.8320544)
+meanvar[[SC]][["RE"]][["w9"]][["B69"]] <- c(-0.01327258, 0.8320544)
 
 # Mathematics
 meanvar[[SC]][["MA"]][["w9"]] <- c(-0.1109509, 1.16) #! im technical report: pcm$all$mod: 1.23277

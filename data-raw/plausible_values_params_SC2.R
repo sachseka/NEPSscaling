@@ -13,15 +13,15 @@ meanvar[[SC]][["RE"]][["w6"]] <- c(-0.567, 1.536)
 # Mathematics
 meanvar[[SC]][["MA"]][["w2"]] <- c(0, 1.087) #!
 meanvar[[SC]][["MA"]][["w3"]] <- c(1.3522, 0.967)
-meanvar[[SC]][["MA"]][["w4"]] <- c(0, 1) #!
+meanvar[[SC]][["MA"]][["w4"]] <- c(-0.003803296, 1) #!
 meanvar[[SC]][["MA"]][["w6"]] <- c(0, 1) #!
 
 # Information and Communication Technology literacy
 meanvar[[SC]][["IC"]][["w5"]] <- c(0, 0.24) #!
 
 # Science
-meanvar[[SC]][["SC"]][["w3"]] <- c(0,1) #!
-meanvar[[SC]][["SC"]][["w5"]] <- c(0,1) #!
+meanvar[[SC]][["SC"]][["w3"]] <- c(0.2875, 0.635) #!
+meanvar[[SC]][["SC"]][["w5"]] <- c(0.0132, 1) #!
 
 # Native Russian
 meanvar[[SC]][["NR"]][["w4"]] <- c(0,1) #!

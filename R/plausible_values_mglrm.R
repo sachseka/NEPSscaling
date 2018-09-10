@@ -177,6 +177,7 @@ plausible_values_mglrm <- function(
       for (j in 1:J) {
         Covitem <- solve(crossprod(Xitem[YOBS[, j], ]) + PrecXi0)
         muitem <- Covitem%*%crossprod(Xitem[YOBS[, j], ], YLAT[YOBS[, j], j])
+        # if (any(is.infinite(muitem)) || any(is.na(muitem))) {muitem <- matrix(c(1,0), 2, 1)} # otherwise while will crash
         XI[1, j] <- 0
         while(XI[1, j] <= 0){
           XI[, j] <- rmvnorm(1, muitem, Covitem)
@@ -255,19 +256,19 @@ plausible_values_mglrm <- function(
   close(pb)
   names(datalist) <- NULL
   bi <- 1:burnin
-  if (!is.null(X))
+  if (!is.null(X)){
       EAPs <- data.frame(ID_t = ID_t, EAP = colMeans(Theta[-bi, ]))
-  else
-      EAPs <- data.frame(EAP = colMeans(Theta[-bi, ]))
-  if (ncol(Gamma) > 1)
+  }else{
+      EAPs <- data.frame(EAP = colMeans(Theta[-bi, ]))}
+  if (ncol(Gamma) > 1){
       regr.coeff <- colMeans(Gamma[-bi, ])
-  else
-      regr.coeff <- mean(Gamma[-bi, ])
+  }else{
+      regr.coeff <- mean(Gamma[-bi, ])}
   alpha <- colMeans(Alpha[-bi, ])
-  if (ncol(Sigma2) >1)
+  if (ncol(Sigma2) >1){
       VAR <- colMeans(Sigma2[-bi,])
-  else
-      VAR <- mean(Sigma2[-bi, ])
+  }else{
+      VAR <- mean(Sigma2[-bi, ])}
   out <- list(datalist=datalist, EAP = EAPs, regr.coeff = regr.coeff, VAR = VAR, alpha = alpha)
   return(out)
 }

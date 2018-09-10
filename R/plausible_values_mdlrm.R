@@ -64,9 +64,9 @@ plausible_values_mdlrm <- function(
             jdim2 <- c(rep(1, 30), rep(2, 36))
         } else if (domain == "MA") {
             DIM <- 2
-            Jdim <- c(21, 64)
-            jdim <- list(1:21, 22:85)
-            jdim2 <- c(rep(1, 21), rep(2, 64))
+            Jdim <- c(21, 52)
+            jdim <- list(1:21, 22:73)
+            jdim2 <- c(rep(1, 21), rep(2, 52))
         }
     }
     if (SC == "SC5") {
@@ -187,7 +187,6 @@ plausible_values_mdlrm <- function(
                 for(j in jdim[[dim]]){
                     Covitem <- solve(crossprod(XITEM[YOBS[, j], ]) + PrecXi0)
                     muitem <- Covitem%*%crossprod(XITEM[YOBS[, j], ], YLAT[YOBS[, j], j])
-                    # if (any(is.infinite(muitem)) || any(is.na(muitem))) {muitem <- matrix(c(1,0), 2, 1)}
                     XI[1, j] <- 0
                     while(XI[1, j] <= 0){
                         XI[, j] <- mvrnorm(1, muitem, Covitem)

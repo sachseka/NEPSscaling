@@ -14,7 +14,7 @@ meanvar[[SC]][["RE"]][["w7"]] <- c(0.045, 0.829)
 meanvar[[SC]][["RE"]][["w10"]] <- c(0.049406366423006+0.045, 0.8320544)
 
 # Mathematics
-meanvar[[SC]][["MA"]][["w7"]] <- c(0.496, 0.989)
+meanvar[[SC]][["MA"]][["w7"]] <- c(0.496, 0.989) # c=0.5162951 über R-Code
 meanvar[[SC]][["MA"]][["w10"]] <- c(0.3194437+0.496, 1.16)
 
 # Information and Communication Technology literacy
@@ -31,10 +31,10 @@ meanvar[[SC]][["NT"]][["w2"]] <- c(0,1) #!
 
 # English as a foreign language
 meanvar[[SC]][["EF"]][["w3"]] <- c(0, 1.88) #!
-meanvar[[SC]][["EF"]][["w7"]] <- c(0, 1.70) #!
+meanvar[[SC]][["EF"]][["w7"]] <- c(0, 1.6957) #!
 
 # Scientific thinking
-meanvar[[SC]][["ST"]][["w"]] <- c(0,1) #!
+meanvar[[SC]][["ST"]][["w7"]] <- c(0,1) #!
 
 save(meanvar, file = "data-raw/meanvar.RData")
 

@@ -29,16 +29,16 @@ adjustments_PCM <- function (resp, SC, wave, domain) {
               # }
                 if (w == "w9") {
                     # collapse categories
-                    resp$rea901010s_c[resp$rea901010s_c == 1] <- 0
-                    resp$rea901010s_c[resp$rea901010s_c == 2] <- 1
-                    resp$rea901010s_c[resp$rea901010s_c == 3] <- 2
-                    resp$rea901010s_c[resp$rea901010s_c == 4] <- 3
-                    resp$rea902060s_c[resp$rea902060s_c == 4] <- 3
-                    resp$rea904030s_c[resp$rea904030s_c == 1] <- 0
-                    resp$rea904030s_c[resp$rea904030s_c == 2] <- 1
-                    resp$rea904030s_c[resp$rea904030s_c == 3] <- 2
-                    resp$rea904030s_c[resp$rea904030s_c == 4] <- 3
-                    resp$rea904030s_c[resp$rea904030s_c == 5] <- 4
+                    resp$rea90101s_c[resp$rea90101s_c == 1] <- 0
+                    resp$rea90101s_c[resp$rea90101s_c == 2] <- 1
+                    resp$rea90101s_c[resp$rea90101s_c == 3] <- 2
+                    resp$rea90101s_c[resp$rea90101s_c == 4] <- 3
+                    resp$rea90206s_c[resp$rea90206s_c == 4] <- 3
+                    resp$rea90403s_c[resp$rea90403s_c == 1] <- 0
+                    resp$rea90403s_c[resp$rea90403s_c == 2] <- 1
+                    resp$rea90403s_c[resp$rea90403s_c == 3] <- 2
+                    resp$rea90403s_c[resp$rea90403s_c == 4] <- 3
+                    resp$rea90403s_c[resp$rea90403s_c == 5] <- 4
                 }
             }
             if (domain == "MA") {
@@ -53,9 +53,6 @@ adjustments_PCM <- function (resp, SC, wave, domain) {
                     resp$maa9r26s_c[resp$maa9r26s_c == 2] <- 1
                     resp$maa9r26s_c[resp$maa9r26s_c == 3] <- 2
                     resp$maa9r26s_c[resp$maa9r26s_c == 4] <- 3
-                    resp$maa9d23s_c[resp$maa9d23s_c == 1] <- 0
-                    resp$maa9d23s_c[resp$maa9d23s_c == 2] <- 1
-                    resp$maa9r18s_c[resp$maa9r18s_c == 2] <- 1
                     resp$maa9d13s_c[resp$maa9d13s_c %in% c(1,2,3)] <- 0
                     resp$maa9d13s_c[resp$maa9d13s_c == 4] <- 1
                     resp$maa9d13s_c[resp$maa9d13s_c %in% c(5,6)] <- 2
@@ -124,16 +121,17 @@ adjustments_PCM <- function (resp, SC, wave, domain) {
             # reading w1 already collapsed in SUF
                 if (w == "w12") {
                     # collapse categories
-                    resp$res1201010s_c[resp$res1201010s_c == 1] <- 0
-                    resp$res1201010s_c[resp$res1201010s_c == 2] <- 1
-                    resp$res1201010s_c[resp$res1201010s_c == 3] <- 2
-                    resp$res1201010s_c[resp$res1201010s_c == 4] <- 3
-                    resp$res1202060s_c[resp$res1202060s_c == 4] <- 3
-                    resp$res1204030s_c[resp$res1204030s_c == 1] <- 0
-                    resp$res1204030s_c[resp$res1204030s_c == 2] <- 1
-                    resp$res1204030s_c[resp$res1204030s_c == 3] <- 2
-                    resp$res1204030s_c[resp$res1204030s_c == 4] <- 3
-                    resp$res1204030s_c[resp$res1204030s_c == 5] <- 4
+                    # TODO: change to correct item names
+                    resp$res120101s_c[resp$res120101s_c == 1] <- 0
+                    resp$res120101s_c[resp$res120101s_c == 2] <- 1
+                    resp$res120101s_c[resp$res120101s_c == 3] <- 2
+                    resp$res120101s_c[resp$res120101s_c == 4] <- 3
+                    resp$res120206s_c[resp$res120206s_c == 4] <- 3
+                    resp$res120403s_c[resp$res120403s_c == 1] <- 0
+                    resp$res120403s_c[resp$res120403s_c == 2] <- 1
+                    resp$res120403s_c[resp$res120403s_c == 3] <- 2
+                    resp$res120403s_c[resp$res120403s_c == 4] <- 3
+                    resp$res120403s_c[resp$res120403s_c == 5] <- 4
                 }
             }
             if (domain == 'MA') {
@@ -144,6 +142,7 @@ adjustments_PCM <- function (resp, SC, wave, domain) {
                 }
                 if (w == "w12") {
                     # collapse categories
+                    # TODO: check correct item names
                     resp$mas12v28s_c[resp$mas12v28s_c %in% c(0,1,2,3)] <- 0
                     resp$mas12v28s_c[resp$mas12v28s_c %in% c(4,5,6)] <- 1
                     resp$mas12v27s_c[resp$mas12v27s_c == 1] <- 0
@@ -249,16 +248,17 @@ adjustments_PCM <- function (resp, SC, wave, domain) {
                     resp$reg12075s_c[resp$reg12075s_c == 3] <- 2
                 }
                 if (w == "w10") {
-                    resp$rea1001010s_c[resp$rea1001010s_c == 1] <- 0
-                    resp$rea1001010s_c[resp$rea1001010s_c == 2] <- 1
-                    resp$rea1001010s_c[resp$rea1001010s_c == 3] <- 2
-                    resp$rea1001010s_c[resp$rea1001010s_c == 4] <- 3
-                    resp$rea1002060s_c[resp$rea1002060s_c == 4] <- 3
-                    resp$rea1004030s_c[resp$rea1004030s_c == 1] <- 0
-                    resp$rea1004030s_c[resp$rea1004030s_c == 2] <- 1
-                    resp$rea1004030s_c[resp$rea1004030s_c == 3] <- 2
-                    resp$rea1004030s_c[resp$rea1004030s_c == 4] <- 3
-                    resp$rea1004030s_c[resp$rea1004030s_c == 5] <- 4
+                    # TODO: change to correct item names
+                    resp$rea100101s_c[resp$rea100101s_c == 1] <- 0
+                    resp$rea100101s_c[resp$rea100101s_c == 2] <- 1
+                    resp$rea100101s_c[resp$rea100101s_c == 3] <- 2
+                    resp$rea100101s_c[resp$rea100101s_c == 4] <- 3
+                    resp$rea100206s_c[resp$rea100206s_c == 4] <- 3
+                    resp$rea100403s_c[resp$rea100403s_c == 1] <- 0
+                    resp$rea100403s_c[resp$rea100403s_c == 2] <- 1
+                    resp$rea100403s_c[resp$rea100403s_c == 3] <- 2
+                    resp$rea100403s_c[resp$rea100403s_c == 4] <- 3
+                    resp$rea100403s_c[resp$rea100403s_c == 5] <- 4
                 }
             } else if (domain == 'MA') {
                 #math w1 already collapsed in SUF
@@ -270,6 +270,7 @@ adjustments_PCM <- function (resp, SC, wave, domain) {
                 }
                 if (w == "w10") {
                     # collapse categories
+                    # TODO: check correct item names
                     resp$maa10v28s_c[resp$maa10v28s_c %in% c(0,1,2,3)] <- 0
                     resp$maa10v28s_c[resp$maa10v28s_c %in% c(4,5,6)] <- 1
                     resp$maa10v27s_c[resp$maa10v27s_c == 1] <- 0

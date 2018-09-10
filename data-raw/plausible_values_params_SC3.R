@@ -7,7 +7,7 @@ load(file = "data-raw/meanvar.RData")
 SC <- 'SC3'
 
 # Reading
-meanvar[[SC]][["RE"]][["w3"]] <- c(0.1371353,1) #! # 1.124 (easy), 1.462 (difficult); muss man hier den Mittelwert nehmen für die Varianz?
+meanvar[[SC]][["RE"]][["w3"]] <- c(0.1371353, 1.537) #!
 meanvar[[SC]][["RE"]][["w6"]] <- c(0.579, 1.02)
 
 # Mathematics
@@ -21,12 +21,16 @@ meanvar[[SC]][["IC"]][["w8"]] <- c(0, 1) #!
 
 # Science
 meanvar[[SC]][["SC"]][["w2"]] <- c(0, 1.082) #!
+meanvar[[SC]][["SC"]][["w5"]] <- c(0, 0.987) #nicht sicher mit der Varianz
+meanvar[[SC]][["SC"]][["w8"]] <- c(0, 1) #!
 
 # Native Russian
-meanvar[[SC]][["NR"]][["w"]] <- c(0,1) #!
+meanvar[[SC]][["NR"]][["w3"]] <- c(0,1) #!
+meanvar[[SC]][["NR"]][["w6"]] <- c(0,1) #!
 
 # Native Turkish
-meanvar[[SC]][["NT"]][["w"]] <- c(0,1) #!
+meanvar[[SC]][["NT"]][["w3"]] <- c(0,1) #!
+meanvar[[SC]][["NT"]][["w6"]] <- c(0,1) #!
 
 # English as a foreign language
 meanvar[[SC]][["EF"]][["w7"]] <- c(-0.201, 2.09) #!

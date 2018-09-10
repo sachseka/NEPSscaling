@@ -9,7 +9,7 @@ complement_control_lists <- function (c_EAP, #c_WLE,
     control_EAP <- FALSE
     #control_WLE <- FALSE
     control_Bayes = list(itermcmc = 10000, burnin = 2000, thin = 1, tdf = 10,
-                        cartctrl1 = 5, cartctrl2 = 0.0001, est.alpha = TRUE)
+                        cartctrl1 = 5, cartctrl2 = 0.0001, est.alpha = FALSE)
     control_ML = list(nmi = 10L, ntheta = 2000, normal.approx = FALSE, samp.regr = FALSE,
                        theta.model=FALSE, np.adj=8, na.grid = 5)
 

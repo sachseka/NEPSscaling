@@ -35,7 +35,7 @@
 #' estimation given to TAM::tam.pv() (therefore, see TAM for further control
 #' options). Analogously, control options for "Bayes" (in form of a list) are
 #' "itermcmc" (number of MCMC iterations), "burnin" (number of burn-in iterations),
-#' "est.alpha" (wether item discriminations for polytomous items are to be fixed
+#' "est.alpha" (whether item discriminations for polytomous items are to be fixed
 #' or estimated freely), "thin" (thinning interval in MCMC), "tdf" (df of multiv.
 #' t proposal distr. for category cut-offs for ordinal items), "cartctrl1" (min.
 #' number of observations in any terminal CART node) and "cartctrl2" (min.
@@ -119,7 +119,7 @@ plausible_values <- function(SC,
     rotation = TRUE,
     nvalid = 3L,
     control = list(EAP = FALSE, #WLE = FALSE,
-                   Bayes = list(itermcmc = 10000, burnin = 2000, est.alpha = TRUE, thin = 1, tdf = 10,
+                   Bayes = list(itermcmc = 10000, burnin = 2000, est.alpha = FALSE, thin = 1, tdf = 10,
                                cartctrl1 = 5, cartctrl2 = 0.0001),
                    ML = list(nmi = 10L, ntheta = 2000, normal.approx = FALSE, samp.regr = FALSE,
                               theta.model=FALSE, np.adj=8, na.grid = 5))
@@ -478,17 +478,22 @@ plausible_values <- function(SC,
         }
         names(VAR) <- gsub("_", "", waves)
         names(MEAN) <- gsub("_", "", waves)
-        longitudinal_IDs <- dplyr::filter_all(n.valid, dplyr::all_vars(. >= nvalid))$ID_t
+        # TODO: for SC6 reading the PVs have to be linked to w3 and w5 separately
+        if (SC == "SC6" && domain == "RE") {
+            longitudinal_IDs <- list()
+            longitudinal_IDs[["w3"]] <- dplyr::filter(data, wave_w3 == 1, !is.na(rea9_sc1u))$ID_t
+            longitudinal_IDs[["w5"]] <- dplyr::filter(data, wave_w3 == 0, wave_w5 == 1, !is.na(rea9_sc1u))$ID_t
+        }
         pv <- scale_pv(pv = if (method == "Bayes") datalist$datalist else datalist,
-                       SC = SC, domain = domain, type = type, wave = gsub("_", "", waves)[-1],
-                       VAR = VAR, MEAN = MEAN, ID = longitudinal_IDs)
+                       SC = SC, domain = domain, type = type, wave = gsub("_", "", waves),
+                       VAR = VAR, MEAN = MEAN, ID = if(SC == "SC6") longitudinal_IDs else NULL)
         for(p in seq(npv)) {
             for(w in waves) {
                 pv[[p]][n.valid[[paste0("valid", w)]] < nvalid, paste0("PV", w)] <- NA
             }
         }
     } else {
-        pv <- datalist
+        pv <- if (method == "ML") datalist else datalist$datalist
         for(p in seq(npv)) {
             pv[[p]][n.valid$valid < nvalid, "PV"] <- NA
         }
