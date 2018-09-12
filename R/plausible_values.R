@@ -124,7 +124,7 @@ plausible_values <- function(SC,
                    ML = list(nmi = 10L, ntheta = 2000, normal.approx = FALSE, samp.regr = FALSE,
                               theta.model=FALSE, np.adj=8, na.grid = 5))
 ){
-    .<-NULL
+    rea9_sc1u <- wave_w3 <- wave_w5 <- . <- NULL
     # check and prepare arguments
     if (missing(SC)) stop("Starting cohort must be specified.")
     if (!is.numeric(SC) || !is.numeric(wave)) stop("Starting cohort and wave must be numeric.")
@@ -217,13 +217,14 @@ plausible_values <- function(SC,
 
         if (nvalid > 0) {
             bgdata <- bgdata[bgdata$ID_t %in% data$ID_t, ]
-            data <- data[data$ID_t %in% bgdata$ID_t, ]
+            # data <- data[data$ID_t %in% bgdata$ID_t, ]
             bgdata <- bgdata[order(bgdata$ID_t), ]
-        } else {
+        } else { # TODO
             # append subjects in background data that did not take the competence tests
-            data <- data[data$ID_t %in% bgdata$ID_t, ]
             data <- suppressWarnings(dplyr::bind_rows(data, bgdata[!(bgdata$ID_t %in% data$ID_t), 'ID_t', drop = FALSE]))
             data <- data[order(data$ID_t), ]
+            bgdata <- suppressWarnings(dplyr::bind_rows(bgdata, data[!(data$ID_t %in% bgdata$ID_t), 'ID_t', drop = FALSE]))
+            bgdata <- bgdata[order(bgdata$ID_t), ]
         }
         ID_t <- bgdata[, "ID_t", drop = FALSE]
 

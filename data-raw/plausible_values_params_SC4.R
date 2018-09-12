@@ -11,11 +11,11 @@ SC <- 'SC4'
 
 # Reading
 meanvar[[SC]][["RE"]][["w7"]] <- c(0.045, 0.829)
-meanvar[[SC]][["RE"]][["w10"]] <- c(0.049406366423006+0.045, 0.8320544)
+meanvar[[SC]][["RE"]][["w10"]] <- c(0.049406366423006, 0.8320544)#+0.045
 
 # Mathematics
 meanvar[[SC]][["MA"]][["w7"]] <- c(0.496, 0.989) # c=0.5162951 über R-Code
-meanvar[[SC]][["MA"]][["w10"]] <- c(0.3194437+0.496, 1.16)
+meanvar[[SC]][["MA"]][["w10"]] <- c(0.3194437, 1.16)#+0.496
 
 # Information and Communication Technology literacy
 meanvar[[SC]][["IC"]][["w7"]] <- c(0.687, 0.46)
