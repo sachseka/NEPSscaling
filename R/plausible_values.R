@@ -492,6 +492,11 @@ plausible_values <- function(SC,
             for(w in waves) {
                 pv[[p]][n.valid[[paste0("valid", w)]] < nvalid, paste0("PV", w)] <- NA
             }
+            if (SC == "SC6" && domain == "RE") {
+                pv[[p]][["PV_w5"]] <- NA
+                pv[[p]][pv[[p]]$ID_t %in% longitudinal_IDs[["w5"]], "PV_w5"] <- pv[[p]][pv[[p]]$ID_t %in% longitudinal_IDs[["w5"]], "PV_w3"]
+                pv[[p]][pv[[p]]$ID_t %in% longitudinal_IDs[["w5"]], "PV_w3"] <- NA
+            }
         }
     } else {
         pv <- if (method == "ML") datalist else datalist$datalist
