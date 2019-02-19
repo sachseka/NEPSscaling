@@ -44,9 +44,9 @@ write_pv <- function(pv.obj, path, ext = c('SPSS', 'Stata', 'Mplus')){
             write.table(pv.obj$pv[i], file = paste0(path, pv.obj$SC, '_', pv.obj$domain, '_', pv.obj$wave, '_', pv.obj$type, '_', 'plausible_values_', i, '.dat'), dec = '.',
                         sep = ',', row.names = FALSE)
         }
-        contents <- 'plausible_values_1.dat'
+        contents <- paste0(pv.obj$SC, '_', pv.obj$domain, '_', pv.obj$wave, '_', pv.obj$type, '_', 'plausible_values_1.dat')
         for (i in 2:length(pv.obj$pv)) {
-            contents <- paste0(contents, '\nplausible_values_', i, '.dat')
+            contents <- paste0(contents, '\n', pv.obj$SC, '_', pv.obj$domain, '_', pv.obj$wave, '_', pv.obj$type, '_', 'plausible_values_', i, '.dat')
         }
         sink(file = paste0(path, pv.obj$SC, '_', pv.obj$domain, '_', pv.obj$wave, '_', pv.obj$type, '_', 'content_file.dat'))
         cat(contents)
