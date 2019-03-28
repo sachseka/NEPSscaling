@@ -62,7 +62,7 @@
 #' variables from complex samples. \emph{Psychometrika, 56}(2), 177-196.
 #' @references Pohl, S., & Carstensen, C. H. (2012). NEPS technical report -
 #' Scaling the data of the competence tests.
-#' @references Scharl, A., Carstensen, C. H., & Gnambs, T. (2018).
+#' @references Scharl, A., Carstensen, C. H., & Gnambs, T. (2019).
 #' \emph{Estimating Plausible Values with NEPS Data: An Example Using Reading
 #' Competence in Starting Cohort 6 (NEPS Survey Paper No. XX)}. Bamberg: Leibniz
 #' Institute for Educational Trajectories, National Educational Panel Study.
@@ -122,7 +122,9 @@ plausible_values <- function(SC,
                    Bayes = list(itermcmc = 10000, burnin = 2000, est.alpha = FALSE, thin = 1, tdf = 10,
                                cartctrl1 = 5, cartctrl2 = 0.0001),
                    ML = list(nmi = 10L, ntheta = 2000, normal.approx = FALSE, samp.regr = FALSE,
-                              theta.model=FALSE, np.adj=8, na.grid = 5))
+                              theta.model = FALSE, np.adj = 8, na.grid = 5,
+                             itermcmc = 100, burnin = 50, thin = 1, tdf = 10,
+                             cartctrl1 = 5, cartctrl2 = 0.0001))
 ){
     rea9_sc1u <- wave_w3 <- wave_w5 <- . <- NULL
     # check and prepare arguments
@@ -174,12 +176,14 @@ plausible_values <- function(SC,
     # get competence data for SC and domain
     files <- list.files(path = path)
     if (filetype == 'SPSS') {
-        data <- tryCatch({haven::read_spss(file = paste0(path, files[grep('xTargetCompetencies', files)]))},
+        data <- tryCatch({haven::read_spss(file = paste0(path, files[grep('xTargetCompetencies', files)]),
+                                           user_na = TRUE)},
                          error=function(e){
                              stop(paste0("Path ", path, " does not lead to competence files OR wrong file formats!"))
                          })
     } else {
-        data <- tryCatch({haven::read_dta(file = paste0(path, files[grep('xTargetCompetencies', files)]))},
+        data <- tryCatch({haven::read_dta(file = paste0(path, files[grep('xTargetCompetencies', files)]),
+                                          user_na = TRUE)},
                          error=function(e){
                              stop(paste0("Path '", path, "' does not lead to competence files OR wrong file formats!"))
                          })
@@ -189,9 +193,16 @@ plausible_values <- function(SC,
     # selection of test takers
     if (longitudinal) {
         sel <- names(data) %in% unique(unlist(item_labels[[SC]][[domain]]))
+        nr <- data.frame(ID_t = data$ID_t, nr = rowSums(data[, sel] == -94))
+        data[data < 0] <- NA
         data <- data[rowSums(!is.na(data[, sel])) >= nvalid, ]
+        nr <- nr[nr$ID_t %in% data$ID_t, ]
     } else {
-        data <- data[rowSums(!is.na(data[, names(data) %in% item_labels[[SC]][[domain]][[wave]]])) >= nvalid, ]
+        sel <- names(data) %in% item_labels[[SC]][[domain]][[wave]]
+        nr <- data.frame(ID_t = data$ID_t, nr = rowSums(data[, sel] == -94))
+        data[data < 0] <- NA
+        data <- data[rowSums(!is.na(data[, sel])) >= nvalid, ]
+        nr <- nr[nr$ID_t %in% data$ID_t, ]
         # reading has been tested twice for different samples in SC6:
         # estimating simultaneously might cause problems because of different
         # information available for background model (large quantities of missing data)
@@ -219,13 +230,14 @@ plausible_values <- function(SC,
             bgdata <- bgdata[bgdata$ID_t %in% data$ID_t, ]
             # data <- data[data$ID_t %in% bgdata$ID_t, ]
             bgdata <- bgdata[order(bgdata$ID_t), ]
-        } else { # TODO
+        } else {
             # append subjects in background data that did not take the competence tests
             data <- suppressWarnings(dplyr::bind_rows(data, bgdata[!(bgdata$ID_t %in% data$ID_t), 'ID_t', drop = FALSE]))
             data <- data[order(data$ID_t), ]
             bgdata <- suppressWarnings(dplyr::bind_rows(bgdata, data[!(data$ID_t %in% bgdata$ID_t), 'ID_t', drop = FALSE]))
             bgdata <- bgdata[order(bgdata$ID_t), ]
         }
+        bgdata <- dplyr::left_join(bgdata, nr, by = "ID_t")
         ID_t <- bgdata[, "ID_t", drop = FALSE]
 
         # list of categorical variables
@@ -263,29 +275,34 @@ plausible_values <- function(SC,
             } else if (SC == 'SC5') {
                 if (wave == 'w1') {
                     position[, 'position'] <- data[, 'tx80211_w1']
-                    position[!is.na(position$position) & (position$position == 126), 'position'] <- 0 # reading first
-                    position[!is.na(position$position) & (position$position == 127), 'position'] <- 1 # maths first
+                    position[!is.na(position$position) & (position$position == 126), 'position'] <- 1 # reading first
+                    position[!is.na(position$position) & (position$position == 127), 'position'] <- 2 # maths first
+                    position$position <- haven::labelled(position$position, c("reading first" = 1, "math first" = 2))
                 } else if (wave == 'w5') {
                     position[, 'position'] <- data[, 'tx80211_w5']
-                    position[!is.na(position$position) & (position$position %in% c(330,332,334)), 'position'] <- 0 # sc first
-                    position[!is.na(position$position) & (position$position %in% c(331,333,335)), 'position'] <- 1 # ict first
+                    position[!is.na(position$position) & (position$position %in% c(330,332,334)), 'position'] <- 1 # sc first
+                    position[!is.na(position$position) & (position$position %in% c(331,333,335)), 'position'] <- 2 # ict first
+                    position$position <- haven::labelled(position$position, c("science first" = 1, "ICT first" = 2))
                 }
             } else if (SC == 'SC6') {
                 if (wave == 'w3') {
                     position[, 'position'] <- data[, 'tx80211_w3']
                     position[!is.na(position$position) & (position$position %in% c(122,124)), 'position'] <- 1 # maths first
                     position[!is.na(position$position) & (position$position %in% c(123,125)), 'position'] <- 2 # reading first
+                    position$position <- haven::labelled(position$position, c("math first" = 1, "reading first" = 2))
                 } else if (wave == 'w5') {
                     position[, 'position'] <- data[, 'tx80211_w5']
                     position[!is.na(position$position) & position$position == 247, 'position'] <- 1 # science first
                     position[!is.na(position$position) & position$position == 248, 'position'] <- 2 # ict first
                     # reading first (i.e. "new" SC6 sample) should be marked with 249 (not found in SUF)
-                    if (domain == "RE")
-                        position[is.na(position$position), 'position'] <- 3 # reading first; should not occur for IC/SC tests
+                    if (domain == "RE"){
+                        position[is.na(position$position), 'position'] <- 3} # reading first; should not occur for IC/SC tests
+                    position$position <- haven::labelled(position$position, c("science first" = 1, "ict first" = 2))
                 } else if (wave == "w9") {
                     position[, 'position'] <- data[, 'tx80211_w9']
                     position[!is.na(position$position) & position$position %in% c(444,445,448,449,452:455), 'position'] <- 1 # reading first
                     position[!is.na(position$position) & position$position %in% c(446,447,450,451,456,457), 'position'] <- 2 # math first
+                    position$position <- haven::labelled(position$position, c("reading first" = 1, "math first" = 2))
                 }
             }
             # possible NAs in position variable treated as third group
@@ -330,10 +347,10 @@ plausible_values <- function(SC,
 
         # multiple imputation of missing covariate data
         if (!is.null(bgdata) && any(is.na(bgdata))){
-            imp <- CART(X = bgdata, itermcmc = control$Bayes$itermcmc,
-                        burnin = control$Bayes$burnin, nmi = control$ML$nmi,
-                        thin = control$Bayes$thin, cartctrl1 = control$Bayes$cartctrl1,
-                        cartctrl2 = control$Bayes$cartctrl2)
+            imp <- CART(X = bgdata, itermcmc = control$ML$itermcmc,
+                        burnin = control$ML$burnin, nmi = control$ML$nmi,
+                        thin = control$ML$thin, cartctrl1 = control$ML$cartctrl1,
+                        cartctrl2 = control$ML$cartctrl2)
         } else imp <- NULL
 
         if(PCM) {
@@ -382,7 +399,7 @@ plausible_values <- function(SC,
             mod <- TAM::tam.mml(resp = resp,
                                 Y = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
                                 irtmodel = ifelse(PCM, "PCM2", "1PL"),
-                                # xsi.fixed = if (!longitudinal && SC == "SC6" && domain == "RE" && wave == "w5") item_diff_SC6_RE_w3 else NULL,
+                                # xsi.fixed = xsi.fixed,
                                 A = if (rotation) A else NULL, B = if (PCM || rotation) B else NULL, Q = Q, verbose = FALSE)
 
             pmod <- TAM::tam.pv(mod, nplausible = npv, ntheta = control$ML$ntheta, normal.approx = control$ML$normal.approx,
@@ -514,9 +531,9 @@ plausible_values <- function(SC,
 
     # output
     res <- list()
-    res[['SC']] <- SC
+    res[['SC']] <- as.numeric(gsub(pattern = "SC", replacement = "", x = SC))
     res[['domain']] <- domain
-    res[['wave']] <- wave
+    res[['wave']] <- as.numeric(gsub(pattern = "w", replacement = "", x = wave))
     res[['method']] <- method
     res[['type']] <- type
     res[['rotation']] <- ifelse(rotation, 'Corrected For Test Position',
@@ -547,6 +564,17 @@ plausible_values <- function(SC,
         #     res[['wle']] <- wle
         res[['EAP.rel']] <- EAP.rel
         res[["regr.coeff"]] <- regr.coeff
+        for (n in seq(control$ML$nmi)) {
+            if (!longitudinal){
+                rownames(res[["regr.coeff"]][[n]]) <-
+                    c("Intercept",
+                      names(res[['pv']][[1]][, 2:(ncol(res[['pv']][[1]])-1)]))
+            } else {
+                rownames(res[["regr.coeff"]][[n]]) <-
+                    c("Intercept", names(res[['pv']][[1]][, 2:(ncol(res[['pv']][[1]]) -
+                       ifelse(SC == "SC6", length(waves) + 1, length(waves)))]))
+            }
+        }
     }
     class(res) <- "pv.obj"
     return(res)

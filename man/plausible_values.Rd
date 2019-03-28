@@ -12,7 +12,8 @@ plausible_values(SC, domain = c("MA", "RE", "SC", "IC", "LI", "EF", "NR",
   = FALSE, Bayes = list(itermcmc = 10000, burnin = 2000, est.alpha = FALSE, thin
   = 1, tdf = 10, cartctrl1 = 5, cartctrl2 = 1e-04), ML = list(nmi = 10L, ntheta
   = 2000, normal.approx = FALSE, samp.regr = FALSE, theta.model = FALSE, np.adj
-  = 8, na.grid = 5)))
+  = 8, na.grid = 5, itermcmc = 100, burnin = 50, thin = 1, tdf = 10, cartctrl1 =
+  5, cartctrl2 = 1e-04)))
 }
 \arguments{
 \item{SC}{numeric. The starting cohort used for the analysis is
@@ -131,7 +132,7 @@ variables from complex samples. \emph{Psychometrika, 56}(2), 177-196.
 Pohl, S., & Carstensen, C. H. (2012). NEPS technical report -
 Scaling the data of the competence tests.
 
-Scharl, A., Carstensen, C. H., & Gnambs, T. (2018).
+Scharl, A., Carstensen, C. H., & Gnambs, T. (2019).
 \emph{Estimating Plausible Values with NEPS Data: An Example Using Reading
 Competence in Starting Cohort 6 (NEPS Survey Paper No. XX)}. Bamberg: Leibniz
 Institute for Educational Trajectories, National Educational Panel Study.
