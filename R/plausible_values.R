@@ -346,15 +346,22 @@ plausible_values <- function(SC,
     if (method == "ML") {
 
         # multiple imputation of missing covariate data
-        if (!is.null(bgdata) && any(is.na(bgdata))){
-            imp <- CART(X = bgdata, itermcmc = control$ML$itermcmc,
+        if (!is.null(bgdata)) {
+            if (any(is.na(bgdata))) {
+                imp <- CART(X = bgdata, itermcmc = control$ML$itermcmc,
                         burnin = control$ML$burnin, nmi = control$ML$nmi,
                         thin = control$ML$thin, cartctrl1 = control$ML$cartctrl1,
                         cartctrl2 = control$ML$cartctrl2)
-        } else imp <- NULL
+            } else {
+                bgdata <- as.data.frame(lapply(bgdata, as.numeric))
+                imp <- NULL
+            }
+        } else {imp <- NULL}
 
         if(PCM) {
-            res <- adjustments_PCM(resp, SC, if (longitudinal) gsub("_", "", waves) else wave, domain)
+            res <- adjustments_PCM(resp, SC,
+                                   if (longitudinal) gsub("_", "", waves) else wave,
+                                   domain)
             resp <- res$resp
             ind <- res$ind
 
@@ -394,19 +401,28 @@ plausible_values <- function(SC,
                 bgdatacom <- imp[[i]]
                 bgdatacom$ID_t <- NULL
                 bgdatacom <- apply(bgdatacom, 2, as.numeric)
+            } else if (!is.null(bgdata)) {
             }
 
             mod <- TAM::tam.mml(resp = resp,
                                 Y = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
                                 irtmodel = ifelse(PCM, "PCM2", "1PL"),
                                 # xsi.fixed = xsi.fixed,
-                                A = if (rotation) A else NULL, B = if (PCM || rotation) B else NULL, Q = Q, verbose = FALSE)
+                                A = if (rotation) A else NULL, B = if (PCM || rotation) B else NULL,
+                                Q = Q, verbose = FALSE)
 
-            pmod <- TAM::tam.pv(mod, nplausible = npv, ntheta = control$ML$ntheta, normal.approx = control$ML$normal.approx,
-                                samp.regr = control$ML$samp.regr, theta.model = control$ML$theta.model,
-                                np.adj = control$ML$np.adj, na.grid = control$ML$na.grid)
-            eap[[i]][, -1] <- as.matrix(mod$person[, grep("EAP", names(mod$person))])
-            colnames(eap[[i]]) <- c('ID_t',  paste0(rep(c('eap','se'), length(waves)), rep(waves, each = 2)))
+            pmod <- TAM::tam.pv(mod, nplausible = npv,
+                                ntheta = control$ML$ntheta,
+                                normal.approx = control$ML$normal.approx,
+                                samp.regr = control$ML$samp.regr,
+                                theta.model = control$ML$theta.model,
+                                np.adj = control$ML$np.adj,
+                                na.grid = control$ML$na.grid)
+            eap[[i]][, -1] <- as.matrix(mod$person[, grep("EAP",
+                                                          names(mod$person))])
+            colnames(eap[[i]]) <- c('ID_t',  paste0(rep(c('eap','se'),
+                                                        length(waves)),
+                                                    rep(waves, each = 2)))
             pvs[[i]] <- TAM::tampv2datalist(pmod,
                                             Y = if (is.null(bgdata) || is.null(imp)) ID_t else cbind(ID_t, bgdatacom),
                                             pvnames = paste0("PV", waves))
@@ -436,8 +452,11 @@ plausible_values <- function(SC,
         ind <- sample(1:length(datalist), npv)
         datalist <- datalist[ind]
         for (i in 1:npv) {
-            datalist[[i]] <- datalist[[i]][, -which(colnames(datalist[[i]]) %in% c('pid', 'pweights', 'test_position'))]
-            datalist[[i]] <- datalist[[i]] %>% dplyr::select(ID_t, dplyr::everything())
+            datalist[[i]] <- datalist[[i]][, -which(colnames(datalist[[i]]) %in%
+                                                        c('pid', 'pweights',
+                                                          'test_position'))]
+            datalist[[i]] <- datalist[[i]] %>% dplyr::select(ID_t,
+                                                             dplyr::everything())
         }
     }
 
@@ -448,7 +467,9 @@ plausible_values <- function(SC,
 
         # collapse categories with N < 200
         if(PCM) {
-            res <- adjustments_PCM(resp, SC, if (longitudinal) gsub("_", "", waves) else wave, domain)
+            res <- adjustments_PCM(resp, SC,
+                                   if (longitudinal) gsub("_", "", waves) else wave,
+                                   domain)
             resp <- res$resp
         }
 
@@ -462,24 +483,31 @@ plausible_values <- function(SC,
         resp <- data.frame(resp)
         if (longitudinal){
             datalist <- plausible_values_mdlrm(Y = resp, X = bgdata, npv = npv,
-                                               itermcmc = control$Bayes$itermcmc, burnin = control$Bayes$burnin,
-                                               thin = control$Bayes$thin, tdf = control$Bayes$tdf,
+                                               itermcmc = control$Bayes$itermcmc,
+                                               burnin = control$Bayes$burnin,
+                                               thin = control$Bayes$thin,
+                                               tdf = control$Bayes$tdf,
                                                est.alpha = control$Bayes$est.alpha,
                                                cartctrl1 = control$Bayes$cartctrl1,
                                                cartctrl2 = control$Bayes$cartctrl2,
-                                               SC = SC, domain = domain, waves = waves)
+                                               SC = SC, domain = domain,
+                                               waves = waves)
         } else {
-            datalist <- plausible_values_mglrm(Y = resp, X = bgdata, S = S, npv = npv,
-                            itermcmc = control$Bayes$itermcmc, burnin = control$Bayes$burnin,
-                            thin = control$Bayes$thin, tdf = control$Bayes$tdf,
-                            est.alpha = control$Bayes$est.alpha,
-                            cartctrl1 = control$Bayes$cartctrl1,
-                            cartctrl2 = control$Bayes$cartctrl2)
+            datalist <- plausible_values_mglrm(Y = resp, X = bgdata, S = S,
+                                               npv = npv,
+                                               itermcmc = control$Bayes$itermcmc,
+                                               burnin = control$Bayes$burnin,
+                                               thin = control$Bayes$thin,
+                                               tdf = control$Bayes$tdf,
+                                               est.alpha = control$Bayes$est.alpha,
+                                               cartctrl1 = control$Bayes$cartctrl1,
+                                               cartctrl2 = control$Bayes$cartctrl2)
         }
         if (is.null(bgdata)) {
             for (i in seq(length(datalist$datalist))) {
                 datalist$datalist[[i]]$ID_t <- ID_t$ID_t
-                datalist$datalist[[i]] <- datalist$datalist[[i]] %>% dplyr::select(ID_t, dplyr::everything())
+                datalist$datalist[[i]] <- datalist$datalist[[i]] %>%
+                    dplyr::select(ID_t, dplyr::everything())
             }
         }
     }
@@ -492,26 +520,32 @@ plausible_values <- function(SC,
             MEAN <- colMeans(datalist$EAP[, grep("EAP", names(datalist$EAP))])
         } else {
             VAR <- colMeans(do.call(rbind, lapply(variance, FUN = function (x) diag(x))))
-            MEAN <- colMeans(do.call(rbind, lapply(eap, FUN = function (x) colMeans(x[, seq(2, (1+2*length(waves)), 2)]))))
+            MEAN <- colMeans(do.call(rbind, lapply(eap, FUN = function (x) {
+                colMeans(x[, seq(2, (1+2*length(waves)), 2)])})))
         }
         names(VAR) <- gsub("_", "", waves)
         names(MEAN) <- gsub("_", "", waves)
         # TODO: for SC6 reading the PVs have to be linked to w3 and w5 separately
         if (SC == "SC6" && domain == "RE") {
             longitudinal_IDs <- list()
-            longitudinal_IDs[["w3"]] <- dplyr::filter(data, wave_w3 == 1, !is.na(rea9_sc1u))$ID_t
-            longitudinal_IDs[["w5"]] <- dplyr::filter(data, wave_w3 == 0, wave_w5 == 1, !is.na(rea9_sc1u))$ID_t
+            longitudinal_IDs[["w3"]] <- dplyr::filter(data, wave_w3 == 1,
+                                                      !is.na(rea9_sc1u))$ID_t
+            longitudinal_IDs[["w5"]] <- dplyr::filter(data, wave_w3 == 0,
+                                                      wave_w5 == 1,
+                                                      !is.na(rea9_sc1u))$ID_t
         }
         pv <- scale_pv(pv = if (method == "Bayes") datalist$datalist else datalist,
-                       SC = SC, domain = domain, type = type, wave = gsub("_", "", waves),
-                       VAR = VAR, MEAN = MEAN, ID = if(SC == "SC6") longitudinal_IDs else NULL)
+                       SC = SC, domain = domain, type = type,
+                       wave = gsub("_", "", waves), VAR = VAR, MEAN = MEAN,
+                       ID = if(SC == "SC6") longitudinal_IDs else NULL)
         for(p in seq(npv)) {
             for(w in waves) {
                 pv[[p]][n.valid[[paste0("valid", w)]] < nvalid, paste0("PV", w)] <- NA
             }
             if (SC == "SC6" && domain == "RE") {
                 pv[[p]][["PV_w5"]] <- NA
-                pv[[p]][pv[[p]]$ID_t %in% longitudinal_IDs[["w5"]], "PV_w5"] <- pv[[p]][pv[[p]]$ID_t %in% longitudinal_IDs[["w5"]], "PV_w3"]
+                pv[[p]][pv[[p]]$ID_t %in% longitudinal_IDs[["w5"]], "PV_w5"] <-
+                    pv[[p]][pv[[p]]$ID_t %in% longitudinal_IDs[["w5"]], "PV_w3"]
                 pv[[p]][pv[[p]]$ID_t %in% longitudinal_IDs[["w5"]], "PV_w3"] <- NA
             }
         }
@@ -546,7 +580,10 @@ plausible_values <- function(SC,
     if (rotation)
         res[['position']] <- data.frame(ID_t, position)
     if (longitudinal){
-        res[["abs.correction"]] <- sapply(meanvar[[SC]][[domain]], FUN = function(x) x[[1]]) + unlist(sapply(gsub("_", "", waves), FUN = function(x) correction[[SC]][[domain]][[x]]))
+        res[["abs.correction"]] <- sapply(meanvar[[SC]][[domain]],
+                                          FUN = function(x) x[[1]]) +
+            unlist(sapply(gsub("_", "", waves),
+                          FUN = function(x) correction[[SC]][[domain]][[x]]))
     }
     res[["variance.PV"]] <- VAR
     res[["mean.PV"]] <- MEAN
@@ -564,17 +601,20 @@ plausible_values <- function(SC,
         #     res[['wle']] <- wle
         res[['EAP.rel']] <- EAP.rel
         res[["regr.coeff"]] <- regr.coeff
-        for (n in seq(control$ML$nmi)) {
-            if (!longitudinal){
-                rownames(res[["regr.coeff"]][[n]]) <-
-                    c("Intercept",
-                      names(res[['pv']][[1]][, 2:(ncol(res[['pv']][[1]])-1)]))
-            } else {
-                rownames(res[["regr.coeff"]][[n]]) <-
-                    c("Intercept", names(res[['pv']][[1]][, 2:(ncol(res[['pv']][[1]]) -
-                       ifelse(SC == "SC6", length(waves) + 1, length(waves)))]))
+        if (!is.null(bgdata)) {
+            for (n in 1:ifelse(!any(is.na(bgdata)), 1, control$ML$nmi)) {
+                if (!longitudinal){
+                    rownames(res[["regr.coeff"]][[n]]) <-
+                        c("Intercept",
+                          names(res[['pv']][[1]][, 2:(ncol(res[['pv']][[1]])-1)]))
+                } else {
+                    rownames(res[["regr.coeff"]][[n]]) <-
+                        c("Intercept", names(res[['pv']][[1]][, 2:(ncol(res[['pv']][[1]]) -
+                           ifelse(SC == "SC6", length(waves) + 1, length(waves)))]))
+                }
             }
         }
+
     }
     class(res) <- "pv.obj"
     return(res)
