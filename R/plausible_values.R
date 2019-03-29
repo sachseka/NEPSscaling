@@ -228,13 +228,24 @@ plausible_values <- function(SC,
 
         if (nvalid > 0) {
             bgdata <- bgdata[bgdata$ID_t %in% data$ID_t, ]
+            if (nrow(bgdata) < nrow(data)) {
+                bgdata <- suppressWarnings(
+                    dplyr::bind_rows(bgdata,
+                                     data[!(data$ID_t %in% bgdata$ID_t),
+                                          'ID_t', drop = FALSE]))
+            }
             # data <- data[data$ID_t %in% bgdata$ID_t, ]
             bgdata <- bgdata[order(bgdata$ID_t), ]
         } else {
             # append subjects in background data that did not take the competence tests
-            data <- suppressWarnings(dplyr::bind_rows(data, bgdata[!(bgdata$ID_t %in% data$ID_t), 'ID_t', drop = FALSE]))
+            data <- suppressWarnings(
+                dplyr::bind_rows(data, bgdata[!(bgdata$ID_t %in% data$ID_t),
+                                              'ID_t', drop = FALSE]))
             data <- data[order(data$ID_t), ]
-            bgdata <- suppressWarnings(dplyr::bind_rows(bgdata, data[!(data$ID_t %in% bgdata$ID_t), 'ID_t', drop = FALSE]))
+            bgdata <- suppressWarnings(
+                dplyr::bind_rows(bgdata,
+                                 data[!(data$ID_t %in% bgdata$ID_t),
+                                      'ID_t', drop = FALSE]))
             bgdata <- bgdata[order(bgdata$ID_t), ]
         }
         bgdata <- dplyr::left_join(bgdata, nr, by = "ID_t")
@@ -400,17 +411,16 @@ plausible_values <- function(SC,
             if (!is.null(imp)) {
                 bgdatacom <- imp[[i]]
                 bgdatacom$ID_t <- NULL
-                bgdatacom <- apply(bgdatacom, 2, as.numeric)
-            } else if (!is.null(bgdata)) {
+                bgdatacom <- as.data.frame(apply(bgdatacom, 2, as.numeric))
             }
-
+            # estimate IRT model
             mod <- TAM::tam.mml(resp = resp,
-                                Y = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
+                                dataY = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
+                                formulaY = as.formula(paste("~", paste(colnames(bgdatacom), collapse = "+"))),
                                 irtmodel = ifelse(PCM, "PCM2", "1PL"),
-                                # xsi.fixed = xsi.fixed,
                                 A = if (rotation) A else NULL, B = if (PCM || rotation) B else NULL,
-                                Q = Q, verbose = FALSE)
-
+                                Q = Q, verbose = TRUE)
+            # impute plausible values
             pmod <- TAM::tam.pv(mod, nplausible = npv,
                                 ntheta = control$ML$ntheta,
                                 normal.approx = control$ML$normal.approx,
