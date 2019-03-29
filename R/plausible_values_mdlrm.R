@@ -77,7 +77,10 @@ plausible_values_mdlrm <- function(
             jdim2 <- c(rep(1, 28), rep(2, 21))
         }
         if (domain == "MA") {
-            # do something
+            DIM <- 2
+            Jdim <- c(20, 52)
+            jdim <- list(1:20, 21:72)
+            jdim2 <- c(rep(1, 20), rep(2, 52))
         }
     }
     if (SC == "SC4") {
@@ -88,7 +91,10 @@ plausible_values_mdlrm <- function(
             jdim2 <- c(rep(1, 31), rep(2, 41), rep(3, 36))
         }
         if (domain == "MA") {
-            # do something
+            DIM <- 3
+            Jdim <- c(22, 31, 52)
+            jdim <- list(1:22, 23:53, 54:105)
+            jdim2 <- c(rep(1, 22), rep(2, 31), rep(3, 52))
         }
     }
     Jdiminv <- 1/Jdim
