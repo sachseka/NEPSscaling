@@ -53,6 +53,9 @@ adjustments_PCM <- function (resp, SC, wave, domain) {
                     resp$maa9r26s_c[resp$maa9r26s_c == 2] <- 1
                     resp$maa9r26s_c[resp$maa9r26s_c == 3] <- 2
                     resp$maa9r26s_c[resp$maa9r26s_c == 4] <- 3
+                    resp$maa9d23s_c[resp$maa9d23s_c == 1] <- 0
+                    resp$maa9d23s_c[resp$maa9d23s_c == 2] <- 1
+                    resp$maa9r18s_c[resp$maa9d18s_c == 2] <- 1
                     resp$maa9d13s_c[resp$maa9d13s_c %in% c(1,2,3)] <- 0
                     resp$maa9d13s_c[resp$maa9d13s_c == 4] <- 1
                     resp$maa9d13s_c[resp$maa9d13s_c %in% c(5,6)] <- 2
