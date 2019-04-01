@@ -104,6 +104,7 @@
 #' https://www.neps-data.de/en-us/datacenter/dataaccess.aspx.
 #'
 #' @importFrom stats prcomp
+#' @importFrom stats as.formula
 #'
 #' @export
 
