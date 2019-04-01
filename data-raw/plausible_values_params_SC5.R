@@ -32,7 +32,9 @@ save(meanvar, file = "data-raw/meanvar.RData")
 # Corrections because of dropout etc.
 correction <- list()
 load(file = "data-raw/correction.RData")
+correction[[SC]][["RE"]] <- list()
 correction[[SC]][["RE"]][["w12"]] <- 0 #!
+correction[[SC]][["MA"]] <- list()
 correction[[SC]][["MA"]][["w12"]] <- 0 #!
 
 save(correction, file = "data-raw/correction.RData")

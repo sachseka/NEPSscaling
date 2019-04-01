@@ -14,7 +14,7 @@ meanvar[[SC]][["RE"]][["w7"]] <- c(0.045, 0.829)
 meanvar[[SC]][["RE"]][["w10"]] <- c(0.049406366423006, 0.8320544)#+0.045
 
 # Mathematics
-meanvar[[SC]][["MA"]][["w7"]] <- c(0.496, 0.989) # c=0.5162951 über R-Code
+meanvar[[SC]][["MA"]][["w7"]] <- c(0.496, 0.989) # c=0.5162951 ?ber R-Code
 meanvar[[SC]][["MA"]][["w10"]] <- c(0.3194437, 1.16)#+0.496
 
 # Information and Communication Technology literacy
@@ -41,7 +41,9 @@ save(meanvar, file = "data-raw/meanvar.RData")
 # Corrections because of dropout etc.
 correction <- list()
 load(file = "data-raw/correction.RData")
+correction[[SC]][["RE"]] <- list()
+correction[[SC]][["RE"]][["w2"]] <- 0
 correction[[SC]][["RE"]][["w7"]] <- 0.487882
-correction[[SC]][["RE"]][["w10"]] <- c(0,0) #!
+correction[[SC]][["RE"]][["w10"]] <- 0 #!
 
 save(correction, file = "data-raw/correction.RData")

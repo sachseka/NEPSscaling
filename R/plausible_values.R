@@ -591,9 +591,9 @@ plausible_values <- function(SC,
         res[['position']] <- data.frame(ID_t, position)
     if (longitudinal){
         res[["abs.correction"]] <- sapply(meanvar[[SC]][[domain]],
-                                          FUN = function(x) x[[1]]) +
-            unlist(sapply(gsub("_", "", waves),
-                          FUN = function(x) correction[[SC]][[domain]][[x]]))
+                                          FUN = function(x) x[[1]]) #+
+            # unlist(sapply(gsub("_", "", waves),
+            #               FUN = function(x) correction[[SC]][[domain]][[x]]))
     }
     res[["variance.PV"]] <- VAR
     res[["mean.PV"]] <- MEAN
