@@ -283,7 +283,33 @@ plausible_values <- function(SC,
             } else if (SC == 'SC3') {
                 stop('Sorry, not yet implemented.')
             } else if (SC == 'SC4') {
-                stop('Sorry, cross-sectional is not yet implemented.')
+                stop('Sorry, not yet implemented.')
+                # if (wave == 'w1') {
+                #     position[, 'position'] <- data[, 'tx80211_w1']
+                #     position[!is.na(position$position) & (position$position == 128), 'position'] <- 1 #  ICT first
+                #     position[!is.na(position$position) & (position$position == 129), 'position'] <- 2 #  science first
+                #     position$position <- haven::labelled(position$position, c("ICT first" = 1, "science first" = 2))
+                # } else if (wave == 'w7') {
+                #     position[, 'position'] <- data[, 'tx80211_w7']
+                #     if (domain == "RE") {
+                #         position[!is.na(position$position) & (position$position %in% c(283:288,300:303)), 'position'] <- 1 # reading first
+                #         position[!is.na(position$position) & (position$position %in% c(281,282,289:292)), 'position'] <- 2 # reading last
+                #         position$position <- haven::labelled(position$position, c("reading first" = 1, "reading last" = 2))
+                #     } else if (domain == "MA") {
+                #         position[!is.na(position$position) & (position$position %in% c(289:292)), 'position'] <- 1 # math first
+                #         position[!is.na(position$position) & (position$position %in% c(284,285,287,288)), 'position'] <- 2 # math last
+                #         position$position <- haven::labelled(position$position, c("math first" = 1, "math last" = 2))
+                #     } else if (domain == "ICT") {
+                #         position[!is.na(position$position) & (position$position %in% c(281,282,296:299)), 'position'] <- 1 # ICT first
+                #         position[!is.na(position$position) & (position$position %in% c(283,286)), 'position'] <- 2 # ICT last
+                #         position$position <- haven::labelled(position$position, c("ICT first" = 1, "ICT last" = 2))
+                #     }
+                # } else if (wave == 'w9') {
+                #     position[, 'position'] <- data[, 'tx80211_w9']
+                #     position[!is.na(position$position) & (position$position %in% c(470,471,474,475)), 'position'] <- 1 # reading first
+                #     position[!is.na(position$position) & (position$position %in% c(472,473,476)), 'position'] <- 2 # math first
+                #     position$position <- haven::labelled(position$position, c("reading first" = 1, "math first" = 2))
+                # }
             } else if (SC == 'SC5') {
                 if (wave == 'w1') {
                     position[, 'position'] <- data[, 'tx80211_w1']
@@ -399,6 +425,27 @@ plausible_values <- function(SC,
             }
         }
 
+        # fixed item parameters
+        if (domain == "MA") {
+            if (longitudinal & SC %in% c("SC4", "SC5", "SC6")) {
+                fixed_difficulty <- xsi.fixed[["long"]][["MA"]][[SC]]
+            } else if ((SC == "SC4" & wave == "w10") |
+                       (SC == "SC5" & wave == "w12") |
+                       (SC == "SC6" & wave == "w9")) {
+                fixed_difficulty <- xsi.fixed[["cross"]][["MA"]]
+            }
+        } else if (domain == "RE") {
+            if (longitudinal & SC %in% c("SC4", "SC5", "SC6")) {
+                fixed_difficulty <- xsi.fixed[["long"]][["RE"]][[SC]]
+            } else if ((SC == "SC4" & wave == "w10") |
+                       (SC == "SC5" & wave == "w12") |
+                       (SC == "SC6" & wave == "w9")) {
+                fixed_difficulty <- xsi.fixed[["cross"]][["RE"]][[SC]]
+            }
+        } else {
+            fixed_difficulty <- NULL
+        }
+
         pvs <- list()
         EAP.rel <- list()
         regr.coeff <- list()
@@ -419,8 +466,9 @@ plausible_values <- function(SC,
                                 dataY = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
                                 formulaY = as.formula(paste("~", paste(colnames(bgdatacom), collapse = "+"))),
                                 irtmodel = ifelse(PCM, "PCM2", "1PL"),
+                                xsi.fixed = fixed_difficulty,
                                 A = if (rotation) A else NULL, B = if (PCM || rotation) B else NULL,
-                                Q = Q, verbose = TRUE)
+                                Q = Q, verbose = FALSE)
             # impute plausible values
             pmod <- TAM::tam.pv(mod, nplausible = npv,
                                 ntheta = control$ML$ntheta,
@@ -512,7 +560,8 @@ plausible_values <- function(SC,
                                                tdf = control$Bayes$tdf,
                                                est.alpha = control$Bayes$est.alpha,
                                                cartctrl1 = control$Bayes$cartctrl1,
-                                               cartctrl2 = control$Bayes$cartctrl2)
+                                               cartctrl2 = control$Bayes$cartctrl2,
+                                               SC = SC, domain = domain, wave = wave)
         }
         if (is.null(bgdata)) {
             for (i in seq(length(datalist$datalist))) {

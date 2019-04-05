@@ -140,6 +140,21 @@ plausible_values_mdlrm <- function(
         ALPHA[jdim[[dim]], dim] <- 1
     }
     BETA <- rep(0, J)
+    if (!is.null(SC) & !is.null(domain) & !is.null(wave)) {
+        if (domain == "MA") {
+            if ((SC == "SC4" & wave == "w10") |
+                (SC == "SC5" & wave == "w12") |
+                (SC == "SC6" & wave == "w9")) {
+                BETA[xsi.fixed$long$MA[1,]] <- xsi.fixed$long$MA[, 2]
+            }
+        } else if (domain == "RE") {
+            if ((SC == "SC4" & wave == "w10") |
+                (SC == "SC5" & wave == "w12") |
+                (SC == "SC6" & wave == "w9")) {
+                BETA[xsi.fixed$long$RE[[SC]][1,]] <- xsi.fixed$long$RE[[SC]][, 2]
+            }
+        }
+    }
     XI <- rbind(rep(1, J), BETA)
     TAU <- lapply(Q, function(x){
         if(x == 2){
@@ -202,6 +217,22 @@ plausible_values_mdlrm <- function(
                 ALPHA[Q == 2, dim] <- 1
                 if (!est.alpha) ALPHA[POSITEMORD, dim] <- 0.5
                 BETA[jdim[[dim]]] <- XI[2, jdim[[dim]]] - sum(XI[2, jdim[[dim]]])/Jdim[dim]
+
+            }
+            if (!is.null(SC) & !is.null(domain) & !is.null(wave)) {
+                if (domain == "MA") {
+                    if ((SC == "SC4" & wave == "w10") |
+                        (SC == "SC5" & wave == "w12") |
+                        (SC == "SC6" & wave == "w9")) {
+                        BETA[xsi.fixed$long$MA[1,]] <- xsi.fixed$long$MA[, 2]
+                    }
+                } else if (domain == "RE") {
+                    if ((SC == "SC4" & wave == "w10") |
+                        (SC == "SC5" & wave == "w12") |
+                        (SC == "SC6" & wave == "w9")) {
+                        BETA[xsi.fixed$long$RE[[SC]][1,]] <- xsi.fixed$long$RE[[SC]][, 2]
+                    }
+                }
             }
             # (3)
             for(j in POSITEMORD){

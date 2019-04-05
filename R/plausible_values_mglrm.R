@@ -27,6 +27,9 @@
 #' @param cartctrl2 complexity parameter. Any CART split that does not decrease the overall
 #' lack of fit by a factor of \code{control2} is not attempted during covariates imputation
 #' cycles.
+#' @param SC NEPS starting cohort for which plausible values are to be estimated.
+#' @param domain competence domain for which plausible values are to be estimated.
+#' @param wave assessment wave for which plausible values are to be estimated.
 #' @details \code{mglrm} uses a fully Bayesian estimation approach. Independent conjugate prior
 #' distributions are chosen to develop a Metropolis-within-Gibbs sampling algorithm based on
 #' the device of data augmentation (Tanner & Wong, 1987). The function generates a sample from
@@ -68,7 +71,10 @@ plausible_values_mglrm <- function(
   thin = 1,
   tdf = 10,
   cartctrl1 = 5,
-  cartctrl2 = 1e-04
+  cartctrl2 = 1e-04,
+  SC = NULL,
+  domain = NULL,
+  wave = NULL
 ){
   if (!is.null(X)) {
     X <- data.frame(X)
@@ -126,7 +132,25 @@ plausible_values_mglrm <- function(
   GAMMA <- matrix(0, nrow = KX, ncol = G)
   SIGMA2 <- rep(1, G)
   ALPHA <- rep(1, J)
-  BETA <- rep(0, J)
+  if (!is.null(SC) & !is.null(domain) & !is.null(wave)) {
+      if (domain == "MA") {
+          if ((SC == "SC4" & wave == "w10") |
+              (SC == "SC5" & wave == "w12") |
+              (SC == "SC6" & wave == "w9")) {
+              BETA <- xsi.fixed[["cross"]][["MA"]][, 2]
+          }
+      } else if (domain == "RE") {
+          if ((SC == "SC4" & wave == "w10") |
+              (SC == "SC5" & wave == "w12") |
+              (SC == "SC6" & wave == "w9")) {
+              BETA <- xsi.fixed[["cross"]][["RE"]][[SC]][, 2]
+          }
+      } else {
+          BETA <- rep(0, J)
+      }
+  } else {
+      BETA <- rep(0, J)
+  }
   XI <- rbind(ALPHA, BETA)
   TAU <- lapply(Q, function(x){
     if(x == 2){
@@ -187,7 +211,25 @@ plausible_values_mglrm <- function(
       # set discrimination to 1 (binary), 0.5 (poly.)
       ALPHA[Q == 2] <- 1
       if (!est.alpha) ALPHA[POSITEMORD] <- 0.5
-      BETA <- XI[2, ] - sum(XI[2, ])/J
+      if (!is.null(SC) & !is.null(domain) & !is.null(wave)) {
+          if (domain == "MA") {
+              if ((SC == "SC4" & wave == "w10") |
+                  (SC == "SC5" & wave == "w12") |
+                  (SC == "SC6" & wave == "w9")) {
+                  BETA <- xsi.fixed[["cross"]][["MA"]][, 2]
+              }
+          } else if (domain == "RE") {
+              if ((SC == "SC4" & wave == "w10") |
+                  (SC == "SC5" & wave == "w12") |
+                  (SC == "SC6" & wave == "w9")) {
+                  BETA <- xsi.fixed[["cross"]][["RE"]][[SC]][, 2]
+              }
+          } else {
+              BETA <- XI[2, ] - sum(XI[2, ])/J
+          }
+      } else {
+          BETA <- XI[2, ] - sum(XI[2, ])/J
+      }
       # (3)
       for(j in POSITEMORD){
         maxTau <- ucminf(par = TAU[[j]], fn = lposttau, Yj = Y[YOBS[, j], j], Qj = QMI2[j],
