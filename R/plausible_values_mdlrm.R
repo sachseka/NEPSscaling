@@ -68,6 +68,7 @@ plausible_values_mdlrm <- function(
             jdim <- list(1:21, 22:73)
             jdim2 <- c(rep(1, 21), rep(2, 52))
         }
+        wave <- "w9"
     }
     if (SC == "SC5") {
         if (domain == "RE") {
@@ -82,6 +83,7 @@ plausible_values_mdlrm <- function(
             jdim <- list(1:20, 21:72)
             jdim2 <- c(rep(1, 20), rep(2, 52))
         }
+        wave <- "w12"
     }
     if (SC == "SC4") {
         if (domain == "RE") {
@@ -96,6 +98,7 @@ plausible_values_mdlrm <- function(
             jdim <- list(1:22, 23:53, 54:105)
             jdim2 <- c(rep(1, 22), rep(2, 31), rep(3, 52))
         }
+        wave <- "w10"
     }
     Jdiminv <- 1/Jdim
 
@@ -140,19 +143,13 @@ plausible_values_mdlrm <- function(
         ALPHA[jdim[[dim]], dim] <- 1
     }
     BETA <- rep(0, J)
-    if (!is.null(SC) & !is.null(domain) & !is.null(wave)) {
-        if (domain == "MA") {
-            if ((SC == "SC4" & wave == "w10") |
-                (SC == "SC5" & wave == "w12") |
-                (SC == "SC6" & wave == "w9")) {
-                BETA[xsi.fixed$long$MA[1,]] <- xsi.fixed$long$MA[, 2]
-            }
-        } else if (domain == "RE") {
-            if ((SC == "SC4" & wave == "w10") |
-                (SC == "SC5" & wave == "w12") |
-                (SC == "SC6" & wave == "w9")) {
-                BETA[xsi.fixed$long$RE[[SC]][1,]] <- xsi.fixed$long$RE[[SC]][, 2]
-            }
+    if (domain == "MA") {
+        if (SC %in% c("SC4", "SC5", "SC6")) {
+            BETA[xsi.fixed$long$MA[[SC]][,1]] <- xsi.fixed$long$MA[[SC]][, 2]
+        }
+    } else if (domain == "RE") {
+        if (SC %in% c("SC4", "SC5", "SC6")) {
+            BETA[xsi.fixed$long$RE[[SC]][,1]] <- xsi.fixed$long$RE[[SC]][, 2]
         }
     }
     XI <- rbind(rep(1, J), BETA)
@@ -219,19 +216,13 @@ plausible_values_mdlrm <- function(
                 BETA[jdim[[dim]]] <- XI[2, jdim[[dim]]] - sum(XI[2, jdim[[dim]]])/Jdim[dim]
 
             }
-            if (!is.null(SC) & !is.null(domain) & !is.null(wave)) {
-                if (domain == "MA") {
-                    if ((SC == "SC4" & wave == "w10") |
-                        (SC == "SC5" & wave == "w12") |
-                        (SC == "SC6" & wave == "w9")) {
-                        BETA[xsi.fixed$long$MA[1,]] <- xsi.fixed$long$MA[, 2]
-                    }
-                } else if (domain == "RE") {
-                    if ((SC == "SC4" & wave == "w10") |
-                        (SC == "SC5" & wave == "w12") |
-                        (SC == "SC6" & wave == "w9")) {
-                        BETA[xsi.fixed$long$RE[[SC]][1,]] <- xsi.fixed$long$RE[[SC]][, 2]
-                    }
+            if (domain == "MA") {
+                if (SC %in% c("SC4", "SC5", "SC6")) {
+                    BETA[xsi.fixed$long$MA[[SC]][, 1]] <- xsi.fixed$long$MA[[SC]][, 2]
+                }
+            } else if (domain == "RE") {
+                if (SC %in% c("SC4", "SC5", "SC6")) {
+                    BETA[xsi.fixed$long$RE[[SC]][, 1]] <- xsi.fixed$long$RE[[SC]][, 2]
                 }
             }
             # (3)

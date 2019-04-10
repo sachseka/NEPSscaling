@@ -6,8 +6,9 @@
 adapted from package LaRA by J.-C. Gaasch (2017)}
 \usage{
 plausible_values_mglrm(Y, X = NULL, S = NULL, npv = 10,
-  est.alpha = TRUE, itermcmc, burnin, thin = 1, tdf = 10, cartctrl1 = 5,
-  cartctrl2 = 1e-04)
+  est.alpha = TRUE, itermcmc, burnin, thin = 1, tdf = 10,
+  cartctrl1 = 5, cartctrl2 = 1e-04, SC = NULL, domain = NULL,
+  wave = NULL)
 }
 \arguments{
 \item{Y}{data frame containing item responses. They can be binary or ordinal items. The
@@ -44,6 +45,12 @@ imputation cycles.}
 \item{cartctrl2}{complexity parameter. Any CART split that does not decrease the overall
 lack of fit by a factor of \code{control2} is not attempted during covariates imputation
 cycles.}
+
+\item{SC}{NEPS starting cohort for which plausible values are to be estimated.}
+
+\item{domain}{competence domain for which plausible values are to be estimated.}
+
+\item{wave}{assessment wave for which plausible values are to be estimated.}
 }
 \value{
 list with elements \code{MCMCdraws} and \code{M-Hacc} containing a list of posterior

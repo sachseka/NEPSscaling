@@ -4,9 +4,9 @@
 \alias{plausible_values_mdlrm}
 \title{Plausible values imputation for longitudinal data}
 \usage{
-plausible_values_mdlrm(Y, X = NULL, npv = 10, est.alpha = TRUE, itermcmc,
-  burnin, thin = 1, tdf = 10, cartctrl1 = 5, cartctrl2 = 1e-04, SC,
-  domain, waves)
+plausible_values_mdlrm(Y, X = NULL, npv = 10, est.alpha = TRUE,
+  itermcmc, burnin, thin = 1, tdf = 10, cartctrl1 = 5,
+  cartctrl2 = 1e-04, SC, domain, waves)
 }
 \arguments{
 \item{Y}{test responses}

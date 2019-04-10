@@ -393,8 +393,9 @@ plausible_values <- function(SC,
             } else {
                 bgdata <- as.data.frame(lapply(bgdata, as.numeric))
                 imp <- NULL
+                frmY <- as.formula(paste("~", paste(colnames(bgdata[, -which(colnames(bgdata) == "ID_t")]), collapse = "+")))
             }
-        } else {imp <- NULL}
+        } else {imp <- frmY <- NULL}
 
         if(PCM) {
             res <- adjustments_PCM(resp, SC,
@@ -460,11 +461,12 @@ plausible_values <- function(SC,
                 bgdatacom <- imp[[i]]
                 bgdatacom$ID_t <- NULL
                 bgdatacom <- as.data.frame(apply(bgdatacom, 2, as.numeric))
+                frmY <- as.formula(paste("~", paste(colnames(bgdatacom), collapse = "+")))
             }
             # estimate IRT model
             mod <- TAM::tam.mml(resp = resp,
                                 dataY = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
-                                formulaY = as.formula(paste("~", paste(colnames(bgdatacom), collapse = "+"))),
+                                formulaY = frmY,
                                 irtmodel = ifelse(PCM, "PCM2", "1PL"),
                                 xsi.fixed = fixed_difficulty,
                                 A = if (rotation) A else NULL, B = if (PCM || rotation) B else NULL,
