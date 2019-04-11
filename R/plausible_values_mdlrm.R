@@ -8,7 +8,8 @@
 #' @param npv number of plausible values to draw for each respondent.
 #' @param itermcmc number of MCMC iterations.
 #' @param burnin number of burnin iterations.
-#' @param est.alpha logical, should alphas be estimated or fixed to 0.5 for ordinal items
+#' @param est.alpha logical, should discrimination parameters be estimated or
+#' fixed to 1 for dichotomous and to 0.5 for ordinal items
 #' @param thin numeric, thinning interval
 #' @param tdf degrees of freedom of multivariate-t proposal distribution for category cutoff
 #' parameters for ordinal items.
@@ -211,8 +212,10 @@ plausible_values_mdlrm <- function(
                     }
                 }
                 ALPHA[jdim[[dim]], dim] <- XI[1, jdim[[dim]]]*(1/prod(XI[1, jdim[[dim]]]))^Jdiminv[dim]
-                ALPHA[Q == 2, dim] <- 1
-                if (!est.alpha) ALPHA[POSITEMORD, dim] <- 0.5
+                if (!est.alpha) {
+                    ALPHA[Q == 2, dim] <- 1
+                    ALPHA[POSITEMORD, dim] <- 0.5
+                }
                 BETA[jdim[[dim]]] <- XI[2, jdim[[dim]]] - sum(XI[2, jdim[[dim]]])/Jdim[dim]
 
             }

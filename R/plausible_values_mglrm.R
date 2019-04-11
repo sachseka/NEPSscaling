@@ -16,7 +16,8 @@
 #' @param npv number of plausible values; defaults to 10.
 #' @param itermcmc number of MCMC iterations.
 #' @param burnin number of burnin iterations.
-#' @param est.alpha logical, should alphas be estimated or fixed to 0.5 for ordinal items
+#' @param est.alpha logical, should discrimination parameters be estimated or
+#' fixed to 1 for dichotomous and to 0.5 for ordinal items
 #' @param thin thinning interval, i.e., retain only every \code{thin}th iteration (if argument
 #' \code{thin} is used, \code{itermcmc*thin} and \code{burnin*thin} yield the total number of
 #' MCMC and burnin iterations).
@@ -209,8 +210,10 @@ plausible_values_mglrm <- function(
       }
       ALPHA <- XI[1, ]*(1/prod(XI[1, ]))^Jinv
       # set discrimination to 1 (binary), 0.5 (poly.)
-      ALPHA[Q == 2] <- 1
-      if (!est.alpha) ALPHA[POSITEMORD] <- 0.5
+      if (!est.alpha) {
+          ALPHA[Q == 2] <- 1
+          ALPHA[POSITEMORD] <- 0.5
+      }
       if (!is.null(SC) & !is.null(domain) & !is.null(wave)) {
           if (domain == "MA") {
               if ((SC == "SC4" & wave == "w10") |

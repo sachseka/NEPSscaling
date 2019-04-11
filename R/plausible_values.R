@@ -35,12 +35,13 @@
 #' estimation given to TAM::tam.pv() (therefore, see TAM for further control
 #' options). Analogously, control options for "Bayes" (in form of a list) are
 #' "itermcmc" (number of MCMC iterations), "burnin" (number of burn-in iterations),
-#' "est.alpha" (whether item discriminations for polytomous items are to be fixed
-#' or estimated freely), "thin" (thinning interval in MCMC), "tdf" (df of multiv.
-#' t proposal distr. for category cut-offs for ordinal items), "cartctrl1" (min.
-#' number of observations in any terminal CART node) and "cartctrl2" (min.
-#' decrease of overall lack of fit by each CART split). NOTE that "Bayes" control
-#' options are also applied to the CART algorithm for "ML" estimation.
+#' "est.alpha" (whether item discriminations of the graded response model are to
+#' be fixed or estimated freely; default: fixed), "thin" (thinning interval in
+#' MCMC), "tdf" (df of multiv. t proposal distr. for category cut-offs for
+#' ordinal items), "cartctrl1" (min. number of observations in any terminal CART
+#' node) and "cartctrl2" (min. decrease of overall lack of fit by each CART
+#' split). NOTE that "Bayes" control options are also applied to the CART
+#' algorithm for "ML" estimation.
 #'
 #' @return \code{plausible_values()} returns an object of class \code{pv.obj}
 #' containing a list of \code{npv} plausible values with the data set used
