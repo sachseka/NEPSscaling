@@ -28,6 +28,9 @@
 #' should be corrected for the rotation design of the booklets. Defaults to
 #' TRUE. If both longitudinal and rotation are TRUE, rotation is set to FALSE
 #' automatically.
+#' @param include.nr logical; whether the number of not-reached items as a proxy
+#' for processing time should be included in the background model (the default
+#' is TRUE)
 #' @param control      list of additional options. If \code{EAP = TRUE}, the EAPs
 #' will be returned as well. Furthermore, additional control options for "ML"
 #' (again in form of a list) are \code{nmi} (the number of multiple imputations
@@ -120,6 +123,7 @@ plausible_values <- function(SC,
     longitudinal = FALSE,
     rotation = TRUE,
     nvalid = 3L,
+    include.nr = TRUE,
     control = list(EAP = FALSE, #WLE = FALSE,
                    Bayes = list(itermcmc = 10000, burnin = 2000, est.alpha = FALSE, thin = 1, tdf = 10,
                                cartctrl1 = 5, cartctrl2 = 0.0001),
@@ -194,17 +198,27 @@ plausible_values <- function(SC,
 
     # selection of test takers
     if (longitudinal) {
-        sel <- names(data) %in% unique(unlist(item_labels[[SC]][[domain]]))
-        nr <- data.frame(ID_t = data$ID_t, nr = rowSums(data[, sel] == -94))
-        data[data < 0] <- NA
-        data <- data[rowSums(!is.na(data[, sel])) >= nvalid, ]
-        nr <- nr[nr$ID_t %in% data$ID_t, ]
+        if (include.nr) {
+            sel <- names(data) %in% unique(unlist(item_labels[[SC]][[domain]]))
+            nr <- data.frame(ID_t = data$ID_t, nr = rowSums(data[, sel] == -94))
+            data[data < 0] <- NA
+            data <- data[rowSums(!is.na(data[, sel])) >= nvalid, ]
+            nr <- nr[nr$ID_t %in% data$ID_t, ]
+        } else {
+            data[data < 0] <- NA
+            data <- data[rowSums(!is.na(data[, sel])) >= nvalid, ]
+        }
     } else {
-        sel <- names(data) %in% item_labels[[SC]][[domain]][[wave]]
-        nr <- data.frame(ID_t = data$ID_t, nr = rowSums(data[, sel] == -94))
-        data[data < 0] <- NA
-        data <- data[rowSums(!is.na(data[, sel])) >= nvalid, ]
-        nr <- nr[nr$ID_t %in% data$ID_t, ]
+        if (include.nr) {
+            sel <- names(data) %in% item_labels[[SC]][[domain]][[wave]]
+            nr <- data.frame(ID_t = data$ID_t, nr = rowSums(data[, sel] == -94))
+            data[data < 0] <- NA
+            data <- data[rowSums(!is.na(data[, sel])) >= nvalid, ]
+            nr <- nr[nr$ID_t %in% data$ID_t, ]
+        } else {
+            data[data < 0] <- NA
+            data <- data[rowSums(!is.na(data[, sel])) >= nvalid, ]
+        }
         # reading has been tested twice for different samples in SC6:
         # estimating simultaneously might cause problems because of different
         # information available for background model (large quantities of missing data)
@@ -250,7 +264,8 @@ plausible_values <- function(SC,
                                       'ID_t', drop = FALSE]))
             bgdata <- bgdata[order(bgdata$ID_t), ]
         }
-        bgdata <- dplyr::left_join(bgdata, nr, by = "ID_t")
+        if (include.nr)
+            bgdata <- dplyr::left_join(bgdata, nr, by = "ID_t")
         ID_t <- bgdata[, "ID_t", drop = FALSE]
 
         # list of categorical variables
