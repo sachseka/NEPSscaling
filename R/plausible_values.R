@@ -29,7 +29,7 @@
 #' TRUE. If both longitudinal and rotation are TRUE, rotation is set to FALSE
 #' automatically.
 #' @param include.nr logical; whether the number of not-reached items as a proxy
-#' for processing time should be included in the background model (the default
+#' for processing speed should be included in the background model (the default
 #' is TRUE)
 #' @param control      list of additional options. If \code{EAP = TRUE}, the EAPs
 #' will be returned as well. Furthermore, additional control options for "ML"
@@ -198,8 +198,8 @@ plausible_values <- function(SC,
 
     # selection of test takers
     if (longitudinal) {
+        sel <- names(data) %in% unique(unlist(item_labels[[SC]][[domain]]))
         if (include.nr) {
-            sel <- names(data) %in% unique(unlist(item_labels[[SC]][[domain]]))
             nr <- data.frame(ID_t = data$ID_t, nr = rowSums(data[, sel] == -94))
             data[data < 0] <- NA
             data <- data[rowSums(!is.na(data[, sel])) >= nvalid, ]
@@ -209,8 +209,8 @@ plausible_values <- function(SC,
             data <- data[rowSums(!is.na(data[, sel])) >= nvalid, ]
         }
     } else {
+        sel <- names(data) %in% item_labels[[SC]][[domain]][[wave]]
         if (include.nr) {
-            sel <- names(data) %in% item_labels[[SC]][[domain]][[wave]]
             nr <- data.frame(ID_t = data$ID_t, nr = rowSums(data[, sel] == -94))
             data[data < 0] <- NA
             data <- data[rowSums(!is.na(data[, sel])) >= nvalid, ]
