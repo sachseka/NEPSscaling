@@ -201,7 +201,7 @@ item_labels <- list(SC4 = list(RE = list(w2 = c("reg90110_c", "reg90120_c", "reg
                                                 "bas7org5_c", "bas7org6_c", "bas7fin1_c", "bas7fin2_c", "bas7fin3_c",
                                                 "bas7fin4_c", "bas7fin5_c", "bas7fin6_c", "bas7acc1_c", "bas7acc2_c",
                                                 "bas7acc3_c", "bas7acc4_c", "bas7acc5_c", "bas7acc6_c", "bas7mic1_c",
-                                                "bas7mic2_c", "bas7mic3_c", "bas7mic4_c", "bas7mic5_c", #"bas7mic6_c",
+                                                "bas7mic2_c", "bas7mic3_c", "bas7mic4_c", "bas7mic5_c", #"bas7mic6_c", # removed due to dif
                                                 #"bas7mac1_c",
                                                 "bas7mac2_c", "bas7mac3_c", "bas7mac4_c", "bas7mac5_c",
                                                 "bas7mac6_c")),

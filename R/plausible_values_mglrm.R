@@ -106,6 +106,9 @@ plausible_values_mglrm <- function(
       XMIS <- is.na(X)
       xmisord <- names(sort(colSums(XMIS)))[sort(colSums(XMIS)) > 0]
       for(k in xmisord){
+          if (length(X[XOBS[, k], k]) == 0) {
+              stop(paste(k, "does not contain any observed values for the subsample of test takers. Please remove it from the background data set."))
+          }
         X[XMIS[, k], k] <- sample(X[XOBS[, k], k], sum(XMIS[, k]), replace = TRUE)
       }
       if(is.null(S)){
@@ -133,6 +136,7 @@ plausible_values_mglrm <- function(
   GAMMA <- matrix(0, nrow = KX, ncol = G)
   SIGMA2 <- rep(1, G)
   ALPHA <- rep(1, J)
+  BETA <- rep(0, J)
   if (!is.null(SC) & !is.null(domain) & !is.null(wave)) {
       if (domain == "MA") {
           if ((SC == "SC4" & wave == "w10") |
@@ -146,11 +150,7 @@ plausible_values_mglrm <- function(
               (SC == "SC6" & wave == "w9")) {
               BETA <- xsi.fixed[["cross"]][["RE"]][[SC]][, 2]
           }
-      } else {
-          BETA <- rep(0, J)
       }
-  } else {
-      BETA <- rep(0, J)
   }
   XI <- rbind(ALPHA, BETA)
   TAU <- lapply(Q, function(x){

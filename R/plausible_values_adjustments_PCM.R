@@ -121,6 +121,7 @@ adjustments_PCM <- function (resp, SC, wave, domain) {
                 resp$sca5091s_c[resp$sca5091s_c == 4] <- 3
             }
         } else if (SC == 'SC5') {
+            # EF (w12) already collapsed in SUF
             if (domain == "RE") {
             # reading w1 already collapsed in SUF
                 if (w == "w12") {

@@ -125,6 +125,9 @@ plausible_values_mdlrm <- function(
             XMIS <- is.na(X)
             xmisord <- names(sort(colSums(XMIS)))[sort(colSums(XMIS)) > 0]
             for(k in xmisord){
+                if (length(X[XOBS[, k], k]) == 0) {
+                    stop(paste(k, "does not contain any observed values for the subsample of test takers. Please remove it from the background data set."))
+                }
                 X[XMIS[, k], k] <- sample(X[XOBS[, k], k], sum(XMIS[, k]), replace = TRUE)
             }
             X2IMP <- data.frame(X, THETA)

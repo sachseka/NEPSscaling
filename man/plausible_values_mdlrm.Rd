@@ -15,7 +15,8 @@ plausible_values_mdlrm(Y, X = NULL, npv = 10, est.alpha = TRUE,
 
 \item{npv}{number of plausible values to draw for each respondent.}
 
-\item{est.alpha}{logical, should alphas be estimated or fixed to 0.5 for ordinal items}
+\item{est.alpha}{logical, should discrimination parameters be estimated or
+fixed to 1 for dichotomous and to 0.5 for ordinal items}
 
 \item{itermcmc}{number of MCMC iterations.}
 

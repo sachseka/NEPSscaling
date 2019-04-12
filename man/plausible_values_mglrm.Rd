@@ -26,7 +26,8 @@ model without grouping results from \code{S} set to \code{NULL} (default).}
 
 \item{npv}{number of plausible values; defaults to 10.}
 
-\item{est.alpha}{logical, should alphas be estimated or fixed to 0.5 for ordinal items}
+\item{est.alpha}{logical, should discrimination parameters be estimated or
+fixed to 1 for dichotomous and to 0.5 for ordinal items}
 
 \item{itermcmc}{number of MCMC iterations.}
 

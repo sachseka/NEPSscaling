@@ -428,6 +428,7 @@ plausible_values <- function(SC,
         }
 
         # fixed item parameters
+        fixed_difficulty <- NULL
         if (domain == "MA") {
             if (longitudinal & SC %in% c("SC4", "SC5", "SC6")) {
                 fixed_difficulty <- xsi.fixed[["long"]][["MA"]][[SC]]
@@ -444,8 +445,6 @@ plausible_values <- function(SC,
                        (SC == "SC6" & wave == "w9")) {
                 fixed_difficulty <- xsi.fixed[["cross"]][["RE"]][[SC]]
             }
-        } else {
-            fixed_difficulty <- NULL
         }
 
         pvs <- list()
