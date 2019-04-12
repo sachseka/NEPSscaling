@@ -46,7 +46,7 @@ CART <- function(
 
     X <- data.frame(X)
     ID_t <- X$ID_t
-    X <- X[, -which(names(X)=='ID_t')]#data.matrix(X[, -which(names(X)=='ID_t')])
+    X <- X[, -which(names(X)=='ID_t')]
 
     XOBS <- !is.na(X)
     XMIS <- is.na(X)

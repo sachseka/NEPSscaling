@@ -431,20 +431,22 @@ plausible_values <- function(SC,
         fixed_difficulty <- NULL
         if (domain == "MA") {
             if (longitudinal & SC %in% c("SC4", "SC5", "SC6")) {
-                fixed_difficulty <- xsi.fixed[["long"]][["MA"]][[SC]]
+                fixed_difficulty <- xsi.fixed$long$MA[[SC]]
             } else if ((SC == "SC4" & wave == "w10") |
                        (SC == "SC5" & wave == "w12") |
                        (SC == "SC6" & wave == "w9")) {
-                fixed_difficulty <- xsi.fixed[["cross"]][["MA"]]
+                fixed_difficulty <- xsi.fixed$cross$MA
             }
         } else if (domain == "RE") {
             if (longitudinal & SC %in% c("SC4", "SC5", "SC6")) {
-                fixed_difficulty <- xsi.fixed[["long"]][["RE"]][[SC]]
+                fixed_difficulty <- xsi.fixed$long$RE[[SC]]
             } else if ((SC == "SC4" & wave == "w10") |
                        (SC == "SC5" & wave == "w12") |
                        (SC == "SC6" & wave == "w9")) {
-                fixed_difficulty <- xsi.fixed[["cross"]][["RE"]][[SC]]
+                fixed_difficulty <- xsi.fixed$cross$RE[[SC]]
             }
+        } else if (domain == "EF" & SC == "SC5") {
+            fixed_difficulty <- xsi.fixed$cross$EF
         }
 
         pvs <- list()

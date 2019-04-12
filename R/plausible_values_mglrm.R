@@ -142,14 +142,16 @@ plausible_values_mglrm <- function(
           if ((SC == "SC4" & wave == "w10") |
               (SC == "SC5" & wave == "w12") |
               (SC == "SC6" & wave == "w9")) {
-              BETA <- xsi.fixed[["cross"]][["MA"]][, 2]
+              BETA <- xsi.fixed$cross$MA[, 2]
           }
       } else if (domain == "RE") {
           if ((SC == "SC4" & wave == "w10") |
               (SC == "SC5" & wave == "w12") |
               (SC == "SC6" & wave == "w9")) {
-              BETA <- xsi.fixed[["cross"]][["RE"]][[SC]][, 2]
+              BETA <- xsi.fixed$cross$RE[[SC]][, 2]
           }
+      } else if (domain == "EF" & SC == "SC5") {
+          BETA <- xsi.fixed$cross$EF[, 2]
       }
   }
   XI <- rbind(ALPHA, BETA)
@@ -219,16 +221,18 @@ plausible_values_mglrm <- function(
               if ((SC == "SC4" & wave == "w10") |
                   (SC == "SC5" & wave == "w12") |
                   (SC == "SC6" & wave == "w9")) {
-                  BETA <- xsi.fixed[["cross"]][["MA"]][, 2]
+                  BETA <- xsi.fixed$cross$MA[, 2]
               }
           } else if (domain == "RE") {
               if ((SC == "SC4" & wave == "w10") |
                   (SC == "SC5" & wave == "w12") |
                   (SC == "SC6" & wave == "w9")) {
-                  BETA <- xsi.fixed[["cross"]][["RE"]][[SC]][, 2]
+                  BETA <- xsi.fixed$cross$RE[[SC]][, 2]
               }
           } else {
               BETA <- XI[2, ] - sum(XI[2, ])/J
+          } else if (domain == "EF" & SC == "SC5") {
+              BETA <- xsi.fixed$cross$EF[, 2]
           }
       } else {
           BETA <- XI[2, ] - sum(XI[2, ])/J

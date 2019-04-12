@@ -101,6 +101,15 @@ xsi.fixed$long[["RE"]] <- list(SC4 = cbind((l4+1):(l4+nrow(xsi.sc4)), unname(xsi
                                SC6 = cbind((l6+1):(l6+nrow(xsi.sc6)), unname(xsi.sc6[, 2])))
 
 
+## additionally SC5 EF w12 is fixed because the scalings are based on the CBT
+## sample alone, but the SUF contains WBT also (not discriminable)
+load("Z:/Projektgruppen_(08)/Kompetenzen_BA_Hiwi_(p000012)/Methoden/Skalierung/HE/B114_SC5/EF/Version 1/output/data/pcm.Rdata")
+
+xsi <- pcm$all$mod$xsi.fixed.estimated#all$mod$xsi.fixed.estimated
+xsi <- xsi[!grepl("step", rownames(xsi)), ]
+
+xsi.fixed$cross[["EF"]] <- xsi
+
 
 
 # save fixed item parameters
