@@ -9,12 +9,12 @@ plausible_values(SC, domain = c("MA", "RE", "SC", "IC", "LI", "EF", "NR",
   "NT", "OR", "ST", "BA", "CD", "GR"), wave, method = c("ML", "Bayes"),
   path, filetype = c("SPSS", "Stata"), bgdata = NULL, npv = 10L,
   longitudinal = FALSE, rotation = TRUE, nvalid = 3L,
-  control = list(EAP = FALSE, Bayes = list(itermcmc = 10000, burnin =
-  2000, est.alpha = FALSE, thin = 1, tdf = 10, cartctrl1 = 5, cartctrl2 =
-  1e-04), ML = list(nmi = 10L, ntheta = 2000, normal.approx = FALSE,
-  samp.regr = FALSE, theta.model = FALSE, np.adj = 8, na.grid = 5, itermcmc
-  = 100, burnin = 50, thin = 1, tdf = 10, cartctrl1 = 5, cartctrl2 =
-  1e-04)))
+  include.nr = TRUE, control = list(EAP = FALSE, Bayes = list(itermcmc
+  = 10000, burnin = 2000, est.alpha = FALSE, thin = 1, tdf = 10, cartctrl1
+  = 5, cartctrl2 = 1e-04), ML = list(nmi = 10L, ntheta = 2000,
+  normal.approx = FALSE, samp.regr = FALSE, theta.model = FALSE, np.adj =
+  8, na.grid = 5, itermcmc = 100, burnin = 50, thin = 1, tdf = 10,
+  cartctrl1 = 5, cartctrl2 = 1e-04)))
 }
 \arguments{
 \item{SC}{numeric. The starting cohort used for the analysis is
@@ -54,6 +54,10 @@ automatically.}
 
 \item{nvalid}{numeric; minimum number of responses test takers had to
 give for inclusion into the estimation process. NEPS default is at least three.}
+
+\item{include.nr}{logical; whether the number of not-reached items as a proxy
+for processing speed should be included in the background model (the default
+is TRUE)}
 
 \item{control}{list of additional options. If \code{EAP = TRUE}, the EAPs
 will be returned as well. Furthermore, additional control options for "ML"

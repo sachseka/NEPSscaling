@@ -194,6 +194,9 @@ plausible_values_mdlrm <- function(
     names(datalist) <- paste0('Iteration', savepvs)
 
     pb <- txtProgressBar(min = 0, max = itermcmc, style = 3)
+    # t <- matrix(0,itermcmc,J)
+    # rownames(t) <- 1:itermcmc
+    # colnames(t) <- paste0("item", 1:J)
     for(ii in 1:itermcmc){
         for(iii in 1:thin){
             # (1)
@@ -212,6 +215,8 @@ plausible_values_mdlrm <- function(
                     XI[1, j] <- 0
                     while(XI[1, j] <= 0){
                         XI[, j] <- mvrnorm(1, muitem, Covitem)
+                        # t[ii,j] <- t[ii,j]+1
+                        # if (t[ii,j] > 100) browser()
                     }
                 }
                 ALPHA[jdim[[dim]], dim] <- XI[1, jdim[[dim]]]*(1/prod(XI[1, jdim[[dim]]]))^Jdiminv[dim]

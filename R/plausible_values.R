@@ -182,17 +182,33 @@ plausible_values <- function(SC,
     # get competence data for SC and domain
     files <- list.files(path = path)
     if (filetype == 'SPSS') {
-        data <- tryCatch({haven::read_spss(file = paste0(path, files[grep('xTargetCompetencies', files)]),
-                                           user_na = TRUE)},
-                         error=function(e){
-                             stop(paste0("Path ", path, " does not lead to competence files OR wrong file formats!"))
-                         })
+        if (SC == "SC5" & domain == "BA") {
+            data <- tryCatch({haven::read_spss(file = paste0(path, files[grep('xEcoCAPI', files)]),
+                                               user_na = TRUE)},
+                             error=function(e){
+                                 stop(paste0("Path ", path, " does not lead to competence files OR wrong file formats!"))
+                             })
+        } else {
+            data <- tryCatch({haven::read_spss(file = paste0(path, files[grep('xTargetCompetencies', files)]),
+                                               user_na = TRUE)},
+                             error=function(e){
+                                 stop(paste0("Path ", path, " does not lead to competence files OR wrong file formats!"))
+                             })
+        }
     } else {
-        data <- tryCatch({haven::read_dta(file = paste0(path, files[grep('xTargetCompetencies', files)]),
-                                          user_na = TRUE)},
-                         error=function(e){
-                             stop(paste0("Path '", path, "' does not lead to competence files OR wrong file formats!"))
-                         })
+        if (SC == "SC5" & domain == "BA") {
+            data <- tryCatch({haven::read_dta(file = paste0(path, files[grep('xEcoCAPI', files)]),
+                                              user_na = TRUE)},
+                             error=function(e){
+                                 stop(paste0("Path '", path, "' does not lead to competence files OR wrong file formats!"))
+                             })
+        } else {
+            data <- tryCatch({haven::read_dta(file = paste0(path, files[grep('xTargetCompetencies', files)]),
+                                              user_na = TRUE)},
+                             error=function(e){
+                                 stop(paste0("Path '", path, "' does not lead to competence files OR wrong file formats!"))
+                             })
+        }
     }
     data <- data[order(data$ID_t), ]
 
@@ -326,7 +342,7 @@ plausible_values <- function(SC,
                 #     position[!is.na(position$position) & (position$position %in% c(472,473,476)), 'position'] <- 2 # math first
                 #     position$position <- haven::labelled(position$position, c("reading first" = 1, "math first" = 2))
                 # }
-            } else if (SC == 'SC5') {
+            } else if (SC == 'SC5') { # w7 does not have rotation an can be ignored here
                 if (wave == 'w1') {
                     position[, 'position'] <- data[, 'tx80211_w1']
                     position[!is.na(position$position) & (position$position == 126), 'position'] <- 1 # reading first
@@ -337,6 +353,23 @@ plausible_values <- function(SC,
                     position[!is.na(position$position) & (position$position %in% c(330,332,334)), 'position'] <- 1 # sc first
                     position[!is.na(position$position) & (position$position %in% c(331,333,335)), 'position'] <- 2 # ict first
                     position$position <- haven::labelled(position$position, c("science first" = 1, "ICT first" = 2))
+                } else if (wave == 'w12') { # rotation for all of them --> like SC4
+                    if (domain == "RE") {
+                        position[, 'position'] <- data[, 'tx80211_w12']
+                        position[!is.na(position$position) & (position$position %in% c(459,462,465,468)), 'position'] <- 1 # reading first
+                        position[!is.na(position$position) & (position$position %in% c(458,463,464,469)), 'position'] <- 2 # reading second
+                        position$position <- haven::labelled(position$position, c("reading first" = 1, "reading second" = 2))
+                    } else if (domain == "MA") {
+                        position[, 'position'] <- data[, 'tx80211_w12']
+                        position[!is.na(position$position) & (position$position %in% c(458,460,464,466)), 'position'] <- 1 # math first
+                        position[!is.na(position$position) & (position$position %in% c(459,461,465,467)), 'position'] <- 2 # math second
+                        position$position <- haven::labelled(position$position, c("math first" = 1, "math second" = 2))
+                    } else if (domain == "EF") {
+                        position[, 'position'] <- data[, 'tx80211_w12']
+                        position[!is.na(position$position) & (position$position %in% c(461,463,467,469)), 'position'] <- 1 # English first
+                        position[!is.na(position$position) & (position$position %in% c(460,462,466,468)), 'position'] <- 2 # English second
+                        position$position <- haven::labelled(position$position, c("English first" = 1, "English second" = 2))
+                    }
                 }
             } else if (SC == 'SC6') {
                 if (wave == 'w3') {
@@ -689,7 +722,7 @@ plausible_values <- function(SC,
                 } else {
                     rownames(res[["regr.coeff"]][[n]]) <-
                         c("Intercept", names(res[['pv']][[1]][, 2:(ncol(res[['pv']][[1]]) -
-                           ifelse(SC == "SC6", length(waves) + 1, length(waves)))]))
+                           ifelse(SC == "SC6" & domain == "RE", length(waves) + 1, length(waves)))]))
                 }
             }
         }

@@ -157,9 +157,9 @@ adjustments_PCM <- function (resp, SC, wave, domain) {
                     resp$maa9r26s_sc5s12_c[resp$maa9r26s_sc5s12_c == 2] <- 1
                     resp$maa9r26s_sc5s12_c[resp$maa9r26s_sc5s12_c == 3] <- 2
                     resp$maa9r26s_sc5s12_c[resp$maa9r26s_sc5s12_c == 4] <- 3
-                    resp$maa9d23s_sc5s12_c[resp$maa9d23s_sc5s12_c == 1] <- 0
-                    resp$maa9d23s_sc5s12_c[resp$maa9d23s_sc5s12_c == 2] <- 1
-                    resp$maa9r18s_sc5s12_c[resp$maa9r18s_sc5s12_c == 2] <- 1
+                    # resp$maa9d23s_sc5s12_c[resp$maa9d23s_sc5s12_c == 1] <- 0
+                    # resp$maa9d23s_sc5s12_c[resp$maa9d23s_sc5s12_c == 2] <- 1
+                    # resp$maa9r18s_sc5s12_c[resp$maa9r18s_sc5s12_c == 2] <- 1
                     resp$maa9d13s_sc5s12_c[resp$maa9d13s_sc5s12_c %in% c(1,2,3)] <- 0
                     resp$maa9d13s_sc5s12_c[resp$maa9d13s_sc5s12_c == 4] <- 1
                     resp$maa9d13s_sc5s12_c[resp$maa9d13s_sc5s12_c %in% c(5,6)] <- 2
@@ -285,9 +285,9 @@ adjustments_PCM <- function (resp, SC, wave, domain) {
                     resp$maa9r26s_sc4a10_c[resp$maa9r26s_sc4a10_c == 2] <- 1
                     resp$maa9r26s_sc4a10_c[resp$maa9r26s_sc4a10_c == 3] <- 2
                     resp$maa9r26s_sc4a10_c[resp$maa9r26s_sc4a10_c == 4] <- 3
-                    resp$maa9d23s_sc4a10_c[resp$maa9d23s_sc4a10_c == 1] <- 0
-                    resp$maa9d23s_sc4a10_c[resp$maa9d23s_sc4a10_c == 2] <- 1
-                    resp$maa9r18s_sc4a10_c[resp$maa9r18s_sc4a10_c == 2] <- 1
+                    # resp$maa9d23s_sc4a10_c[resp$maa9d23s_sc4a10_c == 1] <- 0
+                    # resp$maa9d23s_sc4a10_c[resp$maa9d23s_sc4a10_c == 2] <- 1
+                    # resp$maa9r18s_sc4a10_c[resp$maa9r18s_sc4a10_c == 2] <- 1
                     resp$maa9d13s_sc4a10_c[resp$maa9d13s_sc4a10_c %in% c(1,2,3)] <- 0
                     resp$maa9d13s_sc4a10_c[resp$maa9d13s_sc4a10_c == 4] <- 1
                     resp$maa9d13s_sc4a10_c[resp$maa9d13s_sc4a10_c %in% c(5,6)] <- 2
