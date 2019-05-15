@@ -126,7 +126,6 @@ adjustments_PCM <- function (resp, SC, wave, domain) {
             # reading w1 already collapsed in SUF
                 if (w == "w12") {
                     # collapse categories
-                    # TODO: change to correct item names
                     resp$rea90201s_sc5s12_c[resp$rea90201s_sc5s12_c == 1] <- 0
                     resp$rea90201s_sc5s12_c[resp$rea90201s_sc5s12_c == 2] <- 1
                     resp$rea90201s_sc5s12_c[resp$rea90201s_sc5s12_c == 3] <- 2
@@ -147,7 +146,6 @@ adjustments_PCM <- function (resp, SC, wave, domain) {
                 }
                 if (w == "w12") {
                     # collapse categories
-                    # TODO: check correct item names
                     resp$maa9v28s_sc5s12_c[resp$maa9v28s_sc5s12_c %in% c(0,1,2,3)] <- 0
                     resp$maa9v28s_sc5s12_c[resp$maa9v28s_sc5s12_c %in% c(4,5,6)] <- 1
                     resp$maa9v27s_sc5s12_c[resp$maa9v27s_sc5s12_c == 1] <- 0
@@ -157,6 +155,7 @@ adjustments_PCM <- function (resp, SC, wave, domain) {
                     resp$maa9r26s_sc5s12_c[resp$maa9r26s_sc5s12_c == 2] <- 1
                     resp$maa9r26s_sc5s12_c[resp$maa9r26s_sc5s12_c == 3] <- 2
                     resp$maa9r26s_sc5s12_c[resp$maa9r26s_sc5s12_c == 4] <- 3
+                    # left out because of extreme amount of missing values (almost 100%!)
                     # resp$maa9d23s_sc5s12_c[resp$maa9d23s_sc5s12_c == 1] <- 0
                     # resp$maa9d23s_sc5s12_c[resp$maa9d23s_sc5s12_c == 2] <- 1
                     # resp$maa9r18s_sc5s12_c[resp$maa9r18s_sc5s12_c == 2] <- 1
@@ -285,6 +284,7 @@ adjustments_PCM <- function (resp, SC, wave, domain) {
                     resp$maa9r26s_sc4a10_c[resp$maa9r26s_sc4a10_c == 2] <- 1
                     resp$maa9r26s_sc4a10_c[resp$maa9r26s_sc4a10_c == 3] <- 2
                     resp$maa9r26s_sc4a10_c[resp$maa9r26s_sc4a10_c == 4] <- 3
+                    # left out because of extreme amount of missing values (almost 100%!)
                     # resp$maa9d23s_sc4a10_c[resp$maa9d23s_sc4a10_c == 1] <- 0
                     # resp$maa9d23s_sc4a10_c[resp$maa9d23s_sc4a10_c == 2] <- 1
                     # resp$maa9r18s_sc4a10_c[resp$maa9r18s_sc4a10_c == 2] <- 1

@@ -194,9 +194,6 @@ plausible_values_mdlrm <- function(
     names(datalist) <- paste0('Iteration', savepvs)
 
     pb <- txtProgressBar(min = 0, max = itermcmc, style = 3)
-    # t <- matrix(0,itermcmc,J)
-    # rownames(t) <- 1:itermcmc
-    # colnames(t) <- paste0("item", 1:J)
     for(ii in 1:itermcmc){
         for(iii in 1:thin){
             # (1)
@@ -215,8 +212,6 @@ plausible_values_mdlrm <- function(
                     XI[1, j] <- 0
                     while(XI[1, j] <= 0){
                         XI[, j] <- mvrnorm(1, muitem, Covitem)
-                        # t[ii,j] <- t[ii,j]+1
-                        # if (t[ii,j] > 100) browser()
                     }
                 }
                 ALPHA[jdim[[dim]], dim] <- XI[1, jdim[[dim]]]*(1/prod(XI[1, jdim[[dim]]]))^Jdiminv[dim]
@@ -238,14 +233,18 @@ plausible_values_mdlrm <- function(
             }
             # (3)
             for(j in POSITEMORD){
-                maxTau <- ucminf(par = TAU[[j]], fn = lposttau, Yj = Y[YOBS[, j], j], Qj = QMI2[j],
-                                 alpha = ALPHA[j, jdim2[j]], beta = BETA[j], Theta = THETA[YOBS[, j], jdim2[j]], hessian = 1)
+                maxTau <- ucminf(par = TAU[[j]], fn = lposttau, Yj = Y[YOBS[, j], j],
+                                 Qj = QMI2[j], alpha = ALPHA[j, jdim2[j]],
+                                 beta = BETA[j], Theta = THETA[YOBS[, j], jdim2[j]],
+                                 hessian = 1)
                 hatTau <- maxTau$par
                 InvhessTau <- solve(maxTau$hessian)
                 TAUC <- rmvt(1, delta = hatTau, sigma = InvhessTau, df = tdf)
                 ratio <- min(1, exp(
-                    -lposttau(TAUC, Y[YOBS[, j], j], QMI2[j], ALPHA[j, jdim2[j]], BETA[j], THETA[YOBS[, j], jdim2[j]]) +
-                        lposttau(TAU[[j]], Y[YOBS[, j], j], QMI2[j], ALPHA[j, jdim2[j]], BETA[j], THETA[YOBS[, j], jdim2[j]]) -
+                    -lposttau(TAUC, Y[YOBS[, j], j], QMI2[j], ALPHA[j, jdim2[j]],
+                              BETA[j], THETA[YOBS[, j], jdim2[j]]) +
+                        lposttau(TAU[[j]], Y[YOBS[, j], j], QMI2[j],
+                                 ALPHA[j, jdim2[j]], BETA[j], THETA[YOBS[, j], jdim2[j]]) -
                         dmvt(TAUC, delta = hatTau, sigma = InvhessTau, df = tdf, log = TRUE) +
                         dmvt(TAU[[j]], delta = hatTau, sigma = InvhessTau, df = tdf, log = TRUE)
                 ))

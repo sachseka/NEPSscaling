@@ -175,9 +175,9 @@ plausible_values_mglrm <- function(
   colnames(Sigma2) <- paste0("group", 1:G)
   Alpha <- matrix(0, nrow = itermcmc, ncol = J)
   Beta <- matrix(0, nrow = itermcmc, ncol = J)
-  Kappa <- matrix(0, nrow = itermcmc, ncol = sum(QMI2))#
-  accTau <- rep(0, J)#
-  names(accTau) <- colnames(Y)#
+  # Kappa <- matrix(0, nrow = itermcmc, ncol = sum(QMI2))#
+  # accTau <- rep(0, J)#
+  # names(accTau) <- colnames(Y)#
   Theta <- matrix(0, nrow = itermcmc, ncol = N)
   PrecGamma0 <- solve(100*diag(KX))
   shapeSigma20 <- 1
@@ -190,10 +190,6 @@ plausible_values_mglrm <- function(
   names(datalist) <- paste0('Iteration', savepvs)
   # MCMC
   pb <- txtProgressBar(min = 0, max = itermcmc, style = 3)
-  t <- matrix(0,itermcmc,J)
-  rownames(t) <- 1:itermcmc
-  colnames(t) <- paste0("item", 1:J)
-  # Ylat <- replicate(itermcmc, YLAT) #N, J, itermcmc
   for(ii in 1:itermcmc){
     for(iii in 1:thin){
       # (1)
@@ -208,12 +204,9 @@ plausible_values_mglrm <- function(
       for (j in 1:J) {
         Covitem <- solve(crossprod(Xitem[YOBS[, j], ]) + PrecXi0)
         muitem <- Covitem%*%crossprod(Xitem[YOBS[, j], ], YLAT[YOBS[, j], j])
-        # if (any(is.infinite(muitem)) || any(is.na(muitem))) {muitem <- matrix(c(1,0), 2, 1)} # otherwise while will crash
         XI[1, j] <- 0
         while(XI[1, j] <= 0){
           XI[, j] <- rmvnorm(1, muitem, Covitem)
-          t[ii,j] <- t[ii,j]+1
-          if (t[ii,j] > 100) browser()
         }
       }
       ALPHA <- XI[1, ]*(1/prod(XI[1, ]))^Jinv
@@ -256,9 +249,9 @@ plausible_values_mglrm <- function(
         if(runif(1) < ratio){
           TAU[[j]] <- TAUC
           KAPPA[[j]][3:Q[j]] <- cumsum(exp(TAUC))
-          if(ii > burnin){#
-              accTau[j] <- accTau[j] + 1#
-          }#
+          # if(ii > burnin){#
+          #     accTau[j] <- accTau[j] + 1#
+          # }#
         }
       }
       # (4)
@@ -291,11 +284,10 @@ plausible_values_mglrm <- function(
     Sigma2[ii, ] <- SIGMA2
     Alpha[ii, ] <- ALPHA
     Beta[ii, ] <- BETA
-    Kappa[ii, ] <- unlist(lapply(KAPPA[!ITEMBIN], function(x){#
-      return(x[-c(1, 2, length(x))])#
-    }))#
+    # Kappa[ii, ] <- unlist(lapply(KAPPA[!ITEMBIN], function(x){#
+    #   return(x[-c(1, 2, length(x))])#
+    # }))#
     Theta[ii, ] <- THETA
-    # Ylat[,,ii] <- YLAT#
     # save MCMC draws
     if (ii %in% savepvs) {
       sel <- which(names(datalist) == paste0('Iteration', ii))

@@ -1,5 +1,4 @@
-# Loading patterns for longitudinal
-# item response models (ML)
+# Loading patterns for longitudinal item response models (ML)
 
 qmat <- function(SC, domain) {
     if (SC == "SC6" && domain == "RE") {

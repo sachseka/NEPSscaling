@@ -6,7 +6,8 @@
 
 matrices_with_rotation <- function(resp, position, ind) {
   formulaA <- ~ 0 + item + item:step + position
-  design <- TAM::designMatrices.mfr2(resp = resp, formulaA = formulaA, facets = position, constraint = 'cases')
+  design <- TAM::designMatrices.mfr2(resp = resp, formulaA = formulaA,
+                                     facets = position, constraint = 'cases')
   resp2 <- design$gresp$gresp.noStep
   A <- design$A$A.3d
   xsi.elim <- design$xsi.elim

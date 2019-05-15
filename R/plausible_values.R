@@ -266,7 +266,6 @@ plausible_values <- function(SC,
                                      data[!(data$ID_t %in% bgdata$ID_t),
                                           'ID_t', drop = FALSE]))
             }
-            # data <- data[data$ID_t %in% bgdata$ID_t, ]
             bgdata <- bgdata[order(bgdata$ID_t), ]
         } else {
             # append subjects in background data that did not take the competence tests
@@ -637,7 +636,6 @@ plausible_values <- function(SC,
         }
         names(VAR) <- gsub("_", "", waves)
         names(MEAN) <- gsub("_", "", waves)
-        # TODO: for SC6 reading the PVs have to be linked to w3 and w5 separately
         if (SC == "SC6" && domain == "RE") {
             longitudinal_IDs <- list()
             longitudinal_IDs[["w3"]] <- dplyr::filter(data, wave_w3 == 1,
