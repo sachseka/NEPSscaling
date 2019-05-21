@@ -129,7 +129,7 @@ plausible_values <- function(SC,
                                cartctrl1 = 5, cartctrl2 = 0.0001),
                    ML = list(nmi = 10L, ntheta = 2000, normal.approx = FALSE, samp.regr = FALSE,
                               theta.model = FALSE, np.adj = 8, na.grid = 5,
-                             itermcmc = 100, burnin = 50, thin = 1, tdf = 10,
+                             itermcmc = 100, burnin = 50, thin = 1,
                              cartctrl1 = 5, cartctrl2 = 0.0001))
 ){
     rea9_sc1u <- wave_w3 <- wave_w5 <- . <- NULL
