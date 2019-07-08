@@ -1,5 +1,5 @@
 #' Get information about implementation progress of
-#' \code{NEPStools::plausible_values()}
+#' \code{NEPScaling::plausible_values()}
 #'
 #' @export
 
