@@ -191,7 +191,7 @@ plausible_values <- function(SC,
     if (!is.character(path) || !grepl("/$",path)) stop("Path must be a character string and end in '/'.")
     if (longitudinal && (SC == "SC6" | SC == "SC5") & domain %in% c("IC", "SC", "BA", "EF")){
         longitudinal <- FALSE
-        message(paste("No longitudinal data for:", SC, domain,"."))
+        message(paste("No longitudinal data for:", SC, domain,". Estimating cross-sectional plausible values instead."))
         }
     if(longitudinal) {
         type <- 'long'
