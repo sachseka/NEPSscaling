@@ -2,19 +2,16 @@ Package: NEPStools
 Title: A collection of tools for NEPS data
 Version: 0.0.0.9000
 Authors@R: person("Anna", "Scharl", email = "anna.scharl@lifbi.de", role = c("aut", "cre"))
-Description: The package provides NEPS data users with a series of tools; 
+Description: The package provides NEPS data users with a series of tools;
              among others to estimate plausible values for competence data.
 Depends: R (>= 3.5.0),
-Imports:
-    mvtnorm,
-    ucminf,
-    numDeriv,
-    rpart,
-    haven (>= 1.1.1),
-    TAM (>= 2.12-18),
-    dplyr,
-    MASS,
+Imports: mvtnorm, ucminf, numDeriv, rpart, haven (>= 1.1.1), TAM (>=
+        2.12-18), dplyr, MASS,
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
+NeedsCompilation: no
+Packaged: 2019-07-01 09:22:41 UTC; ba5vz7
+Author: Anna Scharl [aut, cre]
+Maintainer: Anna Scharl <anna.scharl@lifbi.de>

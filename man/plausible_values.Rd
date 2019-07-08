@@ -13,8 +13,8 @@ plausible_values(SC, domain = c("MA", "RE", "SC", "IC", "LI", "EF", "NR",
   = 10000, burnin = 2000, est.alpha = FALSE, thin = 1, tdf = 10, cartctrl1
   = 5, cartctrl2 = 1e-04), ML = list(nmi = 10L, ntheta = 2000,
   normal.approx = FALSE, samp.regr = FALSE, theta.model = FALSE, np.adj =
-  8, na.grid = 5, itermcmc = 100, burnin = 50, thin = 1, tdf = 10,
-  cartctrl1 = 5, cartctrl2 = 1e-04)))
+  8, na.grid = 5, itermcmc = 100, burnin = 50, thin = 1, cartctrl1 = 5,
+  cartctrl2 = 1e-04)))
 }
 \arguments{
 \item{SC}{numeric. The starting cohort used for the analysis is
