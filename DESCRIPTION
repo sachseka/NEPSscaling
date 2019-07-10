@@ -1,9 +1,15 @@
-Package: NEPStools
-Title: A collection of tools for NEPS data
+Package: NEPScaling
+Title: NEPScaling -- Tools for Plausible Values Estimation with NEPS data
 Version: 0.0.0.9000
 Authors@R: person("Anna", "Scharl", email = "anna.scharl@lifbi.de", role = c("aut", "cre"))
+<<<<<<< HEAD
 Description: The package provides NEPS data users with a series of tools;
              among others to estimate plausible values for competence data.
+=======
+Description: NEPScaling allows users of NEPS data to estimate individual 
+             competence values in the form of plausible values for NEPS 
+             competence tests.
+>>>>>>> dev
 Depends: R (>= 3.5.0),
 Imports: mvtnorm, ucminf, numDeriv, rpart, haven (>= 1.1.1), TAM (>=
         2.12-18), dplyr, MASS,

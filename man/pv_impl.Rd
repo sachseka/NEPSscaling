@@ -3,11 +3,11 @@
 \name{pv_impl}
 \alias{pv_impl}
 \title{Get information about implementation progress of
-\code{NEPStools::plausible_values()}}
+\code{NEPScaling::plausible_values()}}
 \usage{
 pv_impl()
 }
 \description{
 Get information about implementation progress of
-\code{NEPStools::plausible_values()}
+\code{NEPScaling::plausible_values()}
 }

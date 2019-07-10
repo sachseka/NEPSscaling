@@ -47,8 +47,50 @@
 #' algorithm for "ML" estimation.
 #'
 #' @return \code{plausible_values()} returns an object of class \code{pv.obj}
-#' containing a list of \code{npv} plausible values with the data set used
-#' for estimating them as well as the specified function arguments.
+#' containing:
+#' \describe{
+#' \item{SC}{Starting cohort that plausible values were estimated for}
+#' \item{domain}{Competence domain that plausible values were estimated for}
+#' \item{wave}{Wave that plausible values were estimated for}
+#' \item{method}{Estimation algorithm that was used for estimating plausible
+#' values (\code{ML} for the EM algorithm implemented in \code{TAM} or \code{Bayes}
+#' for the Gibbs Sampler implemented in \code{LaRA})}
+#' \item{type}{Whether cross-sectional ("cross") or longitudinal ("long")
+#' plausible values were estimated}
+#' \item{rotation}{In most assessments the position of the competence test was
+#' rotated with another competence domain. If this was the case for the
+#' specific estimation, this variable indicates whether the correction was
+#' applied. Depending on the estimation context, this variable may have been
+#' automatically set by the function and thus differ from user input}
+#' \item{nvalid}{The minimum number of answers a test taker must have given}
+#' \item{model}{If the method \code{ML} was chosen, a Rasch or a Partial Credit
+#' Model was estimated, depending on the item format. If \code{Bayes} was chosen,
+#' a Graded Response Model was estimated.}
+#' \item{n.valid}{A \code{data.frame} containing the \code{ID_t} and the
+#' number of valid responses given by the respective individual}
+#' \item{npv}{The number of plausible values that are returned by the function}
+#' \item{control}{The control variables that were applied to fine-tune the
+#' estimation algorithms}
+#' \item{position}{A \code{data.frame} containing the \code{ID_t} and the
+#' position the respective individual got the testlet in (first or second)}
+#' \item{abs.correction}{The total amount by which the scale was shifted in
+#' longitudinal estimation (consisting of linking constants and dropout
+#' corrections)}
+#' \item{variance.PV}{The overall variance of all persons' abilities}
+#' \item{mean.PV}{The overall mean of all persons' abilities}
+#' \item{pv}{A list of \code{data.frame}s containing one plausible value each
+#' and the imputed data set that was used to estimate the plausible value.
+#' Additionally, if \code{include.nr} was specified, the background model is
+#' enriched by the number of not reached items (\code{nr}) per test taker as a
+#' proxy for response times.}
+#' \item{eap}{A \code{data.frame} containing the \code{ID_t} and the ability
+#' EAP value for the respective individual}
+#' \item{regr.coeff}{The regression coefficients of the latent regression of
+#' the ability}
+#' \item{alpha}{If the method \code{Bayes} and, in the controls, \code{est.alpha}
+#' were chosen, the item discrimination parameters (as the EAPs) are returned}
+#' \item{EAP.rel}{For method \code{ML} the EAP reliability is returned}
+#' }
 #'
 #' @references Albert, J. H. (1992). Bayesian estimation of normal ogive item
 #' response curves using Gibbs sampling. \emph{Journal of Educational
@@ -80,7 +122,7 @@
 #' @examples
 #' \dontrun{
 #' rm(list = ls())
-#' library(NEPStools)
+#' library(NEPScaling)
 #' library(foreign)
 #' ## read in data object for conditioning variables
 #' data(bg_data)
@@ -149,7 +191,7 @@ plausible_values <- function(SC,
     if (!is.character(path) || !grepl("/$",path)) stop("Path must be a character string and end in '/'.")
     if (longitudinal && (SC == "SC6" | SC == "SC5") & domain %in% c("IC", "SC", "BA", "EF")){
         longitudinal <- FALSE
-        message(paste("No longitudinal data for:", SC, domain,"."))
+        message(paste("No longitudinal data for:", SC, domain,". Estimating cross-sectional plausible values instead."))
         }
     if(longitudinal) {
         type <- 'long'
