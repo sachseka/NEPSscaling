@@ -270,5 +270,5 @@ load(file = "data-raw/xsi_fixed.RData")
 load(file = "data-raw/correction.RData")
 
 setwd('../')
-devtools::use_data(correction, item_labels, meanvar, xsi.fixed, pkg = 'NEPStools', internal = TRUE, overwrite = TRUE)
-# devtools::use_data(item_labels, item_diff_SC6_RE_w3, meanvar, pkg = 'NEPStools', internal = TRUE, overwrite = TRUE)
+devtools::use_data(correction, item_labels, meanvar, xsi.fixed, pkg = 'NEPScaling', internal = TRUE, overwrite = TRUE)
+# devtools::use_data(item_labels, item_diff_SC6_RE_w3, meanvar, pkg = 'NEPScaling', internal = TRUE, overwrite = TRUE)

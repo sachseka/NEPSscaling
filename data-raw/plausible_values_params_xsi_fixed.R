@@ -29,13 +29,13 @@ rn[rn == "mag2g12s_sc6a9_c"] <- "mag12q111_sc6a9_c"
 rn[rn == "maa3d111_sc6a9_c"] <- "mas1d081_sc6a9_c"
 rn[grep("mag12", rn)] <- grep("mag12", items$poly$suf6, value = T) # item positions match!
 
-View(cbind(rownames(xsi), rn, NEPStools:::item_labels$SC6$MA$w9,
+View(cbind(rownames(xsi), rn, NEPScaling:::item_labels$SC6$MA$w9,
            items$poly$suf6, items$poly$suf5, items$poly$suf4))
 
 # store pre-scaled item parameters in list
-l4 <- length(NEPStools:::item_labels$SC4$MA$w1) + length(NEPStools:::item_labels$SC4$MA$w7)
-l5 <- length(NEPStools:::item_labels$SC5$MA$w1)
-l6 <- length(NEPStools:::item_labels$SC6$MA$w3)
+l4 <- length(NEPScaling:::item_labels$SC4$MA$w1) + length(NEPScaling:::item_labels$SC4$MA$w7)
+l5 <- length(NEPScaling:::item_labels$SC5$MA$w1)
+l6 <- length(NEPScaling:::item_labels$SC6$MA$w3)
 xsi.fixed$cross[["MA"]] <- cbind(1:nrow(xsi), unname(xsi[, 2]))
 xsi.fixed$long[["MA"]] <- list(SC4 = cbind((l4+1):(l4+nrow(xsi)), unname(xsi[, 2])),
                                SC5 = cbind((l5+1):(l5+nrow(xsi)), unname(xsi[, 2])),
@@ -61,8 +61,8 @@ rn <- rownames(xsi.sc4)
 rn <- gsub("A8", "a9", x = rn)
 rn <- paste0(substr(rn, 1, 8), substr(rn, 10, 10), "_sc4a10_c")
 rownames(xsi.sc4) <- rn
-xsi.sc4 <- xsi.sc4[rownames(xsi.sc4) %in% NEPStools:::item_labels$SC4$RE$w10, ]
-View(cbind(rownames(xsi.sc4), NEPStools:::item_labels$SC4$RE$w10))
+xsi.sc4 <- xsi.sc4[rownames(xsi.sc4) %in% NEPScaling:::item_labels$SC4$RE$w10, ]
+View(cbind(rownames(xsi.sc4), NEPScaling:::item_labels$SC4$RE$w10))
 
 
 
@@ -75,8 +75,8 @@ rn[grepl("rea9", rn)] <- paste0(substr(rn[grepl("rea9", rn)], 1, 8),
                                 substr(rn[grepl("rea9", rn)], 10, 10),
                                 "_sc5s12_c")
 rownames(xsi.sc5) <- rn
-xsi.sc5 <- xsi.sc5[rownames(xsi.sc5) %in% NEPStools:::item_labels$SC5$RE$w12, ]
-View(cbind(rownames(xsi.sc5), NEPStools:::item_labels$SC5$RE$w12))
+xsi.sc5 <- xsi.sc5[rownames(xsi.sc5) %in% NEPScaling:::item_labels$SC5$RE$w12, ]
+View(cbind(rownames(xsi.sc5), NEPScaling:::item_labels$SC5$RE$w12))
 
 
 
@@ -85,17 +85,17 @@ rn <- rownames(xsi.sc6)
 rn <- gsub("A8", "a9", x = rn)
 rn <- paste0(substr(rn, 1, 8), substr(rn, 10, 12))
 rownames(xsi.sc6) <- rn
-xsi.sc6 <- xsi.sc6[rownames(xsi.sc6) %in% NEPStools:::item_labels$SC6$RE$w9, ]
-View(cbind(rownames(xsi.sc6), NEPStools:::item_labels$SC6$RE$w9))
+xsi.sc6 <- xsi.sc6[rownames(xsi.sc6) %in% NEPScaling:::item_labels$SC6$RE$w9, ]
+View(cbind(rownames(xsi.sc6), NEPScaling:::item_labels$SC6$RE$w9))
 
 
 # store pre-scaled item parameters in list
 xsi.fixed$cross[["RE"]] <- list(SC4 = cbind(1:nrow(xsi.sc4), unname(xsi.sc4[,2])),
                                 SC5 = cbind(1:nrow(xsi.sc5), unname(xsi.sc5[,2])),
                                 SC6 = cbind(1:nrow(xsi.sc6), unname(xsi.sc6[,2])))
-l4 <- length(NEPStools:::item_labels$SC4$RE$w2) + length(NEPStools:::item_labels$SC4$RE$w7)
-l5 <- length(NEPStools:::item_labels$SC5$RE$w1)
-l6 <- length(NEPStools:::item_labels$SC6$RE$w3)
+l4 <- length(NEPScaling:::item_labels$SC4$RE$w2) + length(NEPScaling:::item_labels$SC4$RE$w7)
+l5 <- length(NEPScaling:::item_labels$SC5$RE$w1)
+l6 <- length(NEPScaling:::item_labels$SC6$RE$w3)
 xsi.fixed$long[["RE"]] <- list(SC4 = cbind((l4+1):(l4+nrow(xsi.sc4)), unname(xsi.sc4[, 2])),
                                SC5 = cbind((l5+1):(l5+nrow(xsi.sc5)), unname(xsi.sc5[, 2])),
                                SC6 = cbind((l6+1):(l6+nrow(xsi.sc6)), unname(xsi.sc6[, 2])))
