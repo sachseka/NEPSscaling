@@ -87,12 +87,15 @@ rn <- paste0(substr(rn, 1, 8), substr(rn, 10, 12))
 rownames(xsi.sc6) <- rn
 xsi.sc6 <- xsi.sc6[rownames(xsi.sc6) %in% NEPScaling:::item_labels$SC6$RE$w9, ]
 View(cbind(rownames(xsi.sc6), NEPScaling:::item_labels$SC6$RE$w9))
-
+# wave 5 sample refreshment
+load("data-raw/item_diff_SC6_RE_w3.RData")
+item_diff_SC6_RE_w3 <- item_diff_SC6_RE_w3[1:30,]
 
 # store pre-scaled item parameters in list
 xsi.fixed$cross[["RE"]] <- list(SC4 = cbind(1:nrow(xsi.sc4), unname(xsi.sc4[,2])),
                                 SC5 = cbind(1:nrow(xsi.sc5), unname(xsi.sc5[,2])),
-                                SC6 = cbind(1:nrow(xsi.sc6), unname(xsi.sc6[,2])))
+                                SC6 = list(w5=item_diff_SC6_RE_w3,
+                                           w9=cbind(1:nrow(xsi.sc6), unname(xsi.sc6[,2]))))
 l4 <- length(NEPScaling:::item_labels$SC4$RE$w2) + length(NEPScaling:::item_labels$SC4$RE$w7)
 l5 <- length(NEPScaling:::item_labels$SC5$RE$w1)
 l6 <- length(NEPScaling:::item_labels$SC6$RE$w3)

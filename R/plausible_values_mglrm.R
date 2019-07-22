@@ -146,9 +146,11 @@ plausible_values_mglrm <- function(
           }
       } else if (domain == "RE") {
           if ((SC == "SC4" & wave == "w10") |
-              (SC == "SC5" & wave == "w12") |
-              (SC == "SC6" & wave == "w9")) {
+              (SC == "SC5" & wave == "w12")) {
               BETA <- xsi.fixed$cross$RE[[SC]][, 2]
+          } else if ( (SC == "SC6" & wave == "w5")|
+                      (SC == "SC6" & wave == "w9")) {
+              BETA <- xsi.fixed$cross$RE$SC6[[wave]][, 2]
           }
       } else if (domain == "EF" & SC == "SC5") {
           BETA <- xsi.fixed$cross$EF[, 2]
