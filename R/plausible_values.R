@@ -166,7 +166,7 @@ plausible_values <- function(SC,
     rotation = TRUE,
     nvalid = 3L,
     include.nr = TRUE,
-    control = list(EAP = FALSE, #WLE = FALSE,
+    control = list(EAP = FALSE, WLE = FALSE,
                    Bayes = list(itermcmc = 10000, burnin = 2000, est.alpha = FALSE, thin = 1, tdf = 10,
                                cartctrl1 = 5, cartctrl2 = 0.0001),
                    ML = list(nmi = 10L, ntheta = 2000, normal.approx = FALSE, samp.regr = FALSE,
@@ -582,16 +582,16 @@ plausible_values <- function(SC,
             regr.coeff[[i]] <- mod$beta
             variance[[i]] <- mod$variance
         }
-        # if (control$WLE && !longitudinal) {
-        #     wmod <- TAM::tam.mml.wle2(mod, WLE = TRUE, progress = FALSE)
-        #     wle <- matrix(wmod$theta, nrow = length(wmod$theta), ncol = 1)
-        #     wle <- cbind(ID_t, wle, wmod$error)
-        #     colnames(wle) <- c('ID_t', 'wle', 'se')
-        # } else if (control$WLE && longitudinal) {
-        #     wmod <- TAM::tam.mml.wle2(mod, WLE = TRUE, progress = FALSE)
-        #     wle <- do.call(cbind, list(ID_t, wmod[grep("theta|error", colnames(wmod))]))
-        #     colnames(wle) <- c('ID_t',  paste0(rep(c('wle','se'), length(waves)), rep(waves, each = 2)))
-        # }
+        if (control$WLE && !longitudinal) {
+            wmod <- TAM::tam.mml.wle2(mod, WLE = TRUE, progress = FALSE)
+            wle <- matrix(wmod$theta, nrow = length(wmod$theta), ncol = 1)
+            wle <- cbind(ID_t, wle, wmod$error)
+            colnames(wle) <- c('ID_t', 'wle', 'se')
+        } else if (control$WLE && longitudinal) {
+            wmod <- TAM::tam.mml.wle2(mod, WLE = TRUE, progress = FALSE)
+            wle <- do.call(cbind, list(ID_t, wmod[grep("theta|error", colnames(wmod))]))
+            colnames(wle) <- c('ID_t',  paste0(rep(c('wle','se'), length(waves)), rep(waves, each = 2)))
+        }
         datalist <- list()
         d <- 1
         for (i in 1:ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi)) {
@@ -749,8 +749,8 @@ plausible_values <- function(SC,
         if (control$EAP) {
             res[['eap']] <- eap
         }
-        # if (control$WLE)
-        #     res[['wle']] <- wle
+        if (control$WLE)
+            res[['wle']] <- wle
         res[['EAP.rel']] <- EAP.rel
         res[["regr.coeff"]] <- regr.coeff
         if (!is.null(bgdata)) {
