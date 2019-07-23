@@ -22,5 +22,5 @@ scale_wle <- function(wle, SC, domain, type, MEAN, VAR, wave, ID) {
                 wle[[paste0("wle_", wave[w])]] - term
         }
     }
-    return(pv)
+    return(wle)
 }
