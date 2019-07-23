@@ -20,10 +20,6 @@ scale_wle <- function(wle, SC, domain, type, MEAN, VAR, wave, ID) {
                 meanvar[[SC]][[domain]][[wave[w]]][1]
             wle[[paste0("wle_", wave[w])]] <-
                 wle[[paste0("wle_", wave[w])]] - term
-            for (i in seq(length(pv))) {
-                pv[[i]][[paste0("PV_",wave[w])]] <-
-                    pv[[i]][[paste0("PV_",wave[w])]] - term
-            }
         }
     }
     return(pv)
