@@ -707,14 +707,14 @@ plausible_values <- function(SC,
                 pv[[p]][pv[[p]]$ID_t %in% longitudinal_IDs[["w5"]], "PV_w5"] <-
                     pv[[p]][pv[[p]]$ID_t %in% longitudinal_IDs[["w5"]], "PV_w3"]
                 pv[[p]][pv[[p]]$ID_t %in% longitudinal_IDs[["w5"]], "PV_w3"] <- NA
-                if (method == "ML" && control$WLE) {
-                    wle[["wle_w5"]] <- NA
-                    wle[["se_w5"]] <- NA
-                    wle[wle$ID_t %in% longitudinal_IDs[["w5"]], c("wle_w5", "se_w5")] <-
-                        wle[wle$ID_t %in% longitudinal_IDs[["w5"]], c("wle_w3", "se_w3")]
-                    wle[wle$ID_t %in% longitudinal_IDs[["w5"]], c("wle_w3", "se_w3")] <- NA
-                }
             }
+        }
+        if (method == "ML" && control$WLE) {
+            wle[["wle_w5"]] <- NA
+            wle[["se_w5"]] <- NA
+            wle[wle$ID_t %in% longitudinal_IDs[["w5"]], c("wle_w5", "se_w5")] <-
+                wle[wle$ID_t %in% longitudinal_IDs[["w5"]], c("wle_w3", "se_w3")]
+            wle[wle$ID_t %in% longitudinal_IDs[["w5"]], c("wle_w3", "se_w3")] <- NA
         }
     } else {
         pv <- if (method == "ML") datalist else datalist$datalist
