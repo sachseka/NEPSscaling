@@ -692,6 +692,12 @@ plausible_values <- function(SC,
                        SC = SC, domain = domain, type = type,
                        wave = gsub("_", "", waves), VAR = VAR, MEAN = MEAN,
                        ID = if(SC == "SC6") longitudinal_IDs else NULL)
+        if (method == "ML" && control$WLE) {
+            wle <- scale_wle(wle = wle, SC = SC, domain = domain, type = type,
+                             wave = gsub("_", "", waves), VAR = VAR,
+                             MEAN = MEAN,
+                             ID = if(SC == "SC6") longitudinal_IDs else NULL)
+        }
         for(p in seq(npv)) {
             for(w in waves) {
                 pv[[p]][n.valid[[paste0("valid", w)]] < nvalid, paste0("PV", w)] <- NA
@@ -701,6 +707,13 @@ plausible_values <- function(SC,
                 pv[[p]][pv[[p]]$ID_t %in% longitudinal_IDs[["w5"]], "PV_w5"] <-
                     pv[[p]][pv[[p]]$ID_t %in% longitudinal_IDs[["w5"]], "PV_w3"]
                 pv[[p]][pv[[p]]$ID_t %in% longitudinal_IDs[["w5"]], "PV_w3"] <- NA
+                if (method == "ML" && control$WLE) {
+                    wle[["wle_w5"]] <- NA
+                    wle[["se_w5"]] <- NA
+                    wle[wle$ID_t %in% longitudinal_IDs[["w5"]], c("wle_w5", "se_w5")] <-
+                        wle[wle$ID_t %in% longitudinal_IDs[["w5"]], c("wle_w3", "se_w3")]
+                    wle[wle$ID_t %in% longitudinal_IDs[["w5"]], c("wle_w3", "se_w3")] <- NA
+                }
             }
         }
     } else {
