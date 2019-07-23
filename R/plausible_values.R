@@ -709,7 +709,7 @@ plausible_values <- function(SC,
                 pv[[p]][pv[[p]]$ID_t %in% longitudinal_IDs[["w5"]], "PV_w3"] <- NA
             }
         }
-        if (method == "ML" && control$WLE) {
+        if (method == "ML" && control$WLE && SC == "SC6" && domain == "RE") {
             wle[["wle_w5"]] <- NA
             wle[["se_w5"]] <- NA
             wle[wle$ID_t %in% longitudinal_IDs[["w5"]], c("wle_w5", "se_w5")] <-
