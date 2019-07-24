@@ -693,9 +693,11 @@ plausible_values <- function(SC,
                        wave = gsub("_", "", waves), VAR = VAR, MEAN = MEAN,
                        ID = if(SC == "SC6") longitudinal_IDs else NULL)
         if (method == "ML" && control$WLE) {
-            wle <- scale_wle(wle = wle, SC = SC, domain = domain, type = type,
-                             wave = gsub("_", "", waves), VAR = VAR,
-                             MEAN = MEAN,
+            m <- colMeans(wle[paste0("wle", waves)], na.rm = TRUE)
+            names(m) <- gsub("_", "", waves)
+            wle <- scale_wle(wle = wle, SC = SC, domain = domain, type = NULL,
+                             wave = gsub("_", "", waves), VAR = NULL,
+                             MEAN = m,
                              ID = if(SC == "SC6") longitudinal_IDs else NULL)
         }
         for(p in seq(npv)) {
