@@ -14,6 +14,7 @@ xsi.fixed <- list(cross = list(), long = list())
 
 load("Z:/Projektgruppen_(08)/Kompetenzen_BA_Hiwi_(p000012)/Methoden/Skalierung/HE/B116_SC6/MA/Version 3/output/data/data.Rdata")
 load("Z:/Projektgruppen_(08)/Kompetenzen_BA_Hiwi_(p000012)/Methoden/Skalierung/HE/B116_SC6/MA/Version 3/output/data/pcm.Rdata")
+load("data-raw/item_difficulties.RData")
 
 xsi <- pcm$capi$mod$xsi.fixed.estimated
 xsi <- xsi[1:length(items$poly$suf4), ]
@@ -29,17 +30,24 @@ rn[rn == "mag2g12s_sc6a9_c"] <- "mag12q111_sc6a9_c"
 rn[rn == "maa3d111_sc6a9_c"] <- "mas1d081_sc6a9_c"
 rn[grep("mag12", rn)] <- grep("mag12", items$poly$suf6, value = T) # item positions match!
 
-View(cbind(rownames(xsi), rn, NEPScaling:::item_labels$SC6$MA$w9,
-           items$poly$suf6, items$poly$suf5, items$poly$suf4))
+# View(cbind(rownames(xsi), rn, NEPScaling:::item_labels$SC6$MA$w9,
+           # items$poly$suf6, items$poly$suf5, items$poly$suf4))
 
 # store pre-scaled item parameters in list
-l4 <- length(NEPScaling:::item_labels$SC4$MA$w1) + length(NEPScaling:::item_labels$SC4$MA$w7)
-l5 <- length(NEPScaling:::item_labels$SC5$MA$w1)
-l6 <- length(NEPScaling:::item_labels$SC6$MA$w3)
-xsi.fixed$cross[["MA"]] <- cbind(1:nrow(xsi), unname(xsi[, 2]))
-xsi.fixed$long[["MA"]] <- list(SC4 = cbind((l4+1):(l4+nrow(xsi)), unname(xsi[, 2])),
-                               SC5 = cbind((l5+1):(l5+nrow(xsi)), unname(xsi[, 2])),
-                               SC6 = cbind((l6+1):(l6+nrow(xsi)), unname(xsi[, 2])))
+# l4 <- length(NEPScaling:::item_labels$SC4$MA$w1) + length(NEPScaling:::item_labels$SC4$MA$w7)
+# l5 <- length(NEPScaling:::item_labels$SC5$MA$w1)
+# l6 <- length(NEPScaling:::item_labels$SC6$MA$w3)
+xsi.fixed$cross[["MA"]] <- list(SC4=list(w10=cbind(1:nrow(xsi), unname(xsi[, 2]))),
+                                SC5=list(w1=item_difficulties$SC5$MA$w1$long[1:20,],
+                                         w12=cbind(1:nrow(xsi), unname(xsi[, 2]))),
+                                SC6=list(w3=item_difficulties$SC6$MA$w3$long,
+                                         w9=cbind(1:nrow(xsi), unname(xsi[, 2]))))
+xsi.fixed$long[["MA"]] <- list(SC4 = cbind(1:nrow(xsi), unname(xsi[, 2])),
+                               SC5 = cbind(1:nrow(xsi), unname(xsi[, 2])),
+                               SC6 = cbind(1:nrow(xsi), unname(xsi[, 2])))
+# xsi.fixed$long[["MA"]] <- list(SC4 = cbind((l4+1):(l4+nrow(xsi)), unname(xsi[, 2])),
+#                                SC5 = cbind((l5+1):(l5+nrow(xsi)), unname(xsi[, 2])),
+#                                SC6 = cbind((l6+1):(l6+nrow(xsi)), unname(xsi[, 2])))
 
 ### reading competence
 
@@ -61,8 +69,8 @@ rn <- rownames(xsi.sc4)
 rn <- gsub("A8", "a9", x = rn)
 rn <- paste0(substr(rn, 1, 8), substr(rn, 10, 10), "_sc4a10_c")
 rownames(xsi.sc4) <- rn
-xsi.sc4 <- xsi.sc4[rownames(xsi.sc4) %in% NEPScaling:::item_labels$SC4$RE$w10, ]
-View(cbind(rownames(xsi.sc4), NEPScaling:::item_labels$SC4$RE$w10))
+# xsi.sc4 <- xsi.sc4[rownames(xsi.sc4) %in% NEPScaling:::item_labels$SC4$RE$w10, ]
+# View(cbind(rownames(xsi.sc4), NEPScaling:::item_labels$SC4$RE$w10))
 
 
 
@@ -75,8 +83,8 @@ rn[grepl("rea9", rn)] <- paste0(substr(rn[grepl("rea9", rn)], 1, 8),
                                 substr(rn[grepl("rea9", rn)], 10, 10),
                                 "_sc5s12_c")
 rownames(xsi.sc5) <- rn
-xsi.sc5 <- xsi.sc5[rownames(xsi.sc5) %in% NEPScaling:::item_labels$SC5$RE$w12, ]
-View(cbind(rownames(xsi.sc5), NEPScaling:::item_labels$SC5$RE$w12))
+# xsi.sc5 <- xsi.sc5[rownames(xsi.sc5) %in% NEPScaling:::item_labels$SC5$RE$w12, ]
+# View(cbind(rownames(xsi.sc5), NEPScaling:::item_labels$SC5$RE$w12))
 
 
 
@@ -85,23 +93,28 @@ rn <- rownames(xsi.sc6)
 rn <- gsub("A8", "a9", x = rn)
 rn <- paste0(substr(rn, 1, 8), substr(rn, 10, 12))
 rownames(xsi.sc6) <- rn
-xsi.sc6 <- xsi.sc6[rownames(xsi.sc6) %in% NEPScaling:::item_labels$SC6$RE$w9, ]
-View(cbind(rownames(xsi.sc6), NEPScaling:::item_labels$SC6$RE$w9))
+# xsi.sc6 <- xsi.sc6[rownames(xsi.sc6) %in% NEPScaling:::item_labels$SC6$RE$w9, ]
+# View(cbind(rownames(xsi.sc6), NEPScaling:::item_labels$SC6$RE$w9))
 # wave 5 sample refreshment
 load("data-raw/item_diff_SC6_RE_w3.RData")
 item_diff_SC6_RE_w3 <- item_diff_SC6_RE_w3[1:30,]
 
 # store pre-scaled item parameters in list
-xsi.fixed$cross[["RE"]] <- list(SC4 = cbind(1:nrow(xsi.sc4), unname(xsi.sc4[,2])),
-                                SC5 = cbind(1:nrow(xsi.sc5), unname(xsi.sc5[,2])),
-                                SC6 = list(w5=item_diff_SC6_RE_w3,
+xsi.fixed$cross[["RE"]] <- list(SC4 = list(w10=cbind(1:nrow(xsi.sc4), unname(xsi.sc4[,2]))),
+                                SC5 = list(w1=item_difficulties$SC5$RE$w1$long[1:28,],
+                                           w12=cbind(1:nrow(xsi.sc5), unname(xsi.sc5[,2]))),
+                                SC6 = list(w3=item_diff_SC6_RE_w3,
+                                           w5=item_diff_SC6_RE_w3,
                                            w9=cbind(1:nrow(xsi.sc6), unname(xsi.sc6[,2]))))
-l4 <- length(NEPScaling:::item_labels$SC4$RE$w2) + length(NEPScaling:::item_labels$SC4$RE$w7)
-l5 <- length(NEPScaling:::item_labels$SC5$RE$w1)
-l6 <- length(NEPScaling:::item_labels$SC6$RE$w3)
-xsi.fixed$long[["RE"]] <- list(SC4 = cbind((l4+1):(l4+nrow(xsi.sc4)), unname(xsi.sc4[, 2])),
-                               SC5 = cbind((l5+1):(l5+nrow(xsi.sc5)), unname(xsi.sc5[, 2])),
-                               SC6 = cbind((l6+1):(l6+nrow(xsi.sc6)), unname(xsi.sc6[, 2])))
+# l4 <- length(NEPScaling:::item_labels$SC4$RE$w2) + length(NEPScaling:::item_labels$SC4$RE$w7)
+# l5 <- length(NEPScaling:::item_labels$SC5$RE$w1)
+# l6 <- length(NEPScaling:::item_labels$SC6$RE$w3)
+# xsi.fixed$long[["RE"]] <- list(SC4 = cbind((l4+1):(l4+nrow(xsi.sc4)), unname(xsi.sc4[, 2])),
+#                                SC5 = cbind((l5+1):(l5+nrow(xsi.sc5)), unname(xsi.sc5[, 2])),
+#                                SC6 = cbind((l6+1):(l6+nrow(xsi.sc6)), unname(xsi.sc6[, 2])))
+xsi.fixed$long[["RE"]] <- list(SC4 = cbind(1:nrow(xsi.sc4), unname(xsi.sc4[, 2])),
+                               SC5 = cbind(1:nrow(xsi.sc5), unname(xsi.sc5[, 2])),
+                               SC6 = cbind(1:nrow(xsi.sc6), unname(xsi.sc6[, 2])))
 
 
 ## additionally SC5 EF w12 is fixed because the scalings are based on the CBT

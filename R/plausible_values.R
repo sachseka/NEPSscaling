@@ -524,17 +524,16 @@ plausible_values <- function(SC,
             } else if ((SC == "SC4" & wave == "w10") |
                        (SC == "SC5" & wave == "w12") |
                        (SC == "SC6" & wave == "w9")) {
-                fixed_difficulty <- xsi.fixed$cross$MA
+                fixed_difficulty <- xsi.fixed$cross$MA[[MA]]
             }
         } else if (domain == "RE") {
             if (longitudinal & SC %in% c("SC4", "SC5", "SC6")) {
                 fixed_difficulty <- xsi.fixed$long$RE[[SC]]
             } else if ((SC == "SC4" & wave == "w10") |
-                       (SC == "SC5" & wave == "w12")) {
-                fixed_difficulty <- xsi.fixed$cross$RE[[SC]]
-            } else if ( (SC == "SC6" & wave == "w5")|
-                        (SC == "SC6" & wave == "w9")) {
-                fixed_difficulty <- xsi.fixed$cross$RE$SC6[[wave]]
+                       (SC == "SC5" & wave == "w12") |
+                       (SC == "SC6" & wave == "w5")|
+                       (SC == "SC6" & wave == "w9")) {
+                fixed_difficulty <- xsi.fixed$cross$RE[[SC]][[wave]]
             }
         } else if (domain == "EF" & SC == "SC5") {
             fixed_difficulty <- xsi.fixed$cross$EF

@@ -269,6 +269,5 @@ load(file = "data-raw/xsi_fixed.RData")
 # corrections
 load(file = "data-raw/correction.RData")
 
-setwd('../')
-usethis::use_data(correction, item_labels, meanvar, xsi.fixed, pkg = 'NEPScaling', internal = TRUE, overwrite = TRUE)
+usethis::use_data(correction, item_labels, meanvar, xsi.fixed, internal = TRUE, overwrite = TRUE)
 # usethis::use_data(item_labels, item_diff_SC6_RE_w3, meanvar, pkg = 'NEPScaling', internal = TRUE, overwrite = TRUE)
