@@ -505,11 +505,13 @@ plausible_values <- function(SC,
                     for (i in seq(length(Q))) {
                         Q[[i]][ind[[i]], ] <- 0.5
                     }
+                    B <- A <- NULL
                 } else {
                     B <- TAM::designMatrices(modeltype = 'PCM',
                                              Q = Q,
                                              resp = resp)$B
                     B[ind, , ] <- 0.5 * B[ind, , ]
+                    A <- NULL
                 }
             }
         } else {
@@ -544,13 +546,15 @@ plausible_values <- function(SC,
             tmp_pvs <- list()
             pmod <- list()
             for (j in seq(length(waves))) {
-                mod[[j]] <- TAM::tam.mml(resp = resp[, item_labels[[SC]][[domain]][[gsub("_", "", waves)[j] ]] ],
-                                         dataY = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
+                mod[[j]] <- TAM::tam.mml(resp = if (longitudinal) {resp[, item_labels[[SC]][[domain]][[gsub("_", "", waves)[j]]] ]} else {resp},
+                                         dataY = if (is.null(bgdata)) {NULL} else if (is.null(imp)) {bgdata[, -which(names(bgdata) == "ID_t")]} else {bgdatacom},
                                          formulaY = frmY,
                                          irtmodel = ifelse(PCM, "PCM2", "1PL"),
-                                         xsi.fixed = if (is.null(xsi.fixed$long[[domain]][[SC]][[gsub("_", "", waves)[j] ]])) NULL else cbind(1:nrow(xsi.fixed$long[[domain]][[SC]][[gsub("_", "", waves)[j] ]]),
-                                                                                                                                              xsi.fixed$long[[domain]][[SC]][[gsub("_", "", waves)[j] ]][,2]),
-                                         Q = Q[[j]], verbose = FALSE)
+                                         xsi.fixed = if (is.null(xsi.fixed[[type]][[domain]][[SC]][[if (longitudinal) {gsub("_", "", waves)[j]} else {wave}]])) {NULL} else
+                                             {cbind(1:nrow(xsi.fixed[[type]][[domain]][[SC]][[if (longitudinal) {gsub("_", "", waves)[j]} else {wave}]]),
+                                                    xsi.fixed[[type]][[domain]][[SC]][[if (longitudinal) {gsub("_", "", waves)[j]} else {wave}]][,2])},
+                                         Q = Q[[j]], B = B, A = A,
+                                         verbose = FALSE)
                 # impute plausible values
                 pmod[[j]] <- TAM::tam.pv(mod[[j]], nplausible = npv,
                                          ntheta = control$ML$ntheta,
@@ -560,10 +564,10 @@ plausible_values <- function(SC,
                                          np.adj = control$ML$np.adj,
                                          na.grid = control$ML$na.grid)
                 tmp_pvs[[j]] <- TAM::tampv2datalist(pmod[[j]],
-                                                    Y = if (is.null(bgdata) || is.null(imp)) ID_t else cbind(ID_t, bgdatacom),
+                                                    Y = if (is.null(bgdata) || is.null(imp)) {ID_t} else {cbind(ID_t, bgdatacom)},
                                                     pvnames = paste0("PV", waves[j]))
-                eap[[i]][, (j*2):(j*2+1)] <- as.matrix(mod[[j]]$person[, grep("EAP",
-                                                                              names(mod[[j]]$person))])
+                eap[[i]][, (j*2):(j*2+1)] <-
+                    as.matrix(mod[[j]]$person[, grep("EAP", names(mod[[j]]$person))])
                 EAP.rel[[i]] <- c(EAP.rel[[i]], mod[[j]]$EAP.rel)
                 regr.coeff[[i]] <- cbind(regr.coeff[[i]], mod[[j]]$beta)
                 variance[[i]] <- c(variance[[i]], mod[[j]]$variance)
