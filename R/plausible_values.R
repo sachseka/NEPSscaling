@@ -572,10 +572,14 @@ plausible_values <- function(SC,
                 regr.coeff[[i]] <- cbind(regr.coeff[[i]], mod[[j]]$beta)
                 variance[[i]] <- c(variance[[i]], mod[[j]]$variance)
             }
-            for (j in seq(length(tmp_pvs)-1)) {
-                for (n in 1:npv) {
-                    pvs[[n]] <- suppressMessages(dplyr::full_join(tmp_pvs[[j]][[n]], tmp_pvs[[j+1]][[n]]))
+            if (longitudinal) {
+                for (j in seq(length(tmp_pvs)-1)) {
+                    for (n in 1:npv) {
+                        pvs[[n]] <- suppressMessages(dplyr::full_join(tmp_pvs[[j]][[n]], tmp_pvs[[j+1]][[n]]))
+                    }
                 }
+            } else {
+                pvs <- tmp_pvs[[1]]
             }
             rm(tmp_pvs)
             colnames(eap[[i]]) <- c('ID_t',  paste0(rep(c('eap','se'),
