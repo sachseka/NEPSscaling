@@ -7,26 +7,26 @@ adjustments_PCM <- function (resp, SC, wave, domain) {
     for (w in wave) {
         if (SC == 'SC6') {
             if (domain == 'RE') {
-              # if (w == 'w3') { # SC6 RE w3 and w5 already collapsed in SUF
-              #   resp$rea3012s_c[resp$rea3012s_c %in% c(0, 1)] <- 0
-              #   resp$rea3012s_c[resp$rea3012s_c == 2] <- 1
-              #   resp$rea3012s_c[resp$rea3012s_c == 3] <- 2
-              #   resp$rea3015s_c[resp$rea3015s_c == 3] <- 2
-              #   resp$rea3028s_c[resp$rea3028s_c %in% c(0, 1)] <- 0
-              #   resp$rea3028s_c[resp$rea3028s_c == 2] <- 1
-              #   resp$rea3028s_c[resp$rea3028s_c == 3] <- 2
-              #   resp$rea3028s_c[resp$rea3028s_c == 4] <- 3
-              #   resp$rea3028s_c[resp$rea3028s_c == 5] <- 4
-              #   resp$rea3028s_c[resp$rea3028s_c == 6] <- 5
-              #   resp$rea3038s_c[resp$rea3038s_c %in% c(0, 1)] <- 0
-              #   resp$rea3038s_c[resp$rea3038s_c == 2] <- 1
-              #   resp$rea3038s_c[resp$rea3038s_c == 3] <- 2
-              #   resp$rea3052s_c[resp$rea3052s_c %in% c(0, 1, 2)] <- 0
-              #   resp$rea3052s_c[resp$rea3052s_c == 3] <- 1
-              #   resp$rea3054s_c[resp$rea3054s_c %in% c(0, 1)] <-  0
-              #   resp$rea3054s_c[resp$rea3054s_c %in% c(2, 3)] <-  1
-              #   resp$rea3054s_c[resp$rea3054s_c %in% c(4, 5)] <-  2
-              # }
+                # if (w == 'w3') { # SC6 RE w3 and w5 already collapsed in SUF
+                #   resp$rea3012s_c[resp$rea3012s_c %in% c(0, 1)] <- 0
+                #   resp$rea3012s_c[resp$rea3012s_c == 2] <- 1
+                #   resp$rea3012s_c[resp$rea3012s_c == 3] <- 2
+                #   resp$rea3015s_c[resp$rea3015s_c == 3] <- 2
+                #   resp$rea3028s_c[resp$rea3028s_c %in% c(0, 1)] <- 0
+                #   resp$rea3028s_c[resp$rea3028s_c == 2] <- 1
+                #   resp$rea3028s_c[resp$rea3028s_c == 3] <- 2
+                #   resp$rea3028s_c[resp$rea3028s_c == 4] <- 3
+                #   resp$rea3028s_c[resp$rea3028s_c == 5] <- 4
+                #   resp$rea3028s_c[resp$rea3028s_c == 6] <- 5
+                #   resp$rea3038s_c[resp$rea3038s_c %in% c(0, 1)] <- 0
+                #   resp$rea3038s_c[resp$rea3038s_c == 2] <- 1
+                #   resp$rea3038s_c[resp$rea3038s_c == 3] <- 2
+                #   resp$rea3052s_c[resp$rea3052s_c %in% c(0, 1, 2)] <- 0
+                #   resp$rea3052s_c[resp$rea3052s_c == 3] <- 1
+                #   resp$rea3054s_c[resp$rea3054s_c %in% c(0, 1)] <-  0
+                #   resp$rea3054s_c[resp$rea3054s_c %in% c(2, 3)] <-  1
+                #   resp$rea3054s_c[resp$rea3054s_c %in% c(4, 5)] <-  2
+                # }
                 if (w == "w9") {
                     # collapse categories
                     resp$rea90101s_c[resp$rea90101s_c == 1] <- 0
@@ -123,7 +123,7 @@ adjustments_PCM <- function (resp, SC, wave, domain) {
         } else if (SC == 'SC5') {
             # EF (w12) already collapsed in SUF
             if (domain == "RE") {
-            # reading w1 already collapsed in SUF
+                # reading w1 already collapsed in SUF
                 if (w == "w12") {
                     # collapse categories
                     resp$rea90201s_sc5s12_c[resp$rea90201s_sc5s12_c == 1] <- 0
@@ -418,9 +418,16 @@ adjustments_PCM <- function (resp, SC, wave, domain) {
         }
     }
 
-  ind <- which(apply(resp, 2, max, na.rm = TRUE) > 1) # to catch only 'after-collapse' pc items (works for MD!)
+    if (length(wave) > 1) {
+        ind <- list()
+        for (i in seq(length(wave))) {
+            ind[[i]] <- which(apply(resp[, item_labels[[SC]][[domain]][[wave[i]]] ], 2, max, na.rm = TRUE) > 1)
+        }
+    } else {
+        ind <- which(apply(resp, 2, max, na.rm = TRUE) > 1) # to catch only 'after-collapse' pc items (works for MD!)
+    }
 
-  res <- list(resp = resp, ind = ind)
-  return(res)
+    res <- list(resp = resp, ind = ind)
+    return(res)
 }
 

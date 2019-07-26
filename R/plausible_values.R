@@ -155,24 +155,24 @@
 #' @export
 
 plausible_values <- function(SC,
-    domain = c('MA','RE','SC','IC','LI','EF','NR','NT','OR','ST','BA','CD', 'GR'),
-    wave,
-    method = c("ML","Bayes"),
-    path,
-    filetype = c('SPSS','Stata'),
-    bgdata = NULL,
-    npv = 10L,
-    longitudinal = FALSE,
-    rotation = TRUE,
-    nvalid = 3L,
-    include.nr = TRUE,
-    control = list(EAP = FALSE, WLE = FALSE,
-                   Bayes = list(itermcmc = 10000, burnin = 2000, est.alpha = FALSE, thin = 1, tdf = 10,
-                               cartctrl1 = 5, cartctrl2 = 0.0001),
-                   ML = list(nmi = 10L, ntheta = 2000, normal.approx = FALSE, samp.regr = FALSE,
-                              theta.model = FALSE, np.adj = 8, na.grid = 5,
-                             itermcmc = 100, burnin = 50, thin = 1,
-                             cartctrl1 = 5, cartctrl2 = 0.0001))
+                             domain = c('MA','RE','SC','IC','LI','EF','NR','NT','OR','ST','BA','CD', 'GR'),
+                             wave,
+                             method = c("ML","Bayes"),
+                             path,
+                             filetype = c('SPSS','Stata'),
+                             bgdata = NULL,
+                             npv = 10L,
+                             longitudinal = FALSE,
+                             rotation = TRUE,
+                             nvalid = 3L,
+                             include.nr = TRUE,
+                             control = list(EAP = FALSE, WLE = FALSE,
+                                            Bayes = list(itermcmc = 10000, burnin = 2000, est.alpha = FALSE, thin = 1, tdf = 10,
+                                                         cartctrl1 = 5, cartctrl2 = 0.0001),
+                                            ML = list(nmi = 10L, ntheta = 2000, normal.approx = FALSE, samp.regr = FALSE,
+                                                      theta.model = FALSE, np.adj = 8, na.grid = 5,
+                                                      itermcmc = 100, burnin = 50, thin = 1,
+                                                      cartctrl1 = 5, cartctrl2 = 0.0001))
 ){
     rea9_sc1u <- wave_w3 <- wave_w5 <- . <- NULL
     # check and prepare arguments
@@ -195,7 +195,7 @@ plausible_values <- function(SC,
     if (longitudinal && ((SC == "SC6" | SC == "SC5") & domain %in% c("IC", "SC", "BA", "EF"))){
         longitudinal <- FALSE
         message(paste0("No longitudinal data for: ", SC, " ", domain,". Estimating cross-sectional plausible values instead."))
-        }
+    }
     if(longitudinal) {
         type <- 'long'
         if (SC == "SC6" && domain %in% c("RE", "MA")) {
@@ -340,8 +340,8 @@ plausible_values <- function(SC,
 
     if (longitudinal) {
         rotation <- FALSE
-        if (method == "ML")
-            Q <- qmat(SC, domain)
+        if (method == "ML") {
+            Q <- qmat(SC, domain)}
     } else {
         Q <- NULL
         if (rotation) {
@@ -454,8 +454,9 @@ plausible_values <- function(SC,
         }
         resp <- resp %>% Reduce(function(df1,df2) dplyr::full_join(df1,df2,by="ID_t"), .)
         resp$ID_t <- NULL
-    } else
+    } else {
         resp <- data[, names(data) %in% item_labels[[SC]][[domain]][[wave]]]
+    }
 
     # check for Partial Credit Items
     PCM <- max(apply(resp, 2, max, na.rm = TRUE)) > 1
@@ -477,9 +478,9 @@ plausible_values <- function(SC,
         if (!is.null(bgdata)) {
             if (any(is.na(bgdata))) {
                 imp <- CART(X = bgdata, itermcmc = control$ML$itermcmc,
-                        burnin = control$ML$burnin, nmi = control$ML$nmi,
-                        thin = control$ML$thin, cartctrl1 = control$ML$cartctrl1,
-                        cartctrl2 = control$ML$cartctrl2)
+                            burnin = control$ML$burnin, nmi = control$ML$nmi,
+                            thin = control$ML$thin, cartctrl1 = control$ML$cartctrl1,
+                            cartctrl2 = control$ML$cartctrl2)
             } else {
                 bgdata <- as.data.frame(lapply(bgdata, as.numeric))
                 imp <- NULL
@@ -500,49 +501,32 @@ plausible_values <- function(SC,
                 B <- res$B
                 resp <- res$resp2
             } else {
-                B <- TAM::designMatrices(modeltype = 'PCM',
-                                         Q = Q,
-                                         resp = resp)$B
-                B[ind, , ] <- 0.5 * B[ind, , ]
+                if (longitudinal) {
+                    for (i in seq(length(Q))) {
+                        Q[[i]][ind[[i]], ] <- 0.5
+                    }
+                } else {
+                    B <- TAM::designMatrices(modeltype = 'PCM',
+                                             Q = Q,
+                                             resp = resp)$B
+                    B[ind, , ] <- 0.5 * B[ind, , ]
+                }
             }
         } else {
             if (rotation) {
-            res <- TAM::designMatrices.mfr(resp = resp, facets = position,
-                                           formulaA = ~ 0 + item + position,
-                                           constraint = "cases")
-            A <- res$A$A.3d
-            B <- res$B$B.3d
-            resp <- res$gresp$gresp.noStep
+                res <- TAM::designMatrices.mfr(resp = resp, facets = position,
+                                               formulaA = ~ 0 + item + position,
+                                               constraint = "cases")
+                A <- res$A$A.3d
+                B <- res$B$B.3d
+                resp <- res$gresp$gresp.noStep
             }
-        }
-
-        # fixed item parameters
-        fixed_difficulty <- NULL
-        if (domain == "MA") {
-            if (longitudinal & SC %in% c("SC4", "SC5", "SC6")) {
-                fixed_difficulty <- xsi.fixed$long$MA[[SC]]
-            } else if ((SC == "SC4" & wave == "w10") |
-                       (SC == "SC5" & wave == "w12") |
-                       (SC == "SC6" & wave == "w9")) {
-                fixed_difficulty <- xsi.fixed$cross$MA[[MA]]
-            }
-        } else if (domain == "RE") {
-            if (longitudinal & SC %in% c("SC4", "SC5", "SC6")) {
-                fixed_difficulty <- xsi.fixed$long$RE[[SC]]
-            } else if ((SC == "SC4" & wave == "w10") |
-                       (SC == "SC5" & wave == "w12") |
-                       (SC == "SC6" & wave == "w5")|
-                       (SC == "SC6" & wave == "w9")) {
-                fixed_difficulty <- xsi.fixed$cross$RE[[SC]][[wave]]
-            }
-        } else if (domain == "EF" & SC == "SC5") {
-            fixed_difficulty <- xsi.fixed$cross$EF
         }
 
         pvs <- list()
-        EAP.rel <- list()
-        regr.coeff <- list()
-        variance <- list()
+        EAP.rel <- list(NULL)
+        regr.coeff <- list(NULL)
+        variance <- list(NULL)
         eap <- replicate(ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi),
                          matrix(c(ID_t$ID_t, rep(0, 2*length(waves)*nrow(resp))),
                                 ncol = (1 + 2*length(waves)),
@@ -556,40 +540,50 @@ plausible_values <- function(SC,
                 frmY <- as.formula(paste("~", paste(colnames(bgdatacom), collapse = "+")))
             }
             # estimate IRT model
-            mod <- TAM::tam.mml(resp = resp,
-                                dataY = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
-                                formulaY = frmY,
-                                irtmodel = ifelse(PCM, "PCM2", "1PL"),
-                                xsi.fixed = fixed_difficulty,
-                                A = if (rotation) A else NULL, B = if (PCM || rotation) B else NULL,
-                                Q = Q, verbose = FALSE)
-            # impute plausible values
-            pmod <- TAM::tam.pv(mod, nplausible = npv,
-                                ntheta = control$ML$ntheta,
-                                normal.approx = control$ML$normal.approx,
-                                samp.regr = control$ML$samp.regr,
-                                theta.model = control$ML$theta.model,
-                                np.adj = control$ML$np.adj,
-                                na.grid = control$ML$na.grid)
-            eap[[i]][, -1] <- as.matrix(mod$person[, grep("EAP",
-                                                          names(mod$person))])
+            mod <- list()
+            tmp_pvs <- list()
+            pmod <- list()
+            for (j in seq(length(waves))) {
+                mod[[j]] <- TAM::tam.mml(resp = resp[, item_labels[[SC]][[domain]][[gsub("_", "", waves)[j] ]] ],
+                                         dataY = if (is.null(bgdata)) NULL else if (is.null(imp)) bgdata[, -which(names(bgdata) == "ID_t")] else bgdatacom,
+                                         formulaY = frmY,
+                                         irtmodel = ifelse(PCM, "PCM2", "1PL"),
+                                         xsi.fixed = if (is.null(xsi.fixed$long[[domain]][[SC]][[gsub("_", "", waves)[j] ]])) NULL else cbind(1:nrow(xsi.fixed$long[[domain]][[SC]][[gsub("_", "", waves)[j] ]]),
+                                                                                                                                              xsi.fixed$long[[domain]][[SC]][[gsub("_", "", waves)[j] ]][,2]),
+                                         Q = Q[[j]], verbose = FALSE)
+                # impute plausible values
+                pmod[[j]] <- TAM::tam.pv(mod[[j]], nplausible = npv,
+                                         ntheta = control$ML$ntheta,
+                                         normal.approx = control$ML$normal.approx,
+                                         samp.regr = control$ML$samp.regr,
+                                         theta.model = control$ML$theta.model,
+                                         np.adj = control$ML$np.adj,
+                                         na.grid = control$ML$na.grid)
+                tmp_pvs[[j]] <- TAM::tampv2datalist(pmod[[j]],
+                                                    Y = if (is.null(bgdata) || is.null(imp)) ID_t else cbind(ID_t, bgdatacom),
+                                                    pvnames = paste0("PV", waves[j]))
+                eap[[i]][, (j*2):(j*2+1)] <- as.matrix(mod[[j]]$person[, grep("EAP",
+                                                                              names(mod[[j]]$person))])
+                EAP.rel[[i]] <- c(EAP.rel[[i]], mod[[j]]$EAP.rel)
+                regr.coeff[[i]] <- cbind(regr.coeff[[i]], mod[[j]]$beta)
+                variance[[i]] <- c(variance[[i]], mod[[j]]$variance)
+            }
+            for (j in seq(length(tmp_pvs)-1)) {
+                for (n in 1:npv) {
+                    pvs[[n]] <- suppressMessages(dplyr::full_join(tmp_pvs[[j]][[n]], tmp_pvs[[j+1]][[n]]))
+                }
+            }
+            rm(tmp_pvs)
             colnames(eap[[i]]) <- c('ID_t',  paste0(rep(c('eap','se'),
                                                         length(waves)),
                                                     rep(waves, each = 2)))
-            pvs[[i]] <- TAM::tampv2datalist(pmod,
-                                            Y = if (is.null(bgdata) || is.null(imp)) ID_t else cbind(ID_t, bgdatacom),
-                                            pvnames = paste0("PV", waves))
-            EAP.rel[[i]] <- mod$EAP.rel
-            regr.coeff[[i]] <- mod$beta
-            variance[[i]] <- mod$variance
         }
-        if (control$WLE && !longitudinal) {
-            wmod <- TAM::tam.mml.wle2(mod, WLE = TRUE, progress = FALSE)
-            wle <- matrix(wmod$theta, nrow = length(wmod$theta), ncol = 1)
-            wle <- cbind(ID_t, wle, wmod$error)
-            colnames(wle) <- c('ID_t', 'wle', 'se')
-        } else if (control$WLE && longitudinal) {
-            wmod <- TAM::tam.mml.wle2(mod, WLE = TRUE, progress = FALSE)
+        if (control$WLE) {
+            wmod <- list()
+            for (j in seq(length(waves))) {
+                wmod[[j]] <- TAM::tam.mml.wle2(mod[[j]], WLE = TRUE, progress = FALSE)
+            }
+            wmod <- wmod %>% Reduce(function(df1,df2) dplyr::full_join(df1,df2,by="pid"), .)
             wle <- do.call(cbind, list(ID_t, wmod[grep("theta|error", colnames(wmod))]))
             colnames(wle) <- c('ID_t',  paste0(rep(c('wle','se'), length(waves)), rep(waves, each = 2)))
         }
@@ -597,20 +591,13 @@ plausible_values <- function(SC,
         d <- 1
         for (i in 1:ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi)) {
             for (j in 1:npv) {
-                datalist[[d]] <- pvs[[i]][[j]]
+                datalist[[d]] <- pvs[[i]][, c("ID_t", paste0("PV", waves))]
                 d <- d + 1
             }
         }
         pvs <- NULL
         ind <- sample(1:length(datalist), npv)
         datalist <- datalist[ind]
-        for (i in 1:npv) {
-            datalist[[i]] <- datalist[[i]][, -which(colnames(datalist[[i]]) %in%
-                                                        c('pid', 'pweights',
-                                                          'test_position'))]
-            datalist[[i]] <- datalist[[i]] %>% dplyr::select(ID_t,
-                                                             dplyr::everything())
-        }
     }
 
 
@@ -750,8 +737,8 @@ plausible_values <- function(SC,
     if (longitudinal){
         res[["abs.correction"]] <- sapply(meanvar[[SC]][[domain]],
                                           FUN = function(x) x[[1]]) #+
-            # unlist(sapply(gsub("_", "", waves),
-            #               FUN = function(x) correction[[SC]][[domain]][[x]]))
+        # unlist(sapply(gsub("_", "", waves),
+        #               FUN = function(x) correction[[SC]][[domain]][[x]]))
     }
     res[["variance.PV"]] <- VAR
     res[["mean.PV"]] <- MEAN
@@ -778,7 +765,7 @@ plausible_values <- function(SC,
                 } else {
                     rownames(res[["regr.coeff"]][[n]]) <-
                         c("Intercept", names(res[['pv']][[1]][, 2:(ncol(res[['pv']][[1]]) -
-                           ifelse(SC == "SC6" & domain == "RE", length(waves) + 1, length(waves)))]))
+                                                                       ifelse(SC == "SC6" & domain == "RE", length(waves) + 1, length(waves)))]))
                 }
             }
         }
