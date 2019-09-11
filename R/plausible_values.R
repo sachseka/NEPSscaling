@@ -432,9 +432,10 @@ plausible_values <- function(SC,
 
     # complement control lists
     res <- complement_control_lists(control$EAP, #control$WLE,
-                                    control$Bayes, control$ML)
+                                    # control$Bayes,
+                                    control$ML)
     control$EAP <- res$EAP
-    control$Bayes <- res$Bayes
+    # control$Bayes <- res$Bayes
     control$ML <- res$ML
 
 
@@ -489,7 +490,7 @@ plausible_values <- function(SC,
         }
     }
 
-    pvs <- list()
+    pvs <- list(NULL)
     EAP.rel <- list(NULL)
     regr.coeff <- list(NULL)
     variance <- list(NULL)
@@ -537,10 +538,9 @@ plausible_values <- function(SC,
             variance[[i]] <- c(variance[[i]], mod[[j]]$variance)
         }
         if (longitudinal) {
-            for (j in seq(length(tmp_pvs)-1)) {
-                for (n in 1:npv) {
-                    pvs[[n]] <- suppressMessages(dplyr::full_join(tmp_pvs[[j]][[n]], tmp_pvs[[j+1]][[n]]))
-                }
+            for (n in 1:npv) {
+                pvs[[n]] <- suppressMessages(lapply(tmp_pvs, function(x) {x[[n]]}) %>%
+                                Reduce(function(df1,df2) dplyr::full_join(df1,df2), .))
             }
         } else {
             pvs <- tmp_pvs[[1]]
