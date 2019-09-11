@@ -157,7 +157,7 @@
 plausible_values <- function(SC,
                              domain = c('MA','RE','SC','IC','LI','EF','NR','NT','OR','ST','BA','CD', 'GR'),
                              wave,
-                             method = c("ML","Bayes"),
+                             # method = c("ML","Bayes"),
                              path,
                              filetype = c('SPSS','Stata'),
                              bgdata = NULL,
@@ -175,6 +175,7 @@ plausible_values <- function(SC,
                                                       cartctrl1 = 5, cartctrl2 = 0.0001))
 ){
     rea9_sc1u <- wave_w3 <- wave_w5 <- . <- NULL
+    method <- "ML"
     # check and prepare arguments
     if (missing(SC)) stop("Starting cohort must be specified.")
     if (!is.numeric(SC) || !is.numeric(wave)) stop("Starting cohort and wave must be numeric.")
@@ -185,7 +186,7 @@ plausible_values <- function(SC,
         wave <- paste0("w", wave)
     domain <- toupper(domain)
     domain <- match.arg(domain)
-    method <- match.arg(method)
+    # method <- match.arg(method)
     filetype <- match.arg(filetype)
     if (missing(path)) stop("Path must be specified.")
     if (!is.character(path) || !grepl("/$",path)) stop("Path must be a character string and end in '/'.")
@@ -340,8 +341,8 @@ plausible_values <- function(SC,
 
     if (longitudinal) {
         rotation <- FALSE
-        if (method == "ML") {
-            Q <- qmat(SC, domain)}
+        # if (method == "ML") {
+            Q <- qmat(SC, domain)#}
     } else {
         Q <- NULL
         if (rotation) {
@@ -472,7 +473,7 @@ plausible_values <- function(SC,
 
 
     # estimation with ML
-    if (method == "ML") {
+    # if (method == "ML") {
 
         # multiple imputation of missing covariate data
         if (!is.null(bgdata)) {
@@ -606,72 +607,72 @@ plausible_values <- function(SC,
         pvs <- NULL
         ind <- sample(1:length(datalist), npv)
         datalist <- datalist[ind]
-    }
+    # }
 
 
 
-    # estimation using MCMC
-    if (method == "Bayes") {
-
-        # collapse categories with N < 200
-        if(PCM) {
-            res <- adjustments_PCM(resp, SC,
-                                   if (longitudinal) gsub("_", "", waves) else wave,
-                                   domain)
-            resp <- res$resp
-        }
-
-        if (rotation) {
-            S <- position[, 1]# + 1
-        } else {
-            S <- NULL
-        }
-
-        if (!is.null(bgdata)) bgdata <- data.frame(bgdata)
-        resp <- data.frame(resp)
-        if (longitudinal){
-            datalist <- plausible_values_mdlrm(Y = resp, X = bgdata, npv = npv,
-                                               itermcmc = control$Bayes$itermcmc,
-                                               burnin = control$Bayes$burnin,
-                                               thin = control$Bayes$thin,
-                                               tdf = control$Bayes$tdf,
-                                               est.alpha = control$Bayes$est.alpha,
-                                               cartctrl1 = control$Bayes$cartctrl1,
-                                               cartctrl2 = control$Bayes$cartctrl2,
-                                               SC = SC, domain = domain,
-                                               waves = waves)
-        } else {
-            datalist <- plausible_values_mglrm(Y = resp, X = bgdata, S = S,
-                                               npv = npv,
-                                               itermcmc = control$Bayes$itermcmc,
-                                               burnin = control$Bayes$burnin,
-                                               thin = control$Bayes$thin,
-                                               tdf = control$Bayes$tdf,
-                                               est.alpha = control$Bayes$est.alpha,
-                                               cartctrl1 = control$Bayes$cartctrl1,
-                                               cartctrl2 = control$Bayes$cartctrl2,
-                                               SC = SC, domain = domain, wave = wave)
-        }
-        if (is.null(bgdata)) {
-            for (i in seq(length(datalist$datalist))) {
-                datalist$datalist[[i]]$ID_t <- ID_t$ID_t
-                datalist$datalist[[i]] <- datalist$datalist[[i]] %>%
-                    dplyr::select(ID_t, dplyr::everything())
-            }
-        }
-    }
+    # # estimation using MCMC
+    # if (method == "Bayes") {
+    #
+    #     # collapse categories with N < 200
+    #     if(PCM) {
+    #         res <- adjustments_PCM(resp, SC,
+    #                                if (longitudinal) gsub("_", "", waves) else wave,
+    #                                domain)
+    #         resp <- res$resp
+    #     }
+    #
+    #     if (rotation) {
+    #         S <- position[, 1]# + 1
+    #     } else {
+    #         S <- NULL
+    #     }
+    #
+    #     if (!is.null(bgdata)) bgdata <- data.frame(bgdata)
+    #     resp <- data.frame(resp)
+    #     if (longitudinal){
+    #         datalist <- plausible_values_mdlrm(Y = resp, X = bgdata, npv = npv,
+    #                                            itermcmc = control$Bayes$itermcmc,
+    #                                            burnin = control$Bayes$burnin,
+    #                                            thin = control$Bayes$thin,
+    #                                            tdf = control$Bayes$tdf,
+    #                                            est.alpha = control$Bayes$est.alpha,
+    #                                            cartctrl1 = control$Bayes$cartctrl1,
+    #                                            cartctrl2 = control$Bayes$cartctrl2,
+    #                                            SC = SC, domain = domain,
+    #                                            waves = waves)
+    #     } else {
+    #         datalist <- plausible_values_mglrm(Y = resp, X = bgdata, S = S,
+    #                                            npv = npv,
+    #                                            itermcmc = control$Bayes$itermcmc,
+    #                                            burnin = control$Bayes$burnin,
+    #                                            thin = control$Bayes$thin,
+    #                                            tdf = control$Bayes$tdf,
+    #                                            est.alpha = control$Bayes$est.alpha,
+    #                                            cartctrl1 = control$Bayes$cartctrl1,
+    #                                            cartctrl2 = control$Bayes$cartctrl2,
+    #                                            SC = SC, domain = domain, wave = wave)
+    #     }
+    #     if (is.null(bgdata)) {
+    #         for (i in seq(length(datalist$datalist))) {
+    #             datalist$datalist[[i]]$ID_t <- ID_t$ID_t
+    #             datalist$datalist[[i]] <- datalist$datalist[[i]] %>%
+    #                 dplyr::select(ID_t, dplyr::everything())
+    #         }
+    #     }
+    # }
 
 
     # linear transformation of longitudinal PVs to pre-defined scale
     if (longitudinal) {
-        if (method == "Bayes") {
-            VAR <- datalist$VAR
-            MEAN <- colMeans(datalist$EAP[, grep("EAP", names(datalist$EAP))])
-        } else {
+        # if (method == "Bayes") {
+            # VAR <- datalist$VAR
+            # MEAN <- colMeans(datalist$EAP[, grep("EAP", names(datalist$EAP))])
+        # } else {
             VAR <- colMeans(do.call(rbind, lapply(variance, FUN = function (x) diag(x))))
             MEAN <- colMeans(do.call(rbind, lapply(eap, FUN = function (x) {
                 colMeans(x[, seq(2, (1+2*length(waves)), 2)])})))
-        }
+        # }
         names(VAR) <- gsub("_", "", waves)
         names(MEAN) <- gsub("_", "", waves)
         if (SC == "SC6" && domain == "RE") {
@@ -682,7 +683,7 @@ plausible_values <- function(SC,
                                                       wave_w5 == 1,
                                                       !is.na(rea9_sc1u))$ID_t
         }
-        pv <- scale_pv(pv = if (method == "Bayes") datalist$datalist else datalist,
+        pv <- scale_pv(pv = datalist, #if (method == "Bayes") datalist$datalist else datalist,
                        SC = SC, domain = domain, type = type,
                        wave = gsub("_", "", waves), VAR = VAR, MEAN = MEAN,
                        ID = if(SC == "SC6") longitudinal_IDs else NULL)
@@ -713,17 +714,18 @@ plausible_values <- function(SC,
             wle[wle$ID_t %in% longitudinal_IDs[["w5"]], c("wle_w3", "se_w3")] <- NA
         }
     } else {
-        pv <- if (method == "ML") datalist else datalist$datalist
+        # pv <- if (method == "ML") datalist else datalist$datalist
+        pv <- datalist
         for(p in seq(npv)) {
             pv[[p]][n.valid$valid < nvalid, "PV"] <- NA
         }
-        if (method == "Bayes") {
-            VAR <- sum(datalist$VAR)
-            MEAN <- mean(datalist$EAP$EAP)
-        } else {
+        # if (method == "Bayes") {
+        #     VAR <- sum(datalist$VAR)
+        #     MEAN <- mean(datalist$EAP$EAP)
+        # } else {
             VAR <- mean(unlist(variance))
             MEAN <- mean(sapply(eap, FUN = function(x) mean(x[, 2])))
-        }
+        # }
     }
 
     # output
@@ -731,12 +733,13 @@ plausible_values <- function(SC,
     res[['SC']] <- as.numeric(gsub(pattern = "SC", replacement = "", x = SC))
     res[['domain']] <- domain
     res[['wave']] <- as.numeric(gsub(pattern = "w", replacement = "", x = wave))
-    res[['method']] <- method
+    # res[['method']] <- method
     res[['type']] <- type
     res[['rotation']] <- ifelse(rotation, 'Corrected For Test Position',
                                 'No Correction For Test Position')
     res[['nvalid']] <- nvalid
-    res[['model']] <- if (method == "ML") ifelse(PCM, 'Partial Credit Model', 'Rasch Model') else "Graded Response Model"
+    # res[['model']] <- if (method == "ML") ifelse(PCM, 'Partial Credit Model', 'Rasch Model') else "Graded Response Model"
+    res[['model']] <- ifelse(PCM, 'Partial Credit Model', 'Rasch Model')
     res[['n.valid']] <- n.valid
     res[['npv']] <- npv
     res[['control']] <- control
@@ -752,11 +755,11 @@ plausible_values <- function(SC,
     res[["mean.PV"]] <- MEAN
     res[['pv']] <- pv
 
-    if (method == "Bayes") {
-        if (control$EAP) res[["eap"]] <- datalist$EAP
-        res[["regr.coeff"]] <- datalist$regr.coeff
-        if (control$Bayes$est.alpha) res[["alpha"]] <- datalist$alpha
-    } else if (method == "ML") {
+    # if (method == "Bayes") {
+    #     if (control$EAP) res[["eap"]] <- datalist$EAP
+    #     res[["regr.coeff"]] <- datalist$regr.coeff
+    #     if (control$Bayes$est.alpha) res[["alpha"]] <- datalist$alpha
+    # } else if (method == "ML") {
         if (control$EAP) {
             res[['eap']] <- eap
         }
@@ -778,7 +781,7 @@ plausible_values <- function(SC,
             }
         }
 
-    }
+    # }
     class(res) <- "pv.obj"
     return(res)
 }
