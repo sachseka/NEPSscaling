@@ -170,6 +170,7 @@ plausible_values <- function(SC,
                              rotation = TRUE,
                              nvalid = 3L,
                              include.nr = TRUE,
+                             verbose = TRUE,
                              control = list(EAP = FALSE, WLE = FALSE,
                                             Bayes = list(itermcmc = 10000,
                                                          burnin = 2000,
@@ -224,7 +225,10 @@ plausible_values <- function(SC,
                        ". Estimating cross-sectional plausible values instead.")
                 )
     }
-    # message("Begin pre-processing of data...")
+    if (verbose) {
+        cat("Begin pre-processing of data... ", paste(Sys.time()), "\n")
+        flush.console()
+    }
     if(longitudinal) {
         type <- "long"
         if (SC == "SC6") {
@@ -664,7 +668,11 @@ plausible_values <- function(SC,
     # multiple imputation of missing covariate data
     if (!is.null(bgdata)) {
         if (any(is.na(bgdata))) {
-            # message("Begin multiple imputation of missing background data...")
+            if (verbose) {
+                cat("Begin multiple imputation of missing background data... ",
+                    paste(Sys.time()), "\n")
+                flush.console()
+            }
             imp <- CART(X = bgdata, itermcmc = control$ML$itermcmc,
                         burnin = control$ML$burnin, nmi = control$ML$nmi,
                         thin = control$ML$thin, cartctrl1 = control$ML$cartctrl1,
@@ -683,7 +691,11 @@ plausible_values <- function(SC,
         }
     } else {imp <- frmY <- NULL}
 
-    # message("Begin estimation...")
+    if (verbose) {
+        cat("Begin estimation... ", paste(Sys.time()), "\nThis might take some time.\n")
+        flush.console()
+    }
+
     if (longitudinal) {
         res <- longitudinal_estimation(bgdata, imp, frmY = NULL, resp, Q,
                                        PCM, ID_t, waves, type, domain, SC,
@@ -717,6 +729,10 @@ plausible_values <- function(SC,
     EAP.rel <- res$EAP.rel
     regr.coeff <- res$regr.coeff
     mod <- res$mod
+    if (verbose) {
+        cat("Finished estimation. Begin post-processing... ", paste(Sys.time()), "\n")
+        flush.console()
+    }
     # assumption: eaps are equivalent over all estimations
     eap <- eap[[1]]
     if (control$WLE) {
@@ -757,7 +773,6 @@ plausible_values <- function(SC,
 
     # linear transformation of longitudinal PVs to pre-defined scale
     if (longitudinal) {
-        # message("Begin post-processing of data...")
         for(p in seq(npv)) {
             for(w in waves) {
                 for (i in seq(nrow(n.valid))) {
