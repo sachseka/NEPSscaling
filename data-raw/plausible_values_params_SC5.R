@@ -3,31 +3,31 @@
 rm(list = ls())
 
 # output object
-meanvar <- list()
-load(file = "data-raw/meanvar.RData")
+link_constant <- list()
+load(file = "data-raw/link_constant.RData")
 
 # starting cohort
 SC <- 'SC5'
 
 # Reading
-meanvar[[SC]][["RE"]][["w12"]] <- c(0.260422881116179, 0.8320544)
+link_constant[[SC]][["RE"]][["w12"]] <- 0.260422881116179
 
 # Mathematics
-meanvar[[SC]][["MA"]][["w12"]] <- c(-0.009668033, 1.16)
+link_constant[[SC]][["MA"]][["w12"]] <- -0.009668033
 
 # Information and Communication Technology literacy
-meanvar[[SC]][["IC"]][["w5"]] <- c(0, 1) #!
+link_constant[[SC]][["IC"]][["w5"]] <- 0 #!
 
 # Science
-meanvar[[SC]][["SC"]][["w5"]] <- c(0, 1) #!
+link_constant[[SC]][["SC"]][["w5"]] <- 0 #!
 
 # English as a foreign language
-meanvar[[SC]][["EF"]][["w12"]] <- c(0, 1) #!
+link_constant[[SC]][["EF"]][["w12"]] <- 0 #!
 
 # Business Administration and Economics
-meanvar[[SC]][["BA"]][["w7"]] <- c(0,1) #!
+link_constant[[SC]][["BA"]][["w7"]] <- 0 #!
 
-save(meanvar, file = "data-raw/meanvar.RData")
+save(link_constant, file = "data-raw/link_constant.RData")
 
 # Corrections because of dropout etc.
 correction <- list()

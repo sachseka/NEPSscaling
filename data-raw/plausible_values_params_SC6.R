@@ -3,28 +3,27 @@
 rm(list = ls())
 
 # output object
-meanvar <- list()
-load(file = "data-raw/meanvar.RData")
+link_constant <- list()
+load(file = "data-raw/link_constant.RData")
 
 # starting cohort
 SC <- 'SC6'
 
 # Reading
-# meanvar[[SC]][["RE"]][["w9"]] <- c(-0.104688810504687, 0.8320544)
-meanvar[[SC]][["RE"]][["w9"]][["B67"]] <- c(-0.1628752, 0.8320544)
-meanvar[[SC]][["RE"]][["w9"]][["B69"]] <- c(-0.01327258, 0.8320544)
+link_constant[[SC]][["RE"]][["w9"]][["B67"]] <- -0.1628752
+link_constant[[SC]][["RE"]][["w9"]][["B69"]] <- -0.01327258
 
 # Mathematics
-meanvar[[SC]][["MA"]][["w9"]] <- c(-0.1109509, 1.16) #! im technical report: pcm$all$mod: 1.23277
+link_constant[[SC]][["MA"]][["w9"]] <- -0.1109509
 
 # Information and Communication Technology literacy
-meanvar[[SC]][["IC"]][["w5"]] <- c(0, 1) #!
+link_constant[[SC]][["IC"]][["w5"]] <- 0 #!
 
 # Science
-meanvar[[SC]][["SC"]][["w5"]] <- c(0, 1) #!
+link_constant[[SC]][["SC"]][["w5"]] <- 0 #!
 
 # Save output object
-save(meanvar, file = "data-raw/meanvar.RData")
+save(link_constant, file = "data-raw/link_constant.RData")
 
 
 # Item difficulties for reading w3 (to be reused in w5)

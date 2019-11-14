@@ -6,29 +6,26 @@
 scaled item parameters}
 \usage{
 plausible_values(SC, domain = c("MA", "RE", "SC", "IC", "LI", "EF", "NR",
-  "NT", "OR", "ST", "BA", "CD", "GR"), wave, method = c("ML", "Bayes"),
-  path, filetype = c("SPSS", "Stata"), bgdata = NULL, npv = 10L,
-  longitudinal = FALSE, rotation = TRUE, nvalid = 3L,
-  include.nr = TRUE, control = list(EAP = FALSE, WLE = FALSE, Bayes =
-  list(itermcmc = 10000, burnin = 2000, est.alpha = FALSE, thin = 1, tdf =
-  10, cartctrl1 = 5, cartctrl2 = 1e-04), ML = list(nmi = 10L, ntheta =
-  2000, normal.approx = FALSE, samp.regr = FALSE, theta.model = FALSE,
-  np.adj = 8, na.grid = 5, itermcmc = 100, burnin = 50, thin = 1, cartctrl1
-  = 5, cartctrl2 = 1e-04)))
+  "NT", "OR", "ST", "BA", "CD", "GR"), wave, path, filetype = c("SPSS",
+  "Stata"), bgdata = NULL, npv = 10L, longitudinal = FALSE,
+  rotation = TRUE, nvalid = 3L, include.nr = TRUE,
+  control = list(EAP = FALSE, WLE = FALSE, Bayes = list(itermcmc = 10000,
+  burnin = 2000, est.alpha = FALSE, thin = 1, tdf = 10, cartctrl1 = 5,
+  cartctrl2 = 1e-04), ML = list(nmi = 10L, ntheta = 2000, normal.approx =
+  FALSE, samp.regr = FALSE, theta.model = FALSE, np.adj = 8, na.grid = 5,
+  itermcmc = 100, burnin = 50, thin = 1, cartctrl1 = 5, cartctrl2 =
+  1e-04)))
 }
 \arguments{
 \item{SC}{numeric. The starting cohort used for the analysis is
 indicated by an integer value (e.g., starting cohort one = 1).}
 
 \item{domain}{character. The competence domain of interest is indicated
-by the domain abbreviation as used in the variable names (see Fuß, D., Gnambs,
-T., Lockl, K., & Attig, M., 2016).}
+by the domain abbreviation as used in the variable names (see Fuß, D.,
+Gnambs, T., Lockl, K., & Attig, M., 2016).}
 
 \item{wave}{numeric. The wave of competence testing is indicated by
 an integer value (e.g., wave one = 1).}
-
-\item{method}{character. Should estimation method be fully Bayesian
-("Bayes") or maximum likelihood-bases ("ML")?}
 
 \item{path}{character; file path leading to the location of the
 competence data}
@@ -38,14 +35,15 @@ and Stata data files)}
 
 \item{bgdata}{data frame containing background variables. Categorical
 variables have to be specified as factors. If \code{bgdata = NULL}, plausible
-values are estimated without a background model. Missing data in the covariates
-is imputed using sequential classification and regression trees.}
+values are estimated without a background model. Missing data in the
+covariates is imputed using sequential classification and regression trees.}
 
 \item{npv}{numeric; number of plausible values to be estimated;
 defaults to 10.}
 
-\item{longitudinal}{logical. TRUE indicating that a multidimensional model with
-the measurement points as its dimensions is to be estimated. Defaults to FALSE.}
+\item{longitudinal}{logical. TRUE indicating that a multidimensional model
+with the measurement points as its dimensions is to be estimated. Defaults to
+FALSE.}
 
 \item{rotation}{logical. TRUE indicating that the competence scores
 should be corrected for the rotation design of the booklets. Defaults to
@@ -53,26 +51,27 @@ TRUE. If both longitudinal and rotation are TRUE, rotation is set to FALSE
 automatically.}
 
 \item{nvalid}{numeric; minimum number of responses test takers had to
-give for inclusion into the estimation process. NEPS default is at least three.}
+give for inclusion into the estimation process. NEPS default is at least
+three.}
 
 \item{include.nr}{logical; whether the number of not-reached items as a proxy
 for processing speed should be included in the background model (the default
 is TRUE)}
 
-\item{control}{list of additional options. If \code{EAP = TRUE}, the EAPs
-will be returned as well. Furthermore, additional control options for "ML"
-(again in form of a list) are \code{nmi} (the number of multiple imputations
-if there is missing data in the covariates) and arguments concerning the ML
-estimation given to TAM::tam.pv() (therefore, see TAM for further control
-options). Analogously, control options for "Bayes" (in form of a list) are
-"itermcmc" (number of MCMC iterations), "burnin" (number of burn-in iterations),
-"est.alpha" (whether item discriminations of the graded response model are to
-be fixed or estimated freely; default: fixed), "thin" (thinning interval in
-MCMC), "tdf" (df of multiv. t proposal distr. for category cut-offs for
-ordinal items), "cartctrl1" (min. number of observations in any terminal CART
-node) and "cartctrl2" (min. decrease of overall lack of fit by each CART
-split). NOTE that "Bayes" control options are also applied to the CART
-algorithm for "ML" estimation.}
+\item{control}{list of additional options. If \code{EAP = TRUE}, the
+EAPs will be returned as well. Furthermore, additional control options for
+"ML" (again in form of a list) are \code{nmi} (the number of multiple
+imputations if there is missing data in the covariates) and arguments
+concerning the ML estimation given to TAM::tam.pv() (therefore, see TAM for
+further control options). Analogously, control options for "Bayes" (in form
+of a list) are "itermcmc" (number of MCMC iterations), "burnin" (number of
+burn-in iterations), "est.alpha" (whether item discriminations of the graded
+response model are to be fixed or estimated freely; default: fixed), "thin"
+(thinning interval in MCMC), "tdf" (df of multiv. t proposal distr. for
+category cut-offs for ordinal items), "cartctrl1" (min. number of
+observations in any terminal CART node) and "cartctrl2" (min. decrease of
+overall lack of fit by each CART split). NOTE that "Bayes" control options
+are also applied to the CART algorithm for "ML" estimation.}
 }
 \value{
 \code{plausible_values()} returns an object of class \code{pv.obj}
@@ -82,8 +81,8 @@ containing:
 \item{domain}{Competence domain that plausible values were estimated for}
 \item{wave}{Wave that plausible values were estimated for}
 \item{method}{Estimation algorithm that was used for estimating plausible
-values (\code{ML} for the EM algorithm implemented in \code{TAM} or \code{Bayes}
-for the Gibbs Sampler implemented in \code{LaRA})}
+values (\code{ML} for the EM algorithm implemented in \code{TAM} or
+\code{Bayes} for the Gibbs Sampler implemented in \code{LaRA})}
 \item{type}{Whether cross-sectional ("cross") or longitudinal ("long")
 plausible values were estimated}
 \item{rotation}{In most assessments the position of the competence test was
@@ -93,8 +92,8 @@ applied. Depending on the estimation context, this variable may have been
 automatically set by the function and thus differ from user input}
 \item{nvalid}{The minimum number of answers a test taker must have given}
 \item{model}{If the method \code{ML} was chosen, a Rasch or a Partial Credit
-Model was estimated, depending on the item format. If \code{Bayes} was chosen,
-a Graded Response Model was estimated.}
+Model was estimated, depending on the item format. If \code{Bayes} was
+chosen, a Graded Response Model was estimated.}
 \item{n.valid}{A \code{data.frame} containing the \code{ID_t} and the
 number of valid responses given by the respective individual}
 \item{npv}{The number of plausible values that are returned by the function}
@@ -116,8 +115,9 @@ proxy for response times.}
 EAP value for the respective individual}
 \item{regr.coeff}{The regression coefficients of the latent regression of
 the ability}
-\item{alpha}{If the method \code{Bayes} and, in the controls, \code{est.alpha}
-were chosen, the item discrimination parameters (as the EAPs) are returned}
+\item{alpha}{If the method \code{Bayes} and, in the controls,
+\code{est.alpha} were chosen, the item discrimination parameters (as the
+EAPs) are returned}
 \item{EAP.rel}{For method \code{ML} the EAP reliability is returned}
 }
 }
@@ -143,7 +143,8 @@ path <- 'Usr/NEPS-data/'
 setwd(path)
 ## save simulated target competencies to path
 data(xTargetCompetencies_sim)
-write.dta(dataframe = xTargetCompetencies_sim, file = 'SC6_xTargetCompetencies_sim.dta')
+write.dta(dataframe = xTargetCompetencies_sim,
+          file = 'SC6_xTargetCompetencies_sim.dta')
 ## estimate default number of 10 plausible values
 ## note: the example background data is completely observed!
 result <- plausible_values(SC = 6
@@ -166,9 +167,10 @@ Azur, M. J., Stuart, E. A., Frangakis, C., & Leaf, P. J. (2011).
 Multiple imputation by chained equations: what is it and how does it work?
 \emph{International Journal of Methods in Psychiatric Research, 20}(1), 40-49.
 
-Blossfeld, H.-P., Rossbach, H.-G., & von Maurice,  J. (Eds.) (2011).
-Education as a Lifelong Process - The German National Educational Panel Study
-(NEPS). \emph{Zeitschrift fuer Erziehungswissenschaft, Sonderheft 14}.
+Blossfeld, H.-P., Rossbach, H.-G., & von Maurice,  J. (Eds.)
+(2011). Education as a Lifelong Process - The German National Educational
+Panel Study (NEPS). \emph{Zeitschrift fuer Erziehungswissenschaft,
+Sonderheft 14}.
 
 Burgette, L. F., & Reiter, J. P. (2010). Multiple imputation for
 missing data via sequential regression trees. \emph{American Journal of
@@ -189,7 +191,7 @@ Tanner, M. A., & Wong, W. H. (1987). The calculation of posterior
 distributions by data augmentation. \emph{Journal of the American Statistical
 Association}, \emph{82}(398), 528-549.
 
-Weirich, S., Haag, N., Hecht, M., Boehme, K., Siegle, T., & Luedtke,
-O. (2014). Nested multiple imputation in large-scale assessments.
+Weirich, S., Haag, N., Hecht, M., Boehme, K., Siegle, T., &
+Luedtke, O. (2014). Nested multiple imputation in large-scale assessments.
 \emph{Large-Scale Assessments in Education, 2}(1), 9.
 }

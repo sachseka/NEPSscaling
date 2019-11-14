@@ -46,16 +46,19 @@ CART <- function(
 
     X <- data.frame(X)
     ID_t <- X$ID_t
-    X <- X[, -which(names(X)=='ID_t')]
+    X <- X[, -which(names(X)=='ID_t'), drop = FALSE]
 
     XOBS <- !is.na(X)
     XMIS <- is.na(X)
     xmisord <- names(sort(colSums(XMIS)))[sort(colSums(XMIS)) > 0]
     for(k in xmisord){
         if (length(X[XOBS[, k], k]) == 0) {
-            stop(paste(k, "does not contain any observed values for the subsample of test takers. Please remove it from the background data set."))
+            stop(paste(k, "does not contain any observed values for the",
+                       "subsample of test takers. Please remove it from the",
+                       "background data set."))
         }
-        X[XMIS[, k], k] <- sample(X[XOBS[, k], k], sum(XMIS[, k]), replace = TRUE)
+        X[XMIS[, k], k] <- sample(X[XOBS[, k], k], sum(XMIS[, k]),
+                                  replace = TRUE)
     }
 
     savemis <- sort(sample((burnin+1):itermcmc, nmi))
@@ -65,7 +68,8 @@ CART <- function(
     pb <- txtProgressBar(min = 0, max = itermcmc, style = 3)
     for(ii in 1:itermcmc){
         for(iii in 1:thin){
-            X <- seqcart(X, xmisord, XOBS, XMIS, cartctrl1, cartctrl2)
+            X <- as.data.frame(
+                seqcart(X, xmisord, XOBS, XMIS, cartctrl1, cartctrl2))
         }
         # save CART draws
         if (ii %in% savemis) {

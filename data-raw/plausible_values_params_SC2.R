@@ -1,42 +1,42 @@
 ## Link constants and correction terms for starting cohort 2
 
 # output object
-meanvar <- list()
-load(file = "data-raw/meanvar.RData")
+link_constant <- list()
+load(file = "data-raw/link_constant.RData")
 
 # starting cohort
 SC <- 'SC2'
 
 # Reading
-meanvar[[SC]][["RE"]][["w6"]] <- c(-0.567, 1.536)
+link_constant[[SC]][["RE"]][["w6"]] <- -0.567
 
 # Mathematics
-meanvar[[SC]][["MA"]][["w2"]] <- c(0, 1.087) #!
-meanvar[[SC]][["MA"]][["w3"]] <- c(1.3522, 0.967)
-meanvar[[SC]][["MA"]][["w4"]] <- c(-0.003803296, 1) #!
-meanvar[[SC]][["MA"]][["w6"]] <- c(0, 1) #!
+link_constant[[SC]][["MA"]][["w2"]] <- 0 #!
+link_constant[[SC]][["MA"]][["w3"]] <- 1.3522
+link_constant[[SC]][["MA"]][["w4"]] <- -0.003803296
+link_constant[[SC]][["MA"]][["w6"]] <- 0 #!
 
 # Information and Communication Technology literacy
-meanvar[[SC]][["IC"]][["w5"]] <- c(0, 0.24) #!
+link_constant[[SC]][["IC"]][["w5"]] <- 0 #!
 
 # Science
-meanvar[[SC]][["SC"]][["w3"]] <- c(0.2875, 0.635) #!
-meanvar[[SC]][["SC"]][["w5"]] <- c(0.0132, 1) #!
+link_constant[[SC]][["SC"]][["w3"]] <- 0.2875 #!
+link_constant[[SC]][["SC"]][["w5"]] <- 0.0132
 
 # Native Russian
-meanvar[[SC]][["NR"]][["w4"]] <- c(0,1) #!
+link_constant[[SC]][["NR"]][["w4"]] <- 0 #!
 
 # Native Turkish
-meanvar[[SC]][["NT"]][["w4"]] <- c(0,1) #!
+link_constant[[SC]][["NT"]][["w4"]] <- 0 #!
 
 # Vocabulary
-meanvar[[SC]][["VO"]][["w3"]] <- c(0,1) #!
-meanvar[[SC]][["VO"]][["w5"]] <- c(0,1) #!
+link_constant[[SC]][["VO"]][["w3"]] <- 0 #!
+link_constant[[SC]][["VO"]][["w5"]] <- 0 #!
 
 # Grammar
-meanvar[[SC]][["GR"]][["w3"]] <- c(0,1) #!
+link_constant[[SC]][["GR"]][["w3"]] <- 0 #!
 
-save(meanvar, file = "data-raw/meanvar.RData")
+save(link_constant, file = "data-raw/link_constant.RData")
 
 # Corrections because of dropout etc.
 correction <- list()

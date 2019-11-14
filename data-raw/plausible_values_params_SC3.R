@@ -1,50 +1,50 @@
 ## Link constants and correction terms for starting cohort 3
 
-meanvar <- list()
-load(file = "data-raw/meanvar.RData")
+link_constant <- list()
+load(file = "data-raw/link_constant.RData")
 
 # starting cohort
 SC <- 'SC3'
 
 # Reading
-meanvar[[SC]][["RE"]][["w3"]] <- c(0.1371353, 1.537) #!
-meanvar[[SC]][["RE"]][["w6"]] <- c(0.579, 1.02)
+link_constant[[SC]][["RE"]][["w3"]] <- 0.1371353
+link_constant[[SC]][["RE"]][["w6"]] <- 0.579
 
 # Mathematics
-meanvar[[SC]][["MA"]][["w3"]] <- c(0.771, 1.156)
-meanvar[[SC]][["MA"]][["w5"]] <- c(0.794, 1.197)
+link_constant[[SC]][["MA"]][["w3"]] <- 0.771
+link_constant[[SC]][["MA"]][["w5"]] <- 0.794
 
 # Information and Communication Technology literacy
-meanvar[[SC]][["IC"]][["w2"]] <- c(0, 0.40) #!
-meanvar[[SC]][["IC"]][["w5"]] <- c(1.042, 0.64)
-meanvar[[SC]][["IC"]][["w8"]] <- c(0, 1) #!
+link_constant[[SC]][["IC"]][["w2"]] <- 0 #!
+link_constant[[SC]][["IC"]][["w5"]] <- 1.042
+link_constant[[SC]][["IC"]][["w8"]] <- 0 #!
 
 # Science
-meanvar[[SC]][["SC"]][["w2"]] <- c(0, 1.082) #!
-meanvar[[SC]][["SC"]][["w5"]] <- c(0, 0.987) #nicht sicher mit der Varianz
-meanvar[[SC]][["SC"]][["w8"]] <- c(0, 1) #!
+link_constant[[SC]][["SC"]][["w2"]] <- 0 #!
+link_constant[[SC]][["SC"]][["w5"]] <- 0
+link_constant[[SC]][["SC"]][["w8"]] <- 0 #!
 
 # Native Russian
-meanvar[[SC]][["NR"]][["w3"]] <- c(0,1) #!
-meanvar[[SC]][["NR"]][["w6"]] <- c(0,1) #!
+link_constant[[SC]][["NR"]][["w3"]] <- 0 #!
+link_constant[[SC]][["NR"]][["w6"]] <- 0 #!
 
 # Native Turkish
-meanvar[[SC]][["NT"]][["w3"]] <- c(0,1) #!
-meanvar[[SC]][["NT"]][["w6"]] <- c(0,1) #!
+link_constant[[SC]][["NT"]][["w3"]] <- 0 #!
+link_constant[[SC]][["NT"]][["w6"]] <- 0 #!
 
 # English as a foreign language
-meanvar[[SC]][["EF"]][["w7"]] <- c(-0.201, 2.09) #!
+link_constant[[SC]][["EF"]][["w7"]] <- -0.201 #!
 
 # Scientific thinking
-meanvar[[SC]][["ST"]][["w"]] <- c(0,1) #!
+link_constant[[SC]][["ST"]][["w"]] <- 0 #!
 
 # Vocabulary
-meanvar[[SC]][["VO"]][["w2"]] <- c(0,1) #!
+link_constant[[SC]][["VO"]][["w2"]] <- 0 #!
 
 # Listening
-meanvar[[SC]][["LI"]][["w6"]] <- c(0,1) #!
+link_constant[[SC]][["LI"]][["w6"]] <- 0 #!
 
-save(meanvar, file = "data-raw/meanvar.RData")
+save(link_constant, file = "data-raw/link_constant.RData")
 
 # Corrections because of dropout etc.
 correction <- list()
