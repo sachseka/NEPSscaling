@@ -31,6 +31,8 @@
 #' @param include.nr logical; whether the number of not-reached items as a proxy
 #' for processing speed should be included in the background model (the default
 #' is TRUE)
+#' @param verbose logical; whether progress should be displayed in the console
+#' (the default is TRUE)
 #' @param control      list of additional options. If \code{EAP = TRUE}, the
 #' EAPs will be returned as well. Furthermore, additional control options for
 #' "ML" (again in form of a list) are \code{nmi} (the number of multiple
@@ -154,6 +156,7 @@
 #'
 #' @importFrom stats prcomp
 #' @importFrom stats as.formula
+#' @importFrom utils flush.console
 #'
 #' @export
 
@@ -692,7 +695,8 @@ plausible_values <- function(SC,
     } else {imp <- frmY <- NULL}
 
     if (verbose) {
-        cat("Begin estimation... ", paste(Sys.time()), "\nThis might take some time.\n")
+        cat("Begin estimation... ", paste(Sys.time()),
+            "\nThis might take some time.\n")
         flush.console()
     }
 
@@ -730,7 +734,8 @@ plausible_values <- function(SC,
     regr.coeff <- res$regr.coeff
     mod <- res$mod
     if (verbose) {
-        cat("Finished estimation. Begin post-processing... ", paste(Sys.time()), "\n")
+        cat("Finished estimation. Begin post-processing... ", paste(Sys.time()),
+            "\n")
         flush.console()
     }
     # assumption: eaps are equivalent over all estimations

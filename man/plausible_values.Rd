@@ -8,7 +8,7 @@ scaled item parameters}
 plausible_values(SC, domain = c("MA", "RE", "SC", "IC", "LI", "EF", "NR",
   "NT", "OR", "ST", "BA", "CD", "GR"), wave, path, filetype = c("SPSS",
   "Stata"), bgdata = NULL, npv = 10L, longitudinal = FALSE,
-  rotation = TRUE, nvalid = 3L, include.nr = TRUE,
+  rotation = TRUE, nvalid = 3L, include.nr = TRUE, verbose = TRUE,
   control = list(EAP = FALSE, WLE = FALSE, Bayes = list(itermcmc = 10000,
   burnin = 2000, est.alpha = FALSE, thin = 1, tdf = 10, cartctrl1 = 5,
   cartctrl2 = 1e-04), ML = list(nmi = 10L, ntheta = 2000, normal.approx =
