@@ -91,6 +91,8 @@ longitudinal_estimation <- function (bgdata, imp, frmY = NULL, resp, Q,
                 suppressMessages(lapply(tmp_pvs, function(x) {x[[n]]}) %>%
                                      Reduce(
                                          function(df1, df2) {
+                                             df2 <- df2[, grepl("ID_t|pid|PV",
+                                                                names(df2))]
                                              dplyr::full_join(df1, df2)}, .))
             if (is.null(bgdata)) {
                 names(pvs[[i]][[n]])[which(names(pvs[[i]][[n]]) == "pid")] <-
