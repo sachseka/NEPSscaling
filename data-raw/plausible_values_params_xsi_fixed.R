@@ -59,6 +59,7 @@ x <- c(-1.206, 1.748, -0.822, 0.450, -2.203, -0.646, 0.461, 0.344, -0.863,
          -0.147, 1.171)
 x51 <- data.frame(item=1:length(x), xsi=x)
 rownames(x51) <- items
+colnames(x51)[1] <- ""
 x52 <- xsi
 rownames(x52) <- NEPScaling:::item_labels$SC5$MA$w12
 items <- c("maa3q071_c", "mag9v131_sc6a3_c", "mag9r261_sc6a3_c", "mag9r111_sc6a3_c"
@@ -71,6 +72,7 @@ x <- c(-0.527, -1.803, 1.550, -2.248, -0.813, 0.702, -0.229, -2.019, -0.215,
          -0.824, -3.183, 1.007)
 x61 <- data.frame(item=1:length(x), xsi=x)
 rownames(x61) <- items
+colnames(x61)[1] <- ""
 x62 <- xsi
 rownames(x62) <- NEPScaling:::item_labels$SC6$MA$w9
 
@@ -111,6 +113,7 @@ x <- c(-1.154, -4.048, -3.441, -0.793, 0.124, -1.172, -2.441, -0.162, -2.538,
          -1.197, -0.838, -1.344)
 x51 <- data.frame(item=1:length(x), xsi=x)
 rownames(x51) <- items
+colnames(x51)[1] <- ""
 
 
 # B110, B116, B114
@@ -128,14 +131,17 @@ items5 <- c(6:10, 12, 13, 15, 16, 19, 20, 22:24, 27:29, 32, 39, 40, 42)
 items6 <- c(1:9, 11:16, 18, 21:26, 28:31, 33:42)
 xsi.sc4 <- xsi[items4,]
 rownames(xsi.sc4) <- NEPScaling:::item_labels$SC4$RE$w10
+colnames(xsi.sc4)[1] <- ""
 xsi.sc4[, 1] <- 1:nrow(xsi.sc4)
 xsi.sc4 <- as.matrix(xsi.sc4)
 xsi.sc5 <- xsi[items5,]
 rownames(xsi.sc5) <- NEPScaling:::item_labels$SC5$RE$w12
+colnames(xsi.sc5)[1] <- ""
 xsi.sc5[, 1] <- 1:nrow(xsi.sc5)
 xsi.sc5 <- as.matrix(xsi.sc5)
 xsi.sc6 <- xsi[items6,]
 rownames(xsi.sc6) <- NEPScaling:::item_labels$SC6$RE$w9
+colnames(xsi.sc6)[1] <- ""
 xsi.sc6[, 1] <- 1:nrow(xsi.sc6)
 xsi.sc6 <- as.matrix(xsi.sc6)
 
@@ -221,6 +227,7 @@ x <- c(1.40366579, -0.86991232, -1.20855800, -0.83436944, -0.90459723,
          -0.29597091, 0.86393283, -1.07652203, 0.35764623, -0.85212525) # NEPScaling SC5 IC without additional info. or rotation
 x5 <- data.frame(item=1:length(x), xsi=x)
 rownames(x5) <- items
+colnames(x5)[1] <- ""
 
 # SC6
 items <- c("ica5001x_c","ica5003x_c","ica5005x_c","ica5004s_c","ica5006x_c"
@@ -234,6 +241,7 @@ xsi <- c(-1.78, 1.04, 1.47, -1.82, -0.93, -0.68, -1.32, -0.01, -1.74, -0.64,
          -1.32, -2.47, -0.21, -2.10, -0.96, -1.80, -0.99, -1.00, -1.45)
 x6 <- data.frame(item=1:length(xsi), xsi)
 rownames(x6) <- items
+colnames(x6)[1] <- ""
 
 # store pre-scaled item parameters in list
 xsi.fixed$cross[["IC"]] <-
@@ -270,6 +278,7 @@ x <- c(0.92237716, 1.46643444, -0.75800539, -0.13650864, -1.07382160,
          -0.75949384, -0.20641310, 0.12653751, -0.02551815) # NEPScaling SC5 SC without additional info. or rotation
 x5 <- data.frame(item=1:length(x), xsi=x)
 rownames(x5) <- items
+colnames(x5)[1] <- ""
 
 # SC6
 items <- c("sca56120_c", "sca56130_c", "sca51110_c", "sca51140_c", "sca50410_c"
@@ -282,6 +291,7 @@ x <- c(0.633, -1.601, -1.774, -1.407, -1.462, -1.634, -0.100, -1.758, -0.628,
          -0.501, 0.416, 1.276, -1.721)
 x6 <- data.frame(item=1:length(x), xsi=x)
 rownames(x6) <- items
+colnames(x6)[1] <- ""
 
 
 # store pre-scaled item parameters in list
@@ -319,6 +329,7 @@ x <- c(-1.18, -0.25, -2.51, -2.02, -0.88, -1.63, -2.26, -2.35, -2.24, -0.21,
          0.27, -1.06, -0.32)
 x5 <- data.frame(item=1:length(x), xsi=x)
 rownames(x5) <- items
+colnames(x5)[1] <- ""
 
 xsi.fixed$cross[["EF"]][["SC5"]][["w12"]] <- x5
 
@@ -349,6 +360,7 @@ x <- c(-1.74, -.21, -1.10, -.87, -.09, -.79, -1.33, -.32, -.74, -.95, -1.36,
          .63, -1.05, -.17, .52, -.27)
 x5 <- data.frame(item=1:length(x), xsi=x)
 rownames(x5) <- items
+colnames(x5)[1] <- ""
 
 xsi.fixed$cross[["BA"]][["SC5"]][["w7"]] <- x5
 

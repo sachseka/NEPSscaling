@@ -58,6 +58,9 @@ three.}
 for processing speed should be included in the background model (the default
 is TRUE)}
 
+\item{verbose}{logical; whether progress should be displayed in the console
+(the default is TRUE)}
+
 \item{control}{list of additional options. If \code{EAP = TRUE}, the
 EAPs will be returned as well. Furthermore, additional control options for
 "ML" (again in form of a list) are \code{nmi} (the number of multiple
