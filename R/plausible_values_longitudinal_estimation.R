@@ -3,6 +3,7 @@
 longitudinal_estimation <- function (bgdata, imp, frmY = NULL, resp, Q,
                                      PCM, ID_t, waves, type, domain, SC,
                                      control, npv) {
+    . <- NULL
     for (i in seq(length(PCM))) {
         if (PCM[[i]]) {
             res <- adjustments_PCM(
