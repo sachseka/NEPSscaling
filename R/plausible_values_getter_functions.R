@@ -7,10 +7,10 @@
 #'
 #' @export
 get_starting_cohort <- function(pv.obj) {
-    if (class(pv.obj) != "pv.obj") {
-        stop("pv.obj must be of class 'pv.obj'.")
-    }
-    pv.obj$SC
+  if (class(pv.obj) != "pv.obj") {
+    stop("pv.obj must be of class 'pv.obj'.")
+  }
+  pv.obj$SC
 }
 
 #' Get the domain for which plausible values have been estimated
@@ -20,10 +20,10 @@ get_starting_cohort <- function(pv.obj) {
 #'
 #' @export
 get_domain <- function(pv.obj) {
-    if (class(pv.obj) != "pv.obj") {
-        stop("pv.obj must be of class 'pv.obj'.")
-    }
-    pv.obj$domain
+  if (class(pv.obj) != "pv.obj") {
+    stop("pv.obj must be of class 'pv.obj'.")
+  }
+  pv.obj$domain
 }
 
 #' Get the wave for which plausible values have been estimated
@@ -33,10 +33,10 @@ get_domain <- function(pv.obj) {
 #'
 #' @export
 get_wave <- function(pv.obj) {
-    if (class(pv.obj) != "pv.obj") {
-        stop("pv.obj must be of class 'pv.obj'.")
-    }
-    pv.obj$wave
+  if (class(pv.obj) != "pv.obj") {
+    stop("pv.obj must be of class 'pv.obj'.")
+  }
+  pv.obj$wave
 }
 
 #' Get the type of estimation (longitudinal or cross-sectional)
@@ -46,15 +46,15 @@ get_wave <- function(pv.obj) {
 #'
 #' @export
 get_type <- function(pv.obj) {
-    if (class(pv.obj) != "pv.obj") {
-        stop("pv.obj must be of class 'pv.obj'.")
-    }
-    if (pv.obj$type == "cross") {
-        type <- "cross-sectional"
-    } else {
-        type <- "longitudinal"
-    }
-    type
+  if (class(pv.obj) != "pv.obj") {
+    stop("pv.obj must be of class 'pv.obj'.")
+  }
+  if (pv.obj$type == "cross") {
+    type <- "cross-sectional"
+  } else {
+    type <- "longitudinal"
+  }
+  type
 }
 
 #' Get whether the test rotation has been considered during estimation
@@ -63,11 +63,11 @@ get_type <- function(pv.obj) {
 #' @return whether the test rotation has been considered as a String
 #'
 #' @export
-get_rotation<- function(pv.obj) {
-    if (class(pv.obj) != "pv.obj") {
-        stop("pv.obj must be of class 'pv.obj'.")
-    }
-    pv.obj$rotation
+get_rotation <- function(pv.obj) {
+  if (class(pv.obj) != "pv.obj") {
+    stop("pv.obj must be of class 'pv.obj'.")
+  }
+  pv.obj$rotation
 }
 
 #' Get the position (first or second) the test has been administered in
@@ -77,15 +77,15 @@ get_rotation<- function(pv.obj) {
 #' been administered in
 #'
 #' @export
-get_test_position<- function(pv.obj) {
-    if (class(pv.obj) != "pv.obj") {
-        stop("pv.obj must be of class 'pv.obj'.")
-    }
-    if (pv.obj$rotation == "Corrected For Test Position") {
-        return(pv.obj$position)
-    } else {
-        stop(pv.obj$rotation)
-    }
+get_test_position <- function(pv.obj) {
+  if (class(pv.obj) != "pv.obj") {
+    stop("pv.obj must be of class 'pv.obj'.")
+  }
+  if (pv.obj$rotation == "Corrected For Test Position") {
+    return(pv.obj$position)
+  } else {
+    stop(pv.obj$rotation)
+  }
 }
 
 #' Get the number of valid responses (i.e., non-missing) required for a test
@@ -96,10 +96,10 @@ get_test_position<- function(pv.obj) {
 #'
 #' @export
 get_nvalid <- function(pv.obj) {
-    if (class(pv.obj) != "pv.obj") {
-        stop("pv.obj must be of class 'pv.obj'.")
-    }
-    pv.obj$nvalid
+  if (class(pv.obj) != "pv.obj") {
+    stop("pv.obj must be of class 'pv.obj'.")
+  }
+  pv.obj$nvalid
 }
 
 #' Get the estimation model
@@ -109,10 +109,10 @@ get_nvalid <- function(pv.obj) {
 #'
 #' @export
 get_model <- function(pv.obj) {
-    if (class(pv.obj) != "pv.obj") {
-        stop("pv.obj must be of class 'pv.obj'.")
-    }
-    pv.obj$model
+  if (class(pv.obj) != "pv.obj") {
+    stop("pv.obj must be of class 'pv.obj'.")
+  }
+  pv.obj$model
 }
 
 #' Get the number of valid responses (i.e., non-missing) for each test taker
@@ -123,10 +123,10 @@ get_model <- function(pv.obj) {
 #'
 #' @export
 get_nvalid_per_person <- function(pv.obj) {
-    if (class(pv.obj) != "pv.obj") {
-        stop("pv.obj must be of class 'pv.obj'.")
-    }
-    pv.obj$n.valid
+  if (class(pv.obj) != "pv.obj") {
+    stop("pv.obj must be of class 'pv.obj'.")
+  }
+  pv.obj$n.valid
 }
 
 #' Get the number of plausible values returned by
@@ -137,10 +137,10 @@ get_nvalid_per_person <- function(pv.obj) {
 #'
 #' @export
 get_npv <- function(pv.obj) {
-    if (class(pv.obj) != "pv.obj") {
-        stop("pv.obj must be of class 'pv.obj'.")
-    }
-    pv.obj$npv
+  if (class(pv.obj) != "pv.obj") {
+    stop("pv.obj must be of class 'pv.obj'.")
+  }
+  pv.obj$npv
 }
 
 #' Get the list of control variables fed to
@@ -151,10 +151,10 @@ get_npv <- function(pv.obj) {
 #'
 #' @export
 get_control <- function(pv.obj) {
-    if (class(pv.obj) != "pv.obj") {
-        stop("pv.obj must be of class 'pv.obj'.")
-    }
-    pv.obj$control
+  if (class(pv.obj) != "pv.obj") {
+    stop("pv.obj must be of class 'pv.obj'.")
+  }
+  pv.obj$control
 }
 
 #' Get the overall mean of the plausible values
@@ -164,10 +164,10 @@ get_control <- function(pv.obj) {
 #'
 #' @export
 get_mean_pv <- function(pv.obj) {
-    if (class(pv.obj) != "pv.obj") {
-        stop("pv.obj must be of class 'pv.obj'.")
-    }
-    pv.obj$mean.PV
+  if (class(pv.obj) != "pv.obj") {
+    stop("pv.obj must be of class 'pv.obj'.")
+  }
+  pv.obj$mean.PV
 }
 
 #' Get the complete list of estimated plausible values and their respective
@@ -178,10 +178,10 @@ get_mean_pv <- function(pv.obj) {
 #'
 #' @export
 get_pv_list <- function(pv.obj) {
-    if (class(pv.obj) != "pv.obj") {
-        stop("pv.obj must be of class 'pv.obj'.")
-    }
-    pv.obj$pv
+  if (class(pv.obj) != "pv.obj") {
+    stop("pv.obj must be of class 'pv.obj'.")
+  }
+  pv.obj$pv
 }
 
 #' Get the i-th plausible value and its respective background data
@@ -194,10 +194,10 @@ get_pv_list <- function(pv.obj) {
 #'
 #' @export
 get_pv_index <- function(pv.obj, index = 1) {
-    if (class(pv.obj) != "pv.obj") {
-        stop("pv.obj must be of class 'pv.obj'.")
-    }
-    pv.obj$pv[[index]]
+  if (class(pv.obj) != "pv.obj") {
+    stop("pv.obj must be of class 'pv.obj'.")
+  }
+  pv.obj$pv[[index]]
 }
 
 #' Get the estimated EAP values and standard errors for each person
@@ -207,14 +207,14 @@ get_pv_index <- function(pv.obj, index = 1) {
 #'
 #' @export
 get_eap <- function(pv.obj) {
-    if (class(pv.obj) != "pv.obj") {
-        stop("pv.obj must be of class 'pv.obj'.")
-    }
-    if (pv.obj$control$EAP) {
-        return(pv.obj$eap)
-    } else {
-        stop("EAPs have not been saved.")
-    }
+  if (class(pv.obj) != "pv.obj") {
+    stop("pv.obj must be of class 'pv.obj'.")
+  }
+  if (pv.obj$control$EAP) {
+    return(pv.obj$eap)
+  } else {
+    stop("EAPs have not been saved.")
+  }
 }
 
 #' Get the estimated WLE values and standard errors for each person
@@ -224,14 +224,14 @@ get_eap <- function(pv.obj) {
 #'
 #' @export
 get_wle <- function(pv.obj) {
-    if (class(pv.obj) != "pv.obj") {
-        stop("pv.obj must be of class 'pv.obj'.")
-    }
-    if (pv.obj$control$WLE) {
-        return(pv.obj$wle)
-    } else {
-        stop("WLEs have not been saved.")
-    }
+  if (class(pv.obj) != "pv.obj") {
+    stop("pv.obj must be of class 'pv.obj'.")
+  }
+  if (pv.obj$control$WLE) {
+    return(pv.obj$wle)
+  } else {
+    stop("WLEs have not been saved.")
+  }
 }
 
 #' Get the EAP reliability of the plausible values
@@ -241,10 +241,10 @@ get_wle <- function(pv.obj) {
 #'
 #' @export
 get_eap_reliability <- function(pv.obj) {
-    if (class(pv.obj) != "pv.obj") {
-        stop("pv.obj must be of class 'pv.obj'.")
-    }
-    pv.obj$EAP.rel
+  if (class(pv.obj) != "pv.obj") {
+    stop("pv.obj must be of class 'pv.obj'.")
+  }
+  pv.obj$EAP.rel
 }
 
 #' Get the regression coefficients estimated in the latent regression on the
@@ -256,10 +256,10 @@ get_eap_reliability <- function(pv.obj) {
 #'
 #' @export
 get_regression_coefficients <- function(pv.obj) {
-    if (class(pv.obj) != "pv.obj") {
-        stop("pv.obj must be of class 'pv.obj'.")
-    }
-    pv.obj$regr.coeff
+  if (class(pv.obj) != "pv.obj") {
+    stop("pv.obj must be of class 'pv.obj'.")
+  }
+  pv.obj$regr.coeff
 }
 
 #' Get the fixed item difficulties and their standard errors
@@ -270,9 +270,8 @@ get_regression_coefficients <- function(pv.obj) {
 #'
 #' @export
 get_item_difficulties <- function(pv.obj) {
-    if (class(pv.obj) != "pv.obj") {
-        stop("pv.obj must be of class 'pv.obj'.")
-    }
-    pv.obj$items
+  if (class(pv.obj) != "pv.obj") {
+    stop("pv.obj must be of class 'pv.obj'.")
+  }
+  pv.obj$items
 }
-

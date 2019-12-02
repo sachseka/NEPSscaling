@@ -31,54 +31,59 @@
 #'
 #' @export
 CART <- function(
-  X,
-  itermcmc,
-  burnin,
-  nmi = 10,
-  thin = 1,
-  cartctrl1 = 5,
-  cartctrl2 = 1e-04
-){
-    if (is.null(X))
-        stop("X == NULL. No data to impute.")
-    if(!any(is.na(X)))
-        stop("X is already complete.")
+                 X,
+                 itermcmc,
+                 burnin,
+                 nmi = 10,
+                 thin = 1,
+                 cartctrl1 = 5,
+                 cartctrl2 = 1e-04) {
+  if (is.null(X)) {
+    stop("X == NULL. No data to impute.")
+  }
+  if (!any(is.na(X))) {
+    stop("X is already complete.")
+  }
 
-    X <- data.frame(X)
-    ID_t <- X$ID_t
-    X <- X[, -which(names(X)=='ID_t'), drop = FALSE]
+  X <- data.frame(X)
+  ID_t <- X$ID_t
+  X <- X[, -which(names(X) == "ID_t"), drop = FALSE]
 
-    XOBS <- !is.na(X)
-    XMIS <- is.na(X)
-    xmisord <- names(sort(colSums(XMIS)))[sort(colSums(XMIS)) > 0]
-    for(k in xmisord){
-        if (length(X[XOBS[, k], k]) == 0) {
-            stop(paste(k, "does not contain any observed values for the",
-                       "subsample of test takers. Please remove it from the",
-                       "background data set."))
-        }
-        X[XMIS[, k], k] <- sample(X[XOBS[, k], k], sum(XMIS[, k]),
-                                  replace = TRUE)
+  XOBS <- !is.na(X)
+  XMIS <- is.na(X)
+  xmisord <- names(sort(colSums(XMIS)))[sort(colSums(XMIS)) > 0]
+  for (k in xmisord) {
+    if (length(X[XOBS[, k], k]) == 0) {
+      stop(paste(
+        k, "does not contain any observed values for the",
+        "subsample of test takers. Please remove it from the",
+        "background data set."
+      ))
     }
+    X[XMIS[, k], k] <- sample(X[XOBS[, k], k], sum(XMIS[, k]),
+      replace = TRUE
+    )
+  }
 
-    savemis <- sort(sample((burnin+1):itermcmc, nmi))
-    datalist <- vector('list', nmi)
-    names(datalist) <- paste0('Iteration', savemis)
-    # CART
-    pb <- txtProgressBar(min = 0, max = itermcmc, style = 3)
-    for(ii in 1:itermcmc){
-        for(iii in 1:thin){
-            X <- as.data.frame(
-                seqcart(X, xmisord, XOBS, XMIS, cartctrl1, cartctrl2))
-        }
-        # save CART draws
-        if (ii %in% savemis) {
-            sel <- which(names(datalist) == paste0('Iteration', ii))
-            datalist[[sel]] <- data.frame(ID_t = ID_t, X)
-        }
-        setTxtProgressBar(pb, ii)
+  savemis <- sort(sample((burnin + 1):itermcmc, nmi))
+  datalist <- vector("list", nmi)
+  names(datalist) <- paste0("Iteration", savemis)
+  # CART
+  pb <- txtProgressBar(min = 0, max = itermcmc, style = 3)
+  for (ii in 1:itermcmc) {
+    for (iii in 1:thin) {
+      X <- as.data.frame(
+        seqcart(X, xmisord, XOBS, XMIS, cartctrl1, cartctrl2)
+      )
     }
-    close(pb)
-    names(datalist) <- NULL
-    return(datalist)
+    # save CART draws
+    if (ii %in% savemis) {
+      sel <- which(names(datalist) == paste0("Iteration", ii))
+      datalist[[sel]] <- data.frame(ID_t = ID_t, X)
+    }
+    setTxtProgressBar(pb, ii)
+  }
+  close(pb)
+  names(datalist) <- NULL
+  return(datalist)
 }

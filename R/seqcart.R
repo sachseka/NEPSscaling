@@ -3,30 +3,30 @@
 ## Jean-Christoph Gaasch (2017). LaRA: Latent Regression Analysis. R package version 0.1.1.
 
 seqcart <- function(
-  dataimp,
-  misord,
-  INDOBS,
-  INDMIS,
-  control1,
-  control2
-){
-
-  for(k in misord){
+                    dataimp,
+                    misord,
+                    INDOBS,
+                    INDMIS,
+                    control1,
+                    control2) {
+  for (k in misord) {
     yobs <- dataimp[INDOBS[, k], k]
-    Xobs <- dataimp[INDOBS[, k], !(names(dataimp)%in%k), drop = FALSE]
-    Xmis <- dataimp[INDMIS[, k], !(names(dataimp)%in%k), drop = FALSE]
+    Xobs <- dataimp[INDOBS[, k], !(names(dataimp) %in% k), drop = FALSE]
+    Xmis <- dataimp[INDMIS[, k], !(names(dataimp) %in% k), drop = FALSE]
     rpartmethod <- ifelse(is.factor(yobs), "class", "anova")
-    tree <- rpart(yobs ~., data = as.data.frame(cbind(yobs, Xobs)),
-                  method = rpartmethod,
-                  control = rpart.control(minbucket = control1, cp = control2))
+    tree <- rpart(yobs ~ .,
+      data = as.data.frame(cbind(yobs, Xobs)),
+      method = rpartmethod,
+      control = rpart.control(minbucket = control1, cp = control2)
+    )
     leafdonor <- floor(as.numeric(row.names(tree$frame[tree$where, ])))
     tree$frame$yval <- as.numeric(row.names(tree$frame))
     leafmis <- predict(tree, Xmis, "vector")
-    dataimp[INDMIS[, k], k] <- sapply(leafmis, function(x){
+    dataimp[INDMIS[, k], k] <- sapply(leafmis, function(x) {
       donorpool <- yobs[leafdonor == x]
-      if(length(donorpool) == 1){
+      if (length(donorpool) == 1) {
         obs <- donorpool
-      }else{
+      } else {
         di <- sort(runif(length(donorpool) - 1))
         obs <- sample(x = donorpool, size = 1, prob = (c(di, 1) - c(0, di)))
       }
@@ -34,5 +34,4 @@ seqcart <- function(
     })
   }
   return(dataimp)
-
 }
