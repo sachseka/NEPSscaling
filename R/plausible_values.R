@@ -922,7 +922,7 @@ plausible_values <- function(SC,
   } else {
     if (rotation) {
       if (PCM) {
-        res <- cross_sectional_PCM_rotation(bgdata, imp,
+        res <- estimate_cross_pcm_corrected_for_rotation(bgdata, imp,
           frmY = NULL,
           waves, ID_t, resp,
           type, domain, SC, control,
