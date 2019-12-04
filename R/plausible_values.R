@@ -942,7 +942,7 @@ plausible_values <- function(SC,
           control, npv
         )
       } else {
-        res <- cross_sectional(bgdata, imp, resp, waves,
+        res <- estimate_cross_rasch_uncorrected(bgdata, imp, resp, waves,
           frmY = NULL, ID_t, type, domain, SC,
           control, npv
         )
