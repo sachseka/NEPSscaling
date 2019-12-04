@@ -914,7 +914,7 @@ plausible_values <- function(SC,
   }
 
   if (longitudinal) {
-    res <- longitudinal_estimation(bgdata, imp,
+    res <- estimate_longitudinal(bgdata, imp,
       frmY = NULL, resp, Q,
       PCM, ID_t, waves, type, domain, SC,
       control, npv

@@ -1,6 +1,30 @@
-# estimation of longitudinal plausible values
+#' estimation of longitudinal plausible values accomodating dichotomous and
+#'   polytomous data
+#'
+#' @param bgdata Background data given by user (either NULL or a data.frame)
+#' @param imp Imputed background data (either NULL if is.null(bgdata) or no
+#'   missing data is in background data)
+#' @param resp List of matrices of item responses given by test takers
+#' @param waves Waves in which the competencies have been assessed (Strings in
+#'   the form "_wX")
+#' @param frmY Formula detailing how the background data is to be used for
+#'   plausible values estimation -- defaults to NULL if is.null(bgdata) or to
+#'   linear combination of all bgdata variables
+#' @param ID_t Data.frame containing all IDs for all test takers of the
+#'   selected waves
+#' @param type String ("cross" for cross-sectional or "long" for longitudinal)
+#' @param domain String detailing the competence domain
+#' @param SC String detailing which starting cohort is used
+#' @param control List of control variables for plausible values estimation
+#'   algorithm
+#' @param npv Integer value fo number of plausible values to be returned by
+#'   `NEPScaling::plausible_values()`
+#' @param Q List of matrices detailing the item scoring (0.5 scoring for PCM
+#'   items)
+#'
+#' @noRd
 
-longitudinal_estimation <- function(bgdata, imp, frmY = NULL, resp, Q,
+estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
                                     PCM, ID_t, waves, type, domain, SC,
                                     control, npv) {
   . <- NULL
