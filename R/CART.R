@@ -85,5 +85,5 @@ CART <- function(
   }
   close(pb)
   names(datalist) <- NULL
-  return(datalist)
+  datalist
 }
