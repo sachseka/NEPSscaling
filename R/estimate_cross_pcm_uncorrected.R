@@ -26,6 +26,17 @@ estimate_cross_pcm_uncorrected <- function(
                                            waves, frmY = NULL,
                                            ID_t, type, domain,
                                            SC, control, npv) {
+  res <- collapse_categories_pcm(
+    resp[, item_labels[[SC]][[domain]][[gsub("_", "", waves)]] ], SC,
+    gsub("_", "", waves), domain
+  )
+  resp[, item_labels[[SC]][[domain]][[gsub("_", "", waves)]] ] <- res$resp
+  B <- TAM::designMatrices(
+      modeltype = "PCM",
+      resp = resp[, item_labels[[SC]][[domain]][[gsub("_", "", waves)]] ]
+  )$B
+  ind <- score(SC, domain, gsub("_", "", waves))
+  B[ind, , ] <- 0.5 * B[ind, , ]
   pvs <- list(NULL)
   EAP.rel <- NULL
   eap <-
@@ -34,12 +45,6 @@ estimate_cross_pcm_uncorrected <- function(
       data.frame(ID_t = ID_t$ID_t),
       simplify = FALSE
     )
-  B <- TAM::designMatrices(
-    modeltype = "PCM",
-    resp = resp[, item_labels[[SC]][[domain]][[gsub("_", "", waves)]] ]
-  )$B
-  ind <- score(SC, domain, gsub("_", "", waves))
-  B[ind, , ] <- 0.5 * B[ind, , ]
   for (i in 1:ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1,
     control$ML$nmi
   )) {

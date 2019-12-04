@@ -30,7 +30,7 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
   . <- NULL
   for (i in seq(length(PCM))) {
     if (PCM[[i]]) {
-      res <- adjustments_PCM(
+      res <- collapse_categories_pcm(
         resp[[i]][, item_labels[[SC]][[domain]][[i]]], SC,
         gsub("_", "", waves)[i], domain
       )

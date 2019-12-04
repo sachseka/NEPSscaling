@@ -26,7 +26,7 @@ estimate_cross_pcm_corrected_for_rotation <- function(
                                                       waves, ID_t, resp, type,
                                                       domain, SC, control, npv,
                                                       position) {
-  res <- adjustments_PCM(
+  res <- collapse_categories_pcm(
     resp[, item_labels[[SC]][[domain]][[gsub("_", "", waves)]] ], SC,
     gsub("_", "", waves), domain
   )
