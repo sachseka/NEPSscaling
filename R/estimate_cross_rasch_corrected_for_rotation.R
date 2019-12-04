@@ -1,8 +1,32 @@
-# estimation of cross-sectional plausible values (test rotation)
+#' estimation of cross-sectional plausible values (dichotomous data) with
+#'   correction for testlet position (multi-facet model)
+#'
+#' @param bgdata Background data given by user (either NULL or a data.frame)
+#' @param imp Imputed background data (either NULL if is.null(bgdata) or no
+#'   missing data is in background data)
+#' @param resp Matrix of item responses given by test takers
+#' @param waves Wave in which the competencies have been assessed (String in
+#'   the form "_wX")
+#' @param frmY Formula detailing how the background data is to be used for
+#'   plausible values estimation -- defaults to NULL if is.null(bgdata) or to
+#'   linear combination of all bgdata variables
+#' @param ID_t Data.frame containing all IDs for the current test takers
+#' @param type String ("cross" for cross-sectional or "long" for longitudinal)
+#' @param domain String detailing the competence domain
+#' @param SC String detailing which starting cohort is used
+#' @param control List of control variables for plausible values estimation
+#'   algorithm
+#' @param npv Integer value fo number of plausible values to be returned by
+#'   `NEPScaling::plausible_values()`
+#'
+#' @noRd
 
-cross_sectional_rotation <- function(bgdata, imp, frmY = NULL, resp, position,
-                                     waves, ID_t, type, domain, SC,
-                                     control, npv) {
+estimate_cross_rasch_corrected_for_rotation <- function(
+                                                        bgdata, imp,
+                                                        frmY = NULL, resp,
+                                                        position, waves,
+                                                        ID_t, type, domain,
+                                                        SC, control, npv) {
   pvs <- list(NULL)
   EAP.rel <- NULL
   eap <-

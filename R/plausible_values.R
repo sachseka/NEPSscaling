@@ -929,7 +929,7 @@ plausible_values <- function(SC,
           npv, position
         )
       } else {
-        res <- cross_sectional_rotation(bgdata, imp,
+        res <- estimate_cross_rasch_corrected_for_rotation(bgdata, imp,
           frmY = NULL, resp,
           position, waves, ID_t, type,
           domain, SC, control, npv
