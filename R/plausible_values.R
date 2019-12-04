@@ -937,7 +937,7 @@ plausible_values <- function(SC,
       }
     } else {
       if (PCM) {
-        res <- cross_sectional_PCM(bgdata, imp, resp, waves,
+        res <- estimate_cross_pcm_uncorrected(bgdata, imp, resp, waves,
           frmY = NULL, ID_t, type, domain, SC,
           control, npv
         )
