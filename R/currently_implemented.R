@@ -3,7 +3,7 @@
 #'
 #' @export
 
-pv_impl <- function() {
+currently_implemented <- function() {
   cat(
     "Plausible_values() is implemented for the following \nstarting cohorts, domains and waves; \nall competence scores are available for \ncross-sectional and longitudinal research\n(if multiple waves are implemented).\n
 == SC1 ==\n--\n

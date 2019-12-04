@@ -48,7 +48,7 @@
 #' overall lack of fit by each CART split). NOTE that "Bayes" control options
 #' are also applied to the CART algorithm for "ML" estimation.
 #'
-#' @return \code{plausible_values()} returns an object of class \code{pv.obj}
+#' @return \code{plausible_values()} returns an object of class \code{pv_obj}
 #' containing:
 #' \describe{
 #' \item{SC}{Starting cohort that plausible values were estimated for}
@@ -543,7 +543,7 @@ plausible_values <- function(SC,
   # consider test form rotation
   if (longitudinal) {
     rotation <- FALSE
-    Q <- qmat(SC, domain)
+    Q <- create_loading_matrix_q_longitudinal(SC, domain)
   } else {
     if (rotation) {
       position <- data.frame(
@@ -1133,6 +1133,6 @@ plausible_values <- function(SC,
     }
   }
   res[["items"]] <- mod[[1]]$xsi
-  class(res) <- "pv.obj"
-  return(res)
+  class(res) <- "pv_obj"
+  res
 }

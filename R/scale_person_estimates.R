@@ -1,5 +1,5 @@
-# Re-scale plausible values to fit linked distributions:
-# The mean difference of the longitudinal sample must be the linking constant
+#' Re-scale plausible values to fit linked distributions:
+#' The mean difference of the longitudinal sample must be the linking constant
 #' @param pv plausible values
 #' @param wle Warm's weighted maximum likelihood estimate
 #' @param eap expected a posteriori point estimate
@@ -9,11 +9,13 @@
 #' @param longitudinal_IDs for SC6/RE contains longitudinal subsamples for
 #' original and refreshment samples separately; else contains sample IDs for
 #' time points 1 and 2 (index 1), 2 and 3 (index 2), 3 and 4 (index 3) asf.
+#'
+#' @noRd
 
 scale_person_estimates <- function(pv, wle, eap,
                                    SC, domain, wave, longitudinal_IDs) {
   if (SC == "SC6" && domain == "RE") {
-    MEAN <- getMEAN(SC, domain, longitudinal_IDs, eap1 = eap, eap2 = NULL)
+    MEAN <- get_mean_linking(SC, domain, longitudinal_IDs, eap1 = eap, eap2 = NULL)
     # original sample
     term1 <- MEAN[3] - MEAN[1] -
       link_constant[[SC]][[domain]][["w9"]][["B67"]]
@@ -44,7 +46,7 @@ scale_person_estimates <- function(pv, wle, eap,
     }
   } else {
     for (w in seq(2, length(wave))) {
-      MEAN <- getMEAN(SC, domain,
+      MEAN <- get_mean_linking(SC, domain,
         longitudinal_IDs = longitudinal_IDs[[w - 1]],
         eap1 = eap[, c("ID_t", paste0("eap_", wave[w - 1]))],
         eap2 = eap[, c("ID_t", paste0("eap_", wave[w]))]
@@ -63,5 +65,5 @@ scale_person_estimates <- function(pv, wle, eap,
       }
     }
   }
-  return(list(pv = pv, wle = wle, eap = eap))
+  list(pv = pv, wle = wle, eap = eap)
 }

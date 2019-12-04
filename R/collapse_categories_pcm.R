@@ -424,5 +424,5 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
   # ind <- which(apply(resp, 2, max, na.rm = TRUE) > 1) # to catch only 'after-collapse' pc items (works for MD!)
 
   res <- list(resp = resp) # , ind = ind)
-  return(res)
+  res
 }

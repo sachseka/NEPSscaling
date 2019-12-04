@@ -1,6 +1,12 @@
-# scoring function for PCM items (and occasionally dichotomous items)
+#' scoring function for PCM items (and occasionally dichotomous items)
+#'
+#' @param SC String representation of starting cohort
+#' @param wave String representation of current wave of test assessment
+#' @param domain String representation of current competency domain
+#'
+#' @noRd
 
-score <- function(SC, domain, wave) {
+get_indicators_for_half_scoring <- function(SC, domain, wave) {
   if (SC == "SC5") {
     if (domain == "MA") {
       if (wave == "w1") {
@@ -59,5 +65,5 @@ score <- function(SC, domain, wave) {
     #     }
     # }
   }
-  return(ind)
+  ind
 }

@@ -25,8 +25,8 @@
 #' @noRd
 
 estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
-                                    PCM, ID_t, waves, type, domain, SC,
-                                    control, npv) {
+                                  PCM, ID_t, waves, type, domain, SC,
+                                  control, npv) {
   . <- NULL
   for (i in seq(length(PCM))) {
     if (PCM[[i]]) {
@@ -35,7 +35,10 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
         gsub("_", "", waves)[i], domain
       )
       resp[[i]][, item_labels[[SC]][[domain]][[i]]] <- res$resp
-      ind <- score(SC, domain, gsub("_", "", waves)[i])
+      ind <- get_indicators_for_half_scoring(
+        SC, domain,
+        gsub("_", "", waves)[i]
+      )
       Q[[i]][ind, ] <- 0.5
     }
   }
@@ -165,5 +168,5 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
     eap = eap, pvs = pvs, EAP.rel = EAP.rel,
     regr.coeff = regr.coeff, mod = mod
   )
-  return(res)
+  res
 }

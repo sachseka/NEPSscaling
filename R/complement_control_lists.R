@@ -1,5 +1,11 @@
-## complement control lists for missing data handling
-## and plausible values estimation
+#' complement control lists for missing data handling
+#'   and plausible values estimation
+#'
+#' @param c_E control list for EAP return
+#' @param c_W control list for WLE estimation and return
+#' @param c_T control list for TAM estimation
+#'
+#' @noRd
 
 complement_control_lists <- function( # c_WLE, c_C,
                                      c_E, c_W, c_T) {
@@ -31,5 +37,5 @@ complement_control_lists <- function( # c_WLE, c_C,
   res[["ML"]] <- control_ML
 
 
-  return(res)
+  res
 }

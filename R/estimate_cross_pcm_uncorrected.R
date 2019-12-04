@@ -35,7 +35,7 @@ estimate_cross_pcm_uncorrected <- function(
       modeltype = "PCM",
       resp = resp[, item_labels[[SC]][[domain]][[gsub("_", "", waves)]] ]
   )$B
-  ind <- score(SC, domain, gsub("_", "", waves))
+  ind <- get_indicators_for_half_scoring(SC, domain, gsub("_", "", waves))
   B[ind, , ] <- 0.5 * B[ind, , ]
   pvs <- list(NULL)
   EAP.rel <- NULL
@@ -89,7 +89,7 @@ estimate_cross_pcm_uncorrected <- function(
       B = B, verbose = FALSE
     )
     # post-processing of model
-    res <- cross_sectional_post_proc(mod[[1]], npv, control,
+    res <- post_process_cross_tam_results(mod[[1]], npv, control,
       Y = if (is.null(bgdata)) {
         NULL
       } else if (is.null(imp)) {
@@ -114,5 +114,5 @@ estimate_cross_pcm_uncorrected <- function(
     eap = eap, pvs = pvs, mod = mod, EAP.rel = EAP.rel,
     regr.coeff = regr.coeff
   )
-  return(res)
+  res
 }

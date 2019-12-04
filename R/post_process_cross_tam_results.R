@@ -1,6 +1,20 @@
-# model post-processing in cross-sectional estimation
+#' model post-processing in cross-sectional estimation
+#'
+#' @param mod estimated TAM model
+#' @param npv number of plausible values to return
+#' @param control control list for TAM functions
+#' @param Y background data
+#' @param Y.pid ID returned by TAM
+#' @param eap list of eap values
+#' @param i current iteration over background data imputations
+#' @param EAP.rel list of eap reliability values
+#' @param regr.coeff list of regression coefficients of latent regression
+#' @param pvs list of estimated plausible values
+#' @param bgdata background data (can be NULL)
+#'
+#' @noRd
 
-cross_sectional_post_proc <- function(mod, npv, control, Y, Y.pid, eap, i,
+post_process_cross_tam_results <- function(mod, npv, control, Y, Y.pid, eap, i,
                                       EAP.rel, regr.coeff, pvs, bgdata) {
 
   # impute plausible values
@@ -40,8 +54,8 @@ cross_sectional_post_proc <- function(mod, npv, control, Y, Y.pid, eap, i,
   }
   colnames(eap[[i]]) <- c("ID_t", "eap", "se")
 
-  return(list(
+  list(
     eap = eap, regr.coeff = regr.coeff, pvs = pvs, mod = mod,
     EAP.rel = EAP.rel
-  ))
+  )
 }

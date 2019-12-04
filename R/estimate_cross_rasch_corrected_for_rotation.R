@@ -83,7 +83,7 @@ estimate_cross_rasch_corrected_for_rotation <- function(
       verbose = FALSE
     )
     # post-processing of model
-    res <- cross_sectional_post_proc(mod[[1]], npv, control,
+    res <- post_process_cross_tam_results(mod[[1]], npv, control,
       Y = if (is.null(bgdata)) {
         NULL
       } else if (is.null(imp)) {
@@ -108,5 +108,5 @@ estimate_cross_rasch_corrected_for_rotation <- function(
     eap = eap, pvs = pvs, mod = mod, EAP.rel = EAP.rel,
     regr.coeff = regr.coeff
   )
-  return(res)
+  res
 }

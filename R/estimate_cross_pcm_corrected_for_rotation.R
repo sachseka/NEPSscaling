@@ -31,7 +31,7 @@ estimate_cross_pcm_corrected_for_rotation <- function(
     gsub("_", "", waves), domain
   )
   resp[, item_labels[[SC]][[domain]][[gsub("_", "", waves)]] ] <- res$resp
-  ind <- score(SC, domain, gsub("_", "", waves))
+  ind <- get_indicators_for_half_scoring(SC, domain, gsub("_", "", waves))
   B <- TAM::designMatrices(
     modeltype = "PCM",
     resp = resp[, item_labels[[SC]][[domain]][[gsub("_", "", waves)]] ]
@@ -85,7 +85,7 @@ estimate_cross_pcm_corrected_for_rotation <- function(
       verbose = FALSE
     )
     # post-processing of model
-    res <- cross_sectional_post_proc(mod[[1]], npv, control,
+    res <- post_process_cross_tam_results(mod[[1]], npv, control,
       Y = if (is.null(bgdata)) {
         NULL
       } else if (is.null(imp)) {
@@ -110,5 +110,5 @@ estimate_cross_pcm_corrected_for_rotation <- function(
     eap = eap, pvs = pvs, mod = mod, EAP.rel = EAP.rel,
     regr.coeff = regr.coeff
   )
-  return(res)
+  res
 }
