@@ -78,7 +78,6 @@
 #' \item{abs.correction}{The total amount by which the scale was shifted in
 #' longitudinal estimation (consisting of linking constants and dropout
 #' corrections)}
-#' \item{variance.PV}{The overall variance of all persons' abilities}
 #' \item{mean.PV}{The overall mean of all persons' abilities}
 #' \item{pv}{A list of \code{data.frame}s containing one plausible value each
 #' and the imputed data set that was used to estimate the plausible value.
@@ -201,8 +200,6 @@ plausible_values <- function(SC,
                                  cartctrl2 = 0.0001
                                )
                              )) {
-  rea9_sc1u <- wave_w3 <- wave_w5 <- . <- NULL
-
   # check argument validity and apply necessary changes to arguments ----------
   if (missing(SC)) {
     stop("Starting cohort is missing, but must be provided.", call. = FALSE)
@@ -435,13 +432,19 @@ plausible_values <- function(SC,
   # linking of longitudinal plausible values ----------------------------------
 
   # linear transformation of longitudinal PVs to pre-defined scale
-  res <- link_longitudinal_plausible_values(longitudinal, datalist, npv,
-                                            min_valid,
-                                            valid_responses_per_person, waves,
-                                            eap, data, SC, domain, control)
-  pv <- res[["pv"]]
-  wle <- res[["wle"]]
-  eap <- res[["eap"]]
+  if (longitudinal) {
+    res <- link_longitudinal_plausible_values(
+      longitudinal, datalist, npv, min_valid, valid_responses_per_person,
+      waves, eap, data, SC, domain, control
+    )
+    pv <- res[["pv"]]
+    wle <- res[["wle"]]
+    eap <- res[["eap"]]
+  } else {
+    pv <- set_pvs_not_enough_valid_resp_NA(
+      datalist, valid_responses_per_person, min_valid, npv
+    )
+  }
 
   # calculate posterior mean of estimated eaps/plausible values
   MEAN <- colMeans(eap[, seq(2, (1 + 2 * length(waves)), 2), drop = FALSE],
@@ -449,7 +452,8 @@ plausible_values <- function(SC,
   )
   names(MEAN) <- gsub("_", "", waves)
 
-  # output
+  # collect output object -----------------------------------------------------
+
   res <- list()
   res[["SC"]] <- as.numeric(gsub(pattern = "SC", replacement = "", x = SC))
   res[["domain"]] <- domain
@@ -483,21 +487,16 @@ plausible_values <- function(SC,
         rownames(res[["regr.coeff"]][[w]]) <-
           c(
             "Intercept",
-            names(res[["pv"]][[1]][
-              ,
-              2:(ncol(res[["pv"]][[1]]) -
-                length(waves))
-            ])
+            names(res[["pv"]][[1]][, 2:(ncol(res[["pv"]][[1]]) - length(waves)),
+                                   drop = FALSE])
           )
       }
     } else {
       rownames(res[["regr.coeff"]]) <-
         c(
           "Intercept",
-          names(res[["pv"]][[1]][
-            ,
-            2:(ncol(res[["pv"]][[1]]) - 1)
-          ])
+          names(res[["pv"]][[1]][, 2:(ncol(res[["pv"]][[1]]) - 1),
+                                 drop = FALSE])
         )
     }
   }

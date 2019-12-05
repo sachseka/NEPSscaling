@@ -1,16 +1,16 @@
 #' link longitudinal pvs using pre-scaled linking information
 #'
-#' @param longitudinal
-#' @param datalist
-#' @param npv
-#' @param min_valid
-#' @param valid_responses_per_person
-#' @param waves
-#' @param eap
-#' @param data
-#' @param SC
-#' @param domain
-#' @param control
+#' @param longitudinal ...
+#' @param datalist ...
+#' @param npv ...
+#' @param min_valid ...
+#' @param valid_responses_per_person ...
+#' @param waves ...
+#' @param eap ...
+#' @param data ...
+#' @param SC ...
+#' @param domain ...
+#' @param control ...
 #'
 #' @noRd
 
@@ -20,14 +20,6 @@ link_longitudinal_plausible_values <- function(longitudinal, datalist, npv,
                                                waves, eap,
                                                data, SC, domain, control) {
   wave_w3 <- wave_w5 <- rea9_sc1u <- NULL
-  if (!longitudinal) {
-    pv <- datalist
-    for (p in seq(npv)) {
-      pv[[p]][valid_responses_per_person$valid < min_valid, "PV"] <- NA
-    }
-    return(pv)
-  }
-
   for (p in seq(npv)) {
     for (w in waves) {
       for (i in seq(nrow(valid_responses_per_person))) {

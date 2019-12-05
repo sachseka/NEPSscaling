@@ -107,7 +107,6 @@ position the respective individual got the testlet in (first or second)}
 \item{abs.correction}{The total amount by which the scale was shifted in
 longitudinal estimation (consisting of linking constants and dropout
 corrections)}
-\item{variance.PV}{The overall variance of all persons' abilities}
 \item{mean.PV}{The overall mean of all persons' abilities}
 \item{pv}{A list of \code{data.frame}s containing one plausible value each
 and the imputed data set that was used to estimate the plausible value.
