@@ -77,7 +77,7 @@ overall lack of fit by each CART split). NOTE that "Bayes" control options
 are also applied to the CART algorithm for "ML" estimation.}
 }
 \value{
-\code{plausible_values()} returns an object of class \code{pv.obj}
+\code{plausible_values()} returns an object of class \code{pv_obj}
 containing:
 \describe{
 \item{SC}{Starting cohort that plausible values were estimated for}
@@ -142,22 +142,25 @@ library(foreign)
 data(bg_data)
 bg_data$gender <- as.factor(bg_data$gender)
 ## define path to NEPS competence data
-path <- 'Usr/NEPS-data/'
+path <- "Usr/NEPS-data/"
 setwd(path)
 ## save simulated target competencies to path
 data(xTargetCompetencies_sim)
-write.dta(dataframe = xTargetCompetencies_sim,
-          file = 'SC6_xTargetCompetencies_sim.dta')
+write.dta(
+  dataframe = xTargetCompetencies_sim,
+  file = "SC6_xTargetCompetencies_sim.dta"
+)
 ## estimate default number of 10 plausible values
 ## note: the example background data is completely observed!
-result <- plausible_values(SC = 6
-                           , domain = 'RE'
-                           , wave = 3
-                           , bgdata = bg_data
-                           , path = path
-                           , method = 'Bayes'
-                           , filetype = 'Stata'
-                           )
+result <- plausible_values(
+  SC = 6,
+  domain = "RE",
+  wave = 3,
+  bgdata = bg_data,
+  path = path,
+  method = "Bayes",
+  filetype = "Stata"
+)
 }
 
 }

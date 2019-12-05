@@ -2,12 +2,12 @@
 % Please edit documentation in R/write_pv.R
 \name{write_pv}
 \alias{write_pv}
-\title{Function to write pv.obj to file}
+\title{Function to write pv_obj to file}
 \usage{
-write_pv(pv.obj, path, ext = c("SPSS", "Stata", "Mplus"))
+write_pv(pv_obj, path, ext = c("SPSS", "Stata", "Mplus"))
 }
 \arguments{
-\item{pv.obj}{return object of function \code{NEPScaling::plausible_values()}}
+\item{pv_obj}{return object of function \code{NEPScaling::plausible_values()}}
 
 \item{path}{path to the directory where the plausible values are going to
 be saved to}
@@ -15,13 +15,13 @@ be saved to}
 \item{ext}{format (either SPSS, Stata (version 14) or Mplus compatible)}
 }
 \description{
-Function to write pv.obj to file
+Function to write pv_obj to file
 }
 \examples{
 \dontrun{
 rm(list = ls())
 library(NEPScaling)
-# the pv.obj results was created by plausible_values()
+# the pv_obj results was created by plausible_values()
 path <- "chosen/directory/"
 write_pv(results, path, "Mplus")
 write_pv(results, path, "Stata")
