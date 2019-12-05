@@ -8,6 +8,7 @@
 #' @noRd
 
 extract_correct_number_of_pvs <- function(bgdata, control, npv, pvs) {
+  ID_t <- NULL
   datalist <- list()
   d <- 1
   for (i in 1:ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1,

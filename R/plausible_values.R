@@ -267,7 +267,7 @@ plausible_values <- function(SC,
   }
 
   # create auxiliary waves variable for longitudinal estimation
-  res <- create_waves_type_vars(longitudinal, SC, domain)
+  res <- create_waves_type_vars(longitudinal, SC, domain, wave)
   type <- res[["type"]]
   waves <- res[["waves"]]
 
@@ -297,7 +297,7 @@ plausible_values <- function(SC,
   # test data and test taker selection
   res <- select_test_responses_and_test_takers(
     longitudinal, SC, domain,
-    data, wave
+    data, wave, min_valid
   )
   data <- res[["data"]]
   resp <- res[["resp"]]
@@ -436,8 +436,9 @@ plausible_values <- function(SC,
 
   # linear transformation of longitudinal PVs to pre-defined scale
   res <- link_longitudinal_plausible_values(longitudinal, datalist, npv,
-                                            min_valid, valid_responses_per_person, waves, eap,
-                                            data, SC, domain, control)
+                                            min_valid,
+                                            valid_responses_per_person, waves,
+                                            eap, data, SC, domain, control)
   pv <- res[["pv"]]
   wle <- res[["wle"]]
   eap <- res[["eap"]]

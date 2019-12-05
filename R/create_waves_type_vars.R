@@ -3,10 +3,11 @@
 #' @param longitudinal logical indicating type of estimation
 #' @param SC starting cohort; string
 #' @param domain competence domain; string
+#' @param wave
 #'
 #' @noRd
 
-create_waves_type_vars <- function(longitudinal, SC, domain) {
+create_waves_type_vars <- function(longitudinal, SC, domain, wave) {
     # create auxiliary waves variable for longitudinal estimation
     if (longitudinal) {
         type <- "long"

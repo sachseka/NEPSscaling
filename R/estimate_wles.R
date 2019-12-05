@@ -7,6 +7,7 @@
 #' @noRd
 
 estimate_wles <- function(longitudinal, waves, mod) {
+    . <- NULL
   if (longitudinal) {
     wmod <- list()
     for (j in seq(length(waves))) {

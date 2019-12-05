@@ -15,8 +15,11 @@
 #' @noRd
 
 link_longitudinal_plausible_values <- function(longitudinal, datalist, npv,
-                                               min_valid, valid_responses_per_person, waves, eap,
+                                               min_valid,
+                                               valid_responses_per_person,
+                                               waves, eap,
                                                data, SC, domain, control) {
+  wave_w3 <- wave_w5 <- rea9_sc1u <- NULL
   if (!longitudinal) {
     pv <- datalist
     for (p in seq(npv)) {

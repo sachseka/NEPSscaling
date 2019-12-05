@@ -8,13 +8,13 @@ scaled item parameters}
 plausible_values(SC, domain = c("MA", "RE", "SC", "IC", "LI", "EF", "NR",
   "NT", "OR", "ST", "BA", "CD", "GR"), wave, path, filetype = c("SPSS",
   "Stata"), bgdata = NULL, npv = 10L, longitudinal = FALSE,
-  rotation = TRUE, nvalid = 3L, include.nr = TRUE, verbose = TRUE,
-  control = list(EAP = FALSE, WLE = FALSE, Bayes = list(itermcmc = 10000,
-  burnin = 2000, est.alpha = FALSE, thin = 1, tdf = 10, cartctrl1 = 5,
-  cartctrl2 = 1e-04), ML = list(nmi = 10L, ntheta = 2000, normal.approx =
-  FALSE, samp.regr = FALSE, theta.model = FALSE, np.adj = 8, na.grid = 5,
-  itermcmc = 100, burnin = 50, thin = 1, cartctrl1 = 5, cartctrl2 =
-  1e-04)))
+  rotation = TRUE, min_valid = 3L, include.nr = TRUE,
+  verbose = TRUE, control = list(EAP = FALSE, WLE = FALSE, Bayes =
+  list(itermcmc = 10000, burnin = 2000, est.alpha = FALSE, thin = 1, tdf =
+  10, cartctrl1 = 5, cartctrl2 = 1e-04), ML = list(nmi = 10L, ntheta =
+  2000, normal.approx = FALSE, samp.regr = FALSE, theta.model = FALSE,
+  np.adj = 8, na.grid = 5, itermcmc = 100, burnin = 50, thin = 1, cartctrl1
+  = 5, cartctrl2 = 1e-04)))
 }
 \arguments{
 \item{SC}{numeric. The starting cohort used for the analysis is
@@ -50,7 +50,7 @@ should be corrected for the rotation design of the booklets. Defaults to
 TRUE. If both longitudinal and rotation are TRUE, rotation is set to FALSE
 automatically.}
 
-\item{nvalid}{numeric; minimum number of responses test takers had to
+\item{min_valid}{numeric; minimum number of responses test takers had to
 give for inclusion into the estimation process. NEPS default is at least
 three.}
 
@@ -93,11 +93,11 @@ rotated with another competence domain. If this was the case for the
 specific estimation, this variable indicates whether the correction was
 applied. Depending on the estimation context, this variable may have been
 automatically set by the function and thus differ from user input}
-\item{nvalid}{The minimum number of answers a test taker must have given}
+\item{min_valid}{The minimum number of answers a test taker must have given}
 \item{model}{If the method \code{ML} was chosen, a Rasch or a Partial Credit
 Model was estimated, depending on the item format. If \code{Bayes} was
 chosen, a Graded Response Model was estimated.}
-\item{n.valid}{A \code{data.frame} containing the \code{ID_t} and the
+\item{valid_responses_per_person}{A \code{data.frame} containing the \code{ID_t} and the
 number of valid responses given by the respective individual}
 \item{npv}{The number of plausible values that are returned by the function}
 \item{control}{The control variables that were applied to fine-tune the

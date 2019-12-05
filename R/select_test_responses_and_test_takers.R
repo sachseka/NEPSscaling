@@ -5,11 +5,12 @@
 #' @param domain
 #' @param data
 #' @param wave
+#' @param min_valid
 #'
 #' @noRd
 
 select_test_responses_and_test_takers <- function(longitudinal, SC, domain,
-                                                  data, wave) {
+                                                  data, wave, min_valid) {
   if (longitudinal) {
     resp <- list()
     if (SC == "SC6" && domain == "RE") {
@@ -21,7 +22,7 @@ select_test_responses_and_test_takers <- function(longitudinal, SC, domain,
             item_labels[[SC]][[domain]][["w3"]]
           )
         ]
-      resp[[1]] <- resp[[1]][rowSums(!is.na(resp[[1]][, -1])) >= nvalid, ]
+      resp[[1]] <- resp[[1]][rowSums(!is.na(resp[[1]][, -1])) >= min_valid, ]
       resp[[1]] <- resp[[1]][order(resp[[1]]$ID_t), ]
       resp[[2]] <-
         data[
@@ -31,7 +32,7 @@ select_test_responses_and_test_takers <- function(longitudinal, SC, domain,
             item_labels[[SC]][[domain]][["w5"]]
           )
         ]
-      resp[[2]] <- resp[[2]][rowSums(!is.na(resp[[2]][, -1])) >= nvalid, ]
+      resp[[2]] <- resp[[2]][rowSums(!is.na(resp[[2]][, -1])) >= min_valid, ]
       resp[[2]] <- resp[[2]][order(resp[[2]]$ID_t), ]
       resp[[3]] <-
         data[
@@ -41,7 +42,7 @@ select_test_responses_and_test_takers <- function(longitudinal, SC, domain,
             item_labels[[SC]][[domain]][["w9"]]
           )
         ]
-      resp[[3]] <- resp[[3]][rowSums(!is.na(resp[[3]][, -1])) >= nvalid, ]
+      resp[[3]] <- resp[[3]][rowSums(!is.na(resp[[3]][, -1])) >= min_valid, ]
       resp[[3]] <- resp[[3]][order(resp[[3]]$ID_t), ]
     } else {
       for (i in seq(length(item_labels[[SC]][[domain]]))) {
@@ -51,7 +52,7 @@ select_test_responses_and_test_takers <- function(longitudinal, SC, domain,
             item_labels[[SC]][[domain]][[i]]
           )]
         resp[[i]] <-
-          resp[[i]][rowSums(!is.na(resp[[i]][, -1])) >= nvalid, ]
+          resp[[i]][rowSums(!is.na(resp[[i]][, -1])) >= min_valid, ]
         resp[[i]] <- resp[[i]][order(resp[[i]]$ID_t), ]
       }
     }
@@ -78,7 +79,7 @@ select_test_responses_and_test_takers <- function(longitudinal, SC, domain,
         "ID_t",
         item_labels[[SC]][[domain]][[wave]]
       )]
-    resp <- resp[rowSums(!is.na(resp[, -1])) >= nvalid, ]
+    resp <- resp[rowSums(!is.na(resp[, -1])) >= min_valid, ]
     resp <- resp[order(resp$ID_t), ]
     data <- data[data$ID_t %in% resp$ID_t, ]
     data <- data[order(data$ID_t), ]

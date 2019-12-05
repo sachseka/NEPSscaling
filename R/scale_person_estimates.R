@@ -15,7 +15,8 @@
 scale_person_estimates <- function(pv, wle, eap,
                                    SC, domain, wave, longitudinal_IDs) {
   if (SC == "SC6" && domain == "RE") {
-    MEAN <- get_mean_linking(SC, domain, longitudinal_IDs, eap1 = eap, eap2 = NULL)
+    MEAN <- get_mean_linking(SC, domain, longitudinal_IDs,
+                             eap1 = eap, eap2 = NULL)
     # original sample
     term1 <- MEAN[3] - MEAN[1] -
       link_constant[[SC]][[domain]][["w9"]][["B67"]]

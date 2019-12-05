@@ -122,11 +122,11 @@ get_model <- function(pv_obj) {
 #' as an integer value
 #'
 #' @export
-get_min_valid_per_person <- function(pv_obj) {
+get_valid_responses_per_person <- function(pv_obj) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }
-  pv_obj$n.valid
+  pv_obj$valid_responses_per_person
 }
 
 #' Get the number of plausible values returned by
