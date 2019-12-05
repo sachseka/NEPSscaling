@@ -95,11 +95,11 @@ get_test_position <- function(pv_obj) {
 #' @return the minimum number of valid responses as an integer value
 #'
 #' @export
-get_nvalid <- function(pv_obj) {
+get_min_valid <- function(pv_obj) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }
-  pv_obj$nvalid
+  pv_obj$min_valid
 }
 
 #' Get the estimation model
@@ -122,7 +122,7 @@ get_model <- function(pv_obj) {
 #' as an integer value
 #'
 #' @export
-get_nvalid_per_person <- function(pv_obj) {
+get_min_valid_per_person <- function(pv_obj) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }

@@ -18,7 +18,7 @@
 #' covariates is imputed using sequential classification and regression trees.
 #' @param npv          numeric; number of plausible values to be estimated;
 #' defaults to 10.
-#' @param nvalid       numeric; minimum number of responses test takers had to
+#' @param min_valid       numeric; minimum number of responses test takers had to
 #' give for inclusion into the estimation process. NEPS default is at least
 #' three.
 #' @param longitudinal logical. TRUE indicating that a multidimensional model
@@ -64,11 +64,11 @@
 #' specific estimation, this variable indicates whether the correction was
 #' applied. Depending on the estimation context, this variable may have been
 #' automatically set by the function and thus differ from user input}
-#' \item{nvalid}{The minimum number of answers a test taker must have given}
+#' \item{min_valid}{The minimum number of answers a test taker must have given}
 #' \item{model}{If the method \code{ML} was chosen, a Rasch or a Partial Credit
 #' Model was estimated, depending on the item format. If \code{Bayes} was
 #' chosen, a Graded Response Model was estimated.}
-#' \item{n.valid}{A \code{data.frame} containing the \code{ID_t} and the
+#' \item{valid_responses_per_person}{A \code{data.frame} containing the \code{ID_t} and the
 #' number of valid responses given by the respective individual}
 #' \item{npv}{The number of plausible values that are returned by the function}
 #' \item{control}{The control variables that were applied to fine-tune the
@@ -176,7 +176,7 @@ plausible_values <- function(SC,
                              npv = 10L,
                              longitudinal = FALSE,
                              rotation = TRUE,
-                             nvalid = 3L,
+                             min_valid = 3L,
                              include.nr = TRUE,
                              verbose = TRUE,
                              control = list(
@@ -202,168 +202,87 @@ plausible_values <- function(SC,
                                )
                              )) {
   rea9_sc1u <- wave_w3 <- wave_w5 <- . <- NULL
-  # check and prepare arguments
+
+  # check argument validity and apply necessary changes to arguments ----------
   if (missing(SC)) {
-    stop("Starting cohort must be specified.")
+    stop("Starting cohort is missing, but must be provided.", call. = FALSE)
   }
-  if (!is.numeric(SC) || !is.numeric(wave)) {
-    stop("Starting cohort and wave must be numeric.")
+  if (!is.numeric(SC)) {
+    stop("Starting cohort must be numeric.", call. = FALSE)
   }
+  if (missing(wave)) {
+    stop(cat(paste0(
+      "Wave is missing, but must be provided.\n",
+      "Please note that, for longitudinal estimation, ",
+      "any wave is fine and will be corrected internally."
+    )),
+    call. = FALSE
+    )
+  }
+  if (!is.numeric(wave)) {
+    stop("Wave must be numeric.", call. = FALSE)
+  }
+
+  # convert SC and wave to character strings to index internal lists more
+  # comfortably
   SC <- paste0("SC", SC)
-  if (!longitudinal && missing(wave)) {
-    stop("Wave must be specified for cross-sectional modeling.")
-  } else {
-    wave <- paste0("w", wave)
-  }
+  wave <- paste0("w", wave)
+
   domain <- toupper(domain)
   domain <- match.arg(domain)
   filetype <- match.arg(filetype)
+
   if (missing(path)) {
-    stop("Path must be specified.")
+    stop("Path is missing, but must be provided.", call. = FALSE)
   }
-  if (!is.character(path) || !grepl("/$", path)) {
-    stop("Path must be a character string and end in '/'.")
+  if (!is.character(path)) {
+    stop("Path must be a character string.", call. = FALSE)
   }
-  if (nvalid < 0) {
-    stop("nvalid must be non-negative.")
+  if (!grepl("/$", path)) {
+    path <- paste0(path, "/")
+  }
+  if (min_valid < 0) {
+    stop("min_valid must be greater than or equal to 0.", call. = FALSE)
   }
   if (is.null(item_labels[[SC]][[domain]][[wave]])) {
     stop(paste0(
-      "No competence data available for ", SC, " ", domain, " ",
-      wave, "."
-    ))
+      "There were no competence tests for ", SC, " ", domain, " ",
+      wave, ". Checking the NEPS documentation might clear things up."
+    ), call. = FALSE)
   }
-  if (longitudinal && ((SC == "SC6" | SC == "SC5") &
-    domain %in% c("IC", "SC", "BA", "EF"))) {
-    longitudinal <- FALSE
-    message(paste0(
-      "No longitudinal data for: ", SC, " ", domain,
-      ". Estimating cross-sectional plausible values instead."
-    ))
+  if (longitudinal &&
+    (
+      (SC == "SC6" & domain %in% c("IC", "SC")) ||
+        (SC == "SC5" & domain %in% c("IC", "SC", "BA", "EF"))
+    )
+  ) {
+    stop(
+      cat(paste0(
+        SC, " ", domain, " was not tested longitudinally.\n",
+        "If you wanted to estimate cross-sectional plausible values, ",
+        "set longitudinal = FALSE."
+      )),
+      call. = FALSE
+    )
   }
+
+  # create auxiliary waves variable for longitudinal estimation
+  res <- create_waves_type_vars(longitudinal, SC, domain)
+  type <- res[["type"]]
+  waves <- res[["waves"]]
+
+  # Begin data pre-processing -------------------------------------------------
+
   if (verbose) {
     cat("Begin pre-processing of data... ", paste(Sys.time()), "\n")
     flush.console()
   }
-  if (longitudinal) {
-    type <- "long"
-    if (SC == "SC6") {
-      if (domain == "RE") {
-        waves <- c("_w3", "_w5", "_w9")
-      }
-      if (domain == "MA") {
-        waves <- c("_w3", "_w9")
-      }
-    }
-    if (SC == "SC5" && domain %in% c("RE", "MA")) {
-      waves <- c("_w1", "_w12")
-    }
-    if (SC == "SC4") {
-      if (domain == "RE") {
-        waves <- c("_w2", "_w7", "_w10")
-      }
-      if (domain == "MA") {
-        waves <- c("_w1", "_w7", "_w10")
-      }
-      if (domain == "IC") {
-        waves <- c("_w1", "_w7")
-      }
-      if (domain == "SC") {
-        waves <- c("_w1", "_w5")
-      }
-      if (domain == "EF") {
-        waves <- c("_w3", "_w7")
-      }
-    }
-  } else {
-    type <- "cross"
-    waves <- paste0("_", wave)
-  }
 
-  # get competence data for SC and domain
-  files <- list.files(path = path)
-  if (filetype == "SPSS") {
-    if (SC == "SC5" & domain == "BA") {
-      data <-
-        tryCatch(
-          {
-            haven::read_spss(
-              file = paste0(path, files[grep("xEcoCAPI", files)]),
-              user_na = TRUE
-            )
-          },
-          error = function(e) {
-            stop(paste0(
-              "Path ", path,
-              " does not lead to competence files OR ",
-              "wrong file formats!"
-            ))
-          }
-        )
-    } else {
-      data <-
-        tryCatch(
-          {
-            haven::read_spss(
-              file = paste0(
-                path,
-                files[grep("xTargetCompetencies", files)]
-              ),
-              user_na = TRUE
-            )
-          },
-          error = function(e) {
-            stop(paste0(
-              "Path ", path,
-              " does not lead to competence files OR ",
-              "wrong file formats!"
-            ))
-          }
-        )
-    }
-  } else {
-    if (SC == "SC5" & domain == "BA") {
-      data <-
-        tryCatch(
-          {
-            haven::read_dta(
-              file = paste0(path, files[grep("xEcoCAPI", files)]),
-              user_na = TRUE
-            )
-          },
-          error = function(e) {
-            stop(paste0(
-              "Path '", path,
-              " does not lead to competence files OR ",
-              "wrong file formats!"
-            ))
-          }
-        )
-    } else {
-      data <-
-        tryCatch(
-          {
-            haven::read_dta(
-              file = paste0(
-                path,
-                files[grep("xTargetCompetencies", files)]
-              ),
-              user_na = TRUE
-            )
-          },
-          error = function(e) {
-            stop(paste0(
-              "Path '", path,
-              " does not lead to competence files OR ",
-              "wrong file formats!"
-            ))
-          }
-        )
-    }
-  }
-  data <- data[order(data$ID_t), ]
+  # read in competence data specified by user
+  data <- read_in_competence_data(path, filetype, SC, domain)
 
   # number of not-reached items as processing time proxy
+  nr <- NULL
   if (include.nr) {
     sel <- (if (longitudinal) {
       names(data) %in% unique(unlist(item_labels[[SC]][[domain]]))
@@ -372,82 +291,16 @@ plausible_values <- function(SC,
     })
     nr <- data.frame(ID_t = data$ID_t, nr = rowSums(data[, sel] == -94))
   }
+  # set user-defined missings to NA
   data[data < -20] <- NA
 
   # test data and test taker selection
-  if (longitudinal) {
-    resp <- list()
-    if (SC == "SC6" && domain == "RE") {
-      resp[[1]] <-
-        data[
-          data$wave_w3 == 1,
-          names(data) %in% c(
-            "ID_t",
-            item_labels[[SC]][[domain]][["w3"]]
-          )
-        ]
-      resp[[1]] <- resp[[1]][rowSums(!is.na(resp[[1]][, -1])) >= nvalid, ]
-      resp[[1]] <- resp[[1]][order(resp[[1]]$ID_t), ]
-      resp[[2]] <-
-        data[
-          data$wave_w3 == 0 & data$wave_w5 == 1,
-          names(data) %in% c(
-            "ID_t",
-            item_labels[[SC]][[domain]][["w5"]]
-          )
-        ]
-      resp[[2]] <- resp[[2]][rowSums(!is.na(resp[[2]][, -1])) >= nvalid, ]
-      resp[[2]] <- resp[[2]][order(resp[[2]]$ID_t), ]
-      resp[[3]] <-
-        data[
-          !is.na(data$rea9_sc1u),
-          names(data) %in% c(
-            "ID_t",
-            item_labels[[SC]][[domain]][["w9"]]
-          )
-        ]
-      resp[[3]] <- resp[[3]][rowSums(!is.na(resp[[3]][, -1])) >= nvalid, ]
-      resp[[3]] <- resp[[3]][order(resp[[3]]$ID_t), ]
-    } else {
-      for (i in seq(length(item_labels[[SC]][[domain]]))) {
-        resp[[i]] <-
-          data[, names(data) %in% c(
-            "ID_t",
-            item_labels[[SC]][[domain]][[i]]
-          )]
-        resp[[i]] <-
-          resp[[i]][rowSums(!is.na(resp[[i]][, -1])) >= nvalid, ]
-        resp[[i]] <- resp[[i]][order(resp[[i]]$ID_t), ]
-      }
-    }
-    data <-
-      data[data$ID_t %in% unique(
-        unlist(lapply(resp, function(x) {
-          x[["ID_t"]]
-        }))
-      ), ]
-    data <- data[order(data$ID_t), ]
-  } else {
-    # reading has been tested twice for different samples in SC6:
-    # estimating simultaneously might cause problems because of different
-    # information available for background model (large quantities of missing data)
-    if (SC == "SC6" & domain == "RE") {
-      if (wave == "w3") {
-        data <- data[data$wave_w3 == 1, ]
-      } else if (wave == "w5") {
-        data <- data[data$wave_w3 == 0 & data$wave_w5 == 1, ]
-      }
-    }
-    resp <-
-      data[, names(data) %in% c(
-        "ID_t",
-        item_labels[[SC]][[domain]][[wave]]
-      )]
-    resp <- resp[rowSums(!is.na(resp[, -1])) >= nvalid, ]
-    resp <- resp[order(resp$ID_t), ]
-    data <- data[data$ID_t %in% resp$ID_t, ]
-    data <- data[order(data$ID_t), ]
-  }
+  res <- select_test_responses_and_test_takers(
+    longitudinal, SC, domain,
+    data, wave
+  )
+  data <- res[["data"]]
+  resp <- res[["resp"]]
 
   # check for Partial Credit Items
   PCM <- (if (longitudinal) {
@@ -459,401 +312,33 @@ plausible_values <- function(SC,
     max(apply(resp[, -1], 2, max, na.rm = TRUE)) > 1
   })
 
-  # process background data
-  if (is.null(bgdata)) {
-    ID_t <- data[, "ID_t", drop = FALSE]
-    if (include.nr) {
-      bgdata <- dplyr::left_join(ID_t, nr, by = "ID_t")
-    }
-  } else {
-    if (!is.data.frame(bgdata)) {
-      stop("bgdata must be a data.frame.")
-    }
-    if (is.null(bgdata$ID_t)) {
-      stop("ID_t must be included in bgdata.")
-    }
-    bgdata <- bgdata[order(bgdata$ID_t), ]
+  # process background data ---------------------------------------------------
 
-    if (nvalid > 0) {
-      bgdata <- bgdata[bgdata$ID_t %in% data$ID_t, ]
-      if (nrow(bgdata) < nrow(data)) {
-        bgdata <- suppressWarnings(
-          dplyr::bind_rows(
-            bgdata,
-            data[!(data$ID_t %in% bgdata$ID_t),
-              "ID_t",
-              drop = FALSE
-            ]
-          )
-        )
-      }
-      bgdata <- bgdata[order(bgdata$ID_t), ]
-    } else {
-      # append subjects in background data that did not take the competence tests
-      data <- suppressWarnings(
-        dplyr::bind_rows(data, bgdata[!(bgdata$ID_t %in% data$ID_t),
-          "ID_t",
-          drop = FALSE
-        ])
-      )
-      data <- data[order(data$ID_t), ]
-      bgdata <- suppressWarnings(
-        dplyr::bind_rows(
-          bgdata,
-          data[!(data$ID_t %in% bgdata$ID_t),
-            "ID_t",
-            drop = FALSE
-          ]
-        )
-      )
-      bgdata <- bgdata[order(bgdata$ID_t), ]
-    }
-    if (include.nr) {
-      bgdata <- dplyr::left_join(bgdata, nr, by = "ID_t")
-    }
-    ID_t <- bgdata[, "ID_t", drop = FALSE]
-
-    # list of categorical variables
-    fac <- unlist(lapply(bgdata, is.factor))
-    categorical <- names(bgdata)[fac]
+  res <- pre_process_background_data(bgdata, data, include.nr, nr, min_valid)
+  if (!is.null(bgdata)) {
+    data <- res[["data"]]
   }
+  bgdata <- res[["bgdata"]]
+  ID_t <- res[["ID_t"]]
+
   # number of valid responses per person (and wave)
-  if (longitudinal) {
-    n.valid <-
-      data.frame(ID_t = unique(
-        unlist(lapply(resp, function(x) {
-          x[["ID_t"]]
-        }))
-      ))
-    for (w in seq(length(waves))) {
-      tmp <-
-        data.frame(
-          ID_t = resp[[w]]$ID_t,
-          rowSums(!is.na(resp[[w]][, -1]))
-        )
-      n.valid <- dplyr::left_join(n.valid, tmp, by = "ID_t")
-      names(n.valid)[w + 1] <- paste0("valid", waves[w])
-    }
-    rm(tmp)
-  } else {
-    n.valid <- data.frame(ID_t = resp$ID_t)
-    n.valid$valid <- rowSums(!is.na(resp[, -1]))
-  }
+  valid_responses_per_person <- calculate_number_of_valid_responses(longitudinal, resp, waves)
 
   # consider test form rotation
+  res <- consider_test_rotation(
+    longitudinal, rotation, data, SC, wave, domain, resp, bgdata, ID_t
+  )
   if (longitudinal) {
-    rotation <- FALSE
-    Q <- create_loading_matrix_q_longitudinal(SC, domain)
+    rotation <- res[["rotation"]]
+    Q <- res[["Q"]]
   } else {
     if (rotation) {
-      position <- data.frame(
-        ID_t = data$ID_t,
-        position = rep(NA, nrow(data))
-      )
-      # construct facet to correct for rotation design
-      if (SC == "SC1") {
-        stop("Sorry, not yet implemented.")
-      } else if (SC == "SC2") {
-        stop("Sorry, not yet implemented.")
-      } else if (SC == "SC3") {
-        stop("Sorry, not yet implemented.")
-      } else if (SC == "SC4") {
-        stop("Sorry, not yet implemented.")
-      } else if (SC == "SC5") { # w7 does not have rotation and can be ignored here
-        if (wave == "w1") {
-          position[, "position"] <- data[, "tx80211_w1"]
-          if (domain == "RE") {
-            position[
-              !is.na(position$position) &
-                (position$position == 126),
-              "position"
-            ] <- 1 # reading first
-            position[
-              !is.na(position$position) &
-                (position$position == 127),
-              "position"
-            ] <- 2 # reading second
-            position$position <-
-              haven::labelled(
-                position$position,
-                c(
-                  "reading first" = 1,
-                  "reading second" = 2
-                )
-              )
-          } else if (domain == "MA") {
-            position[
-              !is.na(position$position) &
-                (position$position == 127),
-              "position"
-            ] <- 1 # maths first
-            position[
-              !is.na(position$position) &
-                (position$position == 126),
-              "position"
-            ] <- 2 # math second
-            position$position <-
-              haven::labelled(
-                position$position,
-                c(
-                  "math first" = 1,
-                  "math second" = 2
-                )
-              )
-          }
-        } else if (wave == "w5") {
-          position[, "position"] <- data[, "tx80211_w5"]
-          if (domain == "IC") {
-            position[
-              !is.na(position$position) &
-                (position$position %in% c(331, 333, 335)),
-              "position"
-            ] <- 1 # ict first
-            position[
-              !is.na(position$position) &
-                (position$position %in% c(330, 332, 334, 336)),
-              "position"
-            ] <- 2 # ict second
-            position$position <-
-              haven::labelled(
-                position$position,
-                c(
-                  "ICT first" = 1,
-                  "ICT second" = 2
-                )
-              )
-          } else if (domain == "SC") {
-            position[
-              !is.na(position$position) &
-                (position$position %in% c(330, 332, 334, 336)),
-              "position"
-            ] <- 1 # sc first
-            position[
-              !is.na(position$position) &
-                (position$position %in% c(331, 333, 335)),
-              "position"
-            ] <- 2 # science second
-            position$position <-
-              haven::labelled(
-                position$position,
-                c(
-                  "science first" = 1,
-                  "science second" = 2
-                )
-              )
-          }
-        } else if (wave == "w12") {
-          position[, "position"] <- data[, "tx80211_w12"]
-          if (domain == "RE") {
-            position[
-              !is.na(position$position) &
-                (position$position %in% c(459, 462, 465, 468)),
-              "position"
-            ] <- 1 # reading first
-            position[
-              !is.na(position$position) &
-                (position$position %in% c(458, 463, 464, 469)),
-              "position"
-            ] <- 2 # reading second
-            position$position <-
-              haven::labelled(
-                position$position,
-                c(
-                  "reading first" = 1,
-                  "reading second" = 2
-                )
-              )
-          } else if (domain == "MA") {
-            position[
-              !is.na(position$position) &
-                (position$position %in% c(458, 460, 464, 466)),
-              "position"
-            ] <- 1 # math first
-            position[
-              !is.na(position$position) &
-                (position$position %in% c(459, 461, 465, 467)),
-              "position"
-            ] <- 2 # math second
-            position$position <-
-              haven::labelled(
-                position$position,
-                c(
-                  "math first" = 1,
-                  "math second" = 2
-                )
-              )
-          } else if (domain == "EF") {
-            position[
-              !is.na(position$position) &
-                (position$position %in% c(461, 463, 467, 469)),
-              "position"
-            ] <- 1 # English first
-            position[
-              !is.na(position$position) &
-                (position$position %in% c(460, 462, 466, 468)),
-              "position"
-            ] <- 2 # English second
-            position$position <-
-              haven::labelled(
-                position$position,
-                c(
-                  "English first" = 1,
-                  "English second" = 2
-                )
-              )
-          }
-        }
-      } else if (SC == "SC6") {
-        if (wave == "w3") {
-          position[, "position"] <- data[, "tx80211_w3"]
-          if (domain == "RE") {
-            position[
-              !is.na(position$position) &
-                (position$position %in% c(123, 125)),
-              "position"
-            ] <- 1 # reading first
-            position[
-              !is.na(position$position) &
-                (position$position %in% c(122, 124)),
-              "position"
-            ] <- 2 # reading second
-            position$position <-
-              haven::labelled(
-                position$position,
-                c(
-                  "reading first" = 1,
-                  "reading second" = 2
-                )
-              )
-          } else if (domain == "MA") {
-            position[
-              !is.na(position$position) &
-                (position$position %in% c(122, 124)),
-              "position"
-            ] <- 1 # maths first
-            position[
-              !is.na(position$position) &
-                (position$position %in% c(123, 125)),
-              "position"
-            ] <- 2 # math second
-            position$position <-
-              haven::labelled(
-                position$position,
-                c(
-                  "math first" = 1,
-                  "math second" = 2
-                )
-              )
-          }
-        } else if (wave == "w5") {
-          position[, "position"] <- data[, "tx80211_w5"]
-          if (domain == "IC") {
-            position[
-              !is.na(position$position) &
-                position$position == 248,
-              "position"
-            ] <- 1 # ict first
-            position[
-              !is.na(position$position) &
-                position$position == 247,
-              "position"
-            ] <- 2 # ict second
-            position$position <-
-              haven::labelled(
-                position$position,
-                c(
-                  "ict first" = 1,
-                  "ict second" = 2
-                )
-              )
-          } else if (domain == "SC") {
-            position[
-              !is.na(position$position) &
-                position$position == 247,
-              "position"
-            ] <- 1 # science first
-            position[
-              !is.na(position$position) &
-                position$position == 248,
-              "position"
-            ] <- 2 # science second
-            position$position <-
-              haven::labelled(
-                position$position,
-                c(
-                  "science first" = 1,
-                  "science second" = 2
-                )
-              )
-          } else if (domain == "RE") {
-            position[
-              !is.na(position$position) &
-                position$position == 249,
-              "position"
-            ] <- 1 # no rotation should be found
-          }
-        } else if (wave == "w9") {
-          position[, "position"] <- data[, "tx80211_w9"]
-          if (domain == "RE") {
-            position[
-              !is.na(position$position) &
-                position$position %in%
-                  c(444, 445, 448, 449, 452:455),
-              "position"
-            ] <- 1 # reading first
-            position[
-              !is.na(position$position) &
-                position$position %in%
-                  c(446, 447, 450, 451, 456, 457),
-              "position"
-            ] <- 2 # reading second
-            position$position <-
-              haven::labelled(
-                position$position,
-                c(
-                  "reading first" = 1,
-                  "reading second" = 2
-                )
-              )
-          } else if (domain == "MA") {
-            position[
-              !is.na(position$position) &
-                position$position %in%
-                  c(446, 447, 450, 451, 456, 457),
-              "position"
-            ] <- 1 # math first
-            position[
-              !is.na(position$position) &
-                position$position %in%
-                  c(444, 445, 448, 449, 452:455),
-              "position"
-            ] <- 2 # math second
-            position$position <-
-              haven::labelled(
-                position$position,
-                c(
-                  "math first" = 1,
-                  "math math" = 2
-                )
-              )
-          }
-        }
-      }
-      # possible NAs lead to further data selection
-      position <- position[!is.na(position$position), ]
-      rotation <- length(unique(position$position)) > 1 # T: with rotation, F: without rotation
-      if (rotation) {
-        data <- data[data$ID_t %in% position$ID_t, ]
-        resp <- resp[resp$ID_t %in% position$ID_t, ]
-        ID_t <- ID_t[ID_t$ID_t %in% position$ID_t, , drop = FALSE]
-        if (!is.null(bgdata)) {
-          bgdata <- bgdata[bgdata$ID_t %in% position$ID_t, ]
-        }
-        # # possible NAs in position variable treated as third group
-        # position[is.na(position$position), "position"] <- 3
-        # format position effect information
-        position <- position[, 2, drop = FALSE]
-      }
+      position <- res[["position"]]
+      rotation <- res[["rotation"]]
+      data <- res[["data"]]
+      resp <- res[["resp"]]
+      ID_t <- res[["ID_t"]]
+      bgdata <- res[["bgdata"]]
     }
   }
 
@@ -867,43 +352,14 @@ plausible_values <- function(SC,
   control$WLE <- res$WLE
 
 
-  # multiple imputation of missing covariate data
-  if (!is.null(bgdata)) {
-    if (any(is.na(bgdata))) {
-      if (verbose) {
-        cat(
-          "Begin multiple imputation of missing background data... ",
-          paste(Sys.time()), "\n"
-        )
-        flush.console()
-      }
-      imp <- CART(
-        X = bgdata, itermcmc = control$ML$itermcmc,
-        burnin = control$ML$burnin, nmi = control$ML$nmi,
-        thin = control$ML$thin, cartctrl1 = control$ML$cartctrl1,
-        cartctrl2 = control$ML$cartctrl2
-      )
-    } else {
-      bgdata <- as.data.frame(lapply(bgdata, as.numeric))
-      imp <- NULL
-      frmY <-
-        as.formula(
-          paste(
-            "~",
-            paste(
-              colnames(
-                bgdata[, -which(colnames(bgdata) == "ID_t"),
-                  drop = FALSE
-                ]
-              ),
-              collapse = "+"
-            )
-          )
-        )
-    }
-  } else {
-    imp <- frmY <- NULL
-  }
+  # multiple imputation of missing covariate data -----------------------------
+
+  res <- impute_missing_data(bgdata, verbose, control)
+  imp <- res[["imp"]]
+  frmY <- res[["frmY"]]
+  bgdata <- res[["bgdata"]]
+
+  # begin estimation of plausible values --------------------------------------
 
   if (verbose) {
     cat(
@@ -915,7 +371,7 @@ plausible_values <- function(SC,
 
   if (longitudinal) {
     res <- estimate_longitudinal(bgdata, imp,
-      frmY = NULL, resp, Q,
+      frmY = frmY, resp, Q,
       PCM, ID_t, waves, type, domain, SC,
       control, npv
     )
@@ -923,14 +379,14 @@ plausible_values <- function(SC,
     if (rotation) {
       if (PCM) {
         res <- estimate_cross_pcm_corrected_for_rotation(bgdata, imp,
-          frmY = NULL,
+          frmY = frmY,
           waves, ID_t, resp,
           type, domain, SC, control,
           npv, position
         )
       } else {
         res <- estimate_cross_rasch_corrected_for_rotation(bgdata, imp,
-          frmY = NULL, resp,
+          frmY = frmY, resp,
           position, waves, ID_t, type,
           domain, SC, control, npv
         )
@@ -938,22 +394,25 @@ plausible_values <- function(SC,
     } else {
       if (PCM) {
         res <- estimate_cross_pcm_uncorrected(bgdata, imp, resp, waves,
-          frmY = NULL, ID_t, type, domain, SC,
+          frmY = frmY, ID_t, type, domain, SC,
           control, npv
         )
       } else {
         res <- estimate_cross_rasch_uncorrected(bgdata, imp, resp, waves,
-          frmY = NULL, ID_t, type, domain, SC,
+          frmY = frmY, ID_t, type, domain, SC,
           control, npv
         )
       }
     }
   }
-  eap <- res$eap
-  pvs <- res$pvs
-  EAP.rel <- res$EAP.rel
-  regr.coeff <- res$regr.coeff
-  mod <- res$mod
+  eap <- res[["eap"]]
+  pvs <- res[["pvs"]]
+  EAP.rel <- res[["EAP.rel"]]
+  regr.coeff <- res[["regr.coeff"]]
+  mod <- res[["mod"]]
+
+  # Begin post-processing of estimated data -----------------------------------
+
   if (verbose) {
     cat(
       "Finished estimation. Begin post-processing... ", paste(Sys.time()),
@@ -961,120 +420,29 @@ plausible_values <- function(SC,
     )
     flush.console()
   }
+
   # assumption: eaps are equivalent over all estimations
   eap <- eap[[1]]
-  if (control$WLE) {
-    if (longitudinal) {
-      wmod <- list()
-      for (j in seq(length(waves))) {
-        wmod[[j]] <- TAM::tam.mml.wle2(mod[[j]],
-          WLE = TRUE,
-          progress = FALSE
-        )
-      }
-      wmod <- wmod %>%
-        Reduce(function(df1, df2) {
-          dplyr::full_join(df1, df2, by = "pid")
-        }, .)
-    } else {
-      wmod <- TAM::tam.mml.wle2(mod[[1]], WLE = TRUE, progress = FALSE)
-    }
-    wle <- wmod[grep("pid|theta|error", colnames(wmod))]
-    colnames(wle) <-
-      c("ID_t", paste0(
-        rep(c("wle", "se"), length(waves)),
-        rep(if (longitudinal) {
-          waves
-        } else {
-          ""
-        },
-        each = 2
-        )
-      ))
-  }
-  datalist <- list()
-  d <- 1
-  for (i in 1:ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1,
-    control$ML$nmi
-  )) {
-    for (j in 1:npv) {
-      datalist[[d]] <- pvs[[i]][[j]][, !grepl(
-        "pweights|test_postition",
-        colnames(pvs[[i]][[j]])
-      )]
-      datalist[[d]] <- datalist[[d]] %>%
-        dplyr::select(ID_t, dplyr::everything())
-      d <- d + 1
-    }
-  }
-  pvs <- NULL
-  ind <- sample(1:length(datalist), npv)
-  datalist <- datalist[ind]
 
+  # estimate WLEs
+  if (control$WLE) {
+    wle <- estimate_wles(longitudinal, waves, mod)
+  }
+
+  # extract correct number of plausible values from pvs object
+  datalist <- extract_correct_number_of_pvs(bgdata, control, npv, pvs)
+
+  # linking of longitudinal plausible values ----------------------------------
 
   # linear transformation of longitudinal PVs to pre-defined scale
-  if (longitudinal) {
-    for (p in seq(npv)) {
-      for (w in waves) {
-        for (i in seq(nrow(n.valid))) {
-          if (is.na(n.valid[i, paste0("valid", w)]) ||
-            n.valid[i, paste0("valid", w)] < nvalid) {
-            datalist[[p]][i, paste0("PV", w)] <- NA
-          }
-        }
-      }
-    }
-    for (w in waves) {
-      for (j in seq(nrow(n.valid))) {
-        if (is.na(n.valid[j, paste0("valid", w)]) ||
-          n.valid[j, paste0("valid", w)] < nvalid) {
-          eap[j, paste0(c("eap", "se"), w)] <- NA
-        }
-      }
-    }
-    # longitudinal subsamples
-    longitudinal_IDs <- list()
-    if (SC == "SC6" && domain == "RE") {
-      longitudinal_IDs[["w3"]] <- dplyr::filter(
-        data, wave_w3 == 1,
-        !is.na(rea9_sc1u)
-      )$ID_t
-      longitudinal_IDs[["w5"]] <- dplyr::filter(
-        data, wave_w3 == 0,
-        wave_w5 == 1,
-        !is.na(rea9_sc1u)
-      )$ID_t
-    } else {
-      for (i in seq(2, length(waves))) {
-        longitudinal_IDs[[i - 1]] <-
-          dplyr::filter(
-            eap, !is.na(eap[paste0("eap", waves[i - 1])]),
-            !is.na(eap[paste0("eap", waves[i])])
-          )$ID_t
-      }
-    }
-    # re-scaling for longitudinal link
-    res <- scale_person_estimates(
-      pv = datalist,
-      wle = if (control$WLE) {
-        wle
-      } else {
-        NULL
-      },
-      eap = eap,
-      SC = SC, domain = domain,
-      wave = gsub("_", "", waves),
-      longitudinal_IDs = longitudinal_IDs
-    )
-    pv <- res$pv
-    wle <- res$wle
-    eap <- res$eap
-  } else {
-    pv <- datalist
-    for (p in seq(npv)) {
-      pv[[p]][n.valid$valid < nvalid, "PV"] <- NA
-    }
-  }
+  res <- link_longitudinal_plausible_values(longitudinal, datalist, npv,
+                                            min_valid, valid_responses_per_person, waves, eap,
+                                            data, SC, domain, control)
+  pv <- res[["pv"]]
+  wle <- res[["wle"]]
+  eap <- res[["eap"]]
+
+  # calculate posterior mean of estimated eaps/plausible values
   MEAN <- colMeans(eap[, seq(2, (1 + 2 * length(waves)), 2), drop = FALSE],
     na.rm = TRUE
   )
@@ -1089,9 +457,9 @@ plausible_values <- function(SC,
   res[["rotation"]] <- ifelse(rotation, "Corrected For Test Position",
     "No Correction For Test Position"
   )
-  res[["nvalid"]] <- nvalid
+  res[["min_valid"]] <- min_valid
   res[["model"]] <- ifelse(PCM, "Partial Credit Model", "Rasch Model")
-  res[["n.valid"]] <- n.valid
+  res[["valid_responses_per_person"]] <- valid_responses_per_person
   res[["npv"]] <- npv
   res[["control"]] <- control
   if (rotation) {
