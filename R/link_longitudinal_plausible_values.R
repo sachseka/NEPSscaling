@@ -7,6 +7,7 @@
 #' @param valid_responses_per_person ...
 #' @param waves ...
 #' @param eap ...
+#' @param wle ...
 #' @param data ...
 #' @param SC ...
 #' @param domain ...
@@ -17,7 +18,7 @@
 link_longitudinal_plausible_values <- function(longitudinal, datalist, npv,
                                                min_valid,
                                                valid_responses_per_person,
-                                               waves, eap,
+                                               waves, eap, wle,
                                                data, SC, domain, control) {
   wave_w3 <- wave_w5 <- rea9_sc1u <- NULL
   for (p in seq(npv)) {
@@ -62,11 +63,7 @@ link_longitudinal_plausible_values <- function(longitudinal, datalist, npv,
   # re-scaling for longitudinal link
   res <- scale_person_estimates(
     pv = datalist,
-    wle = if (control$WLE) {
-      wle
-    } else {
-      NULL
-    },
+    wle = wle,
     eap = eap,
     SC = SC, domain = domain,
     wave = gsub("_", "", waves),

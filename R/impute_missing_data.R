@@ -1,8 +1,8 @@
 #' perform multiple imputation via cart
 #'
-#' @param bgdata
-#' @param verbose
-#' @param control
+#' @param bgdata ...
+#' @param verbose ...
+#' @param control ...
 #'
 #' @noRd
 

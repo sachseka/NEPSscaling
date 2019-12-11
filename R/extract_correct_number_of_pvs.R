@@ -1,9 +1,9 @@
 #' extract correct number of plausible values from pvs object
 #'
-#' @param bgdata
-#' @param control
-#' @param npv
-#' @param pvs
+#' @param bgdata ...
+#' @param control ...
+#' @param npv ...
+#' @param pvs ...
 #'
 #' @noRd
 

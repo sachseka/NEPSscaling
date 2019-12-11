@@ -435,7 +435,8 @@ plausible_values <- function(SC,
   if (longitudinal) {
     res <- link_longitudinal_plausible_values(
       longitudinal, datalist, npv, min_valid, valid_responses_per_person,
-      waves, eap, data, SC, domain, control
+      waves, eap, wle = if (control$WLE) {wle} else {NULL}, 
+      data, SC, domain, control
     )
     pv <- res[["pv"]]
     wle <- res[["wle"]]

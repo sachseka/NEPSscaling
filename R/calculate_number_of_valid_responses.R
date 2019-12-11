@@ -1,8 +1,8 @@
 #' calculate number of valid responses per person
 #'
-#' @param longitudinal
-#' @param resp
-#' @param waves
+#' @param longitudinal ...
+#' @param resp ...
+#' @param waves ...
 #'
 #' @return data.frame
 #'

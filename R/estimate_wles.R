@@ -1,8 +1,8 @@
 #' estimate WLEs
 #'
-#' @param longitudinal
-#' @param waves
-#' @param mod
+#' @param longitudinal ...
+#' @param waves ...
+#' @param mod ...
 #'
 #' @noRd
 

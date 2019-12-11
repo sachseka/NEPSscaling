@@ -82,12 +82,14 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
         } else if (is.null(imp)) {
           bgdata[
             bgdata$ID_t %in% resp[[j]]$ID_t,
-            -which(names(bgdata) == "ID_t")
+            -which(names(bgdata) == "ID_t"),
+            drop = FALSE
           ]
         } else {
           bgdatacom[
             bgdatacom$ID_t %in% resp[[j]]$ID_t,
-            -which(names(bgdatacom) == "ID_t")
+            -which(names(bgdatacom) == "ID_t"),
+            drop = FALSE
           ]
         },
         formulaY = frmY,
