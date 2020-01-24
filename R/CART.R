@@ -17,6 +17,7 @@
 #' @param cartctrl2 complexity parameter. Any CART split that does not decrease the overall
 #' lack of fit by a factor of \code{control2} is not attempted during covariates imputation
 #' cycles.
+#' @param verbose should progress bar be shown? defaults to TRUE.
 #' @details Partially observed variables are imputed in each
 #' sampling iteration. Sequential CART (Burgette & Reiter, 2010) are utilized as approximations
 #' to the full conditional distributions of missing values in \code{X}.
@@ -37,7 +38,8 @@ CART <- function(
                  nmi = 10,
                  thin = 1,
                  cartctrl1 = 5,
-                 cartctrl2 = 1e-04) {
+                 cartctrl2 = 1e-04,
+                 verbose = TRUE) {
   if (is.null(X)) {
     stop("X == NULL. No data to impute.")
   }
@@ -69,7 +71,9 @@ CART <- function(
   datalist <- vector("list", nmi)
   names(datalist) <- paste0("Iteration", savemis)
   # CART
-  pb <- txtProgressBar(min = 0, max = itermcmc, style = 3)
+  if (verbose) {
+      pb <- txtProgressBar(min = 0, max = itermcmc, style = 3)
+  }
   for (ii in 1:itermcmc) {
     for (iii in 1:thin) {
       X <- as.data.frame(
@@ -81,7 +85,9 @@ CART <- function(
       sel <- which(names(datalist) == paste0("Iteration", ii))
       datalist[[sel]] <- data.frame(ID_t = ID_t, X)
     }
-    setTxtProgressBar(pb, ii)
+      if (verbose) {
+          setTxtProgressBar(pb, ii)
+      }
   }
   close(pb)
   names(datalist) <- NULL

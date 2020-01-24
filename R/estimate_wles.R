@@ -10,11 +10,13 @@ estimate_wles <- function(longitudinal, waves, mod) {
     . <- NULL
   if (longitudinal) {
     wmod <- list()
+    WLE.rel <- vector("numeric", length(waves))
     for (j in seq(length(waves))) {
       wmod[[j]] <- TAM::tam.mml.wle2(mod[[j]],
         WLE = TRUE,
         progress = FALSE
       )
+      WLE.rel[j] <- wmod[[j]]$WLE.rel[1]
     }
     wmod <- wmod %>%
       Reduce(function(df1, df2) {
@@ -22,6 +24,7 @@ estimate_wles <- function(longitudinal, waves, mod) {
       }, .)
   } else {
     wmod <- TAM::tam.mml.wle2(mod[[1]], WLE = TRUE, progress = FALSE)
+    WLE.rel <- wmod$WLE.rel[1]
   }
   wle <- wmod[grep("pid|theta|error", colnames(wmod))]
   colnames(wle) <-
@@ -35,5 +38,5 @@ estimate_wles <- function(longitudinal, waves, mod) {
       each = 2
       )
     ))
-  wle
+  list(wle = wle, WLE.rel = WLE.rel)
 }

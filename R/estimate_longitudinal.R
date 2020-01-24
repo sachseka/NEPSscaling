@@ -28,6 +28,12 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
                                   PCM, ID_t, waves, type, domain, SC,
                                   control, npv) {
   . <- NULL
+  quiet <- function(x) {
+    sink(tempfile())
+    on.exit(sink())
+    invisible(force(x))
+  }
+
   for (i in seq(length(PCM))) {
     if (PCM[[i]]) {
       res <- collapse_categories_pcm(
@@ -138,7 +144,7 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
           by = c("ID_t" = "pid")
         )
       EAP.rel[[j]] <- c(EAP.rel[[j]], mod[[j]]$EAP.rel)
-      regr.coeff[[j]] <- cbind(regr.coeff[[j]], mod[[j]]$beta)
+      regr.coeff[[j]] <- cbind(regr.coeff[[j]], quiet(TAM::tam.se(mod[[j]])$beta))
     }
     for (n in 1:npv) {
       pvs[[i]][[n]] <-

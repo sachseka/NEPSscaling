@@ -6,7 +6,7 @@
 adapted from package LaRA by J.-C. Gaasch (2017)}
 \usage{
 CART(X, itermcmc, burnin, nmi = 10, thin = 1, cartctrl1 = 5,
-  cartctrl2 = 1e-04)
+  cartctrl2 = 1e-04, verbose = TRUE)
 }
 \arguments{
 \item{X}{data frame containing person-level covariates. They can be numeric or factor
@@ -30,6 +30,8 @@ imputation cycles.}
 \item{cartctrl2}{complexity parameter. Any CART split that does not decrease the overall
 lack of fit by a factor of \code{control2} is not attempted during covariates imputation
 cycles.}
+
+\item{verbose}{should progress bar be shown? defaults to TRUE.}
 }
 \value{
 list with \code{nmi} imputed data sets.

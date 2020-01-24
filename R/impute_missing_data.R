@@ -21,7 +21,7 @@ impute_missing_data <- function(bgdata, verbose, control) {
         X = bgdata, itermcmc = control$ML$itermcmc,
         burnin = control$ML$burnin, nmi = control$ML$nmi,
         thin = control$ML$thin, cartctrl1 = control$ML$cartctrl1,
-        cartctrl2 = control$ML$cartctrl2
+        cartctrl2 = control$ML$cartctrl2, verbose = verbose
       )
     } else {
       bgdata <- as.data.frame(lapply(bgdata, as.numeric))

@@ -102,18 +102,18 @@ get_min_valid <- function(pv_obj) {
   pv_obj$min_valid
 }
 
-#' Get the estimation model
-#'
-#' @param pv_obj return object of function \code{NEPScaling::plausible_values()}
-#' @return the estimation model as a String
-#'
-#' @export
-get_model <- function(pv_obj) {
-  if (class(pv_obj) != "pv_obj") {
-    stop("pv_obj must be of class 'pv_obj'.")
-  }
-  pv_obj$model
-}
+#' #' Get the estimation model
+#' #'
+#' #' @param pv_obj return object of function \code{NEPScaling::plausible_values()}
+#' #' @return the estimation model as a String
+#' #'
+#' #' @export
+#' get_model <- function(pv_obj) {
+#'   if (class(pv_obj) != "pv_obj") {
+#'     stop("pv_obj must be of class 'pv_obj'.")
+#'   }
+#'   pv_obj$model
+#' }
 
 #' Get the number of valid responses (i.e., non-missing) for each test taker
 #'
@@ -274,4 +274,31 @@ get_item_difficulties <- function(pv_obj) {
     stop("pv_obj must be of class 'pv_obj'.")
   }
   pv_obj$items
+}
+
+#' Get include_nr
+#'
+#' @param pv_obj return object of function \code{NEPScaling::plausible_values()}
+#' @return a boolean indicating whether the number of not-reached items as a
+#' proxy for processing speed should be included in background model
+#'
+#' @export
+get_include_nr <- function(pv_obj) {
+    if (class(pv_obj) != "pv_obj") {
+        stop("pv_obj must be of class 'pv_obj'.")
+    }
+    pv_obj$include_nr
+}
+
+#' Get the file path
+#'
+#' @param pv_obj return object of function \code{NEPScaling::plausible_values()}
+#' @return a string of the file path leading to the competence data
+#'
+#' @export
+get_path <- function(pv_obj) {
+    if (class(pv_obj) != "pv_obj") {
+        stop("pv_obj must be of class 'pv_obj'.")
+    }
+    pv_obj$path
 }

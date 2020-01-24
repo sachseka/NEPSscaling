@@ -17,6 +17,12 @@
 post_process_cross_tam_results <- function(mod, npv, control, Y, Y.pid, eap, i,
                                       EAP.rel, regr.coeff, pvs, bgdata) {
 
+  quiet <- function(x) {
+    sink(tempfile())
+    on.exit(sink())
+    invisible(force(x))
+  }
+
   # impute plausible values
   pmod <- TAM::tam.pv(mod,
     nplausible = npv,
@@ -39,9 +45,9 @@ post_process_cross_tam_results <- function(mod, npv, control, Y, Y.pid, eap, i,
     )
   EAP.rel <- c(EAP.rel, mod$EAP.rel)
   if (i == 1) {
-    regr.coeff <- mod$beta
+    regr.coeff <- quiet(TAM::tam.se(mod)$beta)
   } else if (i > 1) {
-    regr.coeff <- cbind(regr.coeff, mod[[1]]$beta)
+    regr.coeff <- cbind(regr.coeff, quiet(TAM::tam.se(mod)$beta))
   }
   pvs[[i]] <- lapply(tmp_pvs, function(x) {
     x[, -which(colnames(x) == "pweights")]
