@@ -216,9 +216,11 @@ plausible_values <- function(SC,
     stop("min_valid must be greater than or equal to 0.", call. = FALSE)
   }
   if (min_valid > 50) {
-      warning(paste("min_valid is very high.",
-                    "This might exclude all possible test takers from",
-                    "estimation."))
+    warning(paste(
+      "min_valid is very high.",
+      "This might exclude all possible test takers from",
+      "estimation."
+    ))
   }
   if (is.null(item_labels[[SC]][[domain]][[wave]])) {
     stop(paste0(
@@ -416,7 +418,12 @@ plausible_values <- function(SC,
   if (longitudinal) {
     res <- link_longitudinal_plausible_values(
       longitudinal, datalist, npv, min_valid, valid_responses_per_person,
-      waves, eap, wle = if (control$WLE) {wle} else {NULL},
+      waves, eap,
+      wle = if (control$WLE) {
+        wle
+      } else {
+        NULL
+      },
       data, SC, domain, control
     )
     pv <- res[["pv"]]
@@ -454,7 +461,7 @@ plausible_values <- function(SC,
   if (rotation) {
     res[["position"]] <- data.frame(ID_t, position)
   }
-  res[["mean.PV"]] <- MEAN
+  res[["mean_PV"]] <- MEAN
   res[["pv"]] <- pv
 
   if (control$EAP) {
@@ -462,26 +469,38 @@ plausible_values <- function(SC,
   }
   if (control$WLE) {
     res[["wle"]] <- wle
-    res[["WLE.rel"]] <- WLE.rel
+    res[["WLE_rel"]] <- WLE.rel
   }
-  res[["EAP.rel"]] <- EAP.rel
-  res[["regr.coeff"]] <- regr.coeff
+  res[["EAP_rel"]] <- EAP.rel
+  res[["regr_coeff"]] <- regr.coeff
   if (!is.null(bgdata)) {
     if (longitudinal) {
       for (w in seq(length(waves))) {
-        rownames(res[["regr.coeff"]][[w]]) <-
+        rownames(res[["regr_coeff"]][[w]]) <-
           c(
             "Intercept",
             names(res[["pv"]][[1]][, 2:(ncol(res[["pv"]][[1]]) - length(waves)),
-                                   drop = FALSE])
+              drop = FALSE
+            ])
+          )
+        colnames(res[["regr_coeff"]][[w]]) <-
+          paste0(
+            rep(c("coeff", "se"), times = ncol(res[["regr_coeff"]]) / 2),
+            seq(ncol(res[["regr_coeff"]]) / 2)
           )
       }
     } else {
-      rownames(res[["regr.coeff"]]) <-
+      rownames(res[["regr_coeff"]]) <-
         c(
           "Intercept",
           names(res[["pv"]][[1]][, 2:(ncol(res[["pv"]][[1]]) - 1),
-                                 drop = FALSE])
+            drop = FALSE
+          ])
+        )
+      colnames(res[["regr_coeff"]]) <-
+        paste0(
+          rep(c("coeff", "se"), times = ncol(res[["regr_coeff"]]) / 2),
+          seq(ncol(res[["regr_coeff"]]) / 2)
         )
     }
   }

@@ -167,7 +167,7 @@ get_mean_pv <- function(pv_obj) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }
-  pv_obj$mean.PV
+  pv_obj$mean_PV
 }
 
 #' Get the complete list of estimated plausible values and their respective
@@ -244,7 +244,24 @@ get_eap_reliability <- function(pv_obj) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }
-  pv_obj$EAP.rel
+  pv_obj$EAP_rel
+}
+
+#' Get the WLE reliability of the plausible values
+#'
+#' @param pv_obj return object of function \code{NEPScaling::plausible_values()}
+#' @return the WLE reliability of the plausible values as a numeric value
+#'
+#' @export
+get_wle_reliability <- function(pv_obj) {
+  if (class(pv_obj) != "pv_obj") {
+    stop("pv_obj must be of class 'pv_obj'.")
+  }
+  if (pv_obj$control$WLE) {
+    return(pv_obj$WLE_rel)
+  } else {
+    stop("WLEs have not been saved.")
+  }
 }
 
 #' Get the regression coefficients estimated in the latent regression on the
@@ -259,7 +276,7 @@ get_regression_coefficients <- function(pv_obj) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }
-  pv_obj$regr.coeff
+  pv_obj$regr_coeff
 }
 
 #' Get the fixed item difficulties and their standard errors
