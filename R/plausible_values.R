@@ -475,18 +475,19 @@ plausible_values <- function(SC,
   res[["regr_coeff"]] <- regr.coeff
   if (!is.null(bgdata)) {
     if (longitudinal) {
-      for (w in seq(length(waves))) {
+      for (w in seq(ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1,
+                           control$ML$nmi))) {
         rownames(res[["regr_coeff"]][[w]]) <-
           c(
             "Intercept",
             names(res[["pv"]][[1]][, 2:(ncol(res[["pv"]][[1]]) - length(waves)),
-              drop = FALSE
-            ])
-          )
+                                   drop = FALSE
+                                   ])
+                  )
         colnames(res[["regr_coeff"]][[w]]) <-
           paste0(
-            rep(c("coeff", "se"), times = ncol(res[["regr_coeff"]]) / 2),
-            seq(ncol(res[["regr_coeff"]]) / 2)
+            rep(c("coeff", "se"), times = ncol(res[["regr_coeff"]][[w]]) / 2),
+            rep(seq(ncol(res[["regr_coeff"]][[w]]) / 2), each = 2)
           )
       }
     } else {
@@ -494,13 +495,13 @@ plausible_values <- function(SC,
         c(
           "Intercept",
           names(res[["pv"]][[1]][, 2:(ncol(res[["pv"]][[1]]) - 1),
-            drop = FALSE
-          ])
+                                 drop = FALSE
+                                 ])
         )
       colnames(res[["regr_coeff"]]) <-
         paste0(
           rep(c("coeff", "se"), times = ncol(res[["regr_coeff"]]) / 2),
-          seq(ncol(res[["regr_coeff"]]) / 2)
+          rep(seq(ncol(res[["regr_coeff"]]) / 2), each = 2)
         )
     }
   }
