@@ -1,9 +1,7 @@
 #' simulate background data for plausible values estimation
-#' in NEPStools
+#' in NEPScaling
 rm(list = ls())
-setwd("//wipo.lifbi.de/daten/Projektgruppen_(08)/Kompetenzen_BA_(p000011)/Methoden/Anna/02_Anleitung_Plausible_Values/R Code/")
-path <- "Z:/Projektgruppen_(08)/Kompetenzen_BA_(p000011)/Methoden/Anna/02_Anleitung_Plausible_Values/SUFs/SC6/"
-xTargetCompetencies <- haven::read_spss(paste0(path, "SC6_xTargetCompetencies_D_8-0-0.sav"))
+xTargetCompetencies <- haven::read_spss("../SUFs/SC6/SC6_xTargetCompetencies_D_9-0-0.sav")
 
 bg_data <- xTargetCompetencies[!is.na(xTargetCompetencies$rea3_sc1), c("ID_t", "rea3_sc1")]
 
@@ -30,4 +28,4 @@ psych::describe(bg_data)
 
 bg_data <- bg_data[, -2]
 
-devtools::use_data(bg_data, pkg = "NEPStools", overwrite = TRUE)
+usethis::use_data(bg_data, pkg = "NEPScaling", overwrite = TRUE)

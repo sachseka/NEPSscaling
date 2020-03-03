@@ -151,7 +151,7 @@ colnames(x51)[1] <- ""
 # xsi <- pcm$all$mod$xsi.fixed.estimated
 # xsi <- xsi[!grepl("step", rownames(xsi)), ]
 xsi <- readODS::read_ods(
-  path = "../b110_114_116_alte_schwierigkeiten.ods",
+  path = "data-raw/neps_raw/b110_114_116_alte_schwierigkeiten.ods",
   col_names = FALSE
 )
 

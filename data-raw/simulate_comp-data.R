@@ -1,8 +1,6 @@
 #' simulate background data for plausible values estimation
-#' in NEPStools
+#' in NEPScaling
 rm(list = ls())
-
-setwd("//wipo.lifbi.de/daten/Projektgruppen_(08)/Kompetenzen_BA_(p000011)/Methoden/Anna/02_Anleitung_Plausible_Values/R Code/")
 
 set.seed(1234)
 reading <- scale(rnorm(nrow(bg_data)) - 0.005 * bg_data$age + 0.017 * bg_data$gender + 0.03 * bg_data$math, scale = F)
@@ -47,4 +45,4 @@ xTargetCompetencies_sim[sample(nrow(xTargetCompetencies_sim), 2800), "rea3042s_c
 xTargetCompetencies_sim[sample(nrow(xTargetCompetencies_sim), 2800), "rea3054s_c"] <- rep(2, 2800)
 
 
-devtools::use_data(xTargetCompetencies_sim, pkg = "NEPStools", overwrite = TRUE)
+usethis::use_data(xTargetCompetencies_sim, pkg = "NEPScaling", overwrite = TRUE)
