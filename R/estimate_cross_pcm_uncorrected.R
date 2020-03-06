@@ -27,13 +27,13 @@ estimate_cross_pcm_uncorrected <- function(
                                            ID_t, type, domain,
                                            SC, control, npv) {
   res <- collapse_categories_pcm(
-    resp[, item_labels[[SC]][[domain]][[gsub("_", "", waves)]] ], SC,
+    resp[, -which(names(resp) == "ID_t")], SC,
     gsub("_", "", waves), domain
   )
-  resp[, item_labels[[SC]][[domain]][[gsub("_", "", waves)]] ] <- res$resp
+  resp[, -which(names(resp) == "ID_t")] <- res$resp
   B <- TAM::designMatrices(
       modeltype = "PCM",
-      resp = resp[, item_labels[[SC]][[domain]][[gsub("_", "", waves)]] ]
+      resp = resp[, -which(names(resp) == "ID_t")]
   )$B
   ind <- get_indicators_for_half_scoring(SC, domain, gsub("_", "", waves))
   B[ind, , ] <- 0.5 * B[ind, , ]
@@ -63,7 +63,7 @@ estimate_cross_pcm_uncorrected <- function(
     mod <- list()
 
     mod[[1]] <- TAM::tam.mml(
-      resp = resp[, item_labels[[SC]][[domain]][[gsub("_", "", waves)]] ],
+      resp = resp[, -which(names(resp) == "ID_t")],
       dataY = if (is.null(bgdata)) {
         NULL
       } else if (is.null(imp)) {

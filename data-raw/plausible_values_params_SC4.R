@@ -1,4 +1,5 @@
 ## Link constants and correction terms for starting cohort 4
+library(dplyr)
 
 rm(list = ls())
 
@@ -11,6 +12,7 @@ SC <- "SC4"
 
 # Reading
 link_constant[[SC]][["RE"]][["w7"]] <- 0.045
+link_constant[[SC]][["RE"]][["w7special"]] <- 0.25
 link_constant[[SC]][["RE"]][["w10"]] <- 0.049406366423006
 
 # Mathematics
@@ -19,22 +21,25 @@ link_constant[[SC]][["MA"]][["w10"]] <- 0.3194437
 
 # Information and Communication Technology literacy
 link_constant[[SC]][["IC"]][["w7"]] <- 0.687
+link_constant[[SC]][["IC"]][["w13"]] <- 0 # !
 
 # Science
-link_constant[[SC]][["SC"]][["w5"]] <- 0 # !
+const <- haven::read_sav("../SUFs/SC4/SC4_xTargetCompetencies_D_10-0-0.sav") %>%
+  filter(wave_w1 == 1 & wave_w5 == 1) %>%
+  select(scg9_sc1u, scg11_sc1u) %>%
+  mutate(const = scg11_sc1u - scg9_sc1u) %>%
+  summarise_at(vars(const), mean, na.rm = TRUE)
+link_constant[[SC]][["SC"]][["w5"]] <- const[[1]] # !Info not in TR, but in SUF
+rm(const)
+link_constant[[SC]][["SC"]][["w13"]] <- 0 # !
 
 # Native Russian
-link_constant[[SC]][["NR"]][["w2"]] <- 0 # !
-
 # Native Turkish
-link_constant[[SC]][["NT"]][["w2"]] <- 0 # !
+# Scientific thinking
 
 # English as a foreign language
-link_constant[[SC]][["EF"]][["w3"]] <- 0 # !
-link_constant[[SC]][["EF"]][["w7"]] <- 0 # !
+link_constant[[SC]][["EF"]][["w7"]] <- 0 # ! not linked via mean/mean, but by re-using w3 parameter estimates
 
-# Scientific thinking
-link_constant[[SC]][["ST"]][["w7"]] <- 0 # !
 
 save(link_constant, file = "data-raw/link_constant.RData")
 
@@ -47,3 +52,32 @@ correction[[SC]][["RE"]][["w7"]] <- 0.487882
 correction[[SC]][["RE"]][["w10"]] <- 0 # !
 
 save(correction, file = "data-raw/correction.RData")
+
+# Difference matrix for English w3, w7
+diffMat <- list()
+
+load("//wipo.lifbi.de/daten/Projektgruppen_(08)/Kompetenzen_BA_Hiwi_(p000012)/Methoden/Skalierung/HE/A48_G10/English/Version 2 (final)/out/data/dat.Rdata") # original data w3
+dat <- dat[, c("ID_t", items$poly$all)]
+dat[dat < 0] <- 0
+dat[, -1] <- lapply(dat[, -1], as.numeric)
+load("//wipo.lifbi.de/daten/Projektgruppen_(08)/Kompetenzen_BA_Hiwi_(p000012)/Methoden/Skalierung/HE/A48_G10/English/Version 2 (final)/out/data/dati.Rdata") # imputed data w3
+dati <- dati[, c("ID_t", items$poly$all)]
+dati[dati < 0] <- 0
+dati[, -1] <- lapply(dati[, -1], as.numeric)
+dati[, -1] <- dati[, -1] - dat[, -1]
+diffMat$w3 <- dati
+
+load("//wipo.lifbi.de/daten/Projektgruppen_(08)/Kompetenzen_BA_Hiwi_(p000012)/Methoden/Skalierung/HE/A50_B41_G12/English/Version 3 (final)/out/data/dat.Rdata") # original data w7
+dat <- dat[, c("ID_t", items$poly_c)]
+dat[dat < 0] <- 0
+dat[, -1] <- lapply(dat[, -1], as.numeric)
+load("//wipo.lifbi.de/daten/Projektgruppen_(08)/Kompetenzen_BA_Hiwi_(p000012)/Methoden/Skalierung/HE/A50_B41_G12/English/Version 3 (final)/out/data/dati.Rdata") # imputed data w7
+dati <- dati[, c("ID_t", items$poly_c)]
+dati[dati < 0] <- 0
+dati[, -1] <- lapply(dati[, -1], as.numeric)
+dati[, -1] <- dati[, -1] - dat[, -1]
+diffMat$w7 <- dati
+
+rm(dat, dati, items, position, correct)
+
+save(diffMat, file = "data-raw/diffMat.RData")

@@ -37,10 +37,10 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
     for (i in seq(length(PCM))) {
         if (PCM[[i]]) {
             res <- collapse_categories_pcm(
-                resp[[i]][, item_labels[[SC]][[domain]][[i]]], SC,
+                resp[[i]][, -which(names(resp) == "ID_t")], SC,
                 gsub("_", "", waves)[i], domain
             )
-            resp[[i]][, item_labels[[SC]][[domain]][[i]]] <- res$resp
+            resp[[i]][, -which(names(resp) == "ID_t")] <- res$resp
             ind <- get_indicators_for_half_scoring(
                 SC, domain,
                 gsub("_", "", waves)[i]
@@ -90,7 +90,7 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
 
         for (j in seq(length(waves))) {
             mod[[j]] <- TAM::tam.mml(
-                resp = resp[[j]][, item_labels[[SC]][[domain]][[j]]],
+                resp = resp[[j]][, -which(names(resp) == "ID_t")],
                 dataY = if (is.null(bgdata)) {
                     NULL
                 } else if (is.null(imp)) {

@@ -17,9 +17,69 @@ consider_test_rotation <- function(longitudinal, rotation, data, SC, wave,
   if (longitudinal) {
     rotation <- FALSE
     Q <- create_loading_matrix_q_longitudinal(SC, domain)
-    return(list(rotation = rotation, Q = Q))
+    testletSetting <- position <- NULL
+    if (SC == "SC4") { 
+      position[, "position"] <- data[, "tx80211_w7"]
+      if (domain == "RE") {
+        position[
+          !is.na(position$position) &
+            (position$position %in% c(283, 284, 285, 286, 287, 288, 300,
+                                      301, 302, 303)),
+          "position"
+          ] <- 1
+        position[
+          !is.na(position$position) &
+            (position$position %in% c(281, 282, 289, 290, 291, 292, 296,
+                                      297, 298, 299)),
+          "position"
+          ] <- 2
+        position$position <-
+          haven::labelled(
+            position$position,
+            c(
+              "Reading first" = 1,
+              "Reading second" = 2
+            )
+        )
+      }
+      if (domain == "MA") {
+        position[
+          !is.na(position$position) &
+            (position$position %in% c(289, 290, 291, 292, 293, 294)),
+          "position"
+          ] <- 1
+        position[
+          !is.na(position$position) &
+            (position$position %in% c(284, 285, 287, 288, 296, 297, 298,
+                                      299, 300, 301, 302, 303)),
+          "position"
+          ] <- 2
+        position$position <-
+          haven::labelled(
+            position$position,
+            c(
+              "Math first" = 1,
+              "Math second" = 2
+            )
+          )
+        testletSetting <- data.frame(
+          ID_t = data$ID_t,
+          difficultTestlet = ifelse(
+                               data$tx80211_w7 %in% c(285, 288, 
+                                                      291:293, 296:303), 
+                               TRUE,
+                               ifelse(is.na(data$tx80211_w7), NA, 
+                                      FALSE)),
+          atHome = ifelse(data$tx80211_w7 %in% c(281:295), TRUE,
+                          ifelse(is.na(data$tx80211_w7), NA, FALSE))
+        )
+      }
+    }
+    return(list(rotation = rotation, Q = Q, 
+                testletSetting = testletSetting,
+                position = position))
   } else {
-    if (rotation) {
+    if (rotation || (SC == "SC4" & domain == "MA" & wave == "w7")) {
       position <- data.frame(
         ID_t = data$ID_t,
         position = rep(NA, nrow(data))
@@ -32,7 +92,230 @@ consider_test_rotation <- function(longitudinal, rotation, data, SC, wave,
       } else if (SC == "SC3") {
         stop("Sorry, not yet implemented.")
       } else if (SC == "SC4") {
-        stop("Sorry, not yet implemented.")
+        if (wave == "w1") { # grade 9
+          position[, "position"] <- data[, "tx80211_w1"]
+          # if (domain == "VO") {
+          #   # no rotation
+          # }
+          # if (domain == "MA") {
+          #   # no rotation
+          # }
+          if (domain == "SC") {
+            position[
+              !is.na(position$position) &
+                (position$position == 129),
+              "position"
+              ] <- 1
+            position[
+              !is.na(position$position) &
+                (position$position == 128),
+              "position"
+              ] <- 2
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "Science first" = 1,
+                  "Science second" = 2
+                )
+              )
+          }
+          if (domain == "IC") {
+            position[
+              !is.na(position$position) &
+                (position$position == 128),
+              "position"
+              ] <- 1
+            position[
+              !is.na(position$position) &
+                (position$position == 129),
+              "position"
+              ] <- 2
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "ICT first" = 1,
+                  "ICT second" = 2
+                )
+              )
+          }
+        }
+        # if (wave == "w2") { # grade 9
+        #   # no rotation!
+        # }
+        # if (wave == "w3") {# grade 10
+        #   # no rotation!
+        # }
+        # if (wave == "w5") { # grade 11
+        #   # no rotation!
+        # }
+        if (wave == "w7") { # grade 12
+          position[, "position"] <- data[, "tx80211_w7"]
+          if (domain == "RE") {
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(283, 284, 285, 286, 287, 288, 300,
+                                          301, 302, 303)),
+              "position"
+              ] <- 1
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(281, 282, 289, 290, 291, 292, 296,
+                                          297, 298, 299)),
+              "position"
+              ] <- 2
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "Reading first" = 1,
+                  "Reading second" = 2
+                )
+              )
+          }
+          if (domain == "MA") {
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(289, 290, 291, 292, 293, 294)),
+              "position"
+              ] <- 1
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(284, 285, 287, 288, 296, 297, 298,
+                                          299, 300, 301, 302, 303)),
+              "position"
+              ] <- 2
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "Math first" = 1,
+                  "Math second" = 2
+                )
+              )
+            position$difficultTestlet <- ifelse(
+                                           data$tx80211_w7 %in% c(285, 288, 
+                                                          291:293, 296:303), 
+                                           TRUE,
+                                           ifelse(is.na(data$tx80211_w7), NA, 
+                                                  FALSE))
+            position$atHome <- ifelse(data$tx80211_w7 %in% c(281:295), TRUE,
+                                      ifelse(is.na(data$tx80211_w7), NA, FALSE))
+          }
+          if (domain == "IC") {
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(281, 282, 295, 296, 297, 298, 299)),
+              "position"
+              ] <- 1
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(283, 286, 300, 301, 302, 303)),
+              "position"
+              ] <- 2
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "ICT first" = 1,
+                  "ICT second" = 2
+                )
+              )
+          }
+          if (domain == "EF") {
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(298, 299, 302, 303)),
+              "position"
+              ] <- 1
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(296, 297, 300, 301)),
+              "position"
+              ] <- 2
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "English 4th" = 1,
+                  "English 5th" = 2
+                )
+              )
+          }
+          if (domain == "ST") {
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(296, 297, 300, 301)),
+              "position"
+              ] <- 1
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(298, 299, 302, 303)),
+              "position"
+              ] <- 2
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "Scientific thinking 4th" = 1,
+                  "Scientific thinking 5th" = 2
+                )
+              )
+          }
+        }
+        if (wave == "w10") { # 21 years
+          position[, "position"] <- data[, "tx80211_w10"]
+          if (domain == "RE") {
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(470, 471, 474, 475)),
+              "position"
+              ] <- 1
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(472, 473)),
+              "position"
+              ] <- 2
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "Reading first" = 1,
+                  "Reading second" = 2
+                )
+              )
+          }
+          if (domain == "MA") {
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(472, 473, 476)),
+              "position"
+              ] <- 1
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(470, 471)),
+              "position"
+              ] <- 2
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "Math first" = 1,
+                  "Math second" = 2
+                )
+              )
+          }
+        }
+        # if (wave == "w13") { # 25 years
+        #   # position[, "position"] <- data[, "tx80211_w13"]
+        #   if (domain == "SC") {
+        #     #
+        #   }
+        #   if (domain == "IC") {
+        #     #
+        #   }
+        # }
       } else if (SC == "SC5") { # w7 does not have rotation and can be ignored here
         if (wave == "w1") {
           position[, "position"] <- data[, "tx80211_w1"]
@@ -315,11 +598,16 @@ consider_test_rotation <- function(longitudinal, rotation, data, SC, wave,
       }
       # possible NAs lead to further data selection
       position <- position[!is.na(position$position), ]
-      rotation <- length(unique(position$position)) > 1 # T: with rotation, F: without rotation
+      rotation <- rotation & length(unique(position$position)) > 1 # T: with rotation, F: without rotation
+      testletSetting <- position
+      if (SC == "SC4" & domain == "MA" & wave == "w7") {
+        testletSetting <- testletSetting[, c("ID_t", "difficultTestlet", "atHome")]
+      }
       if (rotation) {
         data <- data[data$ID_t %in% position$ID_t, ]
         resp <- resp[resp$ID_t %in% position$ID_t, ]
         ID_t <- ID_t[ID_t$ID_t %in% position$ID_t, , drop = FALSE]
+        testletSetting <- testletSetting[testletSetting$ID_t %in% position$ID_t, ]
         if (!is.null(bgdata)) {
           bgdata <- bgdata[bgdata$ID_t %in% position$ID_t, ]
         }
@@ -331,7 +619,8 @@ consider_test_rotation <- function(longitudinal, rotation, data, SC, wave,
       return(
         list(
           position = position, rotation = rotation, data = data,
-          resp = resp, ID_t = ID_t, bgdata = bgdata
+          resp = resp, ID_t = ID_t, bgdata = bgdata, 
+          testletSetting = testletSetting
         )
       )
     }

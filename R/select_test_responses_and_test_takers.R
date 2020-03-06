@@ -54,6 +54,10 @@ select_test_responses_and_test_takers <- function(longitudinal, SC, domain,
         resp[[i]] <-
           resp[[i]][rowSums(!is.na(resp[[i]][, -1])) >= min_valid, ]
         resp[[i]] <- resp[[i]][order(resp[[i]]$ID_t), ]
+        if (SC == "SC4" & domain == "EF") {
+          resp[[i]][, -1] <- resp[[i]][, -1] +
+            diffMat[[i]][order(diffMat[[i]]$ID_t), -1]
+        }
       }
     }
     data <-
@@ -83,6 +87,23 @@ select_test_responses_and_test_takers <- function(longitudinal, SC, domain,
     resp <- resp[order(resp$ID_t), ]
     data <- data[data$ID_t %in% resp$ID_t, ]
     data <- data[order(data$ID_t), ]
+    if (SC %in% c("SC3", "SC4") & domain == "ST") {
+      items <- if (SC == "SC3") {
+        c("stg12nhs_sc3g12_c", "stg12egs_sc3g12_c", "stg12mts_sc3g12_c",
+          "stg12cws_sc3g12_c", "stg12pds_sc3g12_c")
+      } else {
+        c("stg12nhs_c", "stg12egs_c", "stg12mts_c", "stg12cws_c", "stg12pds_c")
+      }
+      for (i in items) {
+        resp[[i]] <- rowSums(resp[, grep(substr(i, 1, 7), names(resp))],
+                             na.rm = TRUE)
+      }
+      resp <- resp[, c("ID_t", items)]
+    }
+    if (SC == "SC4" & domain == "EF") {
+      resp[, -1] <- resp[, -1] +
+        diffMat[[wave]][order(diffMat[[wave]]$ID_t), -1]
+    }
   }
   list(resp = resp, data = data)
 }

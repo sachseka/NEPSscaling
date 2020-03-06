@@ -55,7 +55,7 @@ estimate_cross_rasch_corrected_for_rotation <- function(
     mod <- list()
 
     mod[[1]] <- TAM::tam.mml.mfr(
-      resp = resp[, item_labels[[SC]][[domain]][[gsub("_", "", waves)]] ],
+      resp = resp[, -which(names(resp) == "ID_t")],
       facets = position,
       formulaA = ~ 0 + item + position,
       dataY = if (is.null(bgdata)) {

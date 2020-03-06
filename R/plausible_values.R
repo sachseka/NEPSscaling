@@ -309,6 +309,9 @@ plausible_values <- function(SC,
   if (longitudinal) {
     rotation <- res[["rotation"]]
     Q <- res[["Q"]]
+    if (SC == "SC4" & domain %in% c("RE", "MA")) {
+      position <- res[["position"]]
+    } 
   } else {
     if (rotation) {
       position <- res[["position"]]
@@ -317,6 +320,34 @@ plausible_values <- function(SC,
       resp <- res[["resp"]]
       ID_t <- res[["ID_t"]]
       bgdata <- res[["bgdata"]]
+    }
+  }
+  if (SC == "SC4" & domain == "MA") {
+    testletSetting <- res[["testletSetting"]]
+    if (longitudinal) {
+      resp[[2]]$mag9d201_sc4g12_c_g <- 
+        ifelse(!testletSetting$atHome, resp[[2]]$mag9d201_sc4g12_c, NA)
+      resp[[2]]$mag9d201_sc4g12_c_i <- 
+        ifelse(testletSetting$atHome, resp[[2]]$mag9d201_sc4g12_c, NA)
+      resp[[2]]$mag9d201_sc4g12_c <- NULL
+      resp[[2]]$mag9r051_sc4g12_c_d <- 
+        ifelse(testletSetting$difficultTestlet, resp[[2]]$mag9r051_sc4g12_c, NA)
+      resp[[2]]$mag9r051_sc4g12_c_e <- 
+        ifelse(!testletSetting$difficultTestlet, resp[[2]]$mag9r051_sc4g12_c, NA)
+      resp[[2]]$mag9r051_sc4g12_c <- NULL
+    } else {
+      if (wave == "w7") {
+        resp$mag9d201_sc4g12_c_g <- 
+          ifelse(!testletSetting$atHome, resp$mag9d201_sc4g12_c, NA)
+        resp$mag9d201_sc4g12_c_i <- 
+          ifelse(testletSetting$atHome, resp$mag9d201_sc4g12_c, NA)
+        resp$mag9d201_sc4g12_c <- NULL
+        resp$mag9r051_sc4g12_c_d <- 
+          ifelse(testletSetting$difficultTestlet, resp$mag9r051_sc4g12_c, NA)
+        resp$mag9r051_sc4g12_c_e <- 
+          ifelse(!testletSetting$difficultTestlet, resp$mag9r051_sc4g12_c, NA)
+        resp$mag9r051_sc4g12_c <- NULL
+      }
     }
   }
 
@@ -429,6 +460,25 @@ plausible_values <- function(SC,
     pv <- res[["pv"]]
     wle <- res[["wle"]]
     eap <- res[["eap"]]
+    if (SC == "SC4") {
+      # correct longitudinal values for change in rotation design
+      # MA: add -0.060 to all participants who took math first (position == 1)
+      if (domain == "MA") {
+        wle[position$position == 1, 4] <- wle[position$position == 1, 4] - 0.060
+        eap[position$position == 1, 4] <- eap[position$position == 1, 4] - 0.060
+        for (i in seq(length(pv))) {
+          pv[[i]][position$position == 1, 4] <- pv[[i]][position$position == 1, 4] - 0.060
+        }
+      }
+      # RE: add 0.164 to all participants who took reading second (position == 2)
+      if (domain == "RE") {
+        wle[position$position == 2, 4] <- wle[position$position == 2, 4] + 0.164
+        eap[position$position == 2, 4] <- eap[position$position == 2, 4] + 0.164
+        for (i in seq(length(pv))) {
+          pv[[i]][position$position == 2, 4] <- pv[[i]][position$position == 2, 4] + 0.164
+        }
+      }
+    }
   } else {
     pv <- set_pvs_not_enough_valid_resp_NA(
       datalist, valid_responses_per_person, min_valid, npv

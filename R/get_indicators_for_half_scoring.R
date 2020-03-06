@@ -55,15 +55,42 @@ get_indicators_for_half_scoring <- function(SC, domain, wave) {
     }
   } else if (SC == "SC4") {
     if (domain == "MA") {
-      if (wave == "w10") {
+      if (wave == "w1") {
+        ind <- c(3, 16)
+      } else if (wave == "w7") {
+        # items 10 and 15 appear twice for different sample groups!
+        ind <- c(21) # 19 ohne item splits!
+      } else if (wave == "w10") {
         ind <- c(5, 14, 23, 25, 29, 39, 45, 46, 49)
       }
+    } else if (domain == "SC") {
+      if (wave == "w1") {
+        ind <- c(2, 4, 7, 11, 14, 18, 19, 20, 24)
+      } else if (wave == "w5") {
+        ind <- c(5, 7, 10, 11, 15, 24)
+      }
+    } else if (domain == "RE") {
+      if (wave == "w1") {
+        ind <- c(4, 5, 13, 24)
+      } else if (wave == "w7") {
+        ind <- c(4, 8, 11, 13, 20, 22, 25, 28, 34, 37, 41)
+      } else if (wave == "w10") {
+        ind <- c(1, 2, 3, 4, 5, 9, 10, 14, 15, 20, 22, 24, 25, 36)
+      }
+    } else if (domain == "EF") {
+      if (wave == "w3") {
+        ind <- c(1, 2, 3, 4, 5, 6, 7, 11)
+      } else if (wave == "w7") {
+        ind <- c(1, 2, 3, 4)
+      }
+    } else if (domain == "IC") {
+      if (wave == "w1") {
+        ind <- c(2, 7, 15, 22, 30, 33, 36)
+      } else if (wave == "w7") {
+        ind <- c(1, 3, 4, 8, 9, 10, 13, 20, 21, 22, 24, 25, 26,
+                 27, 28, 29, 30, 31)
+      }
     }
-    # else if (domain == "RE") {
-    #     if (wave == "w10") {
-    #         ind <- c(1, 2, 3, 4, 5, 9, 10, 14, 15, 20, 22, 24, 25, 36)
-    #     }
-    # }
   }
   ind
 }

@@ -53,7 +53,7 @@ estimate_cross_rasch_uncorrected <- function(
     mod <- list()
 
     mod[[1]] <- TAM::tam.mml(
-      resp = resp[, item_labels[[SC]][[domain]][[gsub("_", "", waves)]]],
+      resp = resp[, -which(names(resp) == "ID_t")],
       dataY = if (is.null(bgdata)) {
         NULL
       } else if (is.null(imp)) {

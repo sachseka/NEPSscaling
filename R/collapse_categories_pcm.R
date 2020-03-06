@@ -256,7 +256,6 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
         resp$reg12075s_c[resp$reg12075s_c == 3] <- 2
       }
       if (wave == "w10") {
-        # TODO: change to correct item names
         resp$rea90101s_sc4a10_c[resp$rea90101s_sc4a10_c == 1] <- 0
         resp$rea90101s_sc4a10_c[resp$rea90101s_sc4a10_c == 2] <- 1
         resp$rea90101s_sc4a10_c[resp$rea90101s_sc4a10_c == 3] <- 2
@@ -278,7 +277,6 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
       }
       if (wave == "w10") {
         # collapse categories
-        # TODO: check correct item names
         resp$maa9v28s_sc4a10_c[resp$maa9v28s_sc4a10_c %in% c(0, 1, 2, 3)] <- 0
         resp$maa9v28s_sc4a10_c[resp$maa9v28s_sc4a10_c %in% c(4, 5, 6)] <- 1
         resp$maa9v27s_sc4a10_c[resp$maa9v27s_sc4a10_c == 1] <- 0
@@ -416,13 +414,103 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
         resp$scg9042s_c[resp$scg9042s_c == 3] <- 2
         resp$scg9042s_c[resp$scg9042s_c == 4] <- 3
       } else if (wave == "w5") {
-        # not available yet
+        # collapsed in SUF!
+        # TODO: CMC-items 14, 16, 17, 18, 19 and 21 were reduced to a 0 and 1
+        # scoring since they showed a decrease in one or two of their step
+        # parameters instead of an increase.
+        # https://www.neps-data.de/Portals/0/Survey%20Papers/SP_VI.pdf
+        # --> what categories were collapsed how? --> ask Kiel?
+        # resp$scg11083s_c[resp$scg11083s_c == 1] <- 0
+        # resp$scg11083s_c[resp$scg11083s_c == 2] <- 1
+        # resp$scg11083s_c[resp$scg11083s_c == 3] <- 2
+        # resp$scg11083s_c[resp$scg11083s_c == 4] <- 3
+        # resp$scg11032s_c[resp$scg11032s_c == 1] <- 0
+        # resp$scg11032s_c[resp$scg11032s_c == 2] <- 0
+        # resp$scg11032s_c[resp$scg11032s_c == 3] <- 1
+        # resp$scg11032s_c[resp$scg11032s_c == 4] <- 2
+        # resp$scg11652s_c[resp$scg11652s_c == 1] <- 0
+        # resp$scg11652s_c[resp$scg11652s_c == 2] <- 1
+        # resp$scg11652s_c[resp$scg11652s_c == 3] <- 2
+        # resp$scg11652s_c[resp$scg11652s_c == 4] <- 3
+        # resp$scg11602s_c[resp$scg11602s_c == 1] <- 0
+        # resp$scg11602s_c[resp$scg11602s_c == 2] <- 1
+        # resp$scg11602s_c[resp$scg11602s_c == 3] <- 2
+        # resp$scg11602s_c[resp$scg11602s_c == 4] <- 3
+        # resp$scs5131s_sc4g11_c[resp$scs5131s_sc4g11_c == 1] <- 0
+        # resp$scs5131s_sc4g11_c[resp$scs5131s_sc4g11_c == 2] <- 0
+        # resp$scs5131s_sc4g11_c[resp$scs5131s_sc4g11_c == 3] <- 1
+        # resp$scs5131s_sc4g11_c[resp$scs5131s_sc4g11_c == 4] <- 2
       }
+    } else if (domain == "ST") {
+      resp$stg12nhs_c[resp$stg12nhs_c == 1] <- 0
+      resp$stg12nhs_c[resp$stg12nhs_c == 2] <- 1
+      resp$stg12nhs_c[resp$stg12nhs_c == 3] <- 2
+      resp$stg12nhs_c[resp$stg12nhs_c == 4] <- 3
+      resp$stg12nhs_c[resp$stg12nhs_c == 5] <- 4
+      resp$stg12egs_c[resp$stg12egs_c == 1] <- 0
+      resp$stg12egs_c[resp$stg12egs_c == 2] <- 0
+      resp$stg12egs_c[resp$stg12egs_c == 3] <- 1
+      resp$stg12egs_c[resp$stg12egs_c == 4] <- 2
+      resp$stg12egs_c[resp$stg12egs_c == 5] <- 3
+      resp$stg12egs_c[resp$stg12egs_c == 6] <- 4
+      resp$stg12egs_c[resp$stg12egs_c == 7] <- 5
+      resp$stg12mts_c[resp$stg12mts_c == 1] <- 0
+      resp$stg12mts_c[resp$stg12mts_c == 2] <- 1
+      resp$stg12mts_c[resp$stg12mts_c == 3] <- 2
+      resp$stg12mts_c[resp$stg12mts_c == 4] <- 3
+      resp$stg12mts_c[resp$stg12mts_c == 5] <- 4
+      resp$stg12mts_c[resp$stg12mts_c == 6] <- 5
+      resp$stg12cws_c[resp$stg12cws_c == 1] <- 0
+      resp$stg12cws_c[resp$stg12cws_c == 2] <- 0
+      resp$stg12cws_c[resp$stg12cws_c == 3] <- 1
+      resp$stg12cws_c[resp$stg12cws_c == 4] <- 2
+      resp$stg12cws_c[resp$stg12cws_c == 5] <- 3
+      resp$stg12cws_c[resp$stg12cws_c == 6] <- 4
+      resp$stg12cws_c[resp$stg12cws_c == 7] <- 5
+      resp$stg12pds_c[resp$stg12pds_c == 1] <- 0
+      resp$stg12pds_c[resp$stg12pds_c == 2] <- 0
+      resp$stg12pds_c[resp$stg12pds_c == 3] <- 0
+      resp$stg12pds_c[resp$stg12pds_c == 4] <- 1
+      resp$stg12pds_c[resp$stg12pds_c == 5] <- 2
+      resp$stg12pds_c[resp$stg12pds_c == 6] <- 3
+      resp$stg12pds_c[resp$stg12pds_c == 7] <- 4
+    }
+  } else if (SC == "SC3") {
+    if (domain == "ST") {
+      resp$stg12nhs_sc3g12_c[resp$stg12nhs_sc3g12_c == 1] <- 0
+      resp$stg12nhs_sc3g12_c[resp$stg12nhs_sc3g12_c == 2] <- 1
+      resp$stg12nhs_sc3g12_c[resp$stg12nhs_sc3g12_c == 3] <- 2
+      resp$stg12nhs_sc3g12_c[resp$stg12nhs_sc3g12_c == 4] <- 3
+      resp$stg12nhs_sc3g12_c[resp$stg12nhs_sc3g12_c == 5] <- 4
+      resp$stg12egs_sc3g12_c[resp$stg12egs_sc3g12_c == 1] <- 0
+      resp$stg12egs_sc3g12_c[resp$stg12egs_sc3g12_c == 2] <- 0
+      resp$stg12egs_sc3g12_c[resp$stg12egs_sc3g12_c == 3] <- 1
+      resp$stg12egs_sc3g12_c[resp$stg12egs_sc3g12_c == 4] <- 2
+      resp$stg12egs_sc3g12_c[resp$stg12egs_sc3g12_c == 5] <- 3
+      resp$stg12egs_sc3g12_c[resp$stg12egs_sc3g12_c == 6] <- 4
+      resp$stg12egs_sc3g12_c[resp$stg12egs_sc3g12_c == 7] <- 5
+      resp$stg12mts_sc3g12_c[resp$stg12mts_sc3g12_c == 1] <- 0
+      resp$stg12mts_sc3g12_c[resp$stg12mts_sc3g12_c == 2] <- 1
+      resp$stg12mts_sc3g12_c[resp$stg12mts_sc3g12_c == 3] <- 2
+      resp$stg12mts_sc3g12_c[resp$stg12mts_sc3g12_c == 4] <- 3
+      resp$stg12mts_sc3g12_c[resp$stg12mts_sc3g12_c == 5] <- 4
+      resp$stg12mts_sc3g12_c[resp$stg12mts_sc3g12_c == 6] <- 5
+      resp$stg12cws_sc3g12_c[resp$stg12cws_sc3g12_c == 1] <- 0
+      resp$stg12cws_sc3g12_c[resp$stg12cws_sc3g12_c == 2] <- 0
+      resp$stg12cws_sc3g12_c[resp$stg12cws_sc3g12_c == 3] <- 1
+      resp$stg12cws_sc3g12_c[resp$stg12cws_sc3g12_c == 4] <- 2
+      resp$stg12cws_sc3g12_c[resp$stg12cws_sc3g12_c == 5] <- 3
+      resp$stg12cws_sc3g12_c[resp$stg12cws_sc3g12_c == 6] <- 4
+      resp$stg12cws_sc3g12_c[resp$stg12cws_sc3g12_c == 7] <- 5
+      resp$stg12pds_sc3g12_c[resp$stg12pds_sc3g12_c == 1] <- 0
+      resp$stg12pds_sc3g12_c[resp$stg12pds_sc3g12_c == 2] <- 0
+      resp$stg12pds_sc3g12_c[resp$stg12pds_sc3g12_c == 3] <- 0
+      resp$stg12pds_sc3g12_c[resp$stg12pds_sc3g12_c == 4] <- 1
+      resp$stg12pds_sc3g12_c[resp$stg12pds_sc3g12_c == 5] <- 2
+      resp$stg12pds_sc3g12_c[resp$stg12pds_sc3g12_c == 6] <- 3
+      resp$stg12pds_sc3g12_c[resp$stg12pds_sc3g12_c == 7] <- 4
     }
   }
-
-  # ind <- which(apply(resp, 2, max, na.rm = TRUE) > 1) # to catch only 'after-collapse' pc items (works for MD!)
-
-  res <- list(resp = resp) # , ind = ind)
+  res <- list(resp = resp)
   res
 }

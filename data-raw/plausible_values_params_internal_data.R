@@ -10,6 +10,23 @@ load(file = "data-raw/link_constant.RData")
 # item labels for item selection
 item_labels <-
   list(
+    SC3 = list(
+      ST = list(
+        w9 = c(
+          "stg12nh01_sc3g12_c", "stg12nh02_sc3g12_c", "stg12nh03_sc3g12_c",
+          "stg12nh04_sc3g12_c", "stg12nh05_sc3g12_c", "stg12eg01_sc3g12_c",
+          "stg12eg02_sc3g12_c", "stg12eg03_sc3g12_c", "stg12eg04_sc3g12_c",
+          "stg12eg05_sc3g12_c", "stg12eg06_sc3g12_c", "stg12eg07_sc3g12_c",
+          "stg12mt01_sc3g12_c", "stg12mt02_sc3g12_c", "stg12mt03_sc3g12_c",
+          "stg12mt04_sc3g12_c", "stg12mt05_sc3g12_c", "stg12cmt06_sc3g12_c",
+          "stg12cw01_sc3g12_c", "stg12cw02_sc3g12_c", "stg12cw03_sc3g12_c",
+          "stg12cw04_sc3g12_c", "stg12cw05_sc3g12_c", "stg12cw06_sc3g12_c",
+          "stg12cw07_sc3g12_c", "stg12pd01_sc3g12_c", "stg12pd02_sc3g12_c",
+          "stg12cpd03_sc3g12_c", "stg12pd04_sc3g12_c", "stg12pd05_sc3g12_c",
+          "stg12pd06_sc3g12_c", "stg12pd07_sc3g12_c"
+        )
+      )
+    ),
     SC4 = list(
       RE = list(
         w2 = c(
@@ -62,12 +79,14 @@ item_labels <-
         w7 = c(
           "maa3q071_sc4g12_c", "mag12v101_c", "mag12q121_c", "mag12v122_c",
           "maa3d131_sc4g12_c", "maa3d132_sc4g12_c", "mag12r011_c", "mag12v061_c",
-          "mag12r091_c", "mag9r051_sc4g12_c", "mag9v011_sc4g12_c", "mag12q081_c",
-          "mag12d021_c", "mag12q051_c", "mag9d201_sc4g12_c", "mag9v121_sc4g12_c",
-          "maa3r121_sc4g12_c", "mag12q111_c", "mas1q02s_sc4g12_c", "mas1d081_sc4g12_c",
-          "maa3d112_sc4g12_c", "mag9r061_sc4g12_c", "maa3q101_sc4g12_c",
-          "mag9q101_sc4g12_c", "maa3r011_sc4g12_c", "mag12d071_c", "mag12r041_c",
-          "mag12v131_c", "mag12v132_c", "mag12d031_c"
+          "mag12r091_c", "mag9r051_sc4g12_c",
+          "mag9v011_sc4g12_c", "mag12q081_c", "mag12d021_c", "mag12q051_c",
+          "mag9d201_sc4g12_c", "mag9v121_sc4g12_c",
+          "maa3r121_sc4g12_c", "mag12q111_c", "mas1q02s_sc4g12_c",
+          "mas1d081_sc4g12_c", "maa3d112_sc4g12_c", "mag9r061_sc4g12_c",
+          "maa3q101_sc4g12_c", "mag9q101_sc4g12_c", "maa3r011_sc4g12_c",
+          "mag12d071_c", "mag12r041_c", "mag12v131_c", "mag12v132_c",
+          "mag12d031_c"
         ),
         w10 = c(
           "maa3q071_sc4a10_c", "mag12v101_sc4a10_c", "mag12v122_sc4a10_c",
@@ -106,13 +125,13 @@ item_labels <-
           "icg9136s_c", "icg9137x_c", "icg9138x_c", "icg9140s_c"
         ),
         w7 = c(
-          "icg12018s_c", "ica5003x_c", "icg12107s_c", "icg12004s_c",
-          "icg12010x_c", "icg12011x_c", "ica5008x_c", "icg12060s_c",
-          "icg12013s_c", "ica5018s_c", "icg12016s_c", "ica5019x_c",
-          "icg12121x_c", "icg12028s_c", "ica5023x_c", "ica5027x_c",
+          "icg12018s_c", "ica5003x_sc4g12_c", "icg12107s_c", "icg12004s_c",
+          "icg12010x_c", "icg12011x_c", "ica5008x_sc4g12_c", "icg12060s_c",
+          "icg12013s_c", "icg12016s_c", "ica5019x_sc4g12_c",
+          "icg12121x_c", "icg12028s_c", "ica5023x_sc4g12_c", "ica5027x_sc4g12_c",
           "icg12033x_c", "icg12034x_c", "icg12035x_c", "icg12040x_c",
           "icg12037s_c", "icg12138s_c", "icg12047s_c", "icg12041x_c",
-          "icg12046s_c", "ica5021s_c", "ica5052s_c", "icg12048s_c",
+          "icg12046s_c", "ica5021s_sc4g12_c", "ica5052s_sc4g12_c", "icg12048s_c",
           "icg12050s_c", "icg12054s_c", "icg12109s_c", "icg12119s_c"
         )
       ),
@@ -367,12 +386,15 @@ item_labels <-
     )
   )
 
-# item difficulties for SC 4, 5, 6 reading and mathematical competence tests
+# item difficulties for competence tests
 load(file = "data-raw/xsi_fixed.RData")
 
 # corrections
 load(file = "data-raw/correction.RData")
 
-usethis::use_data(correction, item_labels, link_constant, xsi.fixed,
+# difference matrix for SC4 English w3, w7
+load(file = "data-raw/diffMat.RData")
+
+usethis::use_data(correction, item_labels, link_constant, xsi.fixed, diffMat,
   internal = TRUE, overwrite = TRUE
 )
