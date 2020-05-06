@@ -111,7 +111,7 @@
 #' @examples
 #' \dontrun{
 #' rm(list = ls())
-#' library(NEPScaling)
+#' library(NEPSscaling)
 #' library(foreign)
 #' ## read in data object for conditioning variables
 #' data(bg_data)
