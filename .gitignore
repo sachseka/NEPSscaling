@@ -2,4 +2,5 @@
 .Rhistory
 .RData
 NEPScaling.Rproj
+*.Rproj
 data-raw/neps_raw/
