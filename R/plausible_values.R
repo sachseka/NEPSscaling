@@ -140,7 +140,6 @@
 #' The function will only work with NEPS data. To access NEPS data see
 #' https://www.neps-data.de/en-us/datacenter/dataaccess.aspx.
 #'
-#' @importFrom stats prcomp
 #' @importFrom stats as.formula
 #' @importFrom utils flush.console
 #'
@@ -149,8 +148,8 @@
 plausible_values <- function(SC,
                              domain = c(
                                "MA", "RE", "SC", "IC", "LI", "EF",
-                               "NR", "NT", "OR", "ST", "BA", "CD",
-                               "GR"
+                               "NR", "NT", "ORA", "ORB", "ST", "BA", "CD",
+                               "GR", "VO"
                              ),
                              wave,
                              path,
@@ -228,10 +227,18 @@ plausible_values <- function(SC,
       wave, ". Please check the NEPS documentation at https://neps-data.de."
     ), call. = FALSE)
   }
+  if (SC == "SC1" & domain %in% c("VO")) {
+    stop(
+      cat("Vocabulary in SC1 is not IRT scalable. Please use the sumscore.")
+    )
+  }
   if (longitudinal &&
     (
       (SC == "SC6" & domain %in% c("IC", "SC")) ||
-        (SC == "SC5" & domain %in% c("IC", "SC", "BA", "EF"))
+        (SC == "SC5" & domain %in% c("IC", "SC", "BA", "EF")) ||
+      (SC == "SC3" & domain %in% c("ST", "LI")) ||
+        (SC == "SC2" & domain %in% c("RE", "GR")) ||
+      (SC == "SC1" & domain %in% c("CD", "VO"))
     )
   ) {
     stop(
@@ -267,10 +274,22 @@ plausible_values <- function(SC,
     } else {
       names(data) %in% item_labels[[SC]][[domain]][[wave]]
     })
-    nr <- data.frame(ID_t = data$ID_t, nr = rowSums(data[, sel] == -94))
+    # in the longitudinal case, missing test taking for later time points
+    # causes problems in imputation, if include_nr = TRUE, bgdata = NULL,
+    # thus, remove NAs from data
+    nr <- data.frame(ID_t = data$ID_t,
+                     nr = rowSums(data[, sel] == -94, na.rm = TRUE))
+    if (length(unique(nr$nr)) == 1) {
+      include_nr <- FALSE
+      nr <- NULL
+      cat(
+        "The number of not-reached missing values is constant.",
+        "Thus, it is not considered in the background model.\n"
+      )
+    }
   }
   # set user-defined missings to NA
-  data[data < -20] <- NA
+  data[data < -15] <- NA # assumption: WLEs this low are not to be expected
 
   # test data and test taker selection
   res <- select_test_responses_and_test_takers(
@@ -300,7 +319,8 @@ plausible_values <- function(SC,
   ID_t <- res[["ID_t"]]
 
   # number of valid responses per person (and wave)
-  valid_responses_per_person <- calculate_number_of_valid_responses(longitudinal, resp, waves)
+  valid_responses_per_person <-
+    calculate_number_of_valid_responses(longitudinal, resp, waves)
 
   # consider test form rotation
   res <- consider_test_rotation(
@@ -309,9 +329,10 @@ plausible_values <- function(SC,
   if (longitudinal) {
     rotation <- res[["rotation"]]
     Q <- res[["Q"]]
-    if (SC == "SC4" & domain %in% c("RE", "MA")) {
+    if ((SC == "SC4" & domain %in% c("RE", "MA")) ||
+        (SC == "SC2" & domain %in% c("VO", "MA"))) {
       position <- res[["position"]]
-    } 
+    }
   } else {
     if (rotation) {
       position <- res[["position"]]
@@ -322,37 +343,12 @@ plausible_values <- function(SC,
       bgdata <- res[["bgdata"]]
     }
   }
-  if (SC == "SC4" & domain == "MA") {
-    testletSetting <- res[["testletSetting"]]
-    if (longitudinal) {
-      resp[[2]]$mag9d201_sc4g12_c_g <- 
-        ifelse(!testletSetting$atHome, resp[[2]]$mag9d201_sc4g12_c, NA)
-      resp[[2]]$mag9d201_sc4g12_c_i <- 
-        ifelse(testletSetting$atHome, resp[[2]]$mag9d201_sc4g12_c, NA)
-      resp[[2]]$mag9d201_sc4g12_c <- NULL
-      resp[[2]]$mag9r051_sc4g12_c_d <- 
-        ifelse(testletSetting$difficultTestlet, resp[[2]]$mag9r051_sc4g12_c, NA)
-      resp[[2]]$mag9r051_sc4g12_c_e <- 
-        ifelse(!testletSetting$difficultTestlet, resp[[2]]$mag9r051_sc4g12_c, NA)
-      resp[[2]]$mag9r051_sc4g12_c <- NULL
-    } else {
-      if (wave == "w7") {
-        resp$mag9d201_sc4g12_c_g <- 
-          ifelse(!testletSetting$atHome, resp$mag9d201_sc4g12_c, NA)
-        resp$mag9d201_sc4g12_c_i <- 
-          ifelse(testletSetting$atHome, resp$mag9d201_sc4g12_c, NA)
-        resp$mag9d201_sc4g12_c <- NULL
-        resp$mag9r051_sc4g12_c_d <- 
-          ifelse(testletSetting$difficultTestlet, resp$mag9r051_sc4g12_c, NA)
-        resp$mag9r051_sc4g12_c_e <- 
-          ifelse(!testletSetting$difficultTestlet, resp$mag9r051_sc4g12_c, NA)
-        resp$mag9r051_sc4g12_c <- NULL
-      }
-    }
+  if (SC == "SC4" && domain == "MA") {
+    resp <- split_SC4_math_items(res[["testletSetting"]], resp, longitudinal)
   }
 
   # complement control lists
-  res <- complement_control_lists( # control$Bayes,
+  res <- complement_control_lists(
     control$EAP, control$WLE, control$ML
   )
   # control$Bayes <- res$Bayes
@@ -448,7 +444,7 @@ plausible_values <- function(SC,
   # linear transformation of longitudinal PVs to pre-defined scale
   if (longitudinal) {
     res <- link_longitudinal_plausible_values(
-      longitudinal, datalist, npv, min_valid, valid_responses_per_person,
+      datalist, npv, min_valid, valid_responses_per_person,
       waves, eap,
       wle = if (control$WLE) {
         wle
@@ -460,24 +456,11 @@ plausible_values <- function(SC,
     pv <- res[["pv"]]
     wle <- res[["wle"]]
     eap <- res[["eap"]]
-    if (SC == "SC4") {
-      # correct longitudinal values for change in rotation design
-      # MA: add -0.060 to all participants who took math first (position == 1)
-      if (domain == "MA") {
-        wle[position$position == 1, 4] <- wle[position$position == 1, 4] - 0.060
-        eap[position$position == 1, 4] <- eap[position$position == 1, 4] - 0.060
-        for (i in seq(length(pv))) {
-          pv[[i]][position$position == 1, 4] <- pv[[i]][position$position == 1, 4] - 0.060
-        }
-      }
-      # RE: add 0.164 to all participants who took reading second (position == 2)
-      if (domain == "RE") {
-        wle[position$position == 2, 4] <- wle[position$position == 2, 4] + 0.164
-        eap[position$position == 2, 4] <- eap[position$position == 2, 4] + 0.164
-        for (i in seq(length(pv))) {
-          pv[[i]][position$position == 2, 4] <- pv[[i]][position$position == 2, 4] + 0.164
-        }
-      }
+    if (SC == "SC4" & domain %in% c("MA", "RE")) { # || (SC == "SC3" & domain == "RE")
+      res <- correct_for_changed_test_rotation(SC, domain, position, wle, eap, pv)
+      pv <- res[["pv"]]
+      wle <- res[["wle"]]
+      eap <- res[["eap"]]
     }
   } else {
     pv <- set_pvs_not_enough_valid_resp_NA(
@@ -496,7 +479,7 @@ plausible_values <- function(SC,
   res <- list()
   res[["SC"]] <- as.numeric(gsub(pattern = "SC", replacement = "", x = SC))
   res[["domain"]] <- domain
-  res[["wave"]] <- as.numeric(gsub(pattern = "w", replacement = "", x = wave))
+  res[["wave"]] <- as.numeric(gsub("_w", "", waves))
   res[["type"]] <- type
   res[["rotation"]] <- ifelse(rotation, "Corrected For Test Position",
     "No Correction For Test Position"
@@ -504,7 +487,6 @@ plausible_values <- function(SC,
   res[["min_valid"]] <- min_valid
   res[["include_nr"]] <- include_nr
   res[["path"]] <- path
-  # res[["model"]] <- ifelse(PCM, "Partial Credit Model", "Rasch Model")
   res[["valid_responses_per_person"]] <- valid_responses_per_person
   res[["npv"]] <- npv
   res[["control"]] <- control
@@ -526,14 +508,15 @@ plausible_values <- function(SC,
   if (!is.null(bgdata)) {
     if (longitudinal) {
       for (w in seq(ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1,
-                           control$ML$nmi))) {
+        control$ML$nmi
+      ))) {
         rownames(res[["regr_coeff"]][[w]]) <-
           c(
             "Intercept",
             names(res[["pv"]][[1]][, 2:(ncol(res[["pv"]][[1]]) - length(waves)),
-                                   drop = FALSE
-                                   ])
-                  )
+              drop = FALSE
+            ])
+          )
         colnames(res[["regr_coeff"]][[w]]) <-
           paste0(
             rep(c("coeff", "se"), times = ncol(res[["regr_coeff"]][[w]]) / 2),
@@ -545,8 +528,8 @@ plausible_values <- function(SC,
         c(
           "Intercept",
           names(res[["pv"]][[1]][, 2:(ncol(res[["pv"]][[1]]) - 1),
-                                 drop = FALSE
-                                 ])
+            drop = FALSE
+          ])
         )
       colnames(res[["regr_coeff"]]) <-
         paste0(
@@ -555,7 +538,11 @@ plausible_values <- function(SC,
         )
     }
   }
-  res[["items"]] <- mod[[1]]$xsi
+  res[["items"]] <- if (longitudinal) {
+    xsi.fixed[["long"]][[domain]][[SC]][gsub("_", "", waves)]
+  } else {
+    mod[[1]]$xsi
+  }
   class(res) <- "pv_obj"
   res
 }

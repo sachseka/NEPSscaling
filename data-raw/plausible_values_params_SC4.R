@@ -54,29 +54,37 @@ correction[[SC]][["RE"]][["w10"]] <- 0 # !
 save(correction, file = "data-raw/correction.RData")
 
 # Difference matrix for English w3, w7
-diffMat <- list()
+diffMat <- list(SC4 = list())
+load("data-raw/diffMat.RData")
+diffMat$SC4 <- list(w3 = list(), w7 = list())
 
 load("//wipo.lifbi.de/daten/Projektgruppen_(08)/Kompetenzen_BA_Hiwi_(p000012)/Methoden/Skalierung/HE/A48_G10/English/Version 2 (final)/out/data/dat.Rdata") # original data w3
-dat <- dat[, c("ID_t", items$poly$all)]
+dat <- dat[order(dat$ID_t), c("ID_t", items$poly$all)]
 dat[dat < 0] <- 0
 dat[, -1] <- lapply(dat[, -1], as.numeric)
 load("//wipo.lifbi.de/daten/Projektgruppen_(08)/Kompetenzen_BA_Hiwi_(p000012)/Methoden/Skalierung/HE/A48_G10/English/Version 2 (final)/out/data/dati.Rdata") # imputed data w3
-dati <- dati[, c("ID_t", items$poly$all)]
-dati[dati < 0] <- 0
+dati <- dati[order(dati$ID_t), c("ID_t", items$poly$all)]
+dati[dati < 0] <- NA
+diffMat$SC4$w3$ind_NA <- dati
+diffMat$SC4$w3$ind_NA[, -1] <- is.na(diffMat$SC4$w3$ind_NA[, -1])
+dati[is.na(dati)] <- 0
 dati[, -1] <- lapply(dati[, -1], as.numeric)
 dati[, -1] <- dati[, -1] - dat[, -1]
-diffMat$w3 <- dati
+diffMat$SC4$w3$diff <- dati
 
 load("//wipo.lifbi.de/daten/Projektgruppen_(08)/Kompetenzen_BA_Hiwi_(p000012)/Methoden/Skalierung/HE/A50_B41_G12/English/Version 3 (final)/out/data/dat.Rdata") # original data w7
-dat <- dat[, c("ID_t", items$poly_c)]
+dat <- dat[order(dat$ID_t), c("ID_t", items$poly_c)]
 dat[dat < 0] <- 0
 dat[, -1] <- lapply(dat[, -1], as.numeric)
 load("//wipo.lifbi.de/daten/Projektgruppen_(08)/Kompetenzen_BA_Hiwi_(p000012)/Methoden/Skalierung/HE/A50_B41_G12/English/Version 3 (final)/out/data/dati.Rdata") # imputed data w7
-dati <- dati[, c("ID_t", items$poly_c)]
-dati[dati < 0] <- 0
+dati <- dati[order(dati$ID_t), c("ID_t", items$poly_c)]
+dati[dati < 0] <- NA
+diffMat$SC4$w7$ind_NA <- dati
+diffMat$SC4$w7$ind_NA[, -1] <- is.na(diffMat$SC4$w7$ind_NA[, -1])
+dati[is.na(dati)] <- 0
 dati[, -1] <- lapply(dati[, -1], as.numeric)
 dati[, -1] <- dati[, -1] - dat[, -1]
-diffMat$w7 <- dati
+diffMat$SC4$w7$diff <- dati
 
 rm(dat, dati, items, position, correct)
 

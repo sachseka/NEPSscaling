@@ -50,7 +50,13 @@ estimate_cross_pcm_uncorrected <- function(
   )) {
     if (!is.null(imp)) {
       bgdatacom <- imp[[i]]
-      bgdatacom <- as.data.frame(apply(bgdatacom, 2, as.numeric))
+      for (f in seq(ncol(bgdatacom))) {
+        if (is.factor(bgdatacom[, f])) {
+          bgdatacom[, f] <- as.numeric(levels(bgdatacom[, f]))[bgdatacom[, f]]
+        } else if (is.character(bgdatacom[, f])) {
+          bgdatacom[, f] <- as.numeric(bgdatacom[, f])
+        }
+      }
       frmY <-
         as.formula(paste(
           "~",
@@ -62,8 +68,9 @@ estimate_cross_pcm_uncorrected <- function(
     # estimate IRT model
     mod <- list()
 
+    items <- rownames(xsi.fixed$cross[[domain]][[SC]][[gsub("_", "", waves)]])
     mod[[1]] <- TAM::tam.mml(
-      resp = resp[, -which(names(resp) == "ID_t")],
+      resp = resp[, items],
       dataY = if (is.null(bgdata)) {
         NULL
       } else if (is.null(imp)) {

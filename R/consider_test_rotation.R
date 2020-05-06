@@ -18,8 +18,9 @@ consider_test_rotation <- function(longitudinal, rotation, data, SC, wave,
     rotation <- FALSE
     Q <- create_loading_matrix_q_longitudinal(SC, domain)
     testletSetting <- position <- NULL
-    if (SC == "SC4") { 
-      position[, "position"] <- data[, "tx80211_w7"]
+    if (SC == "SC4") {
+      position <- data.frame(ID_t = data$ID_t,
+                             position = data$tx80211_w7)
       if (domain == "RE") {
         position[
           !is.na(position$position) &
@@ -65,32 +66,650 @@ consider_test_rotation <- function(longitudinal, rotation, data, SC, wave,
         testletSetting <- data.frame(
           ID_t = data$ID_t,
           difficultTestlet = ifelse(
-                               data$tx80211_w7 %in% c(285, 288, 
-                                                      291:293, 296:303), 
+                               data$tx80211_w7 %in% c(285, 288,
+                                                      291:293, 296:303),
                                TRUE,
-                               ifelse(is.na(data$tx80211_w7), NA, 
+                               ifelse(is.na(data$tx80211_w7), NA,
                                       FALSE)),
           atHome = ifelse(data$tx80211_w7 %in% c(281:295), TRUE,
                           ifelse(is.na(data$tx80211_w7), NA, FALSE))
         )
       }
+    } else if (SC == "SC2") {
+      if (domain == "VO") {
+        position <- data.frame(ID_t = data$ID_t,
+                               position = data$tx80211_w3)
+        position[
+          !is.na(position$position) &
+            (position$position %in% c(256, 258)),
+          "position"
+          ] <- 1
+        position[
+          !is.na(position$position) &
+            (position$position %in% c(252, 253, 254, 255, 257, 259)),
+          "position"
+          ] <- 2
+        position$position <-
+          haven::labelled(
+            position$position,
+            c(
+              "Vocabulary first" = 1,
+              "Vocabulary later" = 2
+            )
+          )
+      } else if (domain == "MA") {
+        position <- data.frame(ID_t = data$ID_t,
+                               position = data$tx80211_w2)
+        position[
+          !is.na(position$position) &
+            (position$position %in% c(252, 255, 256, 259)),
+          "position"
+          ] <- 1
+        position[
+          !is.na(position$position) &
+            (position$position %in% c(253, 254, 257, 258)),
+          "position"
+          ] <- 2
+        position$position <-
+          haven::labelled(
+            position$position,
+            c(
+              "Math first" = 1,
+              "Math second" = 2
+            )
+          )
+      }
     }
-    return(list(rotation = rotation, Q = Q, 
+    return(list(rotation = rotation, Q = Q,
                 testletSetting = testletSetting,
                 position = position))
   } else {
-    if (rotation || (SC == "SC4" & domain == "MA" & wave == "w7")) {
-      position <- data.frame(
-        ID_t = data$ID_t,
-        position = rep(NA, nrow(data))
-      )
+    if (rotation || (SC == "SC4" & domain %in% c("RE", "MA") & wave == "w7")) {
+      position <- data[, "ID_t", drop = FALSE]
       # construct facet to correct for rotation design
       if (SC == "SC1") {
-        stop("Sorry, not yet implemented.")
+        if (wave == "w1") {
+          # no test rotation or position variable available
+          position[, "position"] <- 1
+          position$position <-
+            haven::labelled(
+              position$position,
+              c(
+                "No test rotation" = 1
+              )
+            )
+        } else if (wave == "w4") {
+          position[, "position"] <- data[, "tx80211_w4"]
+          # no rotation
+		} else if (wave == "w5") {
+          position[, "position"] <- data[, "tx80211_w5"]
+          # no rotation
+		} else if (wave == "w6") {
+          position[, "position"] <- data[, "tx80211_w6"]
+          # no rotation
+		} else if (wave == "w7") {
+          position[, "position"] <- data[, "tx80211_w7"]
+          # no rotation
+		}
       } else if (SC == "SC2") {
-        stop("Sorry, not yet implemented.")
+        if (wave == "w1") {
+          position[, "position"] <- data[, "tx80211_w1"]
+          # no rotation
+        } else if (wave == "w2") {
+          position[, "position"] <- data[, "tx80211_w2"]
+          # no rotation
+        } else if (wave == "w3") {
+          position[, "position"] <- data[, "tx80211_w3"]
+          if (domain == "VO") {
+          position[
+            !is.na(position$position) &
+              (position$position %in% c(256, 257, 258, 259, 274:277)),
+            "position"
+            ] <- 1
+          position[
+            !is.na(position$position) &
+              (position$position %in% c(252, 253, 254, 255, 270:273)),
+            "position"
+            ] <- 2
+          position$position <-
+            haven::labelled(
+              position$position,
+              c(
+                "Vocabulary first" = 1,
+                "Vocabulary second" = 2
+              )
+            )
+          } else if (domain == "MA") {
+            position[
+            !is.na(position$position) &
+              (position$position %in% c(252, 253, 254, 255, 256, 257, 258, 259)),
+            "position"
+            ] <- 1
+          position[
+            !is.na(position$position) &
+              (position$position %in% c(270, 271, 273, 274, 275, 276, 277)),
+            "position"
+            ] <- 2
+          position$position <-
+            haven::labelled(
+              position$position,
+              c(
+                "Math first" = 1,
+                "Math second" = 2
+              )
+            )
+          } else if (domain == "SC") {
+            position[
+            !is.na(position$position) &
+              (position$position %in% c(270, 271, 273, 274, 275, 276, 277)),
+            "position"
+            ] <- 1
+          position[
+            !is.na(position$position) &
+              (position$position %in% c(252, 253, 254, 255, 256, 257, 258, 259)),
+            "position"
+            ] <- 2
+          position$position <-
+            haven::labelled(
+              position$position,
+              c(
+                "Science first" = 1,
+                "Science second" = 2
+              )
+            )
+          } else if (domain == "GR") {
+            position[
+            !is.na(position$position) &
+              (position$position %in% c(256, 257, 258, 259, 274:277)),
+            "position"
+            ] <- 1
+          position[
+            !is.na(position$position) &
+              (position$position %in% c(252, 253, 254, 255, 270:273)),
+            "position"
+            ] <- 2
+          position$position <-
+            haven::labelled(
+              position$position,
+              c(
+                "Grammar second" = 1,
+                "Grammar third" = 2
+              )
+            )
+          }
+        } else if (wave == "w4") {
+          position[, "position"] <- data[, "tx80211_w4"]
+          # no rotation
+        } else if (wave == "w5") {
+          position[, "position"] <- data[, "tx80211_w5"]
+          if (domain == "VO") {
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(366, 367)),
+              "position"
+              ] <- 1
+              position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "Vocabulary first" = 1
+                )
+              )
+          } else if (domain == "SC") {
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(366, 367)),
+              "position"
+              ] <- 1
+              position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "Science first" = 1
+                )
+              )
+          } else if (domain == "IC") {
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(366, 367)),
+              "position"
+              ] <- 1
+              position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "ICT second" = 1
+                )
+              )
+          }
+        } else if (wave == "w6") {
+          position[, "position"] <- data[, "tx80211_w6"]
+          if (domain == "RE") {
+            position[
+              !is.na(position$position) &
+                (position$position == 405),
+              "position"
+              ] <- 1
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "Reading second" = 1
+                )
+              )
+          }
+          if (domain %in% c("ORA", "ORB")) {
+            position[
+              !is.na(position$position) &
+                (position$position == 405),
+              "position"
+              ] <- 1
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "Orthography third" = 1
+                )
+              )
+          }
+        }
       } else if (SC == "SC3") {
-        stop("Sorry, not yet implemented.")
+        if (wave == "w1") {
+          position[, "position"] <- data[, "tx80211_w1"]
+          if (domain == "RE") {
+            position[
+              !is.na(position$position) &
+                (position$position == 133),
+              "position"
+              ] <- 1
+            position[
+              !is.na(position$position) &
+                (position$position == 132),
+              "position"
+              ] <- 2
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "Reading first" = 1,
+                  "Reading second" = 2
+                )
+              )
+          } else if (domain == "MA") {
+            position[
+              !is.na(position$position) &
+                (position$position == 132),
+              "position"
+              ] <- 1
+            position[
+              !is.na(position$position) &
+                (position$position == 133),
+              "position"
+              ] <- 2
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "Math first" = 1,
+                  "Math second" = 2
+                )
+              )
+          } else if (domain %in% c("ORA", "ORB")) {
+            position[
+              !is.na(position$position) &
+                (position$position %in% 132:133),
+              "position"
+              ] <- 1
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "Orthography last" = 1
+                )
+              )
+          }
+        } else if (wave == "w2") {
+          position[, "position"] <- data[, "tx80211_w2"]
+          if (domain == "SC") {
+            position[
+              !is.na(position$position) &
+                (position$position == 170),
+              "position"
+              ] <- 1
+            position[
+              !is.na(position$position) &
+                (position$position == 169),
+              "position"
+              ] <- 2
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "Science first" = 1,
+                  "Science second" = 2
+                )
+              )
+          } else if (domain == "IC") {
+            position[
+              !is.na(position$position) &
+                (position$position == 169),
+              "position"
+              ] <- 1
+            position[
+              !is.na(position$position) &
+                (position$position == 170),
+              "position"
+              ] <- 2
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "ICT first" = 1,
+                  "ICT second" = 2
+                )
+              )
+          }
+        } else if (wave == "w3") {
+          position[, "position"] <- data[, "tx80211_w3"]
+          if (domain == "RE") {
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(263, 265)),
+              "position"
+              ] <- 1
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(262, 264)),
+              "position"
+              ] <- 2
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "Reading first" = 1,
+                  "Reading second" = 2
+                )
+              )
+          } else if (domain == "MA") {
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(262, 264)),
+              "position"
+              ] <- 1
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(263, 265)),
+              "position"
+              ] <- 2
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "Math first" = 1,
+                  "Math second" = 2
+                )
+              )
+          } else if (domain %in% c("NR", "NT")) {
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(262:265)),
+              "position"
+              ] <- 1
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "4th position" = 1
+                )
+              )
+          } else if (domain %in% c("ORA", "ORB")) {
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(262:265)),
+              "position"
+              ] <- 1
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "3rd position" = 1
+                )
+              )
+          }
+        } else if (wave == "w5") {
+          position[, "position"] <- data[, "tx80211_w5"]
+          if (domain == "MA") {
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(539:592)),
+              "position"
+              ] <- 1
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "4th position" = 1
+                )
+              )
+          } else if (domain == "SC") {
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(566:592)),
+              "position"
+              ] <- 1
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(539:565)),
+              "position"
+              ] <- 2
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "1st position" = 1,
+                  "2nd position" = 2
+                )
+              )
+          } else if (domain == "IC") {
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(539:565)),
+              "position"
+              ] <- 1
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(566:592)),
+              "position"
+              ] <- 2
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "1st position" = 1,
+                  "2nd position" = 2
+                )
+              )
+          } else if (domain %in% c("ORA", "ORB")) {
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(539:592)),
+              "position"
+              ] <- 1
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "5th position" = 1
+                )
+              )
+          }
+        } else if (wave == "w6") {
+          position[, "position"] <- data[, "tx80211_w6"]
+          if (domain == "RE") {
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(374, 375)),
+              "position"
+              ] <- 1
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "1st position" = 1
+                )
+              )
+          } else if (domain == "LI") {
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(374, 375)),
+              "position"
+              ] <- 1
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "4th position" = 1
+                )
+              )
+          } else if (domain %in% c("NR", "NT")) {
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(374, 375)),
+              "position"
+              ] <- 1
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "5th position" = 1
+                )
+              )
+          }
+        } else if (wave == "w7") {
+          position[, "position"] <- data[, "tx80211_w7"]
+          if (domain == "EF") {
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(414:416)),
+              "position"
+              ] <- 1
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "1st position" = 1
+                )
+              )
+          }
+        } else if (wave == "w8") {
+          position[, "position"] <- data[, "tx80211_w8"]
+          if (domain == "SC") {
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(493)),
+              "position"
+              ] <- 1
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "1st position" = 1
+                )
+              )
+          }
+        } else if (wave == "w9") {
+          position[, "position"] <- data[, "tx80211_w9"]
+          if (domain == "RE") {
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(627:630)),
+              "position"
+              ] <- 1
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(623:626)),
+              "position"
+              ] <- 2
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "1st position" = 1,
+                  "2nd position" = 2
+                )
+              )
+          } else if (domain == "MA") {
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(623:630)),
+              "position"
+              ] <- 1
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "3rd position" = 1
+                )
+              )
+          } else if (domain == "IC") {
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(623:626)),
+              "position"
+              ] <- 1
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(627:630)),
+              "position"
+              ] <- 2
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "1st position" = 1,
+                  "2nd position" = 2
+                )
+              )
+          } else if (domain == "EF") {
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(623, 625, 627, 629)),
+              "position"
+              ] <- 1
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(624, 626, 628, 630)),
+              "position"
+              ] <- 2
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "4th position" = 1,
+                  "5th position" = 2
+                )
+              )
+          } else if (domain == "ST") { #called SC in tx...w9
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(624, 626, 628, 630)),
+              "position"
+              ] <- 1
+            position[
+              !is.na(position$position) &
+                (position$position %in% c(623, 625, 627, 629)),
+              "position"
+              ] <- 2
+            position$position <-
+              haven::labelled(
+                position$position,
+                c(
+                  "4th position" = 1,
+                  "5th position" = 2
+                )
+              )
+          }
+        }
       } else if (SC == "SC4") {
         if (wave == "w1") { # grade 9
           position[, "position"] <- data[, "tx80211_w1"]
@@ -141,15 +760,18 @@ consider_test_rotation <- function(longitudinal, rotation, data, SC, wave,
               )
           }
         }
-        # if (wave == "w2") { # grade 9
-        #   # no rotation!
-        # }
-        # if (wave == "w3") {# grade 10
-        #   # no rotation!
-        # }
-        # if (wave == "w5") { # grade 11
-        #   # no rotation!
-        # }
+        if (wave == "w2") { # grade 9
+          position[, "position"] <- data[, "tx80211_w2"]
+          # no rotation!
+        }
+        if (wave == "w3") {# grade 10
+          position[, "position"] <- data[, "tx80211_w3"]
+          # no rotation!
+        }
+        if (wave == "w5") { # grade 11
+          position[, "position"] <- data[, "tx80211_w5"]
+          # no rotation!
+        }
         if (wave == "w7") { # grade 12
           position[, "position"] <- data[, "tx80211_w7"]
           if (domain == "RE") {
@@ -195,10 +817,10 @@ consider_test_rotation <- function(longitudinal, rotation, data, SC, wave,
                 )
               )
             position$difficultTestlet <- ifelse(
-                                           data$tx80211_w7 %in% c(285, 288, 
-                                                          291:293, 296:303), 
+                                           data$tx80211_w7 %in% c(285, 288,
+                                                          291:293, 296:303),
                                            TRUE,
-                                           ifelse(is.na(data$tx80211_w7), NA, 
+                                           ifelse(is.na(data$tx80211_w7), NA,
                                                   FALSE))
             position$atHome <- ifelse(data$tx80211_w7 %in% c(281:295), TRUE,
                                       ifelse(is.na(data$tx80211_w7), NA, FALSE))
@@ -399,6 +1021,8 @@ consider_test_rotation <- function(longitudinal, rotation, data, SC, wave,
                 )
               )
           }
+        } else if (wave == "w7") {
+          position[, "position"] <- data[, "tx80211_w7"]
         } else if (wave == "w12") {
           position[, "position"] <- data[, "tx80211_w12"]
           if (domain == "RE") {
@@ -619,7 +1243,7 @@ consider_test_rotation <- function(longitudinal, rotation, data, SC, wave,
       return(
         list(
           position = position, rotation = rotation, data = data,
-          resp = resp, ID_t = ID_t, bgdata = bgdata, 
+          resp = resp, ID_t = ID_t, bgdata = bgdata,
           testletSetting = testletSetting
         )
       )

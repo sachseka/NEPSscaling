@@ -6,12 +6,13 @@
 scaled item parameters}
 \usage{
 plausible_values(SC, domain = c("MA", "RE", "SC", "IC", "LI", "EF", "NR",
-  "NT", "OR", "ST", "BA", "CD", "GR"), wave, path, bgdata = NULL,
-  npv = 10L, longitudinal = FALSE, rotation = TRUE, min_valid = 3L,
-  include_nr = TRUE, verbose = TRUE, control = list(EAP = FALSE, WLE
-  = FALSE, ML = list(nmi = 10L, ntheta = 2000, normal.approx = FALSE,
-  samp.regr = FALSE, theta.model = FALSE, np.adj = 8, na.grid = 5, itermcmc
-  = 100, burnin = 50, thin = 1, cartctrl1 = 5, cartctrl2 = 1e-04)))
+  "NT", "ORA", "ORB", "ST", "BA", "CD", "GR", "VO"), wave, path,
+  bgdata = NULL, npv = 10L, longitudinal = FALSE, rotation = TRUE,
+  min_valid = 3L, include_nr = TRUE, verbose = TRUE,
+  control = list(EAP = FALSE, WLE = FALSE, ML = list(nmi = 10L, ntheta =
+  2000, normal.approx = FALSE, samp.regr = FALSE, theta.model = FALSE,
+  np.adj = 8, na.grid = 5, itermcmc = 100, burnin = 50, thin = 1, cartctrl1
+  = 5, cartctrl2 = 1e-04)))
 }
 \arguments{
 \item{SC}{numeric. The starting cohort used for the analysis is

@@ -37,10 +37,10 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
     for (i in seq(length(PCM))) {
         if (PCM[[i]]) {
             res <- collapse_categories_pcm(
-                resp[[i]][, -which(names(resp) == "ID_t")], SC,
+                resp[[i]][, -which(names(resp[[i]]) == "ID_t")], SC,
                 gsub("_", "", waves)[i], domain
             )
-            resp[[i]][, -which(names(resp) == "ID_t")] <- res$resp
+            resp[[i]][, -which(names(resp[[i]]) == "ID_t")] <- res$resp
             ind <- get_indicators_for_half_scoring(
                 SC, domain,
                 gsub("_", "", waves)[i]
@@ -74,7 +74,13 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
     )) {
         if (!is.null(imp)) {
             bgdatacom <- imp[[i]]
-            bgdatacom <- as.data.frame(apply(bgdatacom, 2, as.numeric))
+            for (f in seq(ncol(bgdatacom))) {
+              if (is.factor(bgdatacom[, f])) {
+                bgdatacom[, f] <- as.numeric(levels(bgdatacom[, f]))[bgdatacom[, f]]
+              } else if (is.character(bgdatacom[, f])) {
+                bgdatacom[, f] <- as.numeric(bgdatacom[, f])
+              }
+            }
             frmY <-
                 as.formula(paste(
                     "~",
@@ -89,8 +95,10 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
         pmod <- list()
 
         for (j in seq(length(waves))) {
+            items <-
+                rownames(xsi.fixed$long[[domain]][[SC]][[gsub("_", "", waves[j])]])
             mod[[j]] <- TAM::tam.mml(
-                resp = resp[[j]][, -which(names(resp) == "ID_t")],
+                resp = resp[[j]][, items],
                 dataY = if (is.null(bgdata)) {
                     NULL
                 } else if (is.null(imp)) {

@@ -2,16 +2,16 @@
 #'
 #' @param bgdata ...
 #' @param data ...
-#' @param include.nr ...
+#' @param include_nr ...
 #' @param nr ...
 #' @param min_valid ...
 #'
 #' @noRd
 
-pre_process_background_data <- function(bgdata, data, include.nr, nr, min_valid) {
+pre_process_background_data <- function(bgdata, data, include_nr, nr, min_valid) {
   if (is.null(bgdata)) {
     ID_t <- data[, "ID_t", drop = FALSE]
-    if (include.nr) {
+    if (include_nr) {
       bgdata <- dplyr::left_join(ID_t, nr, by = "ID_t")
     }
     return(list(ID_t = ID_t, bgdata = bgdata))
@@ -58,7 +58,7 @@ pre_process_background_data <- function(bgdata, data, include.nr, nr, min_valid)
       )
       bgdata <- bgdata[order(bgdata$ID_t), ]
     }
-    if (include.nr) {
+    if (include_nr) {
       bgdata <- dplyr::left_join(bgdata, nr, by = "ID_t")
     }
     ID_t <- bgdata[, "ID_t", drop = FALSE]

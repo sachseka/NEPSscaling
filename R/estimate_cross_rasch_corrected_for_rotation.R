@@ -42,7 +42,13 @@ estimate_cross_rasch_corrected_for_rotation <- function(
   )) {
     if (!is.null(imp)) {
       bgdatacom <- imp[[i]]
-      bgdatacom <- as.data.frame(apply(bgdatacom, 2, as.numeric))
+      for (f in seq(ncol(bgdatacom))) {
+        if (is.factor(bgdatacom[, f])) {
+          bgdatacom[, f] <- as.numeric(levels(bgdatacom[, f]))[bgdatacom[, f]]
+        } else if (is.character(bgdatacom[, f])) {
+          bgdatacom[, f] <- as.numeric(bgdatacom[, f])
+        }
+      }
       frmY <-
         as.formula(paste(
           "~",
@@ -54,8 +60,9 @@ estimate_cross_rasch_corrected_for_rotation <- function(
     # estimate IRT model
     mod <- list()
 
+    items <- rownames(xsi.fixed$cross[[domain]][[SC]][[gsub("_", "", waves)]])
     mod[[1]] <- TAM::tam.mml.mfr(
-      resp = resp[, -which(names(resp) == "ID_t")],
+      resp = resp[, items],
       facets = position,
       formulaA = ~ 0 + item + position,
       dataY = if (is.null(bgdata)) {

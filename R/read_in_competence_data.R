@@ -12,6 +12,8 @@ read_in_competence_data <- function(path, SC, domain) {
   files <- list.files(path = path)
   if (SC == "SC5" & domain == "BA") {
     filepath <- paste0(path, files[grep("xEcoCAPI", files)])
+  } else if (SC == "SC1" & domain == "CD") {
+    filepath <- paste0(path, files[grep("xDirectMeasures", files)])
   } else {
     filepath <- paste0(path, files[grep("xTargetCompetencies", files)])
   }

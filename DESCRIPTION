@@ -15,6 +15,7 @@ Imports:
     TAM (>=
         2.12-18),
     dplyr,
+    tibble,
     MASS,
     magrittr
 License: GPL-3

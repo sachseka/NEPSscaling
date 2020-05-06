@@ -1,6 +1,5 @@
 #' link longitudinal pvs using pre-scaled linking information
 #'
-#' @param longitudinal ...
 #' @param datalist ...
 #' @param npv ...
 #' @param min_valid ...
@@ -15,7 +14,7 @@
 #'
 #' @noRd
 
-link_longitudinal_plausible_values <- function(longitudinal, datalist, npv,
+link_longitudinal_plausible_values <- function(datalist, npv,
                                                min_valid,
                                                valid_responses_per_person,
                                                waves, eap, wle,
@@ -69,9 +68,6 @@ link_longitudinal_plausible_values <- function(longitudinal, datalist, npv,
     wave = gsub("_", "", waves),
     longitudinal_IDs = longitudinal_IDs
   )
-  pv <- res$pv
-  wle <- res$wle
-  eap <- res$eap
-
-  list(pv = pv, wle = wle, eap = eap)
+  
+  res
 }

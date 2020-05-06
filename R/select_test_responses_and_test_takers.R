@@ -54,9 +54,14 @@ select_test_responses_and_test_takers <- function(longitudinal, SC, domain,
         resp[[i]] <-
           resp[[i]][rowSums(!is.na(resp[[i]][, -1])) >= min_valid, ]
         resp[[i]] <- resp[[i]][order(resp[[i]]$ID_t), ]
-        if (SC == "SC4" & domain == "EF") {
-          resp[[i]][, -1] <- resp[[i]][, -1] +
-            diffMat[[i]][order(diffMat[[i]]$ID_t), -1]
+        if (SC %in% c("SC3", "SC4") & domain == "EF") {
+          resp[[i]][is.na(resp[[i]])] <- 0
+          dm <- diffMat[[SC]][[i]]$diff[diffMat[[SC]][[i]]$diff$ID_t %in% resp[[i]]$ID_t, ]
+          setNA <- diffMat[[SC]][[i]]$ind_NA[diffMat[[SC]][[i]]$ind_NA$ID_t %in% resp[[i]]$ID_t, ]
+          resp[[i]][, -1] <- resp[[i]][, -1] + dm[order(dm$ID_t), -1]
+          for (j in 2:ncol(resp[[i]])) {
+            resp[[i]][setNA[[j]], j] <- NA
+          }
         }
       }
     }
@@ -78,31 +83,28 @@ select_test_responses_and_test_takers <- function(longitudinal, SC, domain,
         data <- data[data$wave_w3 == 0 & data$wave_w5 == 1, ]
       }
     }
-    resp <-
-      data[, names(data) %in% c(
-        "ID_t",
-        item_labels[[SC]][[domain]][[wave]]
-      )]
+    resp <- data[, c("ID_t", item_labels[[SC]][[domain]][[wave]])]
     resp <- resp[rowSums(!is.na(resp[, -1])) >= min_valid, ]
     resp <- resp[order(resp$ID_t), ]
     data <- data[data$ID_t %in% resp$ID_t, ]
     data <- data[order(data$ID_t), ]
-    if (SC %in% c("SC3", "SC4") & domain == "ST") {
-      items <- if (SC == "SC3") {
-        c("stg12nhs_sc3g12_c", "stg12egs_sc3g12_c", "stg12mts_sc3g12_c",
-          "stg12cws_sc3g12_c", "stg12pds_sc3g12_c")
-      } else {
+    if (SC == "SC4" & domain == "ST") {
+      items <-
         c("stg12nhs_c", "stg12egs_c", "stg12mts_c", "stg12cws_c", "stg12pds_c")
-      }
       for (i in items) {
         resp[[i]] <- rowSums(resp[, grep(substr(i, 1, 7), names(resp))],
                              na.rm = TRUE)
       }
       resp <- resp[, c("ID_t", items)]
     }
-    if (SC == "SC4" & domain == "EF") {
-      resp[, -1] <- resp[, -1] +
-        diffMat[[wave]][order(diffMat[[wave]]$ID_t), -1]
+    if (SC %in% c("SC3", "SC4") & domain == "EF") {
+      resp[is.na(resp)] <- 0
+      dm <- diffMat[[SC]][[wave]]$diff[diffMat[[SC]][[wave]]$diff$ID_t %in% resp$ID_t, ]
+      setNA <- diffMat[[SC]][[wave]]$ind_NA[diffMat[[SC]][[wave]]$ind_NA$ID_t %in% resp$ID_t, ]
+      resp[, -1] <- resp[, -1] + dm[order(dm$ID_t), -1]
+      for (i in 2:ncol(resp)) {
+        resp[setNA[[i]], i] <- NA
+      }
     }
   }
   list(resp = resp, data = data)
