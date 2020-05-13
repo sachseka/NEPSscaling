@@ -7,6 +7,7 @@ load(file = "data-raw/link_constant.RData")
 
 # starting cohort
 SC <- "SC1"
+link_constant[[SC]] <- list()
 
 # Mathematics
 data <- haven::read_sav("../SUFs/SC1/SC1_xTargetCompetencies_D_7-0-0.sav") # no TR

@@ -12,9 +12,8 @@ cross-sectional and longitudinal research
 (if multiple waves are implemented).
 
 == SC1 ==
-Vocabulary: waves 4, 6 and 8
-Math: waves 5, 7 and 9
-Science: waves 6 and 8
+Math: waves 5 and 7
+Science: wave 6
 Cognitive Development: wave 1
 
 == SC2 ==

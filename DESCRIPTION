@@ -1,8 +1,8 @@
-Package: NEPScaling
-Title: NEPScaling -- Tools for Plausible Values Estimation with NEPS data
+Package: NEPSscaling
+Title: NEPSscaling -- Tools for Plausible Values Estimation with NEPS data
 Version: 1.0.0
 Authors@R: person("Anna", "Scharl", email = "anna.scharl@lifbi.de", role = c("aut", "cre"))
-Description: NEPScaling allows users of NEPS data to estimate individual 
+Description: NEPSscaling allows users of NEPS data to estimate individual 
              competence values in the form of plausible values for NEPS 
              competence tests.
 Depends: R (>= 3.5.0),

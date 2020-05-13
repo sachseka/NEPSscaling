@@ -111,7 +111,7 @@
 #' @examples
 #' \dontrun{
 #' rm(list = ls())
-#' library(NEPScaling)
+#' library(NEPSscaling)
 #' library(foreign)
 #' ## read in data object for conditioning variables
 #' data(bg_data)
@@ -227,18 +227,13 @@ plausible_values <- function(SC,
       wave, ". Please check the NEPS documentation at https://neps-data.de."
     ), call. = FALSE)
   }
-  if (SC == "SC1" & domain %in% c("VO")) {
-    stop(
-      cat("Vocabulary in SC1 is not IRT scalable. Please use the sumscore.")
-    )
-  }
   if (longitudinal &&
     (
       (SC == "SC6" & domain %in% c("IC", "SC")) ||
         (SC == "SC5" & domain %in% c("IC", "SC", "BA", "EF")) ||
       (SC == "SC3" & domain %in% c("ST", "LI")) ||
         (SC == "SC2" & domain %in% c("RE", "GR")) ||
-      (SC == "SC1" & domain %in% c("CD", "VO"))
+      (SC == "SC1" & domain %in% c("CD", "SC"))
     )
   ) {
     stop(
