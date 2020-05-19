@@ -169,10 +169,8 @@ plausible_values <- function(SC,
                                  samp.regr = FALSE,
                                  theta.model = FALSE,
                                  np.adj = 8, na.grid = 5,
-                                 itermcmc = 100,
-                                 burnin = 50, thin = 1,
-                                 cartctrl1 = 5,
-                                 cartctrl2 = 0.0001
+                                 minbucket = 5,
+                                 cp = 0.0001
                                )
                              )) {
   # check argument validity and apply necessary changes to arguments ----------

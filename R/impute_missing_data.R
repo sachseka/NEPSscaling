@@ -4,6 +4,7 @@
 #' @param verbose ...
 #' @param control ...
 #'
+#' @importFrom mice mice complete
 #' @noRd
 
 impute_missing_data <- function(bgdata, verbose, control) {
@@ -17,11 +18,14 @@ impute_missing_data <- function(bgdata, verbose, control) {
         )
         flush.console()
       }
-      imp <- CART(
-        X = bgdata, itermcmc = control$ML$itermcmc,
-        burnin = control$ML$burnin, nmi = control$ML$nmi,
-        thin = control$ML$thin, cartctrl1 = control$ML$cartctrl1,
-        cartctrl2 = control$ML$cartctrl2, verbose = verbose
+      predictorMatrix <- matrix(1, ncol = ncol(bgdata), nrow = ncol(bgdata))
+      diag(predictorMatrix) <- 0
+      predictorMatrix[, which(names(bgdata) == "ID_t")] <- 0
+      imp <- complete(
+        mice(data = bgdata, m = control$ML$nmi, method = "cart",
+             minbucket = control$ML$minbucket, cp = control$ML$cp,
+             printFlag = verbose, predictorMatrix = predictorMatrix),
+        "all"
       )
     } else {
       bgdata <- as.data.frame(lapply(bgdata, as.numeric))

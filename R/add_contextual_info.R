@@ -108,6 +108,7 @@ add_contextual_info <- function(path, SC, domain, waves, bgdata, data) {
     tidyr::pivot_wider(names_from = "wave",
                        names_prefix = "school_w",
                        values_from = "ID_i") %>%
+    dplyr::mutate_all(as.numeric) %>%
     dplyr::left_join(.data, data, by = "ID_t")
   school_waves <-
     names(school_data)[names(school_data) %in% paste0("school", waves)]
