@@ -32,9 +32,16 @@ link_constant[[SC]][["IC"]][["w9"]] <- as.numeric(data %>%
     summarise_at(vars(const), mean, na.rm = TRUE)) # !
 
 # Science
-link_constant[[SC]][["SC"]][["w2"]] <- 0 # !
-link_constant[[SC]][["SC"]][["w5"]] <- 0
-link_constant[[SC]][["SC"]][["w8"]] <- 0 # !
+link_constant[[SC]][["SC"]][["w5"]] <- as.numeric(data %>%
+    filter(wave_w2 == 1 & wave_w5 == 1) %>%
+    select(scg6_sc1, scg9_sc1u) %>%
+    mutate(const = scg9_sc1u - scg6_sc1) %>%
+    summarise_at(vars(const), mean, na.rm = TRUE)) # !
+link_constant[[SC]][["SC"]][["w8"]] <- as.numeric(data %>%
+    filter(wave_w8 == 1 & wave_w5 == 1) %>%
+    select(scg9_sc1u, scg11_sc1) %>%
+    mutate(const = scg11_sc1 - scg9_sc1u) %>%
+    summarise_at(vars(const), mean, na.rm = TRUE)) # !
 
 # Native Russian
 link_constant[[SC]][["NR"]][["w6"]] <- 0 # !

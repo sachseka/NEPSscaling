@@ -7,7 +7,6 @@
 #' @noRd
 
 estimate_wles <- function(longitudinal, waves, mod) {
-    . <- NULL
   if (longitudinal) {
     wmod <- list()
     WLE.rel <- vector("numeric", length(waves))
@@ -21,7 +20,7 @@ estimate_wles <- function(longitudinal, waves, mod) {
     wmod <- wmod %>%
       Reduce(function(df1, df2) {
         dplyr::full_join(df1, df2, by = "pid")
-      }, .)
+      }, .data)
   } else {
     wmod <-
       as.data.frame(TAM::tam.mml.wle2(mod[[1]], WLE = TRUE, progress = FALSE))

@@ -48,23 +48,24 @@ save(link_constant, file = "data-raw/link_constant.RData")
 
 # # Estimate item parameters for SC1 CD wave 1 (no TR)
 # --> taken from not-published technical report!
-# library(haven)
-# library(dplyr)
-# library(TAM)
-# suf <- read_spss("../SUFs/SC1/SC1_xDirectMeasures_D_7-0-0.sav")
-# dat <- suf %>%
-#     arrange(ID_t) %>%
-#     select(contains("cdn")) %>%
-#     filter(!is.na(cdn1_sc1)) %>%
-#     select(-cdn1_sc1, -cdn1_sc2, -cdn10001, -cdn10002_c, -cdn1c015_c,
-#            -cdn1c016_c)
-# apply(dat, 2, table, useNA = "always")
-# mod <- tam.mml(
-#     resp = dat, irtmodel = "1PL", verbose = FALSE
-# )
-# item_difficulty_SC1_CD_w1 <- mod$xsi.fixed.estimated
-# save(item_difficulty_SC1_CD_w1,
-#      file = "data-raw/item_difficulty_SC1_CD_w1.RData")
+# --> NOT: mean deviation of 1.7 with tr data!
+library(haven)
+library(dplyr)
+library(TAM)
+suf <- read_spss("../SUFs/SC1/SC1_xDirectMeasures_D_7-0-0.sav")
+dat <- suf %>%
+    arrange(ID_t) %>%
+    select(contains("cdn")) %>%
+    filter(!is.na(cdn1_sc1)) %>%
+    select(-cdn1_sc1, -cdn1_sc2, -cdn10001, -cdn10002_c, -cdn1c015_c,
+           -cdn1c016_c)
+apply(dat, 2, table, useNA = "always")
+mod <- tam.mml(
+    resp = dat, irtmodel = "1PL", verbose = FALSE
+)
+item_difficulty_SC1_CD_w1 <- mod$xsi.fixed.estimated
+save(item_difficulty_SC1_CD_w1,
+     file = "data-raw/item_difficulty_SC1_CD_w1.RData")
 
 
 # Estimate item parameters for SC1 MA wave 7 (no TR)

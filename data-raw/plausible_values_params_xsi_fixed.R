@@ -2253,20 +2253,20 @@ xsi.fixed$long[["GR"]] <- list(
 ### ----------------------------------------------------------------------------
 
 # SC1
-items <- list(
-    w1 = c("cdn1c001_c", "cdn1c002_c", "cdn1c003_c", "cdn1c004_c",
-           "cdn1c005_c", "cdn1c006_c", "cdn1c007_c", "cdn1c008_c",
-           "cdn1c009_c", "cdn1c010_c", "cdn1c011_c", "cdn1c012_c",
-           "cdn1c013_c", "cdn1c014_c")
-)
-x1w1 <- cbind(item = 1:length(items$w1),
-              xsi = c(-3.478, 2.564, -1.486, 2.466, -2.865, 0.735, -1.113,
-                      2.030, 0.402, -1.860, 1.241, -4.569, 1.923, 4.009))
-rownames(x1w1) <- items$w1
-colnames(x1w1)[1] <- ""
-# load("data-raw/item_difficulty_SC1_CD_w1.RData")
-# x1w1 <- item_difficulty_SC1_CD_w1
-# rm(item_difficulty_SC1_CD_w1)
+# items <- list(
+#     w1 = c("cdn1c001_c", "cdn1c002_c", "cdn1c003_c", "cdn1c004_c",
+#            "cdn1c005_c", "cdn1c006_c", "cdn1c007_c", "cdn1c008_c",
+#            "cdn1c009_c", "cdn1c010_c", "cdn1c011_c", "cdn1c012_c",
+#            "cdn1c013_c", "cdn1c014_c")
+# )
+# x1w1 <- cbind(item = 1:length(items$w1),
+#               xsi = c(-3.478, 2.564, -1.486, 2.466, -2.865, 0.735, -1.113,
+#                       2.030, 0.402, -1.860, 1.241, -4.569, 1.923, 4.009))
+# rownames(x1w1) <- items$w1
+# colnames(x1w1)[1] <- ""
+load("data-raw/item_difficulty_SC1_CD_w1.RData")
+x1w1 <- item_difficulty_SC1_CD_w1
+rm(item_difficulty_SC1_CD_w1)
 
 xsi.fixed$cross[["CD"]] <- list(
   SC1 = list(

@@ -27,7 +27,6 @@
 estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
                                   PCM, ID_t, waves, type, domain, SC,
                                   control, npv) {
-    . <- NULL
     quiet <- function(x) {
         sink(tempfile())
         on.exit(sink())
@@ -179,7 +178,7 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
                                 names(df2)
                             )]
                             dplyr::full_join(df1, df2)
-                        }, .
+                        }, .data
                     ))
             if (is.null(bgdata)) {
                 names(pvs[[i]][[n]])[which(names(pvs[[i]][[n]]) == "pid")] <-

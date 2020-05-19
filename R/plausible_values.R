@@ -142,6 +142,7 @@
 #'
 #' @importFrom stats as.formula
 #' @importFrom utils flush.console
+#' @importFrom rlang .data
 #'
 #' @export
 
@@ -342,7 +343,7 @@ plausible_values <- function(SC,
     }
   }
   if (SC == "SC4" && domain == "MA") {
-    resp <- 
+    resp <-
       split_SC4_math_items(res[["testletSetting"]], resp, longitudinal, wave)
   }
 

@@ -19,7 +19,6 @@ link_longitudinal_plausible_values <- function(datalist, npv,
                                                valid_responses_per_person,
                                                waves, eap, wle,
                                                data, SC, domain, control) {
-  wave_w3 <- wave_w5 <- rea9_sc1u <- NULL
   for (p in seq(npv)) {
     for (w in waves) {
       for (i in seq(nrow(valid_responses_per_person))) {
@@ -42,13 +41,13 @@ link_longitudinal_plausible_values <- function(datalist, npv,
   longitudinal_IDs <- list()
   if (SC == "SC6" && domain == "RE") {
     longitudinal_IDs[["w3"]] <- dplyr::filter(
-      data, wave_w3 == 1,
-      !is.na(rea9_sc1u)
+      data, .data$wave_w3 == 1,
+      !is.na(.data$rea9_sc1u)
     )$ID_t
     longitudinal_IDs[["w5"]] <- dplyr::filter(
-      data, wave_w3 == 0,
-      wave_w5 == 1,
-      !is.na(rea9_sc1u)
+      data, .data$wave_w3 == 0,
+      .data$wave_w5 == 1,
+      !is.na(.data$rea9_sc1u)
     )$ID_t
   } else {
     for (i in seq(2, length(waves))) {
@@ -68,6 +67,6 @@ link_longitudinal_plausible_values <- function(datalist, npv,
     wave = gsub("_", "", waves),
     longitudinal_IDs = longitudinal_IDs
   )
-  
+
   res
 }
