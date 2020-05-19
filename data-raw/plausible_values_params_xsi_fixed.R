@@ -214,7 +214,7 @@ x4w7 <- cbind(item = 1:length(items$w7),
 rownames(x4w7) <- items$w7
 colnames(x4w7)[1] <- ""
 x4 <- xsi
-rownames(x4) <- NEPScaling:::item_labels$SC4$MA$w10
+rownames(x4) <- NEPSscaling:::item_labels$SC4$MA$w10
 
 # SC5
 
@@ -236,7 +236,7 @@ x51 <- cbind(item = 1:length(x), xsi = x)
 rownames(x51) <- items
 colnames(x51)[1] <- ""
 x52 <- xsi
-rownames(x52) <- NEPScaling:::item_labels$SC5$MA$w12
+rownames(x52) <- NEPSscaling:::item_labels$SC5$MA$w12
 
 # SC6
 
@@ -256,7 +256,7 @@ x61 <- cbind(item = 1:length(x), xsi = x)
 rownames(x61) <- items
 colnames(x61)[1] <- ""
 x62 <- xsi
-rownames(x62) <- NEPScaling:::item_labels$SC6$MA$w9
+rownames(x62) <- NEPSscaling:::item_labels$SC6$MA$w9
 
 # store pre-scaled item parameters in list
 xsi.fixed$cross[["MA"]] <-
@@ -547,17 +547,17 @@ items4 <- c(1:10, 12:17, 20, 22:26, 28:31, 33:42)
 items5 <- c(6:10, 12, 13, 15, 16, 19, 20, 22:24, 27:29, 32, 39, 40, 42)
 items6 <- c(1:9, 11:16, 18, 21:26, 28:31, 33:42)
 xsi.sc4 <- xsi[items4, ]
-rownames(xsi.sc4) <- NEPScaling:::item_labels$SC4$RE$w10
+rownames(xsi.sc4) <- NEPSscaling:::item_labels$SC4$RE$w10
 colnames(xsi.sc4)[1] <- ""
 xsi.sc4[, 1] <- 1:nrow(xsi.sc4)
 xsi.sc4 <- as.matrix(xsi.sc4)
 xsi.sc5 <- xsi[items5, ]
-rownames(xsi.sc5) <- NEPScaling:::item_labels$SC5$RE$w12
+rownames(xsi.sc5) <- NEPSscaling:::item_labels$SC5$RE$w12
 colnames(xsi.sc5)[1] <- ""
 xsi.sc5[, 1] <- 1:nrow(xsi.sc5)
 xsi.sc5 <- as.matrix(xsi.sc5)
 xsi.sc6 <- xsi[items6, ]
-rownames(xsi.sc6) <- NEPScaling:::item_labels$SC6$RE$w9
+rownames(xsi.sc6) <- NEPSscaling:::item_labels$SC6$RE$w9
 colnames(xsi.sc6)[1] <- ""
 xsi.sc6[, 1] <- 1:nrow(xsi.sc6)
 xsi.sc6 <- as.matrix(xsi.sc6)
@@ -783,7 +783,7 @@ x <- c(
   -0.06746113, -0.05061254, -1.32526649, -2.80908060, -0.35641518,
   1.30212156, 0.44628818, -0.54315593, 0.49712400, -0.51068062,
   -0.29597091, 0.86393283, -1.07652203, 0.35764623, -0.85212525
-) # NEPScaling SC5 IC without additional info. or rotation
+) # NEPSscaling SC5 IC without additional info. or rotation
 x5 <- cbind(item = 1:length(x), xsi = x)
 rownames(x5) <- items
 colnames(x5)[1] <- ""
@@ -1026,7 +1026,7 @@ x <- c(
   -0.24081756, -0.61244643, -0.79890169, 0.02618897, -0.42064414,
   -0.39688836, -0.45444353, -0.64151218, -0.62774150, 0.54444123,
   -0.75949384, -0.20641310, 0.12653751, -0.02551815
-) # NEPScaling SC5 SC without additional info. or rotation
+) # NEPSscaling SC5 SC without additional info. or rotation
 x5 <- cbind(item = 1:length(x), xsi = x)
 rownames(x5) <- items
 colnames(x5)[1] <- ""
@@ -1115,7 +1115,7 @@ items <- list(
 )
 x3w7 <- cbind(item = 1:length(items$w7),
               xsi = c(-0.35, -0.82, -0.74, 0.05, -1.20, 0.10, 0.01, -0.26,
-                      -0.83, -0.18, 0.09, -0.83) + NEPScaling:::link_constant$SC3$EF)
+                      -0.83, -0.18, 0.09, -0.83) + NEPSscaling:::link_constant$SC3$EF)
 rownames(x3w7) <- items$w7
 colnames(x3w7)[1] <- ""
 x3w9 <- cbind(item = 1:length(items$w9),
@@ -2253,9 +2253,20 @@ xsi.fixed$long[["GR"]] <- list(
 ### ----------------------------------------------------------------------------
 
 # SC1
-load("data-raw/item_difficulty_SC1_CD_w1.RData")
-x1w1 <- item_difficulty_SC1_CD_w1
-rm(item_difficulty_SC1_CD_w1)
+items <- list(
+    w1 = c("cdn1c001_c", "cdn1c002_c", "cdn1c003_c", "cdn1c004_c",
+           "cdn1c005_c", "cdn1c006_c", "cdn1c007_c", "cdn1c008_c",
+           "cdn1c009_c", "cdn1c010_c", "cdn1c011_c", "cdn1c012_c",
+           "cdn1c013_c", "cdn1c014_c")
+)
+x1w1 <- cbind(item = 1:length(items$w1),
+              xsi = c(-3.478, 2.564, -1.486, 2.466, -2.865, 0.735, -1.113,
+                      2.030, 0.402, -1.860, 1.241, -4.569, 1.923, 4.009))
+rownames(x1w1) <- items$w1
+colnames(x1w1)[1] <- ""
+# load("data-raw/item_difficulty_SC1_CD_w1.RData")
+# x1w1 <- item_difficulty_SC1_CD_w1
+# rm(item_difficulty_SC1_CD_w1)
 
 xsi.fixed$cross[["CD"]] <- list(
   SC1 = list(

@@ -317,6 +317,9 @@ plausible_values <- function(SC,
   valid_responses_per_person <-
     calculate_number_of_valid_responses(longitudinal, resp, waves)
 
+  # for school starting cohorts (while still in school)
+  bgdata <- add_contextual_info(path, SC, domain, waves, bgdata, data)
+
   # consider test form rotation
   res <- consider_test_rotation(
     longitudinal, rotation, data, SC, wave, domain, resp, bgdata, ID_t
@@ -339,7 +342,8 @@ plausible_values <- function(SC,
     }
   }
   if (SC == "SC4" && domain == "MA") {
-    resp <- split_SC4_math_items(res[["testletSetting"]], resp, longitudinal)
+    resp <- 
+      split_SC4_math_items(res[["testletSetting"]], resp, longitudinal, wave)
   }
 
   # complement control lists

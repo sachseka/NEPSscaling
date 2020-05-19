@@ -15,7 +15,7 @@ item_labels <-
         w1 = c("cdn1c001_c", "cdn1c002_c", "cdn1c003_c", "cdn1c004_c",
                "cdn1c005_c", "cdn1c006_c", "cdn1c007_c", "cdn1c008_c",
                "cdn1c009_c", "cdn1c010_c", "cdn1c011_c", "cdn1c012_c",
-               "cdn1c013_c", "cdn1c014_c", "cdn1c015_c", "cdn1c016_c")
+               "cdn1c013_c", "cdn1c014_c")#, "cdn1c015_c", "cdn1c016_c")
       ),
       MA = list(
         w5 = c("man5z17s_c", "man5z021_c", "man5v181_c", "man5z161_c", "man5r14s_c",

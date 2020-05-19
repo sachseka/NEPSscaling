@@ -1,6 +1,5 @@
 
-split_SC4_math_items <- function(testletSetting, resp, longitudinal) {
-  wave <- NULL
+split_SC4_math_items <- function(testletSetting, resp, longitudinal, wave) {
 
   if (longitudinal) {
     resp[[2]] <- tibble::add_column(resp[[2]],
