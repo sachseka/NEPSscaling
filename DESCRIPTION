@@ -20,7 +20,8 @@ Imports:
     tidyr,
     rlang,
     mice,
-    purrr
+    purrr,
+    sjlabelled
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

@@ -30,6 +30,9 @@ read_in_competence_data <- function(path, SC, domain) {
           stop(cat(error_msg))
         }
       )
+    # test sjlabelled because of problems with labelled_spss class
+    # data <- haven::zap_labels(data
+    data <- sjlabelled::remove_all_labels(data)
   } else {
     data <-
       tryCatch(
@@ -39,6 +42,6 @@ read_in_competence_data <- function(path, SC, domain) {
         }
       )
   }
-  data <- haven::zap_labels(data[order(data[["ID_t"]]), ])
+  data <- data[order(data[["ID_t"]]), ]
   data
 }
