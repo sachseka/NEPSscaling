@@ -43,15 +43,15 @@ link_constant[[SC]][["EF"]][["w7"]] <- 0 # ! not linked via mean/mean, but by re
 
 save(link_constant, file = "data-raw/link_constant.RData")
 
-# Corrections because of dropout etc.
-correction <- list()
-load(file = "data-raw/correction.RData")
-correction[[SC]][["RE"]] <- list()
-correction[[SC]][["RE"]][["w2"]] <- 0
-correction[[SC]][["RE"]][["w7"]] <- 0.487882
-correction[[SC]][["RE"]][["w10"]] <- 0 # !
-
-save(correction, file = "data-raw/correction.RData")
+# # Corrections because of dropout etc.
+# correction <- list()
+# load(file = "data-raw/correction.RData")
+# correction[[SC]][["RE"]] <- list()
+# correction[[SC]][["RE"]][["w2"]] <- 0
+# correction[[SC]][["RE"]][["w7"]] <- 0.487882
+# correction[[SC]][["RE"]][["w10"]] <- 0 # !
+#
+# save(correction, file = "data-raw/correction.RData")
 
 # Difference matrix for English w3, w7
 diffMat <- list(SC4 = list())

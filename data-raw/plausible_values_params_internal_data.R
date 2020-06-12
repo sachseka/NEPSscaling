@@ -78,9 +78,11 @@ item_labels <-
                "mag1r19s_sc2g2_c","mag2g091_c","mag2q051_c"),
         w6 = c("mag5d041_sc2g4_c", "mag4q101_c", "mag4r021_c", "mag5v271_sc2g4_c",
                "mag4q011_c", "mag4r071_c", "mag4d131_c",
-               "mag5q231_sc2g4_c", "mag5q301_sc2g4_c", "mag4v121_c", "mag5d051_sc2g4_c",
-               "mag4d031_c", "mag4v111_c", "mag4r041_c", "mag4r042_c",
-               "mag4q051_c", "mag4q091_c", "mag4q092_c", "mag4d14s_c", "mag5v071_sc2g4_c",
+               "mag5q231_sc2g4_c", "mag5q301_sc2g4_c", "mag4v121_c",
+               "mag5d051_sc2g4_c", #"mag4q060_c",
+               "mag4d031_c", #"mag5q140_sc2g4_c",
+               "mag4v111_c", "mag4r041_c", "mag4r042_c", "mag4q051_c", "mag4q091_c",
+               "mag4q092_c", "mag4d14s_c", "mag5v071_sc2g4_c",
                "mag5r191_sc2g4_c", "mag4d081_c")#,
 #         w9 = c()
       ),
@@ -1131,12 +1133,243 @@ item_labels <-
     )
   )
 
+# testlet variable
+testlet_position <- list(
+  SC1 = list(
+    CD = list(
+      w1 = matrix(c(NA, NA), 1, 2)
+    ),
+    MA = list(
+      w5 = matrix(c(599, 599), 1, 2),
+      w7 = matrix(c(NA, NA), 1, 2)#,
+      # w9 = matrix(c(NA, NA), 1, 2)
+    ),
+    SC = list(
+      w6 = matrix(c(600, 600), 1, 2)#,
+      # w8 = matrix(c(NA, NA), 1, 2)
+    )
+  ),
+  SC2 = list(
+    RE = list(
+      w6 = matrix(c(405, 405), 1, 2)#,
+      # w9 = matrix(c(NA, NA), 1, 2)
+    ),
+    MA = list(
+      w2 = matrix(c(152, 152), 1, 2),
+      w3 = matrix(c(252, 253, 254, 255, 256, 257, 258, 259,
+                    270, 271, 273, 274, 275, 276, 277, NA), 8, 2),
+      w4 = matrix(c(391, 391), 1, 2),
+      w6 = matrix(c(405, 405), 1, 2)#,
+      # w9 = matrix(c(NA, NA), 1, 2)
+    ),
+    IC = list(
+      w5 = matrix(c(366, 367,
+                    366, 367), 2, 2)
+    ),
+    SC = list(
+      w1 = matrix(c(131, 131), 1, 2),
+      w3 = matrix(c(270, 271, 273, 274, 275, 276, 277, NA,
+                    252, 253, 254, 255, 256, 257, 258, 259), 8, 2),
+      w5 = matrix(c(366, 367,
+                    366, 367), 2, 2)#,
+      # w9 = matrix(c(NA, NA), 1, 2)
+    ),
+    NR = list(
+      w4 = matrix(c(391, 391), 1, 2)
+    ),
+    NT = list(
+      w4 = matrix(c(391, 391), 1, 2)
+    ),
+    ORA = list(
+      w6 = matrix(c(405, 405), 1, 2)
+    ),
+    ORB = list(
+      w6 = matrix(c(405, 405), 1, 2)
+    ),
+    VO = list( # VO-GR always in same order, but rotated with MD and on day 1 or 2
+      w1 = matrix(c(131, 131), 1, 2),
+      w3 = matrix(c(252, 253, 254, 255, 256, 257, 258, 259, 270, 271, 272, 273, 274, 275, 276, 277,
+                    252, 253, 254, 255, 256, 257, 258, 259, 270, 271, 272, 273, 274, 275, 276, 277), 16, 2),
+      w5 = matrix(c(366, 367,
+                    366, 367), 2, 2)
+    ),
+    GR = list(
+      w1 = matrix(c(131, 131), 1, 2),
+      w3 = matrix(c(252, 253, 254, 255, 256, 257, 258, 259, 270, 271, 272, 273, 274, 275, 276, 277,
+                    252, 253, 254, 255, 256, 257, 258, 259, 270, 271, 272, 273, 274, 275, 276, 277), 16, 2)
+    )
+  ),
+  SC3 = list(
+    RE = list(
+      w1 = matrix(c(132, 133), 1, 2),
+      w3 = matrix(c(263, 265,
+                    262, 264), 2, 2),
+      w6 = matrix(c(374, 375,
+                    374, 375), 2, 2),
+      w9 = matrix(c(627, 628, 629, 630,
+                    623, 624, 625, 626), 4, 2)
+    ),
+    MA = list(
+      w1 = matrix(c(133, 132), 1, 2),
+      w3 = matrix(c(262, 264,
+                    263, 265), 2, 2),
+      w5 = matrix(c(539:592,
+                    539:592), 54, 2),
+      w9 = matrix(c(623:630,
+                    623:630), 8, 2)
+    ),
+    IC = list(
+      w2 = matrix(c(169, 170), 1, 2),
+      w5 = matrix(c(539:565,
+                    566:592), 27, 2),
+      w9 = matrix(c(623, 624, 625, 626,
+                    627, 628, 629, 630), 4, 2)
+    ),
+    SC = list(
+      w2 = matrix(c(170, 169), 1, 2),
+      w5 = matrix(c(566:592,
+                    539:565), 27, 2),
+      w8 = matrix(c(493, 493), 4, 2)
+    ),
+    ORA = list(
+      w1 = matrix(c(132, 133,
+                    132, 133), 2, 2),
+      w3 = matrix(c(262, 263, 264, 265,
+                    262, 263, 264, 265), 4, 2),
+      w5 = matrix(c(539:592,
+                    539:592), 54, 2)
+    ),
+    ORB = list(
+      w1 = matrix(c(132, 133,
+                    132, 133), 2, 2),
+      w3 = matrix(c(262, 263, 264, 265,
+                    262, 263, 264, 265), 4, 2),
+      w5 = matrix(c(539:592,
+                    539:592), 54, 2)
+    ),
+    NR = list(
+      w3 = matrix(c(262, 263, 264, 265,
+                    262, 263, 264, 265), 4, 2),
+      w6 = matrix(c(374, 375,
+                    374, 375), 2, 2)
+    ),
+    NT = list(
+      w3 = matrix(c(262, 263, 264, 265,
+                    262, 263, 264, 265), 4, 2),
+      w6 = matrix(c(374, 375,
+                    374, 375), 2, 2)
+    ),
+    LI = list(
+      w6 = matrix(c(374, 375,
+                    374, 375), 2, 2)
+    ),
+    EF = list(
+      w7 = matrix(c(414, 415, 416,
+                    414, 415, 416), 3, 2),
+      w9 = matrix(c(623, 625, 627, 629,
+                    624, 626, 628, 630), 4, 2)
+    ),
+    ST = list(
+      w9 = matrix(c(624, 626, 628, 630,
+                    623, 625, 627, 629), 4, 2)
+    )
+  ),
+  SC4 = list(
+    RE = list(
+      w2 = matrix(c(130, 130), 1, 2),
+      w7 = matrix(c(283, 284, 285, 286, 287, 288, 300, 301, 302, 303,
+                    281, 282, 289, 290, 291, 292, 296, 297, 298, 299), 10, 2),
+      w10 = matrix(c(470, 471, 474, 475,
+                     472, 473, NA, NA), 4, 2)
+    ),
+    MA = list(
+      w1 = matrix(c(128, 129,
+                    128, 129), 2, 2),
+      w7 = matrix(c(289, 290, 291, 292, 293, 294, rep(NA, 6),
+                    284, 285, 287, 288, 296, 297, 298, 299, 300, 301, 302, 303), 12, 2),
+      w10 = matrix(c(472, 473, 476,
+                     470, 471, NA), 3, 2)
+    ),
+    IC = list(
+      w1 = matrix(c(128, 129), 1, 2),
+      w7 = matrix(c(281, 282, 295, 296, 297, 298, 299,
+                    283, 286, 300, 301, 302, 303, NA), 7, 2)
+    ),
+    SC = list(
+      w1 = matrix(c(129, 128), 1, 2),
+      w5 = matrix(c(206, 206), 1, 2)
+    ),
+    NR = list(
+      w2 = matrix(c(130, 130), 1, 2)
+    ),
+    NT = list(
+      w2 = matrix(c(130, 130), 1, 2)
+    ),
+    EF = list(
+      w3 = matrix(c(NA, NA), 1, 2),
+      w7 = matrix(c(298, 299, 302, 303,
+                    296, 297, 300, 301), 4, 2)
+    ),
+    ST = list(
+      w7 = matrix(c(296, 297, 300, 301,
+                    298, 299, 302, 303), 4, 2)
+    )
+  ),
+  SC5 = list(
+    RE = list(
+      w1 = matrix(c(126, 127), 1, 2),
+      w12 = matrix(c(459, 462, 465, 468,
+                     458, 463, 464, 469), 4, 2)
+    ),
+    MA = list(
+      w1 = matrix(c(127, 126), 1, 2),
+      w12 = matrix(c(458, 460, 464, 466,
+                     459, 461, 465, 467), 4, 2)
+    ),
+    IC = list(
+      w5 = matrix(c(331, 333, 335, NA,
+                    330, 332, 334, 336), 4, 2)
+    ),
+    SC = list(
+      w5 = matrix(c(330, 332, 334, 336,
+                    331, 333, 335, NA), 4, 2)
+    ),
+    BA = list(
+      w7 = matrix(c(NA, NA), 1, 2)
+    ),
+    EF = list(w12 = matrix(c(461, 463, 467, 469,
+                             460, 462, 466, 468), 4, 2))
+  ),
+  SC6 = list(
+    RE = list(
+      w3 = matrix(c(123, 125,
+                    122, 124), 2, 2),
+      w5 = matrix(c(249, 249), 1, 2),
+      w9 = matrix(c(444, 445, 448, 449, 452, 453, 454, 455,
+                    446, 447, 450, 451, 456, 457, NA, NA), 8, 2)
+    ),
+    MA = list(
+      w3 = matrix(c(122, 124,
+                    123, 125), 1, 2),
+      w9 = matrix(c(446, 447, 450, 451, 456, 457, NA, NA,
+                    444, 445, 448, 449, 452, 453, 454, 455), 8, 2)
+    ),
+    SC = list(
+      w5 = matrix(c(247, 248), 1, 2)
+    ),
+    IC = list(
+      w5 = matrix(c(248, 247), 1, 2)
+    )
+  )
+)
+
 # item difficulties for competence tests
 load(file = "data-raw/xsi_fixed.RData")
 
 # difference matrix for SC4 English w3, w7
 load(file = "data-raw/diffMat.RData")
 
-usethis::use_data(item_labels, link_constant, xsi.fixed, diffMat,
+usethis::use_data(
+  item_labels, link_constant, xsi.fixed, diffMat, testlet_position,
   internal = TRUE, overwrite = TRUE
-)
+  )

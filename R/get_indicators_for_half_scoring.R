@@ -110,15 +110,15 @@ get_indicators_for_half_scoring <- function(SC, domain, wave) {
       } else if (wave == "w3") {
         ind <- c(3, 6, 9, 12, 15, 16, 18, 21, 29, 31, 33, 34, 36, 40)
       } else if (wave == "w6") {
-        ind <- c(3, 4, 11, 13, 22, 24, 30, 37)
+        ind <- c(3, 10, 22, 24, 30, 37)
       } else if (wave == "w9") {
-        ind <- c(4, 12, 15, 18, 26, 27, 29, 32, 35, 37, 41)
+        ind <- c(4, 11, 19, 22, 25, 28, 34, 41)
       }
     } else if (domain == "SC") {
       if (wave == "w2") {
-        ind <- c(15, 20)
+        ind <- c(1, 10, 12, 15, 18, 19, 20, 24)
       } else if (wave == "w5") {
-        ind <- c(2, 4, 7, 11, 14, 18, 19, 20, 24, 30, 33, 34)
+        ind <- c(2, 4, 7, 11, 14, 18, 19, 20, 24, 30, 32, 33)
       } else if (wave == "w8") {
         ind <- c(5, 7, 10, 15, 24, 25)
       }
@@ -135,7 +135,7 @@ get_indicators_for_half_scoring <- function(SC, domain, wave) {
       if (wave == "w7") {
         ind <- c(1, 2, 3, 4, 5, 6, 7, 11)
       } else if (wave == "w9") {
-        ind <- 1:4
+        ind <- 1:3
       }
     } else if (domain == "ST") {
       ind <- 1:5
@@ -155,17 +155,17 @@ get_indicators_for_half_scoring <- function(SC, domain, wave) {
       } else if (wave == "w3") {
         ind <- c(6, 8, 10)
       } else if (wave == "w5") {
-        ind <- c(3, 7, 16, 17, 20)
+        ind <- c(3, 7, 16, 20)
       }
     } else if (domain == "MA") {
       if (wave == "w2") {
-        ind <- c(25)
+        ind <- c(16)
       } else if (wave == "w3") {
         ind <- c(7, 8, 9)
       } else if (wave == "w4") {
         ind <- c(10, 12)
       } else if (wave == "w6") {
-        ind <- c(21)
+        ind <- c()
       }
     }
   } else if (SC == "SC1") {
@@ -173,7 +173,7 @@ get_indicators_for_half_scoring <- function(SC, domain, wave) {
     # if (domain == "VO") {} # no polytomous items
     if (domain == "SC") {
       if (wave == "w6") {
-        ind <- c(2, 5, 13)
+        ind <- c(2, 4, 12)
       } else if (wave == "w8") {
         ind <- c()
       }

@@ -39,6 +39,6 @@ read_in_competence_data <- function(path, SC, domain) {
         }
       )
   }
-  data <- data[order(data$ID_t), ]
+  data <- haven::zap_labels(data[order(data[["ID_t"]]), ])
   data
 }

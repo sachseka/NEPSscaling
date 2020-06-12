@@ -13,7 +13,7 @@ set_pvs_not_enough_valid_resp_NA <- function(datalist,
                                              min_valid, npv) {
   pv <- datalist
   for (p in seq(npv)) {
-    pv[[p]][valid_responses_per_person$valid < min_valid, "PV"] <- NA
+    pv[[p]][valid_responses_per_person[["valid"]] < min_valid, "PV"] <- NA
   }
   pv
 }

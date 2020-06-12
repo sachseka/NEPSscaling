@@ -13,13 +13,14 @@ link_constant[[SC]][["RE"]][["w9"]] <- 0 # !
 
 # Mathematics
 link_constant[[SC]][["MA"]][["w3"]] <- 1.3522
-link_constant[[SC]][["MA"]][["w4"]] <-  0.874
-data <- haven::read_sav("../SUFs/SC2/SC2_xTargetCompetencies_D_8-0-1.sav") # no TR
-link_constant[[SC]][["MA"]][["w6"]] <- as.numeric(data %>%
-    filter(wave_w6 == 1 & wave_w4 == 1) %>%
-    select(mag4_sc1u, mag2_sc1u) %>%
-    mutate(const = mag4_sc1u - mag2_sc1u) %>%
-    summarise_at(vars(const), mean, na.rm = TRUE))
+link_constant[[SC]][["MA"]][["w4"]] <- 0.874# 2.226
+# data <- haven::read_sav("../SUFs/SC2/SC2_xTargetCompetencies_D_8-0-1.sav") # no TR
+link_constant[[SC]][["MA"]][["w6"]] <- 2.394# 4.620
+# as.numeric(data %>%
+# filter(wave_w6 == 1 & wave_w4 == 1) %>%
+# select(mag4_sc1u, mag2_sc1u) %>%
+# mutate(const = mag4_sc1u - mag2_sc1u) %>%
+# summarise_at(vars(const), mean, na.rm = TRUE))
 
 # Information and Communication Technology literacy
 # link_constant[[SC]][["IC"]][["w5"]] <- 0 # !
@@ -44,33 +45,33 @@ link_constant[[SC]][["GR"]][["w3"]] <- 0 # !
 save(link_constant, file = "data-raw/link_constant.RData")
 
 
-# Estimate item parameters for SC2 MA wave 6 (no TR)
-library(haven)
-library(dplyr)
-library(TAM)
-suf <- read_spss("../SUFs/SC2/SC2_xTargetCompetencies_D_8-0-1.sav")
-dat <- suf %>%
-    arrange(ID_t) %>%
-    select("mag5d041_sc2g4_c", "mag4q101_c", "mag4r021_c", "mag5v271_sc2g4_c",
-	  "mag4q011_c", "mag4r071_c", "mag4d131_c",
-	 "mag5q231_sc2g4_c", "mag5q301_sc2g4_c", "mag4v121_c", "mag5d051_sc2g4_c",
-	 "mag4d031_c", "mag4v111_c", "mag4r041_c", "mag4r042_c",
-	 "mag4q051_c", "mag4q091_c", "mag4q092_c", "mag4d14s_c", "mag5v071_sc2g4_c",
-	 "mag5r191_sc2g4_c", "mag4d081_c", "mag4_sc1") %>% # not correct selection!
-    filter(!is.na(mag4_sc1)) %>%
-    select(-mag4_sc1)
-apply(dat, 2, table, useNA = "always")
-dat$mag4d14s_c <- recode(as.numeric(dat$mag4d14s_c),
-                         `0` = 0, `1` = 0, `2` = 1, `3` = 1, `4` = 2, `5` = 3,
-                         .default = NA_real_)
-Q <- matrix(1, 22, 1)
-Q[19, ] <- 0.5
-mod <- tam.mml(
-    resp = dat, irtmodel = "PCM2", verbose = FALSE, Q = Q
-)
-item_difficulty_SC2_MA_w6 <- mod$xsi.fixed.estimated[1:22, ]
-save(item_difficulty_SC2_MA_w6,
-     file = "data-raw/item_difficulty_SC2_MA_w6.RData")
+# # Estimate item parameters for SC2 MA wave 6 (no TR)
+# library(haven)
+# library(dplyr)
+# library(TAM)
+# suf <- read_spss("../SUFs/SC2/SC2_xTargetCompetencies_D_8-0-1.sav")
+# dat <- suf %>%
+#     arrange(ID_t) %>%
+#     select("mag5d041_sc2g4_c", "mag4q101_c", "mag4r021_c", "mag5v271_sc2g4_c",
+# 	  "mag4q011_c", "mag4r071_c", "mag4d131_c",
+# 	 "mag5q231_sc2g4_c", "mag5q301_sc2g4_c", "mag4v121_c", "mag5d051_sc2g4_c",
+# 	 "mag4d031_c", "mag4v111_c", "mag4r041_c", "mag4r042_c",
+# 	 "mag4q051_c", "mag4q091_c", "mag4q092_c", "mag4d14s_c", "mag5v071_sc2g4_c",
+# 	 "mag5r191_sc2g4_c", "mag4d081_c", "mag4_sc1") %>% # not correct selection!
+#     filter(!is.na(mag4_sc1)) %>%
+#     select(-mag4_sc1)
+# apply(dat, 2, table, useNA = "always")
+# dat$mag4d14s_c <- recode(as.numeric(dat$mag4d14s_c),
+#                          `0` = 0, `1` = 0, `2` = 1, `3` = 1, `4` = 2, `5` = 3,
+#                          .default = NA_real_)
+# Q <- matrix(1, 22, 1)
+# Q[19, ] <- 0.5
+# mod <- tam.mml(
+#     resp = dat, irtmodel = "PCM2", verbose = FALSE, Q = Q
+# )
+# item_difficulty_SC2_MA_w6 <- mod$xsi.fixed.estimated[1:22, ]
+# save(item_difficulty_SC2_MA_w6,
+#      file = "data-raw/item_difficulty_SC2_MA_w6.RData")
 
 
 # Estimate item parameters for SC2 NR/NT wave 4 (no TR)
@@ -131,6 +132,7 @@ mod <- tam.mml(
     resp = dat, irtmodel = "1PL", verbose = FALSE
 )
 item_difficulty_SC2_GR_w3 <- mod$xsi.fixed.estimated
+# item_difficulty_SC2_GR_w3[, 2] <- item_difficulty_SC2_GR_w3[, 2] + 1.7 --> no more mean shift, but YES more correlation deviation!
 save(item_difficulty_SC2_GR_w3,
      file = "data-raw/item_difficulty_SC2_GR_w3.RData")
 

@@ -150,14 +150,14 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
                 },
                 pvnames = paste0("PV", waves[j])
             )
-            eap[[i]] <-
+            eap[[i]] <- suppressWarnings(
                 dplyr::left_join(eap[[i]],
                                  mod[[j]]$person[, grep(
                                      "pid|EAP",
                                      names(mod[[j]]$person)
                                  )],
                                  by = c("ID_t" = "pid")
-                )
+                ))
             if (j == 1) {
                 EAP.rel[[i]] <- mod[[j]]$EAP.rel
                 regr.coeff[[i]] <- quiet(TAM::tam.se(mod[[j]])$beta)
@@ -166,20 +166,17 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
                 regr.coeff[[i]] <- cbind(regr.coeff[[i]], quiet(TAM::tam.se(mod[[j]])$beta))
             }
         }
+        # tmp_pv: list of length(waves), each containing list of npv estimations
         for (n in 1:npv) {
-            pvs[[i]][[n]] <-
-                suppressMessages(lapply(tmp_pvs, function(x) {
-                    x[[n]]
-                }) %>%
-                    Reduce(
+            pvs[[i]][[n]] <- suppressWarnings(
+                suppressMessages(lapply(tmp_pvs, function(x) { # address each wave
+                    x[[n]] # take the nth pv for each wave
+                }) %>% # result: list of data.frames for each wave / nth pv estimation
+                    purrr::reduce(
                         function(df1, df2) {
-                            df2 <- df2[, grepl(
-                                "ID_t|pid|PV",
-                                names(df2)
-                            )]
-                            dplyr::full_join(df1, df2)
-                        }, .data
-                    ))
+                            df2 <- df2[, grepl("ID_t|pid|PV", names(df2))]
+                            dplyr::full_join(df1, df2) # merge data sets and store in pvs list
+                        })))
             if (is.null(bgdata)) {
                 names(pvs[[i]][[n]])[which(names(pvs[[i]][[n]]) == "pid")] <-
                     "ID_t"

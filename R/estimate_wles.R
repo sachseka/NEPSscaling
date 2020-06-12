@@ -17,14 +17,14 @@ estimate_wles <- function(longitudinal, waves, mod) {
       ))
       WLE.rel[j] <- wmod[[j]]$WLE.rel[1]
     }
-    wmod <- wmod %>%
-      Reduce(function(df1, df2) {
+    wmod <- suppressWarnings(wmod %>%
+      purrr::reduce(function(df1, df2) {
         dplyr::full_join(df1, df2, by = "pid")
-      }, .data)
+      }))
   } else {
     wmod <-
       as.data.frame(TAM::tam.mml.wle2(mod[[1]], WLE = TRUE, progress = FALSE))
-    WLE.rel <- wmod$WLE.rel[1]
+    WLE.rel <- wmod[["WLE.rel"]][1]
   }
   wle <- wmod[grep("pid|theta|error", colnames(wmod))]
   colnames(wle) <-

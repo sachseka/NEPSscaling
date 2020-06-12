@@ -35,14 +35,14 @@ post_process_cross_tam_results <- function(mod, npv, control, Y, Y.pid, eap, i,
                         verbose = FALSE
     )
     tmp_pvs <- TAM::tampv2datalist(pmod, Y.pid = Y.pid, Y = Y, pvnames = "PV")
-    eap[[i]] <-
+    eap[[i]] <- suppressWarnings(
         dplyr::left_join(eap[[i]],
                          mod$person[, grep(
                              "pid|EAP",
                              names(mod$person)
                          )],
                          by = c("ID_t" = "pid")
-        )
+        ))
     EAP.rel <- c(EAP.rel, mod$EAP.rel)
     # se estimation gives warning "In sqrt(-1/info_pp) : NaNs produced" because
     # item difficulty parameters are fixed --> suppress warnings!

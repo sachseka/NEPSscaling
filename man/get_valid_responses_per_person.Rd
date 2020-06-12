@@ -12,7 +12,7 @@ get_model <- function(pv_obj) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }
-  pv_obj$model
+  pv_obj[["model"]]
 }
 Get the number of valid responses (i.e., non-missing) for each test taker}
 \usage{
@@ -36,7 +36,7 @@ get_model <- function(pv_obj) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }
-  pv_obj$model
+  pv_obj[["model"]]
 }
 Get the number of valid responses (i.e., non-missing) for each test taker
 }

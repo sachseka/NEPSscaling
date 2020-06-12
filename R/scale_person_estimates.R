@@ -23,27 +23,27 @@ scale_person_estimates <- function(pv, wle, eap,
     # refreshment sample
     term2 <- MEAN[4] - MEAN[2] -
       link_constant[[SC]][[domain]][["w9"]][["B69"]]
-    eap[eap$ID_t %in% longitudinal_IDs[["w3"]], "eap_w9"] <-
-      eap[eap$ID_t %in% longitudinal_IDs[["w3"]], "eap_w9"] - term1
-    eap[eap$ID_t %in% longitudinal_IDs[["w5"]], "eap_w9"] <-
-      eap[eap$ID_t %in% longitudinal_IDs[["w5"]], "eap_w9"] - term2
+    eap[eap[["ID_t"]] %in% longitudinal_IDs[["w3"]], "eap_w9"] <-
+      eap[eap[["ID_t"]] %in% longitudinal_IDs[["w3"]], "eap_w9"] - term1
+    eap[eap[["ID_t"]] %in% longitudinal_IDs[["w5"]], "eap_w9"] <-
+      eap[eap[["ID_t"]] %in% longitudinal_IDs[["w5"]], "eap_w9"] - term2
     for (i in seq(length(pv))) {
-      pv[[i]][pv[[i]]$ID_t %in% longitudinal_IDs[["w3"]], "PV_w9"] <-
+      pv[[i]][pv[[i]][["ID_t"]] %in% longitudinal_IDs[["w3"]], "PV_w9"] <-
         pv[[i]][
-          pv[[i]]$ID_t %in% longitudinal_IDs[["w3"]],
+          pv[[i]][["ID_t"]] %in% longitudinal_IDs[["w3"]],
           "PV_w9"
         ] - term1
-      pv[[i]][pv[[i]]$ID_t %in% longitudinal_IDs[["w5"]], "PV_w9"] <-
+      pv[[i]][pv[[i]][["ID_t"]] %in% longitudinal_IDs[["w5"]], "PV_w9"] <-
         pv[[i]][
-          pv[[i]]$ID_t %in% longitudinal_IDs[["w5"]],
+          pv[[i]][["ID_t"]] %in% longitudinal_IDs[["w5"]],
           "PV_w9"
         ] - term2
     }
     if (!is.null(wle)) {
-      wle[wle$ID_t %in% longitudinal_IDs[["w3"]], "wle_w9"] <-
-        wle[wle$ID_t %in% longitudinal_IDs[["w3"]], "wle_w9"] - term1
-      wle[wle$ID_t %in% longitudinal_IDs[["w5"]], "wle_w9"] <-
-        wle[wle$ID_t %in% longitudinal_IDs[["w5"]], "wle_w9"] - term2
+      wle[wle[["ID_t"]] %in% longitudinal_IDs[["w3"]], "wle_w9"] <-
+        wle[wle[["ID_t"]] %in% longitudinal_IDs[["w3"]], "wle_w9"] - term1
+      wle[wle[["ID_t"]] %in% longitudinal_IDs[["w5"]], "wle_w9"] <-
+        wle[wle[["ID_t"]] %in% longitudinal_IDs[["w5"]], "wle_w9"] - term2
     }
   } else if ((SC == "SC4" & domain == "EF") || domain %in% c("ORA", "ORB")) { # already linked via item parameters!
     return(list(pv = pv, wle = wle, eap = eap))

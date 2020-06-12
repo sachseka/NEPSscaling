@@ -14,10 +14,19 @@
 ##   parameters as original sample
 ## - SC5 English as a foreign language wave 12: same item parameters as in
 ##   SC4 were used
+
+## ConQuest and TAM give different values for PC item difficulties
+## --> TAM ~ ConQuest/2
+## This has to be corrected for!
 rm(list = ls())
 
 # fixed item parameters
 xsi.fixed <- list(cross = list(), long = list())
+
+# auxiliary for half scoring of ConQuest-Values
+pcitems <- function(SC, domain, wave){
+  NEPSscaling:::get_indicators_for_half_scoring(SC, domain, wave)
+}
 
 ### ----------------------------------------------------------------------------
 ### mathematical competence
@@ -39,13 +48,15 @@ items <- list(
 )
 x1w5 <- cbind(item = 1:length(items$w5),
               xsi = c(-0.353, -0.407, 0.706, -1.143, -0.872, -0.026, 0.669,
-			          -1.121, 0.627, 1.765, -2.434, 0.558, 2.279, -2.830,
-					  0.436, -1.835, 0.597, -0.153, 0.870, 0.185))
+                      -1.121, 0.627, 1.765, -2.434, 0.558, 2.279, -2.830,
+                      0.436, -1.835, 0.597, -0.153, 0.870, 0.185))
 rownames(x1w5) <- items$w5
 colnames(x1w5)[1] <- ""
-# TODO
+x1w5[, 2][pcitems("SC1", "MA", "w5")] <-
+  x1w5[, 2][pcitems("SC1", "MA", "w5")]/2
 load("data-raw/item_difficulty_SC1_MA_w7.RData")
 x1w7 <- item_difficulty_SC1_MA_w7
+rm(item_difficulty_SC1_MA_w7)
 
 # SC2
 items <- list(
@@ -72,7 +83,9 @@ items <- list(
       w6 = c("mag5d041_sc2g4_c", "mag4q101_c", "mag4r021_c", "mag5v271_sc2g4_c",
       "mag4q011_c", "mag4r071_c", "mag4d131_c",
      "mag5q231_sc2g4_c", "mag5q301_sc2g4_c", "mag4v121_c", "mag5d051_sc2g4_c",
-     "mag4d031_c", "mag4v111_c", "mag4r041_c", "mag4r042_c",
+     # "mag4q060_c",
+     "mag4d031_c", #"mag5q140_sc2g4_c",
+     "mag4v111_c", "mag4r041_c", "mag4r042_c",
      "mag4q051_c", "mag4q091_c", "mag4q092_c", "mag4d14s_c", "mag5v071_sc2g4_c",
      "mag5r191_sc2g4_c", "mag4d081_c")
 )
@@ -84,14 +97,17 @@ x2w2 <- cbind(item = 1:length(items$w2),
                       1.644, -0.669))
 rownames(x2w2) <- items$w2
 colnames(x2w2)[1] <- ""
+x2w2[, 2][pcitems("SC2", "MA", "w2")] <-
+    x2w2[, 2][pcitems("SC2", "MA", "w2")]/2
 x2w3 <- cbind(item = 1:length(items$w3),
-              xsi = c(-0.344, 1.300 , -1.808, 0.122 , -0.364,
--0.226, -1.768, -1.539, -0.390, 2.420 ,
--0.390, -0.611, -0.432, -1.058, 0.588 ,
-0.721 , -1.068, -0.006, 0.155 , -1.256,
--0.114))
+              xsi = c(-0.344, 1.301, -1.809, 0.123, -0.364,
+                      -0.226, -1.054, -1.540, -0.390, 2.422,
+                      -0.089, -0.611, -0.432, -1.059, 0.589,
+                      0.7212, -1.069, -0.006, 0.155, -1.256, -0.114))
 rownames(x2w3) <- items$w3
 colnames(x2w3)[1] <- ""
+x2w3[, 2][pcitems("SC2", "MA", "w3")] <-
+  x2w3[, 2][pcitems("SC2", "MA", "w3")]/2
 x2w4 <- cbind(item = 1:length(items$w4),
               xsi = c(-1.250, -0.779, -2.007, -0.584, -0.267, 0.253,
                       -0.633, 2.054, -0.056, -0.549, 1.609, -1.483,
@@ -99,8 +115,21 @@ x2w4 <- cbind(item = 1:length(items$w4),
                       -1.383, -0.718, -0.288, -0.829, -0.603, -1.828))
 rownames(x2w4) <- items$w4
 colnames(x2w4)[1] <- ""
-load("data-raw/item_difficulty_SC2_MA_w6.RData")
-x2w6 <- item_difficulty_SC2_MA_w6
+x2w4[, 2][pcitems("SC2", "MA", "w4")] <-
+    x2w4[, 2][pcitems("SC2", "MA", "w4")]/2
+x2w6 <- cbind(item = 1:length(items$w6),
+              xsi = c(-0.268, 2.291, 0.507, 1.179, 1.955, 0.998, -2.839, 1.171,
+                      1.051, -0.068, -1.582, #2.630,
+                      0.547, #-0.026,
+                      2.135,
+                      -2.624, -0.783, -1.226, -0.881, 0.001, -1.723, -1.723,
+                      0.686, -1.510))
+rownames(x2w6) <- items$w6
+colnames(x2w6)[1] <- ""
+x2w6[, 2][pcitems("SC2", "MA", "w6")] <-
+    x2w6[, 2][pcitems("SC2", "MA", "w6")]/2
+
+
 
 # SC3
 items <- list(
@@ -145,6 +174,8 @@ x3w1 <- cbind(item = 1:length(items$w1),
                       -0.271, 0.333))
 rownames(x3w1) <- items$w1
 colnames(x3w1)[1] <- ""
+x3w1[, 2][pcitems("SC3", "MA", "w1")] <-
+  x3w1[, 2][pcitems("SC3", "MA", "w1")]/2
 x3w3 <- cbind(item = 1:length(items$w3),
               xsi = c(-0.284, 0.533, 0.247, 0.348, -0.153, -1.328, -3.132,
                       -1.780, -0.543, 0.238, -0.634, -1.860, -0.090, -1.823,
@@ -152,18 +183,21 @@ x3w3 <- cbind(item = 1:length(items$w3),
                       -1.142, -1.191))
 rownames(x3w3) <- items$w3
 colnames(x3w3)[1] <- ""
+x3w3[, 2][pcitems("SC3", "MA", "w3")] <-
+  x3w3[, 2][pcitems("SC3", "MA", "w3")]/2
 x3w5 <- cbind(item = 1:length(items$w5),
               xsi = c(-1.499, 0.068, -1.923, -1.679, 0.028, 0.792, 0.236, 0.113,
                       -0.537, 0.432, -0.365, -2.23, 0.036, 0.577, -0.051, 0.404,
                       -1.643, 1.375, -0.619, 2.015, 0.2, 1.14, -0.509, -0.82,
-                      2.342, -1.096, -1.276, -1.042, 0.288, 0.142, 1.187, 0.018,
+                      2.342, -1.096, -1.276, -1.042, -0.288, 0.142, 1.187, 0.018,
                       -1.087, 1.115))
 rownames(x3w5) <- items$w5
 colnames(x3w5)[1] <- ""
-x3w9 <- cbind(item = 1:length(items$w9),
-              xsi = c(rep(0, length(items$w9)))) # TODO
-rownames(x3w9) <- items$w9
-colnames(x3w9)[1] <- ""
+x3w5[, 2][pcitems("SC3", "MA", "w5")] <-
+  x3w5[, 2][pcitems("SC3", "MA", "w5")]/2
+load("data-raw/item_difficulty_SC3_MA_w9.RData")
+x3w9 <- item_difficulty_SC3_MA_w9
+rm(item_difficulty_SC3_MA_w9)
 
 
 
@@ -205,6 +239,8 @@ x4w1 <- cbind(item = 1:length(items$w1),
                       0.08))
 rownames(x4w1) <- items$w1
 colnames(x4w1)[1] <- ""
+x4w1[, 2][pcitems("SC4", "MA", "w1")] <-
+  x4w1[, 2][pcitems("SC4", "MA", "w1")]/2
 x4w7 <- cbind(item = 1:length(items$w7),
               xsi = c(-0.510, -0.375, 0.747, 0.070, -0.099, 1.328, 0.299, 0.894,
                       0.512, -0.891, 0.064, -0.984, 1.545, -0.342, 1.143,
@@ -213,6 +249,8 @@ x4w7 <- cbind(item = 1:length(items$w7),
                       -1.337, -0.340))
 rownames(x4w7) <- items$w7
 colnames(x4w7)[1] <- ""
+x4w7[, 2][pcitems("SC4", "MA", "w7")] <-
+  x4w7[, 2][pcitems("SC4", "MA", "w7")]/2
 x4 <- xsi
 rownames(x4) <- NEPSscaling:::item_labels$SC4$MA$w10
 
@@ -235,6 +273,8 @@ x <- c(
 x51 <- cbind(item = 1:length(x), xsi = x)
 rownames(x51) <- items
 colnames(x51)[1] <- ""
+x51[, 2][pcitems("SC5", "MA", "w1")] <-
+  x51[, 2][pcitems("SC5", "MA", "w1")]/2
 x52 <- xsi
 rownames(x52) <- NEPSscaling:::item_labels$SC5$MA$w12
 
@@ -355,9 +395,12 @@ x2w6 <- cbind(item = 1:length(items$w6),
                       -2.05036, -0.98054, -0.22250, -1.68061, -0.75722,
                       -0.10508, -1.64459,  1.40923,  0.62386,  0.25773,
                       -1.62467, -0.82118,  0.50125, -0.87791, -0.77332,
-                      -0.49841) + (-0.567)) # link to SC3 grade 5
+                      -0.49841))
 rownames(x2w6) <- items$w6
 colnames(x2w6)[1] <- ""
+x2w6[, 2][pcitems("SC2", "RE", "w6")] <-
+    x2w6[, 2][pcitems("SC2", "RE", "w6")]/2
+x2w6[, 2] <- x2w6[, 2] + (-0.567) # link to SC3 grade 5
 
 
 # SC3
@@ -426,6 +469,8 @@ x3w1 <- cbind(item = 1:length(items$w1),
                       -1.418, -1.355, -0.362, -0.968))
 rownames(x3w1) <- items$w1
 colnames(x3w1)[1] <- ""
+x3w1[, 2][pcitems("SC3", "RE", "w1")] <-
+  x3w1[, 2][pcitems("SC3", "RE", "w1")]/2
 x3w3 <- cbind(item = 1:length(items$w3),
               xsi = c(-0.375, -2.524, -2.594, -3.456, -2.940, -1.099, -2.847,
                       -0.613, -2.706, 0.464, 0.229, -1.208, -2.792, -1.941,
@@ -435,6 +480,8 @@ x3w3 <- cbind(item = 1:length(items$w3),
                       -1.482, 0.918, 0.631, -0.911, 0.318))
 rownames(x3w3) <- items$w3
 colnames(x3w3)[1] <- ""
+x3w3[, 2][pcitems("SC3", "RE", "w3")] <-
+  x3w3[, 2][pcitems("SC3", "RE", "w3")]/2
 x3w6 <- cbind(item = 1:length(items$w6),
               xsi = c(-0.12149, 0.63415, 0.16412, -0.26008, 0.74353, -0.31853,
                       0.47501, 0.10495, 0.42921, -0.55437, 1.51681, 0.07977,
@@ -446,6 +493,8 @@ x3w6 <- cbind(item = 1:length(items$w6),
                       -0.14051, -0.62121, -1.43628))
 rownames(x3w6) <- items$w6
 colnames(x3w6)[1] <- ""
+x3w6[, 2][pcitems("SC3", "RE", "w6")] <-
+  x3w6[, 2][pcitems("SC3", "RE", "w6")]/2
 x3w9 <- cbind(item = 1:length(items$w9),
               xsi = c(-1.256, -0.642, -2.234, -2.306, -0.792, -1.263, -2.181,
                       -1.076, 0.208, 0.243, -0.544, -0.599, -2.237, -0.642,
@@ -489,6 +538,8 @@ x4w2 <- cbind(item = 1:length(items$w2),
                       -0.754, -1.966))
 rownames(x4w2) <- items$w2
 colnames(x4w2)[1] <- ""
+x4w2[, 2][pcitems("SC4", "RE", "w2")] <-
+  x4w2[, 2][pcitems("SC4", "RE", "w2")]/2
 x4w7 <- cbind(item = 1:length(items$w7),
               xsi = c(-1.289, -0.821, -2.313, -2.679, -0.907, -1.141, -2.146,
                       -0.807, -0.488, -1.691, -1.142, -1.831, -0.223, -0.145,
@@ -498,6 +549,8 @@ x4w7 <- cbind(item = 1:length(items$w7),
                       -1.500, -0.942, -1.672, -0.073, 0.066, -1.288))
 rownames(x4w7) <- items$w7
 colnames(x4w7)[1] <- ""
+x4w7[, 2][pcitems("SC4", "RE", "w7")] <-
+  x4w7[, 2][pcitems("SC4", "RE", "w7")]/2
 # x4w2_special <- cbind(item = 1:length(items$w2),
 #                       xsi = c(-1.46, -2.18, 0.54, 0.61, -0.87, 0.20,
 #                               0.97, -0.07, 0.65, 1.45, 0.19, -0.20,
@@ -534,6 +587,8 @@ x <- c(
 x51 <- cbind(item = 1:length(x), xsi = x)
 rownames(x51) <- items
 colnames(x51)[1] <- ""
+x51[, 2][pcitems("SC5", "RE", "w1")] <-
+  x51[, 2][pcitems("SC5", "RE", "w1")]/2
 
 
 # B110, B116, B114
@@ -698,7 +753,7 @@ x3w5 <- cbind(item = 1:length(items$w5),
               xsi = c(-0.117, -1.020, -0.637, -0.826, -1.498, -0.672, -1.002,
                       -1.154, -0.610, 0.273, -0.543, -0.624, -1.590, -0.752,
                       -0.753, -1.406, -1.823, -0.436, -0.847, -0.668, -0.770,
-                      -0.034, -0.833, -0.256, -1.004, -1.520, -0.232, -1.505,
+                      -0.034, -0.833, -0.256, -1.044, -1.520, -0.232, -1.505,
                       -1.494, -0.762, -0.597, -0.733, -1.087, -1.441, -0.773,
                       -2.259, -0.603, 0.602, -0.116, 0.828, 1.443, 0.109,
                       -1.465, -1.846, 0.477, -0.833, -0.221, 0.769, 0.808,
@@ -706,10 +761,11 @@ x3w5 <- cbind(item = 1:length(items$w5),
                       -0.528, -1.200, 1.393, -0.467))
 rownames(x3w5) <- items$w5
 colnames(x3w5)[1] <- ""
-x3w9 <- cbind(item = 1:length(items$w9),
-              xsi = c(rep(0, length(items$w9)))) # TODO
-rownames(x3w9) <- items$w9
-colnames(x3w9)[1] <- ""
+x3w5[, 2][pcitems("SC3", "IC", "w5")] <-
+  x3w5[, 2][pcitems("SC3", "IC", "w5")]/2
+load("data-raw/item_difficulty_SC3_IC_w9.RData")
+x3w9 <- item_difficulty_SC3_IC_w9
+rm(item_difficulty_SC3_IC_w9)
 
 
 
@@ -754,6 +810,8 @@ x4w1 <- cbind(item = 1:length(items$w1),
                       -0.62, -0.97, -1.72))
 rownames(x4w1) <- items$w1
 colnames(x4w1)[1] <- ""
+x4w1[, 2][pcitems("SC4", "IC", "w1")] <-
+  x4w1[, 2][pcitems("SC4", "IC", "w1")]/2
 x4w7 <- cbind(item = 1:length(items$w7),
               xsi = c(-1.164, 1.320, -0.587, -0.124, 0.041, 1.323, -0.850,
                       -1.512, -1.308, -0.365, 1.124, 0.430, -1.359, 0.109,
@@ -762,6 +820,8 @@ x4w7 <- cbind(item = 1:length(items$w7),
                       -0.713, -0.826, -0.840))
 rownames(x4w7) <- items$w7
 colnames(x4w7)[1] <- ""
+x4w7[, 2][pcitems("SC4", "IC", "w7")] <-
+  x4w7[, 2][pcitems("SC4", "IC", "w7")]/2
 x4w13 <- cbind(item = 1:length(items$w13),
               xsi = c())
 rownames(x4w13) <- items$w13
@@ -784,6 +844,8 @@ x <- c(
   1.30212156, 0.44628818, -0.54315593, 0.49712400, -0.51068062,
   -0.29597091, 0.86393283, -1.07652203, 0.35764623, -0.85212525
 ) # NEPSscaling SC5 IC without additional info. or rotation
+# don't know any more where those values come frome
+# no deviation in wle comparison -- leave the way it is
 x5 <- cbind(item = 1:length(x), xsi = x)
 rownames(x5) <- items
 colnames(x5)[1] <- ""
@@ -863,11 +925,13 @@ items <- list(
       )
 x1w6 <- cbind(item = 1:length(items$w6),
               xsi = c(-1.852, -0.695, -2.219, 0.215, -0.433, -1.558,
-			          -0.733, -2.022, 0.593, -1.535, -0.367, 0.163,
-					  -1.300, -0.387, 0.605, -0.212, -0.714, -0.720,
-					  -1.130))
+                      -0.733, -2.022, 0.593, -1.535, -0.367, 0.163,
+                      -1.300, -0.387, 0.605, -0.212, -0.714, -0.720,
+                      -1.130))
 rownames(x1w6) <- items$w6
 colnames(x1w6)[1] <- ""
+x1w6[, 2][pcitems("SC1", "SC", "w6")] <-
+  x1w6[, 2][pcitems("SC1", "SC", "w6")]/2
 
 # SC2
 items <- list(
@@ -900,6 +964,8 @@ x2w1 <- cbind(item = 1:length(items$w1),
                       0.923))
 rownames(x2w1) <- items$w1
 colnames(x2w1)[1] <- ""
+x2w1[, 2][pcitems("SC2", "SC", "w1")] <-
+  x2w1[, 2][pcitems("SC2", "SC", "w1")]/2
 x2w3 <- cbind(item = 1:length(items$w3),
               xsi = c(-1.000, -0.141, 0.870, -2.064, 0.579, 0.230,
                       -0.763, -0.601, -0.684, 0.017, -0.184, -0.766,
@@ -908,6 +974,8 @@ x2w3 <- cbind(item = 1:length(items$w3),
                       -0.375))
 rownames(x2w3) <- items$w3
 colnames(x2w3)[1] <- ""
+x2w3[, 2][pcitems("SC2", "SC", "w3")] <-
+  x2w3[, 2][pcitems("SC2", "SC", "w3")]/2
 x2w5 <- cbind(item = 1:length(items$w5),
               xsi = c(-1.130, -1.038, -0.362, -0.371, -0.832, -0.043,
                       -0.354, 0.031, 0.409, -0.374, 1.556, 0.072,
@@ -915,6 +983,8 @@ x2w5 <- cbind(item = 1:length(items$w5),
                       -0.803, -0.585, -0.466, 0.594))
 rownames(x2w5) <- items$w5
 colnames(x2w5)[1] <- ""
+x2w5[, 2][pcitems("SC2", "SC", "w5")] <-
+  x2w5[, 2][pcitems("SC2", "SC", "w5")]/2
 
 
 # SC3
@@ -958,13 +1028,14 @@ x3w2 <- cbind(item = 1:length(items$w2),
                       -0.268, 0.460, -0.283, -0.931))
 rownames(x3w2) <- items$w2
 colnames(x3w2)[1] <- ""
+x3w2[, 2][pcitems("SC3", "SC", "w2")] <-
+  x3w2[, 2][pcitems("SC3", "SC", "w2")]/2
 load("data-raw/item_difficulty_SC3_SC_w5.RData")
 x3w5 <- item_difficulty_SC3_SC_w5
 rm(item_difficulty_SC3_SC_w5)
-x3w8 <- cbind(item = 1:length(items$w8),
-              xsi = c(rep(0, length(items$w8))))# TODO
-rownames(x3w8) <- items$w8
-colnames(x3w8)[1] <- ""
+load("data-raw/item_difficulty_SC3_SC_w8.RData")
+x3w8 <- item_difficulty_SC3_SC_w8
+rm(item_difficulty_SC3_SC_w8)
 
 # SC4
 items <- list(
@@ -998,6 +1069,8 @@ x4w1 <- cbind(item = 1:length(items$w1),
                       -0.553, 0.401, -1.215, -0.320, 0.149, 1.160, 0.835))
 rownames(x4w1) <- items$w1
 colnames(x4w1)[1] <- ""
+x4w1[, 2][pcitems("SC4", "SC", "w1")] <-
+  x4w1[, 2][pcitems("SC4", "SC", "w1")]/2
 x4w5 <- cbind(item = 1:length(items$w5),
               xsi = c(-0.391, 0.087, 0.171, 0.390, -0.879, -0.528, -1.170,
                       -0.273, -0.608, -0.147, -0.661, -0.407, -0.654, 1.516,
@@ -1005,6 +1078,8 @@ x4w5 <- cbind(item = 1:length(items$w5),
                       -0.618, 0.031))
 rownames(x4w5) <- items$w5
 colnames(x4w5)[1] <- ""
+x4w5[, 2][pcitems("SC4", "SC", "w5")] <-
+  x4w5[, 2][pcitems("SC4", "SC", "w5")]/2
 x4w13 <- cbind(item = 1:length(items$w13),
               xsi = c(rep(0, length(items$w13))))#TODO
 rownames(x4w13) <- items$w13
@@ -1027,6 +1102,8 @@ x <- c(
   -0.39688836, -0.45444353, -0.64151218, -0.62774150, 0.54444123,
   -0.75949384, -0.20641310, 0.12653751, -0.02551815
 ) # NEPSscaling SC5 SC without additional info. or rotation
+# don't know any more where those values come from
+# no deviations in wle comparison -- leave like that
 x5 <- cbind(item = 1:length(x), xsi = x)
 rownames(x5) <- items
 colnames(x5)[1] <- ""
@@ -1113,20 +1190,49 @@ items <- list(
          "efg12d001_sc3g12_c", "efg12d002_sc3g12_c", "efg12d003_sc3g12_c",
          "efg12d004_sc3g12_c", "efg12d005_sc3g12_c")
 )
+scoring <- rep(1, length(items$w7))
+scoring[grepl("s_", items$w7)] <- 0.5
 x3w7 <- cbind(item = 1:length(items$w7),
               xsi = c(-0.35, -0.82, -0.74, 0.05, -1.20, 0.10, 0.01, -0.26,
-                      -0.83, -0.18, 0.09, -0.83) + NEPSscaling:::link_constant$SC3$EF)
+                      -0.83, -0.18, 0.09, -0.83) - # subtracted in original scaling
+                  NEPSscaling:::link_constant$SC3$EF[["w7"]] * scoring)
 rownames(x3w7) <- items$w7
 colnames(x3w7)[1] <- ""
+rm(scoring)
 x3w9 <- cbind(item = 1:length(items$w9),
-              xsi = c(-0.87, -0.21, -1.15, -0.62, 0.20, 1.82, -0.89, 0.21))
+              # xsi = c(-0.87, -0.21, -1.15, -0.62, 0.20, 1.82, -0.89, 0.21))
+              xsi = c(-0.870616151, -0.208347002, -1.153352604, -0.617262276,
+                      0.202559982, 1.816132743, -0.886134130, 0.207340070))
 rownames(x3w9) <- items$w9
 colnames(x3w9)[1] <- ""
+# load("data-raw/item_difficulty_SC3_EF_w9.RData")
+# x3w9 <- item_difficulty_SC3_EF_w9
+# rm(item_difficulty_SC3_EF_w9)
+# rownames(x3w9)[c(1, 9:13)] <-
+    # gsub("efg12a00s_sc3g12_c", "efg10022s_sc3g12_c", rownames(x3w9)[c(1, 9:13)])
+# rownames(x3w9)[c(3, 21:23)] <-
+    # gsub("efg12c00s_sc3g12_c", "efg10108s_sc3g12_c", rownames(x3w9)[c(3, 21:23)])
 # Link via setting the common items in g12 to g10 values, not mean/mean!
 x3w9long <- cbind(item = 1:length(items$w9),
-                  xsi = c(-0.35, -0.82, -1.15, -0.62, 0.20, 1.82, -0.89, 0.21))
+                  xsi = c(#-0.73193623, -0.04568658, #-1.20599428, -0.49651959,
+                          # 0.53185271, 2.16816310, -0.60536367, 0.50848183
+                          -0.25, -0.72, -1.153352604, -0.617262276,
+                          0.202559982, 1.816132743, -0.886134130, 0.207340070
+                          #-0.25, -0.72, -1.15, -0.62, 0.20, 1.82, -0.89, 0.21
+                          ))
 rownames(x3w9long) <- items$w9
 colnames(x3w9long)[1] <- ""
+# load("data-raw/item_difficulty_SC3_EF_w9_long.RData")
+# x3w9long <- item_difficulty_SC3_EF_w9_long
+# rm(item_difficulty_SC3_EF_w9_long)
+# rownames(x3w9long)[c(1, 9:13)] <-
+    # gsub("efg12a00s_sc3g12_c", "efg10022s_sc3g12_c",
+         # rownames(x3w9long)[c(1, 9:13)])
+# rownames(x3w9long)[c(3, 21:23)] <-
+    # gsub("efg12c00s_sc3g12_c", "efg10108s_sc3g12_c",
+         # rownames(x3w9long)[c(3, 21:23)])
+### ! restricting the step parameters works via AXsi for WLEs, not for tam.mml
+###   via xsi.fixed
 
 # SC4
 items <- list(
@@ -1392,6 +1498,8 @@ x3 <- cbind(item = 1:length(items),
                     -1.693, -2.654))
 rownames(x3) <- items
 colnames(x3)[1] <- ""
+x3[, 2][pcitems("SC3", "LI", "w6")] <-
+  x3[, 2][pcitems("SC3", "LI", "w6")]/2
 
 xsi.fixed$cross[["LI"]][["SC3"]][["w6"]] <- x3
 
@@ -1806,7 +1914,7 @@ x3w3b <- cbind(item = 1:length(items$B$w3),
                        -4.031, -3.342, -3.974, -2.590, -4.546, -2.840, -2.445,
                        -2.245, -2.765, -1.974, -1.537, -4.214, -1.090, -1.362,
                        0.325, -2.945, -1.886, -1.746, -4.091, -3.946, -1.741,
-                       -1.963, -2.898, -3.234, -4.291, 1.948, -4.687, -4.477,
+                       -1.963, -3.898, -3.234, -4.291, 1.948, -4.687, -4.477,
                        -2.758, -4.419, -0.813, -3.564, -3.777, -2.006, -3.102,
                        -4.067, -3.174, -3.424, -2.283, -5.353, -0.500, -3.277,
                        0.275, -1.488, -0.533, -1.686, -3.556, -2.682, -0.013,

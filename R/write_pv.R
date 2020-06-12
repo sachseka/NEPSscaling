@@ -28,31 +28,31 @@ write_pv <- function(pv_obj, path, ext = c("SPSS", "Stata", "Mplus")) {
     stop("Path must be a character string and end in '/'.")
   }
   if (ext == "SPSS") {
-    for (i in 1:length(pv_obj$pv)) {
-      haven::write_sav(pv_obj$pv[[i]], path = paste0(path, pv_obj$SC, "_", pv_obj$domain, "_", pv_obj$wave, "_", pv_obj$type, "_", "plausible_values_", i, ".sav"))
+    for (i in 1:length(pv_obj[["pv"]])) {
+      haven::write_sav(pv_obj[["pv"]][[i]], path = paste0(path, pv_obj[["SC"]], "_", pv_obj[["domain"]], "_", pv_obj[["wave"]], "_", pv_obj[["type"]], "_", "plausible_values_", i, ".sav"))
     }
   }
   if (ext == "Stata") {
-    for (i in 1:length(pv_obj$pv)) {
-      colnames(pv_obj$pv[[i]]) <- gsub("[[:punct:]]", "_", colnames(pv_obj$pv[[i]]))
-      haven::write_dta(pv_obj$pv[[i]],
-        path = paste0(path, pv_obj$SC, "_", pv_obj$domain, "_", pv_obj$wave, "_", pv_obj$type, "_", "plausible_values_", i, ".dta"),
+    for (i in 1:length(pv_obj[["pv"]])) {
+      colnames(pv_obj[["pv"]][[i]]) <- gsub("[[:punct:]]", "_", colnames(pv_obj[["pv"]][[i]]))
+      haven::write_dta(pv_obj[["pv"]][[i]],
+        path = paste0(path, pv_obj[["SC"]], "_", pv_obj[["domain"]], "_", pv_obj[["wave"]], "_", pv_obj[["type"]], "_", "plausible_values_", i, ".dta"),
         version = 14
       )
     }
   }
   if (ext == "Mplus") {
-    for (i in 1:length(pv_obj$pv)) {
-      write.table(pv_obj$pv[i],
-        file = paste0(path, pv_obj$SC, "_", pv_obj$domain, "_", pv_obj$wave, "_", pv_obj$type, "_", "plausible_values_", i, ".dat"), dec = ".",
+    for (i in 1:length(pv_obj[["pv"]])) {
+      write.table(pv_obj[["pv"]][i],
+        file = paste0(path, pv_obj[["SC"]], "_", pv_obj[["domain"]], "_", pv_obj[["wave"]], "_", pv_obj[["type"]], "_", "plausible_values_", i, ".dat"), dec = ".",
         sep = ",", row.names = FALSE
       )
     }
-    contents <- paste0(pv_obj$SC, "_", pv_obj$domain, "_", pv_obj$wave, "_", pv_obj$type, "_", "plausible_values_1.dat")
-    for (i in 2:length(pv_obj$pv)) {
-      contents <- paste0(contents, "\n", pv_obj$SC, "_", pv_obj$domain, "_", pv_obj$wave, "_", pv_obj$type, "_", "plausible_values_", i, ".dat")
+    contents <- paste0(pv_obj[["SC"]], "_", pv_obj[["domain"]], "_", pv_obj[["wave"]], "_", pv_obj[["type"]], "_", "plausible_values_1.dat")
+    for (i in 2:length(pv_obj[["pv"]])) {
+      contents <- paste0(contents, "\n", pv_obj[["SC"]], "_", pv_obj[["domain"]], "_", pv_obj[["wave"]], "_", pv_obj[["type"]], "_", "plausible_values_", i, ".dat")
     }
-    sink(file = paste0(path, pv_obj$SC, "_", pv_obj$domain, "_", pv_obj$wave, "_", pv_obj$type, "_", "content_file.dat"))
+    sink(file = paste0(path, pv_obj[["SC"]], "_", pv_obj[["domain"]], "_", pv_obj[["wave"]], "_", pv_obj[["type"]], "_", "content_file.dat"))
     cat(contents)
     sink()
   }

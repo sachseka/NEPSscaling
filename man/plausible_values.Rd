@@ -9,9 +9,10 @@ plausible_values(SC, domain = c("MA", "RE", "SC", "IC", "LI", "EF", "NR",
   "NT", "ORA", "ORB", "ST", "BA", "CD", "GR", "VO"), wave, path,
   bgdata = NULL, npv = 10L, longitudinal = FALSE, rotation = TRUE,
   min_valid = 3L, include_nr = TRUE, verbose = TRUE,
-  control = list(EAP = FALSE, WLE = FALSE, ML = list(nmi = 10L, ntheta =
-  2000, normal.approx = FALSE, samp.regr = FALSE, theta.model = FALSE,
-  np.adj = 8, na.grid = 5, minbucket = 5, cp = 1e-04)))
+  adjust_school_context = TRUE, control = list(EAP = FALSE, WLE =
+  FALSE, ML = list(nmi = 10L, ntheta = 2000, normal.approx = FALSE,
+  samp.regr = FALSE, theta.model = FALSE, np.adj = 8, na.grid = 5,
+  minbucket = 5, cp = 1e-04)))
 }
 \arguments{
 \item{SC}{numeric. The starting cohort used for the analysis is
@@ -56,6 +57,9 @@ is TRUE)}
 \item{verbose}{logical; whether progress should be displayed in the console
 (the default is TRUE)}
 
+\item{adjust_school_context}{logical; whether the school context should be
+included in the background models of SC3 and SC4 (the default is TRUE)}
+
 \item{control}{list of additional options. If \code{EAP = TRUE}, the
 EAPs will be returned as well; for \code{WLE = TRUE} WLEs are returned.
 Furthermore, additional control options for are collected in the list `ML`.
@@ -63,8 +67,9 @@ Furthermore, additional control options for are collected in the list `ML`.
 (defaults to 10); `itermcmc` and `burnin` denote the number of iterations and
 and how many are later disregarded as a burnin period of the CART algorithm.
 `thin` allows the thinning of CART. `cartctrl1` defines the minimum number of
-observations in any terminal CART node (defaults to 5), `cartctrl2` determines the minimum
-decrease of overall lack of fit by each CART split (defaults to 0.0001).}
+observations in any terminal CART node (defaults to 5), `cartctrl2`
+determines the minimum decrease of overall lack of fit by each CART split
+(defaults to 0.0001).}
 }
 \value{
 \code{plausible_values()} returns an object of class \code{pv_obj}
@@ -81,8 +86,9 @@ specific estimation, this variable indicates whether the correction was
 applied. Depending on the estimation context, this variable may have been
 automatically set by the function and thus differ from user input}
 \item{min_valid}{The minimum number of answers a test taker must have given}
-\item{valid_responses_per_person}{A \code{data.frame} containing the \code{ID_t} and the
-number of valid responses given by the respective individual}
+\item{valid_responses_per_person}{A \code{data.frame} containing the
+\code{ID_t} and the number of valid responses given by the respective
+individual}
 \item{npv}{The number of plausible values that are returned by the function}
 \item{control}{The control variables that were applied to fine-tune the
 estimation algorithms}

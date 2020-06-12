@@ -30,6 +30,8 @@
 #' @param include_nr logical; whether the number of not-reached items as a proxy
 #' for processing speed should be included in the background model (the default
 #' is TRUE)
+#' @param adjust_school_context logical; whether the school context should be
+#' included in the background models of SC3 and SC4 (the default is TRUE)
 #' @param verbose logical; whether progress should be displayed in the console
 #' (the default is TRUE)
 #' @param control      list of additional options. If \code{EAP = TRUE}, the
@@ -39,8 +41,9 @@
 #' (defaults to 10); `itermcmc` and `burnin` denote the number of iterations and
 #' and how many are later disregarded as a burnin period of the CART algorithm.
 #' `thin` allows the thinning of CART. `cartctrl1` defines the minimum number of
-#' observations in any terminal CART node (defaults to 5), `cartctrl2` determines the minimum
-#' decrease of overall lack of fit by each CART split (defaults to 0.0001).
+#' observations in any terminal CART node (defaults to 5), `cartctrl2`
+#' determines the minimum decrease of overall lack of fit by each CART split
+#' (defaults to 0.0001).
 #'
 #' @return \code{plausible_values()} returns an object of class \code{pv_obj}
 #' containing:
@@ -56,8 +59,9 @@
 #' applied. Depending on the estimation context, this variable may have been
 #' automatically set by the function and thus differ from user input}
 #' \item{min_valid}{The minimum number of answers a test taker must have given}
-#' \item{valid_responses_per_person}{A \code{data.frame} containing the \code{ID_t} and the
-#' number of valid responses given by the respective individual}
+#' \item{valid_responses_per_person}{A \code{data.frame} containing the
+#' \code{ID_t} and the number of valid responses given by the respective
+#' individual}
 #' \item{npv}{The number of plausible values that are returned by the function}
 #' \item{control}{The control variables that were applied to fine-tune the
 #' estimation algorithms}
@@ -143,6 +147,7 @@
 #' @importFrom stats as.formula
 #' @importFrom utils flush.console
 #' @importFrom rlang .data
+#' @importFrom stats na.omit
 #'
 #' @export
 
@@ -161,6 +166,7 @@ plausible_values <- function(SC,
                              min_valid = 3L,
                              include_nr = TRUE,
                              verbose = TRUE,
+                             adjust_school_context = TRUE,
                              control = list(
                                EAP = FALSE, WLE = FALSE,
                                ML = list(
@@ -250,6 +256,19 @@ plausible_values <- function(SC,
   type <- res[["type"]]
   waves <- res[["waves"]]
 
+  # school context only for SC3/4 while still in school
+  if (adjust_school_context) {
+      if (!(SC %in% c("SC3", "SC4"))) {
+          adjust_school_context <- FALSE
+      } else {
+          if (!longitudinal &&
+              (domain %in% c("MA", "RE") &
+              waves %in% c("_w9", "_w10"))) {
+              adjust_school_context <- FALSE
+          }
+      }
+  }
+
   # Begin data pre-processing -------------------------------------------------
 
   if (verbose) {
@@ -271,9 +290,9 @@ plausible_values <- function(SC,
     # in the longitudinal case, missing test taking for later time points
     # causes problems in imputation, if include_nr = TRUE, bgdata = NULL,
     # thus, remove NAs from data
-    nr <- data.frame(ID_t = data$ID_t,
+    nr <- data.frame(ID_t = data[["ID_t"]],
                      nr = rowSums(data[, sel] == -94, na.rm = TRUE))
-    if (length(unique(nr$nr)) == 1) {
+    if (length(unique(nr[["nr"]])) == 1) {
       include_nr <- FALSE
       nr <- NULL
       cat(
@@ -317,7 +336,12 @@ plausible_values <- function(SC,
     calculate_number_of_valid_responses(longitudinal, resp, waves)
 
   # for school starting cohorts (while still in school)
-  bgdata <- add_contextual_info(path, SC, domain, waves, bgdata, data)
+  if (adjust_school_context) {
+    if (is.null(bgdata)) {
+      bgdata <- ID_t
+    }
+    bgdata <- add_contextual_info(path, SC, domain, waves, bgdata, data)
+  }
 
   # consider test form rotation
   res <- consider_test_rotation(
@@ -327,6 +351,7 @@ plausible_values <- function(SC,
     rotation <- res[["rotation"]]
     Q <- res[["Q"]]
     if ((SC == "SC4" & domain %in% c("RE", "MA")) ||
+        (SC == "SC3" & domain == "RE") ||
         (SC == "SC2" & domain %in% c("VO", "MA"))) {
       position <- res[["position"]]
     }
@@ -347,12 +372,12 @@ plausible_values <- function(SC,
 
   # complement control lists
   res <- complement_control_lists(
-    control$EAP, control$WLE, control$ML
+    control[["EAP"]], control[["WLE"]], control[["ML"]]
   )
   # control$Bayes <- res$Bayes
-  control$ML <- res$ML
-  control$EAP <- res$EAP
-  control$WLE <- res$WLE
+  control[["ML"]] <- res[["ML"]]
+  control[["EAP"]] <- res[["EAP"]]
+  control[["WLE"]] <- res[["WLE"]]
 
 
   # multiple imputation of missing covariate data -----------------------------
@@ -428,10 +453,10 @@ plausible_values <- function(SC,
   eap <- eap[[1]]
 
   # estimate WLEs
-  if (control$WLE) {
+  if (control[["WLE"]]) {
     res <- estimate_wles(longitudinal, waves, mod)
-    wle <- res$wle
-    WLE.rel <- res$WLE.rel
+    wle <- res[["wle"]]
+    WLE.rel <- res[["WLE.rel"]]
   }
 
   # extract correct number of plausible values from pvs object
@@ -444,7 +469,7 @@ plausible_values <- function(SC,
     res <- link_longitudinal_plausible_values(
       datalist, npv, min_valid, valid_responses_per_person,
       waves, eap,
-      wle = if (control$WLE) {
+      wle = if (control[["WLE"]]) {
         wle
       } else {
         NULL
@@ -454,8 +479,11 @@ plausible_values <- function(SC,
     pv <- res[["pv"]]
     wle <- res[["wle"]]
     eap <- res[["eap"]]
-    if (SC == "SC4" & domain %in% c("MA", "RE")) { # || (SC == "SC3" & domain == "RE")
-      res <- correct_for_changed_test_rotation(SC, domain, position, wle, eap, pv)
+    if (SC == "SC4" & domain %in% c("MA", "RE") ||
+        (SC == "SC3" & domain == "RE") ||
+        (SC == "SC2" & domain %in% c("VO", "MA"))) {
+      res <- correct_for_changed_test_rotation(SC, domain, position, wle, eap,
+                                               pv)
       pv <- res[["pv"]]
       wle <- res[["wle"]]
       eap <- res[["eap"]]
@@ -484,6 +512,7 @@ plausible_values <- function(SC,
   )
   res[["min_valid"]] <- min_valid
   res[["include_nr"]] <- include_nr
+  res[["adjust_school_context"]] <- adjust_school_context
   res[["path"]] <- path
   res[["valid_responses_per_person"]] <- valid_responses_per_person
   res[["npv"]] <- npv
@@ -494,10 +523,10 @@ plausible_values <- function(SC,
   res[["mean_PV"]] <- MEAN
   res[["pv"]] <- pv
 
-  if (control$EAP) {
+  if (control[["EAP"]]) {
     res[["eap"]] <- eap
   }
-  if (control$WLE) {
+  if (control[["WLE"]]) {
     res[["wle"]] <- wle
     res[["WLE_rel"]] <- WLE.rel
   }
@@ -506,7 +535,7 @@ plausible_values <- function(SC,
   if (!is.null(bgdata)) {
     if (longitudinal) {
       for (w in seq(ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1,
-        control$ML$nmi
+        control[["ML"]][["nmi"]]
       ))) {
         rownames(res[["regr_coeff"]][[w]]) <-
           c(
@@ -539,7 +568,7 @@ plausible_values <- function(SC,
   res[["items"]] <- if (longitudinal) {
     xsi.fixed[["long"]][[domain]][[SC]][gsub("_", "", waves)]
   } else {
-    mod[[1]]$xsi
+    mod[[1]][["xsi"]]
   }
   class(res) <- "pv_obj"
   res

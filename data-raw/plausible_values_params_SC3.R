@@ -151,6 +151,7 @@ dat$scg9611s_sc3g9_c <- recode(as.numeric(dat$scg9611s_sc3g9_c),
 dat$scg9012s_sc3g9_c <- recode(as.numeric(dat$scg9012s_sc3g9_c),
                                `0` = 0, `1` = 0, `2` = 1, `3` = 2,
                                .default = NA_real_)
+dat[["scg9043s_sc3g9_c"]][dat[["scg9043s_sc3g9_c"]] == 3] <- 2
 mod <- tam.mml(
     resp = dat, irtmodel = "PCM2", verbose = FALSE,
     Q = as.matrix(ifelse(apply(dat, 2, max, na.rm = TRUE) > 1, 0.5, 1))
@@ -158,6 +159,170 @@ mod <- tam.mml(
 item_difficulty_SC3_SC_w5 <- mod$xsi.fixed.estimated[1:37, ]
 save(item_difficulty_SC3_SC_w5,
      file = "data-raw/item_difficulty_SC3_SC_w5.RData")
+
+
+# Estimate item parameters for SC3 Science wave 8 (substitute until technical
+# report is published)
+library(haven)
+library(dplyr)
+library(TAM)
+dat <- read_spss("../SUFs/SC3/SC3_xTargetCompetencies_D_9-0-0.sav") %>%
+    arrange(ID_t) %>%
+    select("scg116420_sc3g11_c", "scg110620_sc3g11_c", "scg110630_sc3g11_c",
+           "scg11012s_sc3g11_c", "scg11083s_sc3g11_c", "scg110720_sc3g11_c",
+           "scg11032s_sc3g11_c", "scg110330_sc3g11_c", "scg116510_sc3g11_c",
+           "scg11652s_sc3g11_c", "scs56320_sc3g11_c", "scg110510_sc3g11_c",
+           "scg110520_sc3g11_c", "scg110540_sc3g11_c", "scg11123s_sc3g11_c",
+           "scg11102s_sc3g11_c", "scg11021s_sc3g11_c", "scg11022s_sc3g11_c",
+           "scg11112s_sc3g11_c", "scg116210_sc3g11_c", "scg11622s_sc3g11_c",
+           "scg116320_sc3g11_c", "scg110930_sc3g11_c", "scs5131s_sc3g11_c",
+           "scs5132s_sc3g11_c", scg11_sc1) %>%
+    filter(!is.na(scg11_sc1)) %>%
+    select(-scg11_sc1)
+apply(dat, 2, table, useNA = "always")
+dat$scg11083s_sc3g11_c <- recode(as.numeric(dat$scg11083s_sc3g11_c),
+                               `0` = 0, `1` = 0, `2` = 1, `3` = 2,
+                               .default = NA_real_)
+dat$scg11123s_sc3g11_c <- recode(as.numeric(dat$scg11123s_sc3g11_c),
+                               `0` = 0, `1` = 0, `2` = 1, `3` = 2, `4` = 3,
+                               .default = NA_real_)
+dat$scs5132s_sc3g11_c <- recode(as.numeric(dat$scs5132s_sc3g11_c),
+                               `0` = 0, `1` = 0, `2` = 1, `3` = 2, `4` = 3,
+                               .default = NA_real_)
+mod <- tam.mml(
+    resp = dat, irtmodel = "PCM2", verbose = FALSE,
+    Q = as.matrix(ifelse(apply(dat, 2, max, na.rm = TRUE) > 1, 0.5, 1))
+)
+item_difficulty_SC3_SC_w8 <- mod$xsi.fixed.estimated[1:25, ]
+save(item_difficulty_SC3_SC_w8,
+     file = "data-raw/item_difficulty_SC3_SC_w8.RData")
+
+
+# Estimate item parameters for SC3 math wave 9 (substitute until technical
+# report is published)
+library(haven)
+library(dplyr)
+library(TAM)
+dat <- read_spss("../SUFs/SC3/SC3_xTargetCompetencies_D_9-0-0.sav") %>%
+    arrange(ID_t) %>%
+    select("maa3q071_sc3g12_c", "mag12v101_sc3g12_c", "mag12q121_sc3g12_c",
+           "mag12v122_sc3g12_c", "mag12r011_sc3g12_c", "mag12v061_sc3g12_c",
+           "mag12r091_sc3g12_c", "mag9r051_sc3g12_c", "mag12q081_sc3g12_c",
+           "mag12d021_sc3g12_c", "mag12q051_sc3g12_c", "mag9d201_sc3g12_c",
+           "mag9v121_sc3g12_c", "mas1q021s_sc3g12_c", "mas1d081_sc3g12_c",
+           "maa3d112_sc3g12_c", "mag9r061_sc3g12_c", "maa3r011_sc3g12_c",
+           "mag12d071_sc3g12_c", "mag12r041_sc3g12_c", "mag12v131_sc3g12_c",
+           "mag12d031_sc3g12_c", "maa3d131_sc3g12_c", "maa3d132_sc3g12_c",
+           "mag9v011_sc3g12_c", "maa3r121_sc3g12_c", "mag12q111_sc3g12_c",
+           "maa3q101_sc3g12_c", "mag9q101_sc3g12_c", "mag12v132_sc3g12_c",
+           "mag12_sc1") %>%
+    filter(!is.na(mag12_sc1)) %>%
+    select(-mag12_sc1)
+apply(dat, 2, table, useNA = "always")
+dat$mas1q021s_sc3g12_c <- recode(as.numeric(dat$mas1q021s_sc3g12_c),
+                         `0` = 0, `1` = 0, `2` = 0, `3` = 1, `4` = 2,
+                         .default = NA_real_)
+mod <- tam.mml(
+    resp = dat, irtmodel = "PCM2", verbose = FALSE,
+    Q = as.matrix(ifelse(apply(dat, 2, max, na.rm = TRUE) > 1, 0.5, 1))
+)
+item_difficulty_SC3_MA_w9 <- mod$xsi.fixed.estimated[1:30, ]
+save(item_difficulty_SC3_MA_w9,
+     file = "data-raw/item_difficulty_SC3_MA_w9.RData")
+
+# Estimate item parameters for SC3 ict wave 9 (substitute until technical
+# report is published)
+library(haven)
+library(dplyr)
+library(TAM)
+dat <- read_spss("../SUFs/SC3/SC3_xTargetCompetencies_D_9-0-0.sav") %>%
+    arrange(ID_t) %>%
+    select("icg12018s_sc3g12_c", "ica4003x_sc3g12_c", "icg12107s_sc3g12_c",
+           "icg12004s_sc3g12_c", "icg12010x_sc3g12_c", "icg12011x_sc3g12_c",
+           "ica4008x_sc3g12_c", "icg12060s_sc3g12_c", "icg12013s_sc3g12_c",
+           "ica4018s_sc3g12_c", "icg12016s_sc3g12_c", "ica4019x_sc3g12_c",
+           "icg12121x_sc3g12_c", "icg12028s_sc3g12_c", "ica4023x_sc3g12_c",
+           "ica4027x_sc3g12_c", "icg12033x_sc3g12_c", "icg12034x_sc3g12_c",
+           "icg12035x_sc3g12_c", "icg12040x_sc3g12_c", "icg12037s_sc3g12_c",
+           "icg12138s_sc3g12_c", "icg12047s_sc3g12_c", "icg12041x_sc3g12_c",
+           "icg12046s_sc3g12_c", "ica4021s_sc3g12_c", "ica4052s_sc3g12_c",
+           "icg12048s_sc3g12_c", "icg12050s_sc3g12_c", "icg12054s_sc3g12_c",
+           "icg12109s_sc3g12_c", "icg12119s_sc3g12_c", icg12_sc1) %>%
+    filter(!is.na(icg12_sc1)) %>%
+    select(-icg12_sc1)
+apply(dat, 2, table, useNA = "always")
+dat$icg12119s_sc3g12_c <- recode(as.numeric(dat$icg12119s_sc3g12_c),
+                         `0` = 0, `1` = 0, `2` = 0, `3` = 1, `4` = 2, `5` = 3,
+                         .default = NA_real_)
+dat$icg12109s_sc3g12_c <- recode(as.numeric(dat$icg12109s_sc3g12_c),
+                         `0` = 0, `1` = 0, `2` = 1, `3` = 2, `4` = 3,
+                         .default = NA_real_)
+dat$icg12054s_sc3g12_c <- recode(as.numeric(dat$icg12054s_sc3g12_c),
+                         `0` = 0, `1` = 0, `2` = 1, `3` = 2, `4` = 3,
+                         .default = NA_real_)
+dat$icg12050s_sc3g12_c <- recode(as.numeric(dat$icg12050s_sc3g12_c),
+                                 `0` = 0, `1` = 0, `2` = 0, `3` = 0, `4` = 0,
+                                 `5` = 1, `6` = 2,
+                                 .default = NA_real_)
+dat$icg12048s_sc3g12_c <- recode(as.numeric(dat$icg12048s_sc3g12_c),
+                                 `0` = 0, `1` = 0, `2` = 0, `3` = 1, `4` = 2,
+                                 `5` = 3,
+                                 .default = NA_real_)
+dat$ica4052s_sc3g12_c <- recode(as.numeric(dat$ica4052s_sc3g12_c),
+                                `0` = 0, `1` = 0, `2` = 0, `3` = 1, `4` = 2,
+                                `5` = 3,
+                                .default = NA_real_)
+dat$ica4021s_sc3g12_c <- recode(as.numeric(dat$ica4021s_sc3g12_c),
+                                `0` = 0, `1` = 0, `2` = 0, `3` = 0, `4` = 0,
+                                `5` = 1,
+                                .default = NA_real_)
+dat$icg12046s_sc3g12_c <- recode(as.numeric(dat$icg12046s_sc3g12_c),
+                                 `0` = 0, `1` = 0, `2` = 0, `3` = 1, `4` = 2,
+                                 `5` = 3, `6` = 4,
+                                 .default = NA_real_)
+dat$icg12047s_sc3g12_c <- recode(as.numeric(dat$icg12047s_sc3g12_c),
+                                 `0` = 0, `1` = 0, `2` = 0, `3` = 0, `4` = 0,
+                                 `5` = 0, `6` = 0, `7` = 1, `8` = 2, `9` = 3,
+                                 `10` = 4,
+                                 .default = NA_real_)
+dat$icg12138s_sc3g12_c <- recode(as.numeric(dat$icg12138s_sc3g12_c),
+                                 `0` = 0, `1` = 0, `2` = 0, `3` = 1, `4` = 2,
+                                 .default = NA_real_)
+dat$icg12028s_sc3g12_c <- recode(as.numeric(dat$icg12028s_sc3g12_c),
+                                `0` = 0, `1` = 0, `2` = 0, `3` = 0, `4` = 1,
+                                `5` = 2,
+                                .default = NA_real_)
+dat$icg12016s_sc3g12_c <- recode(as.numeric(dat$icg12016s_sc3g12_c),
+                                 `0` = 0, `1` = 0, `2` = 0, `3` = 1, `4` = 2,
+                                 .default = NA_real_)
+dat$ica4018s_sc3g12_c <- recode(as.numeric(dat$ica4018s_sc3g12_c),
+                                 `0` = 0, `1` = 1, `2` = 2, `3` = 2, `4` = 2,
+                                 `5` = 2, `6` = 3, `7` = 3, `8` = 4,
+                                 .default = NA_real_)
+dat$icg12013s_sc3g12_c <- recode(as.numeric(dat$icg12013s_sc3g12_c),
+                                 `0` = 0, `1` = 0, `2` = 1, `3` = 1,
+                                 .default = NA_real_)
+dat$icg12060s_sc3g12_c <- recode(as.numeric(dat$icg12060s_sc3g12_c),
+                                 `0` = 0, `1` = 0, `2` = 0, `3` = 0, `4` = 1,
+                                 .default = NA_real_)
+dat$icg12004s_sc3g12_c <- recode(as.numeric(dat$icg12004s_sc3g12_c),
+                                 `0` = 0, `1` = 0, `2` = 0, `3` = 1, `4` = 2,
+                                 `5` = 3, `6` = 4,
+                                 .default = NA_real_)
+dat$icg12107s_sc3g12_c <- recode(as.numeric(dat$icg12107s_sc3g12_c),
+                                 `0` = 0, `1` = 0, `2` = 0, `3` = 0, `4` = 1,
+                                 `5` = 2,
+                                 .default = NA_real_)
+dat$icg12018s_sc3g12_c <- recode(as.numeric(dat$icg12018s_sc3g12_c),
+                                 `0` = 0, `1` = 0, `2` = 0, `3` = 0, `4` = 1,
+                                 .default = NA_real_)
+mod <- tam.mml(
+    resp = dat, irtmodel = "PCM2", verbose = FALSE,
+    Q = as.matrix(ifelse(apply(dat, 2, max, na.rm = TRUE) > 1, 0.5, 1))
+)
+item_difficulty_SC3_IC_w9 <- mod$xsi.fixed.estimated[1:32, ]
+save(item_difficulty_SC3_IC_w9,
+     file = "data-raw/item_difficulty_SC3_IC_w9.RData")
 
 # Estimate item parameters for SC3 NR/NT waves 3 and 6 (no TR) and calculate
 # link constant from data in the SUF
