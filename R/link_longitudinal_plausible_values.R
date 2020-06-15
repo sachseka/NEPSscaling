@@ -59,10 +59,14 @@ link_longitudinal_plausible_values <- function(datalist, npv,
     ]
   } else {
     for (i in seq(2, length(waves))) {
-      longitudinal_IDs[[i - 1]] <- eap[["ID_t"]][
-        !is.na(eap[paste0("eap", waves[i - 1])]) &
-          !is.na(eap[paste0("eap", waves[i])])
+      longitudinal_IDs[[i - 1]] <- data[["ID_t"]][
+        !is.na(data[[wle_names[[SC]][[domain]][[gsub("_", "", waves[i-1])]]]]) &
+          !is.na(data[[wle_names[[SC]][[domain]][[gsub("_", "", waves[i])]] ]])
       ]
+      # longitudinal_IDs[[i - 1]] <- eap[["ID_t"]][
+      #   !is.na(eap[paste0("eap", waves[i - 1])]) &
+      #     !is.na(eap[paste0("eap", waves[i])])
+      # ]
     }
   }
   # re-scaling for longitudinal link

@@ -1363,6 +1363,82 @@ testlet_position <- list(
   )
 )
 
+# wle variable names for calculating longitudinal IDs
+wle_names <- list(
+  SC1 = list(
+    CD = list(w1 = "cdn1_sc1"),
+    SC = list(w6 = "scn6_sc1"),
+    MA = list(
+      w5 = "man5_sc1", w7 = "man7_sc1u"
+    )
+  ),
+  SC2 = list(
+    SC = list(
+      w1 = "sck1_sc1u", w3 = "scg1_sc1u", w5 = "scg3_sc1u"
+    ),
+    MA = list(
+      w2 = "mak2_sc1u", w3 = "mag1_sc1u", w4 = "mag2_sc1u", w6 = "mag4_sc1u"
+    ),
+    VO = list(
+      w1 = "vok1_sc1u", w3 ="vog1_sc1u", w5 = "vog3_sc1u"
+    ),
+    GR = list(w1 = "grk1_sc1u", w3 = "grg1_sc1u"),
+    RE = list(
+      w4 = "reg2_sc1u", w6 = "reg4_sc1u"
+    ),
+    NR = list(w4 = "nrg2_sc1u"),
+    NT = list(w4 = "ntg2_sc1u"),
+    IC = list(w5 = "icg3_sc1u"),
+    ORA = list(w6 = "org4_sc1a"),
+    ORB = list(w6 = "org4_sc1b")
+  ),
+  SC3 = list(
+    MA = list(
+      w1 = "mag5_sc1u", w3 = "mag7_sc1u", w5 = "mag9_sc1u", w9 = "mag12_sc1u"
+    ),
+    RE = list(
+      w1 = "reg5_sc1u", w3 = "reg7_sc1u", w6 = "reg9_sc1u", w9 = "reg12_sc1u"
+    ),
+    ORA = list(w1 = "org5_sc1a", w3 = "org7_sc1a", w5 = "org9_sc1a"), # !
+    ORB = list(w1 = "org5_sc1b", w3 = "org7_sc1b", w5 = "org9_sc1b"), # !
+    SC = list(
+      w2 = "scg6_sc1", w5 = "scg9_sc1u", w8 = "scg11_sc1" # !
+    ),
+    IC = list(
+      w2 = "icg6_sc1u", w5 = "icg9_sc1u", w9 = "icg12_sc1u"
+    ),
+    NR = list(w3 = "nrg7_sc1", w6 = "nrg9_sc3g9_sc1"), # !
+    NT = list(w3 = "ntg7_sc1", w6 = "ntg9_sc3g9_sc1"), # !
+    LI = list(w6 = "lig9_sc1u"),
+    EF = list(w7 = "efg10_sc1u", w9 = "efg12_sc1u"),
+    ST = list(w9 = "stg12_sc1u")
+  ),
+  SC4 = list(
+    SC = list(w1 = "scg9_sc1u", w4 = "scg11_sc1u"),
+    MA = list(w1 = "mag9_sc1u", w7 = "mag12_sc1u", w10 = "maa10_sc1u"),
+    IC = list(w1 = "icg9_sc1u", w7 = "icg12_sc1u"),
+    NR = list(w2 = "nrg9_sc1u"),
+    NT = list(w2 = "ntg9_sc1u"),
+    RE = list(w2 = "reg9_sc1u", w7 = "reg12_sc1u", w10 = "rea10_sc1u"),
+    EF = list(w3 = "efg10_sc1u", w7 = "efg12_sc1u"),
+    ST = list(w7 = "stg12_sc1u")
+  ),
+  SC5 = list(
+    MA = list(w1 = "mas1_sc1u", w12 = "mas12_sc1u"),
+    RE = list(w1 = "res1_sc1u", w12 = "res12_sc1u"),
+    SC = list(w5 = "scs3_sc1u"),
+    IC = list(w5 = "ics3_sc1u"),
+    BA = list(w7 = "bas7_sc1u"),
+    EF = list(w12 = "efs12_sc1u")
+  ),
+  SC6 = list(
+    MA = list(w3 = "maa3_sc1u", w9 = "maa9_sc1u"),
+    RE = list(w3 = "rea3_sc1u", w5 = "rea5_sc1u", w9 = "rea9_sc1u"),
+    SC = list(w5 = "sca5_sc1u"),
+    IC = list(w5 = "ica5_sc1u")
+  )
+)
+
 # item difficulties for competence tests
 load(file = "data-raw/xsi_fixed.RData")
 
@@ -1370,6 +1446,6 @@ load(file = "data-raw/xsi_fixed.RData")
 load(file = "data-raw/diffMat.RData")
 
 usethis::use_data(
-  item_labels, link_constant, xsi.fixed, diffMat, testlet_position,
+  item_labels, link_constant, xsi.fixed, diffMat, testlet_position, wle_names,
   internal = TRUE, overwrite = TRUE
   )
