@@ -45,7 +45,7 @@ scale_person_estimates <- function(pv, wle, eap,
       wle[wle[["ID_t"]] %in% longitudinal_IDs[["w5"]], "wle_w9"] <-
         wle[wle[["ID_t"]] %in% longitudinal_IDs[["w5"]], "wle_w9"] - term2
     }
-  } else if ((SC == "SC4" & domain == "EF") ||
+  } else if ((SC %in% c("SC3", "SC4") & domain == "EF") ||
              domain %in% c("ORA", "ORB", "NR", "NT")) { # already linked via item parameters!
     return(list(pv = pv, wle = wle, eap = eap))
   } else {

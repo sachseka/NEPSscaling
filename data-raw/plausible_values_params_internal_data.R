@@ -1414,7 +1414,7 @@ wle_names <- list(
     ST = list(w9 = "stg12_sc1u")
   ),
   SC4 = list(
-    SC = list(w1 = "scg9_sc1u", w4 = "scg11_sc1u"),
+    SC = list(w1 = "scg9_sc1u", w5 = "scg11_sc1u"),
     MA = list(w1 = "mag9_sc1u", w7 = "mag12_sc1u", w10 = "maa10_sc1u"),
     IC = list(w1 = "icg9_sc1u", w7 = "icg12_sc1u"),
     NR = list(w2 = "nrg9_sc1u"),

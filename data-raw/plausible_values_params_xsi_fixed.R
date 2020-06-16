@@ -1201,7 +1201,7 @@ colnames(x3w7)[1] <- ""
 rm(scoring)
 x3w9 <- cbind(item = 1:length(items$w9),
               # xsi = c(-0.87, -0.21, -1.15, -0.62, 0.20, 1.82, -0.89, 0.21))
-              xsi = c(-0.870616151, -0.208347002, -1.153352604, -0.617262276,
+              xsi = c(-0.870616151, -1.153352604, -0.617262276,
                       0.202559982, 1.816132743, -0.886134130, 0.207340070))
 rownames(x3w9) <- items$w9
 colnames(x3w9)[1] <- ""
@@ -1214,11 +1214,9 @@ colnames(x3w9)[1] <- ""
     # gsub("efg12c00s_sc3g12_c", "efg10108s_sc3g12_c", rownames(x3w9)[c(3, 21:23)])
 # Link via setting the common items in g12 to g10 values, not mean/mean!
 x3w9long <- cbind(item = 1:length(items$w9),
-                  xsi = c(#-0.73193623, -0.04568658, #-1.20599428, -0.49651959,
-                          # 0.53185271, 2.16816310, -0.60536367, 0.50848183
-                          -0.25, -0.72, -1.153352604, -0.617262276,
+                  xsi = c(-0.25, -0.208347002, -0.72, -0.617262276,
                           0.202559982, 1.816132743, -0.886134130, 0.207340070
-                          #-0.25, -0.72, -1.15, -0.62, 0.20, 1.82, -0.89, 0.21
+                          #-0.25, -0.21, -0.72, -0.62, 0.20, 1.82, -0.89, 0.21
                           ))
 rownames(x3w9long) <- items$w9
 colnames(x3w9long)[1] <- ""
@@ -1260,7 +1258,7 @@ rownames(x4w7) <- items$w7
 colnames(x4w7)[1] <- ""
 # Link via setting the common items in g12 to g10 values, not mean/mean!
 x4w7long <- cbind(item = 1:length(items$w7),
-              xsi = c(-0.25, -0.77, -1.12, -0.40, 0.37, 2.53, -0.66, 0.43))
+              xsi = c(-0.25, -0.08, -0.77, -0.40, 0.37, 2.53, -0.66, 0.43))
 rownames(x4w7long) <- items$w7
 colnames(x4w7long)[1] <- ""
 
