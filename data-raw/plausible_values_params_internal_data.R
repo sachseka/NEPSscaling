@@ -1137,29 +1137,37 @@ item_labels <-
 testlet_position <- list(
   SC1 = list(
     CD = list(
-      w1 = matrix(c(NA, NA), 1, 2)
+      w1 = matrix(c(NA,
+                    NA), 1, 2)
     ),
     MA = list(
-      w5 = matrix(c(599, 599), 1, 2),
-      w7 = matrix(c(NA, NA), 1, 2)#,
+      w5 = matrix(c(599,
+                    599), 1, 2),
+      w7 = matrix(c(NA,
+                    NA), 1, 2)#,
       # w9 = matrix(c(NA, NA), 1, 2)
     ),
     SC = list(
-      w6 = matrix(c(600, 600), 1, 2)#,
+      w6 = matrix(c(600,
+                    600), 1, 2)#,
       # w8 = matrix(c(NA, NA), 1, 2)
     )
   ),
   SC2 = list(
     RE = list(
-      w6 = matrix(c(405, 405), 1, 2)#,
+      w6 = matrix(c(405,
+                    405), 1, 2)#,
       # w9 = matrix(c(NA, NA), 1, 2)
     ),
     MA = list(
-      w2 = matrix(c(152, 152), 1, 2),
+      w2 = matrix(c(152,
+                    152), 1, 2),
       w3 = matrix(c(252, 253, 254, 255, 256, 257, 258, 259,
                     270, 271, 273, 274, 275, 276, 277, NA), 8, 2),
-      w4 = matrix(c(391, 391), 1, 2),
-      w6 = matrix(c(405, 405), 1, 2)#,
+      w4 = matrix(c(391,
+                    391), 1, 2),
+      w6 = matrix(c(405,
+                    405), 1, 2)#,
       # w9 = matrix(c(NA, NA), 1, 2)
     ),
     IC = list(
@@ -1167,7 +1175,8 @@ testlet_position <- list(
                     366, 367), 2, 2)
     ),
     SC = list(
-      w1 = matrix(c(131, 131), 1, 2),
+      w1 = matrix(c(131,
+                    131), 1, 2),
       w3 = matrix(c(270, 271, 273, 274, 275, 276, 277, NA,
                     252, 253, 254, 255, 256, 257, 258, 259), 8, 2),
       w5 = matrix(c(366, 367,
@@ -1175,33 +1184,40 @@ testlet_position <- list(
       # w9 = matrix(c(NA, NA), 1, 2)
     ),
     NR = list(
-      w4 = matrix(c(391, 391), 1, 2)
+      w4 = matrix(c(391,
+                    391), 1, 2)
     ),
     NT = list(
-      w4 = matrix(c(391, 391), 1, 2)
+      w4 = matrix(c(391,
+                    391), 1, 2)
     ),
     ORA = list(
-      w6 = matrix(c(405, 405), 1, 2)
+      w6 = matrix(c(405,
+                    405), 1, 2)
     ),
     ORB = list(
-      w6 = matrix(c(405, 405), 1, 2)
+      w6 = matrix(c(405,
+                    405), 1, 2)
     ),
     VO = list( # VO-GR always in same order, but rotated with MD and on day 1 or 2
-      w1 = matrix(c(131, 131), 1, 2),
+      w1 = matrix(c(131,
+                    131), 1, 2),
       w3 = matrix(c(252, 253, 254, 255, 256, 257, 258, 259, 270, 271, 272, 273, 274, 275, 276, 277,
                     252, 253, 254, 255, 256, 257, 258, 259, 270, 271, 272, 273, 274, 275, 276, 277), 16, 2),
       w5 = matrix(c(366, 367,
                     366, 367), 2, 2)
     ),
     GR = list(
-      w1 = matrix(c(131, 131), 1, 2),
+      w1 = matrix(c(131,
+                    131), 1, 2),
       w3 = matrix(c(252, 253, 254, 255, 256, 257, 258, 259, 270, 271, 272, 273, 274, 275, 276, 277,
                     252, 253, 254, 255, 256, 257, 258, 259, 270, 271, 272, 273, 274, 275, 276, 277), 16, 2)
     )
   ),
   SC3 = list(
     RE = list(
-      w1 = matrix(c(132, 133), 1, 2),
+      w1 = matrix(c(132,
+                    133), 1, 2),
       w3 = matrix(c(263, 265,
                     262, 264), 2, 2),
       w6 = matrix(c(374, 375,
@@ -1210,26 +1226,30 @@ testlet_position <- list(
                     623, 624, 625, 626), 4, 2)
     ),
     MA = list(
-      w1 = matrix(c(133, 132), 1, 2),
+      w1 = matrix(c(133,
+                    132), 1, 2),
       w3 = matrix(c(262, 264,
                     263, 265), 2, 2),
       w5 = matrix(c(539:592,
                     539:592), 54, 2),
-      w9 = matrix(c(623:630,
-                    623:630), 8, 2)
+      w9 = matrix(c(623, 624, 625, 626, 627, 628, 629, 630,
+                    623, 624, 625, 626, 627, 628, 629, 630), 8, 2)
     ),
     IC = list(
-      w2 = matrix(c(169, 170), 1, 2),
+      w2 = matrix(c(169,
+                    170), 1, 2),
       w5 = matrix(c(539:565,
                     566:592), 27, 2),
       w9 = matrix(c(623, 624, 625, 626,
                     627, 628, 629, 630), 4, 2)
     ),
     SC = list(
-      w2 = matrix(c(170, 169), 1, 2),
+      w2 = matrix(c(170,
+                    169), 1, 2),
       w5 = matrix(c(566:592,
                     539:565), 27, 2),
-      w8 = matrix(c(493, 493), 4, 2)
+      w8 = matrix(c(493,
+                    493), 1, 2)
     ),
     ORA = list(
       w1 = matrix(c(132, 133,
@@ -1276,7 +1296,8 @@ testlet_position <- list(
   ),
   SC4 = list(
     RE = list(
-      w2 = matrix(c(130, 130), 1, 2),
+      w2 = matrix(c(130,
+                    130), 1, 2),
       w7 = matrix(c(283, 284, 285, 286, 287, 288, 300, 301, 302, 303,
                     281, 282, 289, 290, 291, 292, 296, 297, 298, 299), 10, 2),
       w10 = matrix(c(470, 471, 474, 475,
@@ -1291,22 +1312,28 @@ testlet_position <- list(
                      470, 471, NA), 3, 2)
     ),
     IC = list(
-      w1 = matrix(c(128, 129), 1, 2),
+      w1 = matrix(c(128,
+                    129), 1, 2),
       w7 = matrix(c(281, 282, 295, 296, 297, 298, 299,
                     283, 286, 300, 301, 302, 303, NA), 7, 2)
     ),
     SC = list(
-      w1 = matrix(c(129, 128), 1, 2),
-      w5 = matrix(c(206, 206), 1, 2)
+      w1 = matrix(c(129,
+                    128), 1, 2),
+      w5 = matrix(c(206,
+                    206), 1, 2)
     ),
     NR = list(
-      w2 = matrix(c(130, 130), 1, 2)
+      w2 = matrix(c(130,
+                    130), 1, 2)
     ),
     NT = list(
-      w2 = matrix(c(130, 130), 1, 2)
+      w2 = matrix(c(130,
+                    130), 1, 2)
     ),
     EF = list(
-      w3 = matrix(c(NA, NA), 1, 2),
+      w3 = matrix(c(NA,
+                    NA), 1, 2),
       w7 = matrix(c(298, 299, 302, 303,
                     296, 297, 300, 301), 4, 2)
     ),
@@ -1317,12 +1344,14 @@ testlet_position <- list(
   ),
   SC5 = list(
     RE = list(
-      w1 = matrix(c(126, 127), 1, 2),
+      w1 = matrix(c(126,
+                    127), 1, 2),
       w12 = matrix(c(459, 462, 465, 468,
                      458, 463, 464, 469), 4, 2)
     ),
     MA = list(
-      w1 = matrix(c(127, 126), 1, 2),
+      w1 = matrix(c(127,
+                    126), 1, 2),
       w12 = matrix(c(458, 460, 464, 466,
                      459, 461, 465, 467), 4, 2)
     ),
@@ -1335,7 +1364,8 @@ testlet_position <- list(
                     331, 333, 335, NA), 4, 2)
     ),
     BA = list(
-      w7 = matrix(c(NA, NA), 1, 2)
+      w7 = matrix(c(NA,
+                    NA), 1, 2)
     ),
     EF = list(w12 = matrix(c(461, 463, 467, 469,
                              460, 462, 466, 468), 4, 2))
@@ -1344,21 +1374,24 @@ testlet_position <- list(
     RE = list(
       w3 = matrix(c(123, 125,
                     122, 124), 2, 2),
-      w5 = matrix(c(249, 249), 1, 2),
+      w5 = matrix(c(249,
+                    249), 1, 2),
       w9 = matrix(c(444, 445, 448, 449, 452, 453, 454, 455,
                     446, 447, 450, 451, 456, 457, NA, NA), 8, 2)
     ),
     MA = list(
       w3 = matrix(c(122, 124,
-                    123, 125), 1, 2),
+                    123, 125), 2, 2),
       w9 = matrix(c(446, 447, 450, 451, 456, 457, NA, NA,
                     444, 445, 448, 449, 452, 453, 454, 455), 8, 2)
     ),
     SC = list(
-      w5 = matrix(c(247, 248), 1, 2)
+      w5 = matrix(c(247,
+                    248), 1, 2)
     ),
     IC = list(
-      w5 = matrix(c(248, 247), 1, 2)
+      w5 = matrix(c(248,
+                    247), 1, 2)
     )
   )
 )
