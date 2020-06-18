@@ -190,7 +190,7 @@ plausible_values <- function(SC,
     stop(cat(paste0(
       "Wave is missing, but must be provided.\n",
       "Please note that, for longitudinal estimation, ",
-      "any wave is fine and will be corrected internally."
+      "any of the waves in which the competence was assessed is fine."
     )),
     call. = FALSE
     )
@@ -216,16 +216,6 @@ plausible_values <- function(SC,
   if (!grepl("/$", path)) {
     path <- paste0(path, "/")
   }
-  if (min_valid < 0) {
-    stop("min_valid must be greater than or equal to 0.", call. = FALSE)
-  }
-  if (min_valid > 50) {
-    warning(paste(
-      "min_valid is very high.",
-      "This might exclude all possible test takers from",
-      "estimation."
-    ))
-  }
   if (is.null(item_labels[[SC]][[domain]][[wave]])) {
     stop(paste0(
       "There were no competence tests for ", SC, " ", domain, " ",
@@ -233,13 +223,13 @@ plausible_values <- function(SC,
     ), call. = FALSE)
   }
   if (longitudinal &&
-    (
-      (SC == "SC6" & domain %in% c("IC", "SC")) ||
+      (
+        (SC == "SC6" & domain %in% c("IC", "SC")) ||
         (SC == "SC5" & domain %in% c("IC", "SC", "BA", "EF")) ||
-      (SC == "SC3" & domain %in% c("ST", "LI")) ||
+        (SC == "SC3" & domain %in% c("ST", "LI")) ||
         (SC == "SC2" & domain %in% c("RE", "GR")) ||
-      (SC == "SC1" & domain %in% c("CD", "SC"))
-    )
+        (SC == "SC1" & domain %in% c("CD", "SC"))
+      )
   ) {
     stop(
       cat(paste0(
@@ -249,6 +239,13 @@ plausible_values <- function(SC,
       )),
       call. = FALSE
     )
+  }
+  if (min_valid < 0) {
+    stop("min_valid must be greater than or equal to 0.", call. = FALSE)
+  }
+  if (min_valid >= length(item_labels[[SC]][[domain]][[wave]])) {
+    stop("min_valid is too high. It excludes all possible test takers.",
+         call. = FALSE)
   }
 
   # create auxiliary waves variable for longitudinal estimation
@@ -280,34 +277,14 @@ plausible_values <- function(SC,
   data <- read_in_competence_data(path, SC, domain)
 
   # number of not-reached items as processing time proxy
-  nr <- NULL
-  if (include_nr) {
-    sel <- (if (longitudinal) {
-      names(data) %in% unique(unlist(item_labels[[SC]][[domain]]))
-    } else {
-      names(data) %in% item_labels[[SC]][[domain]][[wave]]
-    })
-    # in the longitudinal case, missing test taking for later time points
-    # causes problems in imputation, if include_nr = TRUE, bgdata = NULL,
-    # thus, remove NAs from data
-    nr <- data.frame(ID_t = data[["ID_t"]],
-                     nr = rowSums(data[, sel] == -94, na.rm = TRUE))
-    if (length(unique(nr[["nr"]])) == 1) {
-      include_nr <- FALSE
-      nr <- NULL
-      cat(
-        "The number of not-reached missing values is constant.",
-        "Thus, it is not considered in the background model.\n"
-      )
-    }
-  }
-  # set user-defined missings to NA
-  data[data < -15] <- NA # assumption: WLEs this low are not to be expected
+  res <- not_reached_as_proxy(
+    include_nr, longitudinal, data, SC, domain, wave, waves)
+  nr <- res[["nr"]]
+  data <- res[["data"]]
 
   # test data and test taker selection
   res <- select_test_responses_and_test_takers(
-    longitudinal, SC, domain,
-    data, wave, min_valid
+    longitudinal, SC, domain, data, wave, min_valid
   )
   data <- res[["data"]]
   resp <- res[["resp"]]
