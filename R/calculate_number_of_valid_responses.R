@@ -16,6 +16,7 @@ calculate_number_of_valid_responses <- function(longitudinal, resp, waves) {
           x[["ID_t"]]
         }))
       ))
+    n.valid <- n.valid[order(n.valid[["ID_t"]]), , drop = FALSE]
     for (w in seq(length(waves))) {
       tmp <-
         data.frame(
