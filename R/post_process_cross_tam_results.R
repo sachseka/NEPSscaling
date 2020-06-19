@@ -42,7 +42,7 @@ post_process_cross_tam_results <- function(mod, npv, control, Y, Y.pid, eap, i,
                              names(mod$person)
                          )],
                          by = c("ID_t" = "pid")
-        ))
+        )) %>% dplyr::arrange(.data$ID_t)
     EAP.rel <- c(EAP.rel, mod$EAP.rel)
     # se estimation gives warning "In sqrt(-1/info_pp) : NaNs produced" because
     # item difficulty parameters are fixed --> suppress warnings!

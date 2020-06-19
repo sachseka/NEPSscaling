@@ -36,7 +36,12 @@ estimate_cross_pcm_corrected_for_rotation <- function(
     modeltype = "PCM",
     resp = resp[, -which(names(resp) == "ID_t")]
   )$B
-  B[ind, , ] <- 0.5 * B[ind, , ]
+  if (SC == "SC4" & domain == "SC" & waves == "_w1") {
+    B[ind[[1]], , ] <- (2/3) * B[ind[[1]], , ]
+    B[ind[[2]], , ] <- 0.5 * B[ind[[2]], , ]
+  } else {
+    B[ind, , ] <- 0.5 * B[ind, , ]
+  }
   pvs <- list(NULL)
   EAP.rel <- NULL
   regr.coeff <- NULL

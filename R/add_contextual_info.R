@@ -103,13 +103,12 @@ add_contextual_info <- function(path, SC, domain, waves, bgdata, data) {
 
   # match wle to school id, get group average per school
   school_data <- school_data %>%
+    haven::zap_labels() %>%
     tidyr::pivot_wider(names_from = "wave",
                        names_prefix = "school_w",
                        values_from = "ID_i") %>%
     dplyr::mutate_all(as.numeric)
-  school_data <- suppressWarnings(
-      haven::zap_labels(dplyr::left_join(data, school_data, by = "ID_t"))
-  )
+  school_data <- dplyr::left_join(data, school_data, by = "ID_t")
   school_waves <-
     names(school_data)[names(school_data) %in% paste0("school", waves)]
   for (i in seq(length(waves))) {
@@ -122,14 +121,12 @@ add_contextual_info <- function(path, SC, domain, waves, bgdata, data) {
     }
     names(school_data)[which(names(school_data) == vn)] <- paste0(vn, "_schavg")
   }
-  bgdata <- suppressWarnings(
-    dplyr::left_join(bgdata,
-                     school_data %>%
-                       dplyr::select(dplyr::matches("ID_t|_schavg")),
-                     by = "ID_t") %>%
+  bgdata <- dplyr::left_join(bgdata,
+                             school_data %>%
+                               dplyr::select(dplyr::matches("ID_t|_schavg")),
+                             by = "ID_t") %>%
     dplyr::arrange(.data$ID_t)
-  )
-
+  
   bgdata
 }
 

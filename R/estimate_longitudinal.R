@@ -44,7 +44,12 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
                 SC, domain,
                 gsub("_", "", waves)[i]
             )
-            Q[[i]][ind, ] <- 0.5
+            if (SC == "SC4" & domain == "SC" & i == 1) {
+                Q[[i]][ind[[1]], ] <- 2/3
+                Q[[i]][ind[[2]], ] <- 0.5
+            } else {
+                Q[[i]][ind, ] <- 0.5
+            }
         }
     }
     pvs <- replicate(ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1,
@@ -157,7 +162,7 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
                                      names(mod[[j]]$person)
                                  )],
                                  by = c("ID_t" = "pid")
-                ))
+                )) %>% dplyr::arrange(.data$ID_t)
             if (j == 1) {
                 EAP.rel[[i]] <- mod[[j]]$EAP.rel
                 regr.coeff[[i]] <- quiet(TAM::tam.se(mod[[j]])$beta)

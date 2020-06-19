@@ -38,5 +38,6 @@ estimate_wles <- function(longitudinal, waves, mod) {
       each = 2
       )
     ))
+  wle <- wle[order(wle[["ID_t"]]), ]
   list(wle = wle, WLE.rel = WLE.rel)
 }

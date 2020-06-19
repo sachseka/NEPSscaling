@@ -19,7 +19,8 @@ extract_correct_number_of_pvs <- function(bgdata, control, npv, pvs) {
         colnames(pvs[[i]][[j]])
       )]
       datalist[[d]] <- datalist[[d]] %>%
-        dplyr::select(.data$ID_t, dplyr::everything())
+        dplyr::select(.data$ID_t, dplyr::everything()) %>%
+        dplyr::arrange(.data$ID_t)
       d <- d + 1
     }
   }

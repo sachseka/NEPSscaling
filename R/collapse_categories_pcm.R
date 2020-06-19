@@ -347,7 +347,7 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
         # left out because of extreme amount of missing values (almost 100%!)
         # resp[["maa9d23s_sc4a10_c"]][resp[["maa9d23s_sc4a10_c"]] == 1] <- 0
         # resp[["maa9d23s_sc4a10_c"]][resp[["maa9d23s_sc4a10_c"]] == 2] <- 1
-
+        # 
         # resp[["maa9r18s_sc4a10_c"]][resp[["maa9r18s_sc4a10_c"]] == 2] <- 1
 
         resp[["maa9d13s_sc4a10_c"]][resp[["maa9d13s_sc4a10_c"]] %in% c(1, 2, 3)] <- 0

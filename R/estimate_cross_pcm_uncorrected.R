@@ -36,7 +36,12 @@ estimate_cross_pcm_uncorrected <- function(
       resp = resp[, -which(names(resp) == "ID_t")]
   )$B
   ind <- get_indicators_for_half_scoring(SC, domain, gsub("_", "", waves))
-  B[ind, , ] <- 0.5 * B[ind, , ]
+  if (SC == "SC4" & domain == "SC" & waves == "_w1") {
+    B[ind[[1]], , ] <- (2/3) * B[ind[[1]], , ]
+    B[ind[[2]], , ] <- 0.5 * B[ind[[2]], , ]
+  } else {
+    B[ind, , ] <- 0.5 * B[ind, , ]
+  }
   pvs <- list(NULL)
   EAP.rel <- NULL
   eap <-
