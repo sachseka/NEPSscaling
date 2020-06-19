@@ -52,30 +52,10 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
             }
         }
     }
-    pvs <- replicate(ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1,
-                            control$ML$nmi
-    ), list(), simplify = FALSE)
-    EAP.rel <- replicate(
-        ifelse(
-            is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi
-        ),
-        list(), simplify = FALSE)
-    regr.coeff <- replicate(
-        ifelse(
-            is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi
-        ),
-        list(), simplify = FALSE)
-    eap <-
-        replicate(
-            ifelse(
-                is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi
-            ),
-            data.frame(ID_t = ID_t$ID_t),
-            simplify = FALSE
-        )
-    for (i in 1:ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1,
-                       control$ML$nmi
-    )) {
+    times <- ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi)
+    pvs <- EAP.rel <- regr.coeff <- replicate(times, list(), simplify = FALSE)
+    eap <- replicate(times, data.frame(ID_t = ID_t$ID_t), simplify = FALSE)
+    for (i in 1:times) {
         if (!is.null(imp)) {
             bgdatacom <- imp[[i]]
             for (f in seq(ncol(bgdatacom))) {
@@ -168,7 +148,8 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
                 regr.coeff[[i]] <- quiet(TAM::tam.se(mod[[j]])$beta)
             } else {
                 EAP.rel[[i]] <- c(EAP.rel[[i]], mod[[j]]$EAP.rel)
-                regr.coeff[[i]] <- cbind(regr.coeff[[i]], quiet(TAM::tam.se(mod[[j]])$beta))
+                regr.coeff[[i]] <- cbind(regr.coeff[[i]],
+                                         quiet(TAM::tam.se(mod[[j]])$beta))
             }
         }
         # tmp_pv: list of length(waves), each containing list of npv estimations

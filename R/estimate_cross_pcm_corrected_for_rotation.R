@@ -42,18 +42,11 @@ estimate_cross_pcm_corrected_for_rotation <- function(
   } else {
     B[ind, , ] <- 0.5 * B[ind, , ]
   }
+  times <- ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi)
   pvs <- list(NULL)
   EAP.rel <- NULL
-  regr.coeff <- NULL
-  eap <-
-    replicate(
-      ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi),
-      data.frame(ID_t = ID_t$ID_t),
-      simplify = FALSE
-    )
-  for (i in 1:ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1,
-    control$ML$nmi
-  )) {
+  eap <- replicate(times, data.frame(ID_t = ID_t$ID_t), simplify = FALSE)
+  for (i in 1:times) {
     if (!is.null(imp)) {
       bgdatacom <- imp[[i]]
       for (f in seq(ncol(bgdatacom))) {
