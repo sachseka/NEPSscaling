@@ -117,7 +117,7 @@ get_indicators_for_half_scoring <- function(SC, domain, wave) {
       }
     } else if (domain == "SC") {
       if (wave == "w2") {
-        ind <- c(1, 10, 12, 15, 18, 19, 20, 24)
+        ind <- c(15, 20)
       } else if (wave == "w5") {
         ind <- c(2, 4, 7, 11, 14, 18, 19, 20, 24, 30, 32, 33)
       } else if (wave == "w8") {

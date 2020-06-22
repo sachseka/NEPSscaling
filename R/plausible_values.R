@@ -466,9 +466,13 @@ plausible_values <- function(SC,
       eap <- res[["eap"]]
     }
   } else {
-    pv <- set_pvs_not_enough_valid_resp_NA(
-      datalist, valid_responses_per_person, min_valid, npv
+    res <- set_not_enough_valid_resp_NA(
+      datalist, eap, wle = ifelse(control[["WLE"]], wle, NULL),
+      valid_responses_per_person, min_valid, npv
     )
+    pv <- res[["pv"]]
+    wle <- res[["wle"]]
+    eap <- res[["eap"]]
   }
 
   # calculate posterior mean of estimated eaps/plausible values
