@@ -26,15 +26,16 @@ estimate_cross_pcm_corrected_for_rotation <- function(
                                                       waves, ID_t, resp, type,
                                                       domain, SC, control, npv,
                                                       position) {
+  items <- rownames(xsi.fixed$cross[[domain]][[SC]][[gsub("_", "", waves)]])
   res <- collapse_categories_pcm(
-    resp[, -which(names(resp) == "ID_t")], SC,
+    resp[, items], SC,
     gsub("_", "", waves), domain
   )
-  resp[, -which(names(resp) == "ID_t")] <- res$resp
+  resp[, items] <- res$resp[, items]
   ind <- get_indicators_for_half_scoring(SC, domain, gsub("_", "", waves))
   B <- TAM::designMatrices(
     modeltype = "PCM",
-    resp = resp[, -which(names(resp) == "ID_t")]
+    resp = resp[, items]
   )$B
   if (SC == "SC4" & domain == "SC" & waves == "_w1") {
     B[ind[[1]], , ] <- (2/3) * B[ind[[1]], , ]
@@ -67,7 +68,6 @@ estimate_cross_pcm_corrected_for_rotation <- function(
     # estimate IRT model
     mod <- list()
 
-    items <- rownames(xsi.fixed$cross[[domain]][[SC]][[gsub("_", "", waves)]])
     mod[[1]] <- TAM::tam.mml.mfr(
       formulaA = ~ 0 + item + item:step + position,
       facets = position,

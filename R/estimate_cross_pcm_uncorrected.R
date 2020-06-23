@@ -26,14 +26,15 @@ estimate_cross_pcm_uncorrected <- function(
                                            waves, frmY = NULL,
                                            ID_t, type, domain,
                                            SC, control, npv) {
+  items <- rownames(xsi.fixed$cross[[domain]][[SC]][[gsub("_", "", waves)]])
   res <- collapse_categories_pcm(
-    resp[, -which(names(resp) == "ID_t")], SC,
+    resp[, items], SC,
     gsub("_", "", waves), domain
   )
-  resp[, -which(names(resp) == "ID_t")] <- res$resp
+  resp[, items] <- res$resp[, items]
   B <- TAM::designMatrices(
       modeltype = "PCM",
-      resp = resp[, -which(names(resp) == "ID_t")]
+      resp = resp[, items]
   )$B
   ind <- get_indicators_for_half_scoring(SC, domain, gsub("_", "", waves))
   if (SC == "SC4" & domain == "SC" & waves == "_w1") {
@@ -67,7 +68,6 @@ estimate_cross_pcm_uncorrected <- function(
     # estimate IRT model
     mod <- list()
 
-    items <- rownames(xsi.fixed$cross[[domain]][[SC]][[gsub("_", "", waves)]])
     mod[[1]] <- TAM::tam.mml(
       resp = resp[, items],
       dataY = if (is.null(bgdata)) {

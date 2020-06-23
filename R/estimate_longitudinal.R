@@ -35,11 +35,12 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
 
     for (i in seq(length(PCM))) {
         if (PCM[[i]]) {
+            items <- rownames(xsi.fixed$cross[[domain]][[SC]][[gsub("_", "", waves[i])]])
             res <- collapse_categories_pcm(
-                resp[[i]][, -which(names(resp[[i]]) == "ID_t")], SC,
+                resp[[i]][, items], SC,
                 gsub("_", "", waves)[i], domain
             )
-            resp[[i]][, -which(names(resp[[i]]) == "ID_t")] <- res$resp
+            resp[[i]][, items] <- res$resp[, items]
             ind <- get_indicators_for_half_scoring(
                 SC, domain,
                 gsub("_", "", waves)[i]

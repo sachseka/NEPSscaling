@@ -467,7 +467,7 @@ plausible_values <- function(SC,
     }
   } else {
     res <- set_not_enough_valid_resp_NA(
-      datalist, eap, wle = ifelse(control[["WLE"]], wle, NULL),
+      datalist, eap, wle = if (control[["WLE"]]) {wle} else {NULL},
       valid_responses_per_person, min_valid, npv
     )
     pv <- res[["pv"]]
@@ -476,8 +476,8 @@ plausible_values <- function(SC,
   }
 
   # calculate posterior mean of estimated eaps/plausible values
-  MEAN <- colMeans(eap[, seq(2, (1 + 2 * length(waves)), 2), drop = FALSE],
-    na.rm = TRUE
+  MEAN <- colMeans(
+    eap[, seq(2, (1 + 2 * length(waves)), 2), drop = FALSE], na.rm = TRUE
   )
   names(MEAN) <- gsub("_", "", waves)
 
