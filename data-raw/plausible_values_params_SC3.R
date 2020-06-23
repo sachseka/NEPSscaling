@@ -247,9 +247,12 @@ dat <- read_spss("../SUFs/SC3/SC3_xTargetCompetencies_D_9-0-0.sav") %>%
            "icg12138s_sc3g12_c", "icg12047s_sc3g12_c", "icg12041x_sc3g12_c",
            "icg12046s_sc3g12_c", "ica4021s_sc3g12_c", "ica4052s_sc3g12_c",
            "icg12048s_sc3g12_c", "icg12050s_sc3g12_c", "icg12054s_sc3g12_c",
-           "icg12109s_sc3g12_c", "icg12119s_sc3g12_c", icg12_sc1) %>%
+           "icg12109s_sc3g12_c", "icg12119s_sc3g12_c", icg12_sc1, tx80211_w9) %>%
     filter(!is.na(icg12_sc1)) %>%
     select(-icg12_sc1)
+position <- dat %>% mutate(tx80211_w9 = ifelse(tx80211_w9 %in% 623:626, 1, 2)) %>%
+    rename(position = tx80211_w9) %>% select(position)
+dat <- dat %>% select(-tx80211_w9)
 apply(dat, 2, table, useNA = "always")
 dat$icg12119s_sc3g12_c <- recode(as.numeric(dat$icg12119s_sc3g12_c),
                          `0` = 0, `1` = 0, `2` = 0, `3` = 1, `4` = 2, `5` = 3,
@@ -316,10 +319,16 @@ dat$icg12107s_sc3g12_c <- recode(as.numeric(dat$icg12107s_sc3g12_c),
 dat$icg12018s_sc3g12_c <- recode(as.numeric(dat$icg12018s_sc3g12_c),
                                  `0` = 0, `1` = 0, `2` = 0, `3` = 0, `4` = 1,
                                  .default = NA_real_)
-mod <- tam.mml(
-    resp = dat, irtmodel = "PCM2", verbose = FALSE,
-    Q = as.matrix(ifelse(apply(dat, 2, max, na.rm = TRUE) > 1, 0.5, 1))
-)
+B <- TAM::designMatrices(
+    modeltype = "PCM",
+    resp = dat
+)$B
+B[apply(dat, 2, max, na.rm = TRUE) > 1, , ] <-
+    0.5 * B[apply(dat, 2, max, na.rm = TRUE) > 1, , ]
+mod <- tam.mml.mfr(resp = dat, irtmodel = "PCM2", verbose = FALSE,
+                   B = B,
+                   formulaA = ~ 0 + item + item:step + position,
+                   facets = position)
 item_difficulty_SC3_IC_w9 <- mod$xsi.fixed.estimated[1:32, ]
 save(item_difficulty_SC3_IC_w9,
      file = "data-raw/item_difficulty_SC3_IC_w9.RData")

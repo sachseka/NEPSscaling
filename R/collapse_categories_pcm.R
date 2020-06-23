@@ -639,7 +639,10 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
   } else if (SC == "SC3") {
     if (domain == "MA") {
       if (wave == "w1") {
-        # already collapsed in SUF
+        resp[["mag5v01s_c"]][resp[["mag5v01s_c"]] == 1] <- 0
+        resp[["mag5v01s_c"]][resp[["mag5v01s_c"]] == 2] <- 1
+        resp[["mag5v01s_c"]][resp[["mag5v01s_c"]] == 3] <- 2
+        resp[["mag5v01s_c"]][resp[["mag5v01s_c"]] == 4] <- 3
       } else if (wave == "w3") {
         # already collapsed in SUF
       } else if (wave == "w5") {
