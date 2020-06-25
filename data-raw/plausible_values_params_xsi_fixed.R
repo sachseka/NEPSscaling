@@ -768,6 +768,9 @@ x3w5[, 2][pcitems("SC3", "IC", "w5")] <-
 load("data-raw/item_difficulty_SC3_IC_w9.RData")
 x3w9 <- item_difficulty_SC3_IC_w9
 rm(item_difficulty_SC3_IC_w9)
+load("data-raw/item_difficulty_SC3_IC_w9_long.RData")
+x3w9long <- item_difficulty_SC3_IC_w9_long
+rm(item_difficulty_SC3_IC_w9_long)
 
 
 
@@ -898,7 +901,7 @@ xsi.fixed$long[["IC"]] <-
     SC3 = list(
       w2 = x3w2,
       w5 = x3w5,
-      w9 = x3w9
+      w9 = x3w9#long
     ),
     SC4 = list(
       w1 = x4w1,
@@ -1036,6 +1039,9 @@ x3w2[, 2][pcitems("SC3", "SC", "w2")] <-
 load("data-raw/item_difficulty_SC3_SC_w5.RData")
 x3w5 <- item_difficulty_SC3_SC_w5
 rm(item_difficulty_SC3_SC_w5)
+load("data-raw/item_difficulty_SC3_SC_w5_long.RData")
+x3w5long <- item_difficulty_SC3_SC_w5_long
+rm(item_difficulty_SC3_SC_w5_long)
 load("data-raw/item_difficulty_SC3_SC_w8.RData")
 x3w8 <- item_difficulty_SC3_SC_w8
 rm(item_difficulty_SC3_SC_w8)
@@ -1072,8 +1078,8 @@ x4w1 <- cbind(item = 1:length(items$w1),
                       -0.553, 0.401, -1.215, -0.320, 0.149, 1.160, 0.835))
 rownames(x4w1) <- items$w1
 colnames(x4w1)[1] <- ""
-x4w1[, 2][pcitems("SC4", "SC", "w1")] <-
-  x4w1[, 2][pcitems("SC4", "SC", "w1")]/2
+x4w1[, 2][unlist(pcitems("SC4", "SC", "w1"))] <-
+  x4w1[, 2][unlist(pcitems("SC4", "SC", "w1"))]/2
 x4w5 <- cbind(item = 1:length(items$w5),
               xsi = c(-0.391, 0.087, 0.171, 0.390, -0.879, -0.528, -1.170,
                       -0.273, -0.608, -0.147, -0.661, -0.407, -0.654, 1.516,
@@ -1166,7 +1172,7 @@ xsi.fixed$long[["SC"]] <-
     ),
     SC3 = list(
       w2 = x3w2,
-      w5 = x3w5,
+      w5 = x3w5long,
       w8 = x3w8
     ),
     SC4 = list(
