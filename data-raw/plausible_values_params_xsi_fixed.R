@@ -1149,7 +1149,7 @@ xsi.fixed$cross[["SC"]] <-
     ),
     SC3 = list(
       w2 = x3w2,
-      w5 = x3w5,
+      w5 = x3w5long,
       w8 = x3w8
     ),
     SC4 = list(
