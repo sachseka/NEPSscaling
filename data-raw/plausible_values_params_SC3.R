@@ -138,9 +138,9 @@ dat <- read_spss("../SUFs/SC3/SC3_xTargetCompetencies_D_9-0-0.sav") %>%
     select(NEPSscaling:::item_labels$SC3$SC$w5, scg9_sc1, tx80211_w5) %>%
     filter(!is.na(scg9_sc1)) %>%
     select(-scg9_sc1)
-# position <- dat %>% mutate(tx80211_w5 = ifelse(tx80211_w5 %in% 566:592, 1,
-#                                                ifelse(is.na(tx80211_w5), NA, 2))) %>%
-#     rename(position = tx80211_w5) %>% select(position)
+position <- dat %>% mutate(tx80211_w5 = ifelse(tx80211_w5 %in% 566:592, 1,
+                                               ifelse(is.na(tx80211_w5), NA, 2))) %>%
+    rename(position = tx80211_w5) %>% select(position)
 dat <- dat %>% select(-tx80211_w5)
 apply(dat, 2, table, useNA = "always")
 dat$scg9042s_sc3g9_c <- recode(as.numeric(dat$scg9042s_sc3g9_c),
@@ -156,14 +156,14 @@ dat$scg9012s_sc3g9_c <- recode(as.numeric(dat$scg9012s_sc3g9_c),
                                `0` = 0, `1` = 0, `2` = 1, `3` = 2,
                                .default = NA_real_)
 dat[["scg9043s_sc3g9_c"]][dat[["scg9043s_sc3g9_c"]] == 3] <- 2
-# B <- TAM::designMatrices(modeltype = "PCM", resp = dat)$B
-# B[apply(dat, 2, max, na.rm = TRUE) > 1, , ] <-
-#     0.5 * B[apply(dat, 2, max, na.rm = TRUE) > 1, , ]
-# mod <- tam.mml.mfr(resp = dat[!is.na(position$position), ], irtmodel = "PCM2",
-#                    verbose = FALSE, B = B,
-#                    formulaA = ~ 0 + item + item:step + position,
-#                    facets = position[!is.na(position$position), ])
-# item_difficulty_SC3_SC_w5 <- mod$xsi.fixed.estimated[1:37, ]
+B <- TAM::designMatrices(modeltype = "PCM", resp = dat)$B
+B[apply(dat, 2, max, na.rm = TRUE) > 1, , ] <-
+    0.5 * B[apply(dat, 2, max, na.rm = TRUE) > 1, , ]
+mod <- tam.mml.mfr(resp = dat[!is.na(position$position), ], irtmodel = "PCM2",
+                   verbose = FALSE, B = B,
+                   formulaA = ~ 0 + item + item:step + position,
+                   facets = position[!is.na(position$position), ])
+item_difficulty_SC3_SC_w5 <- mod$xsi.fixed.estimated[1:37, ]
 # tmp <- dplyr::left_join(data.frame(item = NEPSscaling:::item_labels$SC3$SC$w5),
 #                         item_difficulty_SC3_SC_w5 %>%
 #                             as.data.frame() %>%
@@ -173,8 +173,8 @@ dat[["scg9043s_sc3g9_c"]][dat[["scg9043s_sc3g9_c"]] == 3] <- 2
 #                                    xsi = tmp$xsi)
 # rownames(item_difficulty_SC3_SC_w5) <- tmp$item
 # rm(tmp)
-# save(item_difficulty_SC3_SC_w5,
-#      file = "data-raw/item_difficulty_SC3_SC_w5.RData")
+save(item_difficulty_SC3_SC_w5,
+     file = "data-raw/item_difficulty_SC3_SC_w5.RData")
 mod <- tam.mml(
     resp = dat, irtmodel = "PCM2", verbose = FALSE,
     Q = as.matrix(ifelse(apply(dat, 2, max, na.rm = TRUE) > 1, 0.5, 1))

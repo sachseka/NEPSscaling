@@ -1149,7 +1149,7 @@ xsi.fixed$cross[["SC"]] <-
     ),
     SC3 = list(
       w2 = x3w2,
-      w5 = x3w5long,
+      w5 = x3w5,
       w8 = x3w8
     ),
     SC4 = list(
@@ -1213,6 +1213,8 @@ x3w9 <- cbind(item = 1:length(items$w9),
               xsi = c(-0.87, -0.21, -1.15, -0.62, 0.20, 1.82, -0.89, 0.21))
 rownames(x3w9) <- items$w9
 colnames(x3w9)[1] <- ""
+# x3w9 <- x3w9[order(rownames(x3w9)), ]
+# x3w9[, 1] <- 1:nrow(x3w9)
 # Link via setting the common items in g12 to g10 values, not mean/mean!
 x3w9long <- cbind(item = 1:length(items$w9),
                   xsi = c(-0.25, -0.21, -0.72, -0.62, 0.20, 1.82, -0.89, 0.21))
@@ -2370,6 +2372,177 @@ xsi.fixed$cross[["CD"]] <- list(
 )
 
 
+# order item difficulties alphabetically
+# SC2
+# MA
+for (type in c("cross", "long")) {
+    xsi.fixed[[type]][["MA"]][["SC2"]][["w2"]] <-
+        xsi.fixed[[type]][["MA"]][["SC2"]][["w2"]][
+            order(rownames(xsi.fixed[[type]][["MA"]][["SC2"]][["w2"]])), ]
+    xsi.fixed[[type]][["MA"]][["SC2"]][["w2"]][, 1] <-
+        1:nrow(xsi.fixed[[type]][["MA"]][["SC2"]][["w2"]])
+    xsi.fixed[[type]][["MA"]][["SC2"]][["w3"]] <-
+        xsi.fixed[[type]][["MA"]][["SC2"]][["w3"]][
+            order(rownames(xsi.fixed[[type]][["MA"]][["SC2"]][["w3"]])), ]
+    xsi.fixed[[type]][["MA"]][["SC2"]][["w3"]][, 1] <-
+        1:nrow(xsi.fixed[[type]][["MA"]][["SC2"]][["w3"]])
+    xsi.fixed[[type]][["MA"]][["SC2"]][["w4"]] <-
+        xsi.fixed[[type]][["MA"]][["SC2"]][["w4"]][
+            order(rownames(xsi.fixed[[type]][["MA"]][["SC2"]][["w4"]])), ]
+    xsi.fixed[[type]][["MA"]][["SC2"]][["w4"]][, 1] <-
+        1:nrow(xsi.fixed[[type]][["MA"]][["SC2"]][["w4"]])
+    xsi.fixed[[type]][["MA"]][["SC2"]][["w6"]] <-
+        xsi.fixed[[type]][["MA"]][["SC2"]][["w6"]][
+            order(rownames(xsi.fixed[[type]][["MA"]][["SC2"]][["w6"]])), ]
+    xsi.fixed[[type]][["MA"]][["SC2"]][["w6"]][, 1] <-
+        1:nrow(xsi.fixed[[type]][["MA"]][["SC2"]][["w6"]])
+}
+
+# SC
+for (type in c("cross", "long")) {
+    xsi.fixed[[type]][["SC"]][["SC2"]][["w1"]] <-
+        xsi.fixed[[type]][["SC"]][["SC2"]][["w1"]][
+            order(rownames(xsi.fixed[[type]][["SC"]][["SC2"]][["w1"]])), ]
+    xsi.fixed[[type]][["SC"]][["SC2"]][["w1"]][, 1] <-
+        1:nrow(xsi.fixed[[type]][["SC"]][["SC2"]][["w1"]])
+    xsi.fixed[[type]][["SC"]][["SC2"]][["w3"]] <-
+        xsi.fixed[[type]][["SC"]][["SC2"]][["w3"]][
+            order(rownames(xsi.fixed[[type]][["SC"]][["SC2"]][["w3"]])), ]
+    xsi.fixed[[type]][["SC"]][["SC2"]][["w3"]][, 1] <-
+        1:nrow(xsi.fixed[[type]][["SC"]][["SC2"]][["w3"]])
+    # if (type == "long") next
+    # xsi.fixed[[type]][["SC"]][["SC2"]][["w5"]] <-
+    #     xsi.fixed[[type]][["SC"]][["SC2"]][["w5"]][
+    #         order(rownames(xsi.fixed[[type]][["SC"]][["SC2"]][["w5"]])), ]
+    # xsi.fixed[[type]][["SC"]][["SC2"]][["w5"]][, 1] <-
+    #     1:nrow(xsi.fixed[[type]][["SC"]][["SC2"]][["w5"]])
+}
+
+# SC3
+# MA
+for (type in c("cross", "long")) {
+    xsi.fixed[[type]][["MA"]][["SC3"]][["w1"]] <-
+        xsi.fixed[[type]][["MA"]][["SC3"]][["w1"]][
+            order(rownames(xsi.fixed[[type]][["MA"]][["SC3"]][["w1"]])), ]
+    xsi.fixed[[type]][["MA"]][["SC3"]][["w1"]][, 1] <-
+        1:nrow(xsi.fixed[[type]][["MA"]][["SC3"]][["w1"]])
+    xsi.fixed[[type]][["MA"]][["SC3"]][["w3"]] <-
+        xsi.fixed[[type]][["MA"]][["SC3"]][["w3"]][
+            order(rownames(xsi.fixed[[type]][["MA"]][["SC3"]][["w3"]])), ]
+    xsi.fixed[[type]][["MA"]][["SC3"]][["w3"]][, 1] <-
+        1:nrow(xsi.fixed[[type]][["MA"]][["SC3"]][["w3"]])
+    xsi.fixed[[type]][["MA"]][["SC3"]][["w5"]] <-
+        xsi.fixed[[type]][["MA"]][["SC3"]][["w5"]][
+            order(rownames(xsi.fixed[[type]][["MA"]][["SC3"]][["w5"]])), ]
+    xsi.fixed[[type]][["MA"]][["SC3"]][["w5"]][, 1] <-
+        1:nrow(xsi.fixed[[type]][["MA"]][["SC3"]][["w5"]])
+    if (type == "long") next
+    xsi.fixed[[type]][["MA"]][["SC3"]][["w9"]] <-
+        xsi.fixed[[type]][["MA"]][["SC3"]][["w9"]][
+            order(rownames(xsi.fixed[[type]][["MA"]][["SC3"]][["w9"]])), ]
+    xsi.fixed[[type]][["MA"]][["SC3"]][["w9"]][, 1] <-
+        1:nrow(xsi.fixed[[type]][["MA"]][["SC3"]][["w9"]])
+}
+
+# RE
+for (type in c("cross", "long")) {
+    xsi.fixed[[type]][["RE"]][["SC3"]][["w1"]] <-
+        xsi.fixed[[type]][["RE"]][["SC3"]][["w1"]][
+            order(rownames(xsi.fixed[[type]][["RE"]][["SC3"]][["w1"]])), ]
+    xsi.fixed[[type]][["RE"]][["SC3"]][["w1"]][, 1] <-
+      1:nrow(xsi.fixed[[type]][["RE"]][["SC3"]][["w1"]])
+    xsi.fixed[[type]][["RE"]][["SC3"]][["w3"]] <-
+      xsi.fixed[[type]][["RE"]][["SC3"]][["w3"]][
+        order(rownames(xsi.fixed[[type]][["RE"]][["SC3"]][["w3"]])), ]
+    xsi.fixed[[type]][["RE"]][["SC3"]][["w3"]][, 1] <-
+      1:nrow(xsi.fixed[[type]][["RE"]][["SC3"]][["w3"]])
+    xsi.fixed[[type]][["RE"]][["SC3"]][["w6"]] <-
+      xsi.fixed[[type]][["RE"]][["SC3"]][["w6"]][
+        order(rownames(xsi.fixed[[type]][["RE"]][["SC3"]][["w6"]])), ]
+    xsi.fixed[[type]][["RE"]][["SC3"]][["w6"]][, 1] <-
+      1:nrow(xsi.fixed[[type]][["RE"]][["SC3"]][["w6"]])
+    if (type == "long") {
+      xsi.fixed[[type]][["RE"]][["SC3"]][["w9"]] <-
+        xsi.fixed[[type]][["RE"]][["SC3"]][["w9"]][
+          order(rownames(xsi.fixed[[type]][["RE"]][["SC3"]][["w9"]])), ]
+      xsi.fixed[[type]][["RE"]][["SC3"]][["w9"]][, 1] <-
+        1:nrow(xsi.fixed[[type]][["RE"]][["SC3"]][["w9"]])
+    }
+}
+
+# EF
+xsi.fixed[["cross"]][["EF"]][["SC3"]][["w9"]] <-
+    xsi.fixed[["cross"]][["EF"]][["SC3"]][["w9"]][
+        order(rownames(xsi.fixed[["cross"]][["EF"]][["SC3"]][["w9"]])), ]
+xsi.fixed[["cross"]][["EF"]][["SC3"]][["w9"]][, 1] <-
+    1:nrow(xsi.fixed[["cross"]][["EF"]][["SC3"]][["w9"]])
+
+
+# SC4
+# MA
+xsi.fixed[["cross"]][["MA"]][["SC4"]][["w7"]] <-
+    xsi.fixed[["cross"]][["MA"]][["SC4"]][["w7"]][
+        order(rownames(xsi.fixed[["cross"]][["MA"]][["SC4"]][["w7"]])), ]
+xsi.fixed[["cross"]][["MA"]][["SC4"]][["w7"]][, 1] <-
+    1:nrow(xsi.fixed[["cross"]][["MA"]][["SC4"]][["w7"]])
+
+# RE
+xsi.fixed[["long"]][["RE"]][["SC4"]][["w10"]] <-
+    xsi.fixed[["long"]][["RE"]][["SC4"]][["w10"]][
+        order(rownames(xsi.fixed[["long"]][["RE"]][["SC4"]][["w10"]])), ]
+xsi.fixed[["long"]][["RE"]][["SC4"]][["w10"]][, 1] <-
+    1:nrow(xsi.fixed[["long"]][["RE"]][["SC4"]][["w10"]])
+
+# SC
+for (type in c("cross", "long")) {
+    xsi.fixed[[type]][["SC"]][["SC4"]][["w1"]] <-
+        xsi.fixed[[type]][["SC"]][["SC4"]][["w1"]][
+            order(rownames(xsi.fixed[[type]][["SC"]][["SC4"]][["w1"]])), ]
+    xsi.fixed[[type]][["SC"]][["SC4"]][["w1"]][, 1] <-
+        1:nrow(xsi.fixed[[type]][["SC"]][["SC4"]][["w1"]])
+    xsi.fixed[[type]][["SC"]][["SC4"]][["w5"]] <-
+        xsi.fixed[[type]][["SC"]][["SC4"]][["w5"]][
+            order(rownames(xsi.fixed[[type]][["SC"]][["SC4"]][["w5"]])), ]
+    xsi.fixed[[type]][["SC"]][["SC4"]][["w5"]][, 1] <-
+        1:nrow(xsi.fixed[[type]][["SC"]][["SC4"]][["w5"]])
+}
+
+# IC
+for (type in c("cross", "long")) {
+    xsi.fixed[[type]][["IC"]][["SC4"]][["w1"]] <-
+        xsi.fixed[[type]][["IC"]][["SC4"]][["w1"]][
+            order(rownames(xsi.fixed[[type]][["IC"]][["SC4"]][["w1"]])), ]
+    xsi.fixed[[type]][["IC"]][["SC4"]][["w1"]][, 1] <-
+        1:nrow(xsi.fixed[[type]][["IC"]][["SC4"]][["w1"]])
+    xsi.fixed[[type]][["IC"]][["SC4"]][["w7"]] <-
+        xsi.fixed[[type]][["IC"]][["SC4"]][["w7"]][
+            order(rownames(xsi.fixed[[type]][["IC"]][["SC4"]][["w7"]])), ]
+    xsi.fixed[[type]][["IC"]][["SC4"]][["w7"]][, 1] <-
+        1:nrow(xsi.fixed[[type]][["IC"]][["SC4"]][["w7"]])
+}
+
+# EF
+xsi.fixed[["cross"]][["EF"]][["SC4"]][["w7"]] <-
+    xsi.fixed[["cross"]][["EF"]][["SC4"]][["w7"]][
+        order(rownames(xsi.fixed[["cross"]][["EF"]][["SC4"]][["w7"]])), ]
+xsi.fixed[["cross"]][["EF"]][["SC4"]][["w7"]][, 1] <-
+    1:nrow(xsi.fixed[["cross"]][["EF"]][["SC4"]][["w7"]])
+
+# for (a in names(xsi.fixed)) { # type
+#     for (b in names(xsi.fixed[[a]])) { # domain
+#         for (c in names(xsi.fixed[[a]][[b]])) { # SC
+#             for (d in names(xsi.fixed[[a]][[b]][[c]])) { # wave / matrix
+#                 if (is.null(rownames(xsi.fixed[[a]][[b]][[c]][[d]]))) {
+#                     next
+#                 }
+#                 xsi.fixed[[a]][[b]][[c]][[d]] <-
+#                     xsi.fixed[[a]][[b]][[c]][[d]][
+#                         order(rownames(xsi.fixed[[a]][[b]][[c]][[d]])), ]
+#                 xsi.fixed[[a]][[b]][[c]][[d]][, 1] <- 1:nrow(xsi.fixed[[a]][[b]][[c]][[d]])
+#             }
+#         }
+#     }
+# }
 
 
 # save fixed item parameters
