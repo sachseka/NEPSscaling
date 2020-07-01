@@ -6,7 +6,7 @@
 #'
 #' @noRd
 
-get_indicators_for_half_scoring <- function(SC, domain, wave) {
+get_indicators_for_half_scoring2 <- function(SC, domain, wave) {
   if (SC == "SC5") {
     if (domain == "MA") {
       if (wave == "w1") {

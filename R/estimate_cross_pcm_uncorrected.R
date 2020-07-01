@@ -38,10 +38,11 @@ estimate_cross_pcm_uncorrected <- function(
   )$B
   ind <- get_indicators_for_half_scoring(SC, domain, gsub("_", "", waves))
   if (SC == "SC4" & domain == "SC" & waves == "_w1") {
-    B[ind[[1]], , ] <- (2/3) * B[ind[[1]], , ]
-    B[ind[[2]], , ] <- 0.5 * B[ind[[2]], , ]
+    B[which(items %in% ind[[1]]), , ] <-
+      (2/3) * B[which(items %in% ind[[1]]), , ]
+    B[which(items %in% ind[[2]]), , ] <- 0.5 * B[which(items %in% ind[[2]]), , ]
   } else {
-    B[ind, , ] <- 0.5 * B[ind, , ]
+    B[which(items %in% ind), , ] <- 0.5 * B[which(items %in% ind), , ]
   }
   times <- ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi)
   pvs <- list(NULL)

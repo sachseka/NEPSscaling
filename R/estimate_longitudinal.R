@@ -46,10 +46,10 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
                 gsub("_", "", waves)[i]
             )
             if (SC == "SC4" & domain == "SC" & i == 1) {
-                Q[[i]][ind[[1]], ] <- 2/3
-                Q[[i]][ind[[2]], ] <- 0.5
+                Q[[i]][which(items %in% ind[[1]]), ] <- 2/3
+                Q[[i]][which(items %in% ind[[2]]), ] <- 0.5
             } else {
-                Q[[i]][ind, ] <- 0.5
+                Q[[i]][which(items %in% ind), ] <- 0.5
             }
         }
     }
