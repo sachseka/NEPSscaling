@@ -11,7 +11,7 @@ not_reached_as_proxy <- function(include_nr, longitudinal, data, SC, domain,
             # causes problems in imputation, if include_nr = TRUE, bgdata = NULL,
             # thus, remove NAs from data
             nr <- data.frame(ID_t = data[["ID_t"]])
-            for (s in seq_len(sel)) {
+            for (s in seq(length(sel))) {
                 nr[[paste0("nr", waves[s])]] <-
                     rowSums(data[, sel[s]] == -94, na.rm = TRUE)
             }

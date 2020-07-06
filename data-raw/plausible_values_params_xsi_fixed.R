@@ -241,16 +241,19 @@ rownames(x4w1) <- items$w1
 colnames(x4w1)[1] <- ""
 x4w1[, 2][rownames(x4w1) %in% pcitems("SC4", "MA", "w1")] <-
   x4w1[, 2][rownames(x4w1) %in% pcitems("SC4", "MA", "w1")]/2
-x4w7 <- cbind(item = 1:length(items$w7),
+x4w7long <- cbind(item = 1:length(items$w7),
               xsi = c(-0.510, -0.375, 0.747, 0.070, -0.099, 1.328, 0.299, 0.894,
                       0.512, -0.891, 0.064, -0.984, 1.545, -0.342, 1.143,
                       -1.295, -0.217, 0.090, -1.377, -0.270, -1.247, -0.934,
                       1.109, -0.033, 0.188, -1.354, -0.331, -0.514, -0.151,
                       -1.337, -0.340))
-rownames(x4w7) <- items$w7
-colnames(x4w7)[1] <- ""
-x4w7[, 2][rownames(x4w7) %in% pcitems("SC4", "MA", "w7")] <-
-  x4w7[, 2][rownames(x4w7) %in% pcitems("SC4", "MA", "w7")]/2
+rownames(x4w7long) <- items$w7
+colnames(x4w7long)[1] <- ""
+x4w7long[, 2][rownames(x4w7long) %in% pcitems("SC4", "MA", "w7")] <-
+  x4w7long[, 2][rownames(x4w7long) %in% pcitems("SC4", "MA", "w7")]/2
+load("data-raw/item_difficulty_SC4_MA_w7.RData")
+x4w7 <- item_difficulty_SC4_MA_w7
+rm(item_difficulty_SC4_MA_w7)
 x4w10 <- xsi
 rownames(x4w10) <- NEPSscaling:::item_labels$SC4$MA$w10
 
@@ -351,7 +354,7 @@ xsi.fixed$long[["MA"]] <-
     ),
     SC4 = list(
       w1 = x4w1,
-      w7 = x4w7,
+      w7 = x4w7long,
       w10 = x4w10
     ),
     SC5 = list(
@@ -567,6 +570,9 @@ x4w7[, 2][rownames(x4w7) %in% pcitems("SC4", "RE", "w7")] <-
 #                               -0.89, -1.21, 0.09))
 # rownames(x4w7_special) <- items$w7
 # colnames(x4w7_special)[1] <- ""
+# load("data-raw/item_difficulty_SC4_RE_w10_long.RData")
+# x4w10long <- item_difficulty_SC4_RE_w10
+# rm(item_difficulty_SC4_RE_w10)
 
 # SC5
 items <- c(

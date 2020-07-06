@@ -29,6 +29,11 @@ get_mean_linking <- function(SC, domain, longitudinal_IDs, eap1, eap2) {
           na.rm = TRUE
         )
       )
+  } else if (SC == "SC2" && domain == "SC") {
+    # longitudinal mean biases the wle estimation wrt the suf estimates
+    MEAN <- vector("numeric", 2)
+    MEAN[1] <- mean(eap1[, 2], na.rm = TRUE)
+    MEAN[2] <- mean(eap2[, 2], na.rm = TRUE)
   } else {
     MEAN <- vector("numeric", 2)
     MEAN[1] <- mean(eap1[eap1$ID_t %in% longitudinal_IDs, 2], na.rm = TRUE)
