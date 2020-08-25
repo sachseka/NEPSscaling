@@ -57,6 +57,8 @@ scale_person_estimates <- function(pv, wle, eap,
       )
       term <- MEAN[2] - MEAN[1] -
         link_constant[[SC]][[domain]][[wave[w] ]]
+      # estimated WLE means around 0 (as befitting the model),
+      # estimated correlations with SUF >> 0.95
       if (SC == "SC2" & domain == "MA" & wave[w] == "w4") {
         # means bias the wle estimate wrt the suf estimate, link constants alone
         # give correct result
@@ -69,6 +71,12 @@ scale_person_estimates <- function(pv, wle, eap,
         # means bias the wle estimate wrt the suf estimate
         term <- term - 0.1
       } else if (SC == "SC4" & domain == "MA" & wave[w] == "w7") {
+        # longitudinal means bias the wle estimate wrt the suf estimate
+        term <- term - 0.1
+      } else if (SC == "SC4" & domain == "SC" & wave[w] == "w5") {
+        # longitudinal means bias the wle estimate wrt the suf estimate
+        term <- term - 0.1
+      } else if (SC == "SC4" & domain == "RE" & wave[w] == "w10") {
         # longitudinal means bias the wle estimate wrt the suf estimate
         term <- term - 0.1
       }

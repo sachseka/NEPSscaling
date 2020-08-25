@@ -570,9 +570,9 @@ x4w7[, 2][rownames(x4w7) %in% pcitems("SC4", "RE", "w7")] <-
 #                               -0.89, -1.21, 0.09))
 # rownames(x4w7_special) <- items$w7
 # colnames(x4w7_special)[1] <- ""
-# load("data-raw/item_difficulty_SC4_RE_w10_long.RData")
-# x4w10long <- item_difficulty_SC4_RE_w10
-# rm(item_difficulty_SC4_RE_w10)
+load("data-raw/item_difficulty_SC4_RE_w10_long.RData")
+x4w10long <- item_difficulty_SC4_RE_w10
+rm(item_difficulty_SC4_RE_w10)
 
 # SC5
 items <- c(
@@ -670,7 +670,7 @@ xsi.fixed$long[["RE"]] <-
     SC4 = list(
       w2 = x4w2,
       w7 = x4w7,
-      w10 = x4w10
+      w10 = x4w10#long
     ),
     SC5 = list(
       w1 = x5w1,
@@ -1219,8 +1219,6 @@ x3w9 <- cbind(item = 1:length(items$w9),
               xsi = c(-0.87, -0.21, -1.15, -0.62, 0.20, 1.82, -0.89, 0.21))
 rownames(x3w9) <- items$w9
 colnames(x3w9)[1] <- ""
-# x3w9 <- x3w9[order(rownames(x3w9)), ]
-# x3w9[, 1] <- 1:nrow(x3w9)
 # Link via setting the common items in g12 to g10 values, not mean/mean!
 x3w9long <- cbind(item = 1:length(items$w9),
                   xsi = c(-0.25, -0.21, -0.72, -0.62, 0.20, 1.82, -0.89, 0.21))
@@ -2528,11 +2526,13 @@ for (type in c("cross", "long")) {
 }
 
 # EF
-xsi.fixed[["cross"]][["EF"]][["SC4"]][["w7"]] <-
-    xsi.fixed[["cross"]][["EF"]][["SC4"]][["w7"]][
-        order(rownames(xsi.fixed[["cross"]][["EF"]][["SC4"]][["w7"]])), ]
-xsi.fixed[["cross"]][["EF"]][["SC4"]][["w7"]][, 1] <-
-    1:nrow(xsi.fixed[["cross"]][["EF"]][["SC4"]][["w7"]])
+for (type in c("cross", "long")) {
+  xsi.fixed[[type]][["EF"]][["SC4"]][["w7"]] <-
+    xsi.fixed[[type]][["EF"]][["SC4"]][["w7"]][
+      order(rownames(xsi.fixed[[type]][["EF"]][["SC4"]][["w7"]])), ]
+  xsi.fixed[[type]][["EF"]][["SC4"]][["w7"]][, 1] <-
+    1:nrow(xsi.fixed[[type]][["EF"]][["SC4"]][["w7"]])
+}
 
 # for (a in names(xsi.fixed)) { # type
 #     for (b in names(xsi.fixed[[a]])) { # domain
