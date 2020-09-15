@@ -6,91 +6,81 @@
 #' @param SC starting cohort
 #' @param domain competence domain
 #' @param wave all waves for a specific SC/domain
-#' @param longitudinal_IDs for SC6/RE contains longitudinal subsamples for
+#' @param long_IDs for SC6/RE contains longitudinal subsamples for
 #' original and refreshment samples separately; else contains sample IDs for
 #' time points 1 and 2 (index 1), 2 and 3 (index 2), 3 and 4 (index 3) asf.
 #'
 #' @noRd
 
-scale_person_estimates <- function(pv, wle, eap,
-                                   SC, domain, wave, longitudinal_IDs) {
+scale_person_estimates <- function(pv, wle, eap, SC, domain, wave, long_IDs) {
   if (SC == "SC6" && domain == "RE") {
-    MEAN <- get_mean_linking(SC, domain, longitudinal_IDs,
-                             eap1 = eap, eap2 = NULL)
-    # original sample
-    term1 <- MEAN[3] - MEAN[1] -
-      link_constant[[SC]][[domain]][["w9"]][["B67"]]
-    # refreshment sample
-    term2 <- MEAN[4] - MEAN[2] -
-      link_constant[[SC]][[domain]][["w9"]][["B69"]]
-    eap[eap[["ID_t"]] %in% longitudinal_IDs[["w3"]], "eap_w9"] <-
-      eap[eap[["ID_t"]] %in% longitudinal_IDs[["w3"]], "eap_w9"] - term1
-    eap[eap[["ID_t"]] %in% longitudinal_IDs[["w5"]], "eap_w9"] <-
-      eap[eap[["ID_t"]] %in% longitudinal_IDs[["w5"]], "eap_w9"] - term2
-    for (i in seq(length(pv))) {
-      pv[[i]][pv[[i]][["ID_t"]] %in% longitudinal_IDs[["w3"]], "PV_w9"] <-
-        pv[[i]][
-          pv[[i]][["ID_t"]] %in% longitudinal_IDs[["w3"]],
-          "PV_w9"
-        ] - term1
-      pv[[i]][pv[[i]][["ID_t"]] %in% longitudinal_IDs[["w5"]], "PV_w9"] <-
-        pv[[i]][
-          pv[[i]][["ID_t"]] %in% longitudinal_IDs[["w5"]],
-          "PV_w9"
-        ] - term2
-    }
-    if (!is.null(wle)) {
-      wle[wle[["ID_t"]] %in% longitudinal_IDs[["w3"]], "wle_w9"] <-
-        wle[wle[["ID_t"]] %in% longitudinal_IDs[["w3"]], "wle_w9"] - term1
-      wle[wle[["ID_t"]] %in% longitudinal_IDs[["w5"]], "wle_w9"] <-
-        wle[wle[["ID_t"]] %in% longitudinal_IDs[["w5"]], "wle_w9"] - term2
-    }
+    res <- rescale_sc6_reading(SC, domain, long_IDs, eap, pv, wle)
+    eap <- res[["eap"]]
+    wle <- res[["wle"]]
+    pv <- res[["pv"]]
   } else if ((SC %in% c("SC3", "SC4") & domain == "EF") ||
              domain %in% c("ORA", "ORB", "NR", "NT")) { # already linked via item parameters!
     return(list(pv = pv, wle = wle, eap = eap))
   } else {
     for (w in seq(2, length(wave))) {
-      MEAN <- get_mean_linking(SC, domain,
-        longitudinal_IDs = longitudinal_IDs[[w - 1]],
+      MEAN <- get_mean_linking(
+        SC, domain, long_IDs = long_IDs[[w - 1]],
         eap1 = eap[, c("ID_t", paste0("eap_", wave[w - 1]))],
         eap2 = eap[, c("ID_t", paste0("eap_", wave[w]))]
       )
-      term <- MEAN[2] - MEAN[1] -
-        link_constant[[SC]][[domain]][[wave[w] ]]
-      # estimated WLE means around 0 (as befitting the model),
-      # estimated correlations with SUF >> 0.95
-      if (SC == "SC2" & domain == "MA" & wave[w] == "w4") {
-        # means bias the wle estimate wrt the suf estimate, link constants alone
-        # give correct result
-        term <- -(link_constant[[SC]][[domain]][[wave[w] ]] +
-                      link_constant[[SC]][[domain]][[wave[w - 1] ]])
-      } else if (SC == "SC3" & domain == "IC" & wave[w] == "w5") {
-        # means bias the wle estimate wrt the suf estimate
-        term <- term + 0.2
-      } else if (SC == "SC3" & domain == "SC" & wave[w] == "w8") {
-        # means bias the wle estimate wrt the suf estimate
-        term <- term - 0.1
-      } else if (SC == "SC4" & domain == "MA" & wave[w] == "w7") {
-        # longitudinal means bias the wle estimate wrt the suf estimate
-        term <- term - 0.1
-      } else if (SC == "SC4" & domain == "SC" & wave[w] == "w5") {
-        # longitudinal means bias the wle estimate wrt the suf estimate
-        term <- term - 0.1
-      } else if (SC == "SC4" & domain == "RE" & wave[w] == "w10") {
-        # longitudinal means bias the wle estimate wrt the suf estimate
-        term <- term - 0.1
-      }
-      eap[, paste0("eap_", wave[w])] <-
-        eap[, paste0("eap_", wave[w])] - term
+      term <- MEAN[2] - MEAN[1] - link_constant[[SC]][[domain]][[wave[w] ]]
+      term <- correct_linking_term(term, SC, domain, wave, w)
+
+      eap[, paste0("eap_", wave[w])] <- eap[, paste0("eap_", wave[w])] - term
       for (i in seq(length(pv))) {
         pv[[i]][, paste0("PV_", wave[w])] <-
           pv[[i]][, paste0("PV_", wave[w])] - term
       }
       if (!is.null(wle)) {
-        wle[, paste0("wle_", wave[w])] <-
-          wle[, paste0("wle_", wave[w])] - term
+        wle[, paste0("wle_", wave[w])] <- wle[, paste0("wle_", wave[w])] - term
       }
     }
   }
   list(pv = pv, wle = wle, eap = eap)
+}
+
+
+#' Re-scale plausible values to fit linked distributions for SC6
+#' (incl. refreshment sample)
+#' @param pv plausible values
+#' @param wle Warm's weighted maximum likelihood estimate
+#' @param eap expected a posteriori point estimate
+#' @param SC starting cohort
+#' @param domain competence domain
+#' @param wave all waves for a specific SC/domain
+#' @param long_IDs for SC6/RE contains longitudinal subsamples for
+#' original and refreshment samples separately; else contains sample IDs for
+#' time points 1 and 2 (index 1), 2 and 3 (index 2), 3 and 4 (index 3) asf.
+#'
+#' @noRd
+
+rescale_sc6_reading <- function(SC, domain, long_IDs, eap, pv, wle) {
+  MEAN <- get_mean_linking(SC, domain, long_IDs, eap1 = eap, eap2 = NULL)
+  # original sample
+  term1 <- MEAN[3] - MEAN[1] - link_constant[[SC]][[domain]][["w9"]][["B67"]]
+  # refreshment sample
+  term2 <- MEAN[4] - MEAN[2] - link_constant[[SC]][[domain]][["w9"]][["B69"]]
+
+  eap[eap[["ID_t"]] %in% long_IDs[["w3"]], "eap_w9"] <-
+    eap[eap[["ID_t"]] %in% long_IDs[["w3"]], "eap_w9"] - term1
+  eap[eap[["ID_t"]] %in% long_IDs[["w5"]], "eap_w9"] <-
+    eap[eap[["ID_t"]] %in% long_IDs[["w5"]], "eap_w9"] - term2
+  for (i in seq(length(pv))) {
+    pv[[i]][pv[[i]][["ID_t"]] %in% long_IDs[["w3"]], "PV_w9"] <-
+      pv[[i]][pv[[i]][["ID_t"]] %in% long_IDs[["w3"]], "PV_w9"] - term1
+    pv[[i]][pv[[i]][["ID_t"]] %in% long_IDs[["w5"]], "PV_w9"] <-
+      pv[[i]][pv[[i]][["ID_t"]] %in% long_IDs[["w5"]], "PV_w9"] - term2
+  }
+  if (!is.null(wle)) {
+    wle[wle[["ID_t"]] %in% long_IDs[["w3"]], "wle_w9"] <-
+      wle[wle[["ID_t"]] %in% long_IDs[["w3"]], "wle_w9"] - term1
+    wle[wle[["ID_t"]] %in% long_IDs[["w5"]], "wle_w9"] <-
+      wle[wle[["ID_t"]] %in% long_IDs[["w5"]], "wle_w9"] - term2
+  }
+  list(eap = eap, pv = pv, wle = wle)
 }

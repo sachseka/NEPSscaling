@@ -32,23 +32,9 @@ estimate_cross_rasch_uncorrected <- function(
   EAP.rel <- NULL
   eap <- replicate(times, data.frame(ID_t = ID_t$ID_t), simplify = FALSE)
   for (i in 1:times) {
-    if (!is.null(imp)) {
-      bgdatacom <- imp[[i]]
-      for (f in seq(ncol(bgdatacom))) {
-        if (is.factor(bgdatacom[, f])) {
-          bgdatacom[, f] <- as.numeric(levels(bgdatacom[, f]))[bgdatacom[, f]]
-        } else if (is.character(bgdatacom[, f])) {
-          bgdatacom[, f] <- as.numeric(bgdatacom[, f])
-        }
-      }
-      frmY <-
-        as.formula(paste(
-          "~",
-          paste(colnames(bgdatacom)[-which(names(bgdatacom) == "ID_t")],
-            collapse = "+"
-          )
-        ))
-    }
+    res <- prepare_bgdata_frmY(imp, i, frmY)
+    bgdatacom <- res[["bgdatacom"]]
+    frmY <- res[["frmY"]]
     # estimate IRT model
     mod <- list()
 
@@ -81,18 +67,7 @@ estimate_cross_rasch_uncorrected <- function(
     )
     # post-processing of model
     res <- post_process_cross_tam_results(mod[[1]], npv, control,
-      Y = if (is.null(bgdata)) {
-        NULL
-      } else if (is.null(imp)) {
-        bgdata
-      } else {
-        bgdatacom
-      },
-      Y.pid = if (is.null(bgdata)) {
-        NULL
-      } else {
-        "ID_t"
-      },
+      imp, bgdatacom,
       eap, i, EAP.rel, regr.coeff, pvs, bgdata
     )
     eap <- res$eap

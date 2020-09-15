@@ -179,7 +179,10 @@ plausible_values <- function(SC,
                                  cp = 0.0001
                                )
                              )) {
+  t0 <- Sys.time()
+
   # check argument validity and apply necessary changes to arguments ----------
+
   if (missing(SC)) {
     stop("Starting cohort is missing, but must be provided.", call. = FALSE)
   }
@@ -187,11 +190,11 @@ plausible_values <- function(SC,
     stop("Starting cohort must be numeric.", call. = FALSE)
   }
   if (missing(wave)) {
-    stop(cat(paste0(
+    stop(paste0(
       "Wave is missing, but must be provided.\n",
       "Please note that, for longitudinal estimation, ",
       "any of the waves in which the competence was assessed is fine."
-    )),
+    ),
     call. = FALSE
     )
   }
@@ -231,14 +234,11 @@ plausible_values <- function(SC,
         (SC == "SC1" & domain %in% c("CD", "SC"))
       )
   ) {
-    stop(
-      cat(paste0(
-        SC, " ", domain, " was not tested longitudinally.\n",
-        "If you wanted to estimate cross-sectional plausible values, ",
-        "set longitudinal = FALSE."
-      )),
-      call. = FALSE
-    )
+    stop(paste0(
+      SC, " ", domain, " was not tested longitudinally.\n",
+      "If you wanted to estimate cross-sectional plausible values, ",
+      "set longitudinal = FALSE."
+    ), call. = FALSE)
   }
   if (min_valid < 0) {
     stop("min_valid must be greater than or equal to 0.", call. = FALSE)
@@ -247,6 +247,15 @@ plausible_values <- function(SC,
     stop("min_valid is too high. It excludes all possible test takers.",
          call. = FALSE)
   }
+
+  # complement control lists
+  res <- complement_control_lists(
+    control[["EAP"]], control[["WLE"]], control[["ML"]]
+  )
+  # control$Bayes <- res$Bayes
+  control[["ML"]] <- res[["ML"]]
+  control[["EAP"]] <- res[["EAP"]]
+  control[["WLE"]] <- res[["WLE"]]
 
   # create auxiliary waves variable for longitudinal estimation
   res <- create_waves_type_vars(longitudinal, SC, domain, wave)
@@ -268,8 +277,9 @@ plausible_values <- function(SC,
 
   # Begin data pre-processing -------------------------------------------------
 
+  t1 <- Sys.time()
   if (verbose) {
-    cat("Begin pre-processing of data... ", paste(Sys.time()), "\n")
+    cat("Begin pre-processing of data... ", paste(t1), "\n")
     flush.console()
   }
 
@@ -279,7 +289,7 @@ plausible_values <- function(SC,
   # number of not-reached items as processing time proxy
   res <- not_reached_as_proxy(
     include_nr, longitudinal, data, SC, domain, wave, waves)
-  nr <- res[["nr"]]
+  items_not_reached <- res[["nr"]]
   data <- res[["data"]]
 
   # test data and test taker selection
@@ -291,17 +301,15 @@ plausible_values <- function(SC,
 
   # check for Partial Credit Items
   PCM <- (if (longitudinal) {
-    lapply(resp, function(x) {
-      max(apply(x[, -1], 2, max, na.rm = TRUE)) > 1
-    })
-  }
-  else {
+    lapply(resp, function(x) {max(apply(x[, -1], 2, max, na.rm = TRUE)) > 1})
+  } else {
     max(apply(resp[, -1], 2, max, na.rm = TRUE)) > 1
   })
 
   # process background data ---------------------------------------------------
 
-  res <- pre_process_background_data(bgdata, data, include_nr, nr, min_valid)
+  res <- pre_process_background_data(bgdata, data, include_nr,
+                                     items_not_reached, min_valid)
   if (!is.null(bgdata)) {
     data <- res[["data"]]
   }
@@ -312,7 +320,7 @@ plausible_values <- function(SC,
   valid_responses_per_person <-
     calculate_number_of_valid_responses(longitudinal, resp, waves)
 
-  # for school starting cohorts (while still in school)
+  # multi-level proxy for school starting cohorts (while still in school)
   if (adjust_school_context) {
     if (is.null(bgdata)) {
       bgdata <- ID_t
@@ -342,23 +350,16 @@ plausible_values <- function(SC,
       bgdata <- res[["bgdata"]]
     }
   }
+
+  # split items if DIF was detected during original scaling procedure
   if (SC == "SC4" && domain == "MA") {
     resp <-
       split_SC4_math_items(res[["testletSetting"]], resp, longitudinal, wave)
   }
 
-  # complement control lists
-  res <- complement_control_lists(
-    control[["EAP"]], control[["WLE"]], control[["ML"]]
-  )
-  # control$Bayes <- res$Bayes
-  control[["ML"]] <- res[["ML"]]
-  control[["EAP"]] <- res[["EAP"]]
-  control[["WLE"]] <- res[["WLE"]]
-
-
   # multiple imputation of missing covariate data -----------------------------
 
+  t2 <- Sys.time()
   res <- impute_missing_data(bgdata, verbose, control)
   imp <- res[["imp"]]
   frmY <- res[["frmY"]]
@@ -366,45 +367,39 @@ plausible_values <- function(SC,
 
   # begin estimation of plausible values --------------------------------------
 
+  t3 <- Sys.time()
   if (verbose) {
-    cat(
-      "Begin estimation... ", paste(Sys.time()),
-      "\nThis might take some time.\n"
-    )
+    cat("Begin estimation... ", paste(t3), "\nThis might take some time.\n")
     flush.console()
   }
 
   if (longitudinal) {
-    res <- estimate_longitudinal(bgdata, imp,
-      frmY = frmY, resp, Q,
-      PCM, ID_t, waves, type, domain, SC,
+    res <- estimate_longitudinal(
+      bgdata, imp, frmY = frmY, resp, Q, PCM, ID_t, waves, type, domain, SC,
       control, npv
     )
   } else {
     if (rotation) {
       if (PCM) {
-        res <- estimate_cross_pcm_corrected_for_rotation(bgdata, imp,
-          frmY = frmY,
-          waves, ID_t, resp,
-          type, domain, SC, control,
-          npv, position
+        res <- estimate_cross_pcm_corrected_for_rotation(
+          bgdata, imp, frmY = frmY, waves, ID_t, resp, type, domain, SC,
+          control, npv, position
         )
       } else {
-        res <- estimate_cross_rasch_corrected_for_rotation(bgdata, imp,
-          frmY = frmY, resp,
-          position, waves, ID_t, type,
-          domain, SC, control, npv
+        res <- estimate_cross_rasch_corrected_for_rotation(
+          bgdata, imp, frmY = frmY, resp, position, waves, ID_t, type, domain,
+          SC, control, npv
         )
       }
     } else {
       if (PCM) {
-        res <- estimate_cross_pcm_uncorrected(bgdata, imp, resp, waves,
-          frmY = frmY, ID_t, type, domain, SC,
+        res <- estimate_cross_pcm_uncorrected(
+          bgdata, imp, resp, waves, frmY = frmY, ID_t, type, domain, SC,
           control, npv
         )
       } else {
-        res <- estimate_cross_rasch_uncorrected(bgdata, imp, resp, waves,
-          frmY = frmY, ID_t, type, domain, SC,
+        res <- estimate_cross_rasch_uncorrected(
+          bgdata, imp, resp, waves, frmY = frmY, ID_t, type, domain, SC,
           control, npv
         )
       }
@@ -418,11 +413,9 @@ plausible_values <- function(SC,
 
   # Begin post-processing of estimated data -----------------------------------
 
+  t4 <- Sys.time()
   if (verbose) {
-    cat(
-      "Finished estimation. Begin post-processing... ", paste(Sys.time()),
-      "\n"
-    )
+    cat("Finished estimation. Begin post-processing... ", paste(t4), "\n")
     flush.console()
   }
 
@@ -439,18 +432,19 @@ plausible_values <- function(SC,
   # extract correct number of plausible values from pvs object
   datalist <- extract_correct_number_of_pvs(bgdata, control, npv, pvs)
 
+  # keep only those regr. coefficients / EAP reliabilities of kept imputations
+  res <- discard_not_used_imputations(datalist, regr.coeff, EAP.rel,
+                                      longitudinal)
+  regr.coeff <- res[["regr.coeff"]]
+  EAP.rel <- res[["EAP.rel"]]
+
   # linking of longitudinal plausible values ----------------------------------
 
   # linear transformation of longitudinal PVs to pre-defined scale
   if (longitudinal) {
     res <- link_longitudinal_plausible_values(
-      datalist, npv, min_valid, valid_responses_per_person,
-      waves, eap,
-      wle = if (control[["WLE"]]) {
-        wle
-      } else {
-        NULL
-      },
+      datalist, npv, min_valid, valid_responses_per_person, waves, eap,
+      wle = if (control[["WLE"]]) {wle} else {NULL},
       data, SC, domain, control
     )
     pv <- res[["pv"]]
@@ -481,6 +475,8 @@ plausible_values <- function(SC,
   )
   names(MEAN) <- gsub("_", "", waves)
 
+  t5 <- Sys.time()
+
   # collect output object -----------------------------------------------------
 
   res <- list()
@@ -503,7 +499,6 @@ plausible_values <- function(SC,
   }
   res[["mean_PV"]] <- MEAN
   res[["pv"]] <- pv
-
   if (control[["EAP"]]) {
     res[["eap"]] <- eap
   }
@@ -513,44 +508,20 @@ plausible_values <- function(SC,
   }
   res[["EAP_rel"]] <- EAP.rel
   res[["regr_coeff"]] <- regr.coeff
-  if (!is.null(bgdata)) {
-    if (longitudinal) {
-      for (w in seq(ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1,
-        control[["ML"]][["nmi"]]
-      ))) {
-        rownames(res[["regr_coeff"]][[w]]) <-
-          c(
-            "Intercept",
-            names(res[["pv"]][[1]][, 2:(ncol(res[["pv"]][[1]]) - length(waves)),
-              drop = FALSE
-            ])
-          )
-        colnames(res[["regr_coeff"]][[w]]) <-
-          paste0(
-            rep(c("coeff", "se"), times = ncol(res[["regr_coeff"]][[w]]) / 2),
-            rep(seq(ncol(res[["regr_coeff"]][[w]]) / 2), each = 2)
-          )
-      }
-    } else {
-      rownames(res[["regr_coeff"]]) <-
-        c(
-          "Intercept",
-          names(res[["pv"]][[1]][, 2:(ncol(res[["pv"]][[1]]) - 1),
-            drop = FALSE
-          ])
-        )
-      colnames(res[["regr_coeff"]]) <-
-        paste0(
-          rep(c("coeff", "se"), times = ncol(res[["regr_coeff"]]) / 2),
-          rep(seq(ncol(res[["regr_coeff"]]) / 2), each = 2)
-        )
-    }
-  }
   res[["items"]] <- if (longitudinal) {
     xsi.fixed[["long"]][[domain]][[SC]][gsub("_", "", waves)]
   } else {
     mod[[1]][["xsi"]]
   }
+  res[["comp_time"]] <- list(
+    initial_time = t0,
+    input_check= t1 - t0,
+    data_processing = t2 - t1,
+    imputation = t3 - t2,
+    estimation_time = t4 - t3,
+    estimator_postprocessing = t5 - t4,
+    total_comp_time = t5 - t0
+  )
   class(res) <- "pv_obj"
   res
 }

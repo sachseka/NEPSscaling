@@ -4,13 +4,15 @@
 \name{bg_data}
 \alias{bg_data}
 \title{Background variables for plausible values estimation}
-\format{A data frame with 5330 rows and 4 variables:
+\format{
+A data frame with 5330 rows and 4 variables:
 \describe{
   \item{ID_t}{target IDs}
   \item{age}{age of the subjects}
   \item{gender}{gender of the subjects, 1 female}
   \item{math}{math competence of the subjects}
-}}
+}
+}
 \usage{
 bg_data
 }

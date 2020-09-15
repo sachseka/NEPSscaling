@@ -1,0 +1,52 @@
+#' Print information about NEPSscaling plausible values estimation
+#'
+#' @param object return object of function \code{NEPScaling::plausible_values()}
+#' @param ... unused
+#'
+#' @importFrom vctrs vec_as_names
+#' @export
+
+
+summary.pv_obj <- function(object, ...) {
+    pv_obj <- object
+    print.pv_obj(pv_obj)
+
+    cat("\nMean of Plausible Values: \n")
+    print(round(get_mean_pv(pv_obj), 3))
+
+    if (get_type(pv_obj = pv_obj) == "longitudinal") {
+        cat("\nItem parameters: \n")
+        item_pars <- get_item_difficulties(pv_obj) %>%
+            purrr::map(.f = function(mat) {
+                colnames(mat) <-
+                    vctrs::vec_as_names(colnames(mat), repair = "unique",
+                                        quiet = TRUE)
+                mat}) %>%
+            purrr::map(tibble::as_tibble, rownames = "items") %>%
+            purrr::map(dplyr::rename, "pos" = "...1") %>%
+            purrr::map2(.x = .data, .y = get_wave(pv_obj),
+                        .f = function(df, wave) {
+                            names(df)[-2] <- paste(names(df)[-2], wave,
+                                                   sep = "_w")
+                            df}) %>%
+            purrr::reduce(dplyr::full_join, by = "pos") %>%
+            dplyr::select(-.data$pos) %>%
+            dplyr::mutate_if(.predicate = is.numeric,
+                             .funs = round, digits = 3) %>%
+            as.data.frame()
+        print(item_pars)
+
+        cat("\nRegression Coefficients (per imputed data set): \n")
+        for (i in get_regression_coefficients(pv_obj)) {
+            print(round(i, 3))
+        }
+    } else {
+        cat("\nItem parameters: \n")
+        print(round(get_item_difficulties(pv_obj), 3))
+
+        cat("\nRegression Coefficients: \n")
+        print(round(get_regression_coefficients(pv_obj), 3))
+    }
+
+
+}

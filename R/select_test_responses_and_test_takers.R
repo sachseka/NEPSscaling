@@ -12,65 +12,24 @@
 select_test_responses_and_test_takers <- function(longitudinal, SC, domain,
                                                   data, wave, min_valid) {
   if (longitudinal) {
-    resp <- list()
     if (SC == "SC6" && domain == "RE") {
-      resp[[1]] <-
-        data[
-          data[["wave_w3"]] == 1,
-          names(data) %in% c(
-            "ID_t",
-            item_labels[[SC]][[domain]][["w3"]]
-          )
-        ]
-      resp[[1]] <- resp[[1]][rowSums(!is.na(resp[[1]][, -1])) >= min_valid, ]
-      resp[[1]] <- resp[[1]][order(resp[[1]][["ID_t"]]), ]
-      resp[[2]] <-
-        data[
-          data[["wave_w3"]] == 0 & data[["wave_w5"]] == 1,
-          names(data) %in% c(
-            "ID_t",
-            item_labels[[SC]][[domain]][["w5"]]
-          )
-        ]
-      resp[[2]] <- resp[[2]][rowSums(!is.na(resp[[2]][, -1])) >= min_valid, ]
-      resp[[2]] <- resp[[2]][order(resp[[2]][["ID_t"]]), ]
-      resp[[3]] <-
-        data[
-          !is.na(data[["rea9_sc1u"]]),
-          names(data) %in% c(
-            "ID_t",
-            item_labels[[SC]][[domain]][["w9"]]
-          )
-        ]
-      resp[[3]] <- resp[[3]][rowSums(!is.na(resp[[3]][, -1])) >= min_valid, ]
-      resp[[3]] <- resp[[3]][order(resp[[3]][["ID_t"]]), ]
+      resp <- select_longitudinal_sc6_reading(data, SC, domain, min_valid)
     } else {
+      resp <- list()
       for (i in seq(length(item_labels[[SC]][[domain]]))) {
         resp[[i]] <-
-          data[, names(data) %in% c(
-            "ID_t",
-            item_labels[[SC]][[domain]][[i]]
-          )]
-        resp[[i]] <-
-          resp[[i]][rowSums(!is.na(resp[[i]][, -1])) >= min_valid, ]
+          data[, names(data) %in% c("ID_t", item_labels[[SC]][[domain]][[i]])]
+        resp[[i]] <- resp[[i]][rowSums(!is.na(resp[[i]][, -1])) >= min_valid, ]
         resp[[i]] <- resp[[i]][order(resp[[i]][["ID_t"]]), ]
         if (SC %in% c("SC3", "SC4") & domain == "EF") {
-          resp[[i]][is.na(resp[[i]])] <- 0
-          dm <- diffMat[[SC]][[i]][["diff"]][diffMat[[SC]][[i]][["diff"]][["ID_t"]] %in% resp[[i]][["ID_t"]], ]
-          setNA <- diffMat[[SC]][[i]][["ind_NA"]][diffMat[[SC]][[i]][["ind_NA"]][["ID_t"]] %in% resp[[i]][["ID_t"]], ]
-          resp[[i]][, -1] <- resp[[i]][, -1] + dm[order(dm[["ID_t"]]), -1]
-          for (j in 2:ncol(resp[[i]])) {
-            resp[[i]][setNA[[j]], j] <- NA
-          }
+          resp[[i]] <- impute_english_competence_data(resp[[i]], SC, wave = i)
         }
       }
     }
     data <-
-      data[data[["ID_t"]] %in% unique(
-        unlist(lapply(resp, function(x) {
-          x[["ID_t"]]
-        }))
-      ), ]
+      data[
+        data[["ID_t"]] %in% unique(unlist(lapply(resp,
+                                                 function(x) {x[["ID_t"]]}))), ]
     data <- data[order(data[["ID_t"]]), ]
   } else {
     # reading has been tested twice for different samples in SC6:
@@ -98,13 +57,7 @@ select_test_responses_and_test_takers <- function(longitudinal, SC, domain,
       resp <- resp[, c("ID_t", items)]
     }
     if (SC %in% c("SC3", "SC4") & domain == "EF") {
-      resp[is.na(resp)] <- 0
-      dm <- diffMat[[SC]][[wave]][["diff"]][diffMat[[SC]][[wave]][["diff"]][["ID_t"]] %in% resp[["ID_t"]], ]
-      setNA <- diffMat[[SC]][[wave]][["ind_NA"]][diffMat[[SC]][[wave]][["ind_NA"]][["ID_t"]] %in% resp[["ID_t"]], ]
-      resp[, -1] <- resp[, -1] + dm[order(dm[["ID_t"]]), -1]
-      for (i in 2:ncol(resp)) {
-        resp[setNA[[i]], i] <- NA
-      }
+      resp <- impute_english_competence_data(resp, SC, wave)
     }
   }
   list(resp = resp, data = data)

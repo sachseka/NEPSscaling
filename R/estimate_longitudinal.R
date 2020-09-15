@@ -27,57 +27,22 @@
 estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
                                   PCM, ID_t, waves, type, domain, SC,
                                   control, npv) {
-  quiet <- function(x) {
-    sink(tempfile())
-    on.exit(sink())
-    invisible(force(x))
-  }
-
   items <- lapply(xsi.fixed$long[[domain]][[SC]], rownames)
 
-  for (i in seq(length(PCM))) {
-    if (PCM[[i]]) {
-      res <- collapse_categories_pcm(
-        resp[[i]][, items[[i]]], SC, gsub("_", "", waves)[i], domain
-      )
-      resp[[i]][, items[[i]]] <- res$resp[, items[[i]]]
-      ind <- get_indicators_for_half_scoring(
-        SC, domain, gsub("_", "", waves[i])
-      )
-      if (SC == "SC4" & domain == "SC" & i == 1) {
-        Q[[i]][which(items[[i]] %in% ind[[1]]), ] <- 2 / 3
-        Q[[i]][which(items[[i]] %in% ind[[2]]), ] <- 0.5
-      } else {
-        Q[[i]][which(items[[i]] %in% ind), ] <- 0.5
-      }
-    }
-  }
+  res <- prepare_resp_q_longitudinal(PCM, resp, items, waves, SC, domain, Q)
+  resp <- res[["resp"]]
+  Q <- res[["Q"]]
+
   times <- ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi)
   pvs <- EAP.rel <- regr.coeff <- replicate(times, list(), simplify = FALSE)
   eap <- replicate(times, data.frame(ID_t = ID_t$ID_t), simplify = FALSE)
   for (i in 1:times) {
-    if (!is.null(imp)) {
-      bgdatacom <- imp[[i]]
-      for (f in seq(ncol(bgdatacom))) {
-        if (is.factor(bgdatacom[, f])) {
-          bgdatacom[, f] <- as.numeric(levels(bgdatacom[, f]))[bgdatacom[, f]]
-        } else if (is.character(bgdatacom[, f])) {
-          bgdatacom[, f] <- as.numeric(bgdatacom[, f])
-        }
-      }
-      frmY <-
-        as.formula(paste(
-          "~",
-          paste(colnames(bgdatacom)[-which(names(bgdatacom) == "ID_t")],
-            collapse = "+"
-          )
-        ))
-    }
-    # estimate IRT model
-    mod <- list()
-    tmp_pvs <- list()
-    pmod <- list()
+    res <- prepare_bgdata_frmY(imp, i, frmY)
+    bgdatacom <- res[["bgdatacom"]]
+    frmY <- res[["frmY"]]
 
+    # estimate IRT model
+    mod <- tmp_pvs <- list()
     for (j in seq(length(waves))) {
       mod[[j]] <- TAM::tam.mml(
         resp = resp[[j]][, items[[j]]],
@@ -104,69 +69,29 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
         verbose = FALSE
       )
       # impute plausible values
-      pmod[[j]] <- TAM::tam.pv(mod[[j]],
-        nplausible = npv,
-        ntheta = control$ML$ntheta,
-        normal.approx = control$ML$normal.approx,
-        samp.regr = control$ML$samp.regr,
-        theta.model = control$ML$theta.model,
-        np.adj = control$ML$np.adj,
-        na.grid = control$ML$na.grid,
-        verbose = FALSE
-      )
-      tmp_pvs[[j]] <- TAM::tampv2datalist(
-        pmod[[j]],
-        Y.pid = if (is.null(bgdata)) {
-          NULL
-        } else {
-          "ID_t"
-        },
-        Y = if (is.null(bgdata)) {
-          NULL
-        } else if (is.null(imp)) {
-          bgdata
-        } else {
-          bgdatacom
-        },
-        pvnames = paste0("PV", waves[j])
-      )
+      tmp_pvs[[j]] <- impute_pvs(mod[[j]], npv, control, bgdata, imp, bgdatacom, 
+                                 waves, j)
       eap[[i]] <- suppressWarnings(
-        dplyr::left_join(eap[[i]],
-          mod[[j]]$person[, grep(
-            "pid|EAP",
-            names(mod[[j]]$person)
-          )],
+        dplyr::left_join(
+          eap[[i]], mod[[j]]$person[, grep("pid|EAP", names(mod[[j]]$person))],
           by = c("ID_t" = "pid")
         )
       ) %>% dplyr::arrange(.data$ID_t)
       if (j == 1) {
         EAP.rel[[i]] <- mod[[j]]$EAP.rel
         regr.coeff[[i]] <- quiet(TAM::tam.se(mod[[j]])$beta)
+        rownames(regr.coeff[[i]]) <-
+          c("Intercept",
+            names(bgdata[, -which(names(bgdata) == "ID_t"), drop = FALSE]))
+        colnames(regr.coeff[[i]]) <- paste0(c("coeff", "se"), waves[j])
       } else {
         EAP.rel[[i]] <- c(EAP.rel[[i]], mod[[j]]$EAP.rel)
-        regr.coeff[[i]] <- cbind(
-          regr.coeff[[i]],
-          quiet(TAM::tam.se(mod[[j]])$beta)
-        )
+        tmp <- quiet(TAM::tam.se(mod[[j]])$beta)
+        colnames(tmp) <- paste0(c("coeff", "se"), waves[j])
+        regr.coeff[[i]] <- cbind(regr.coeff[[i]], tmp)
       }
     }
-    # tmp_pv: list of length(waves), each containing list of npv estimations
-    for (n in 1:npv) {
-      pvs[[i]][[n]] <- suppressWarnings(
-        suppressMessages(lapply(tmp_pvs, function(x) { # address each wave
-          x[[n]] # take the nth pv for each wave
-        }) %>% # result: list of data.frames for each wave / nth pv estimation
-          purrr::reduce(
-            function(df1, df2) {
-              df2 <- df2[, grepl("ID_t|pid|PV", names(df2))]
-              dplyr::full_join(df1, df2) # merge data sets and store in pvs list
-            }
-          ))
-      )
-      if (is.null(bgdata)) {
-        names(pvs[[i]][[n]])[which(names(pvs[[i]][[n]]) == "pid")] <- "ID_t"
-      }
-    }
+    pvs <- reformat_longitudinal_tmp_pvs(npv, pvs, i, tmp_pvs, bgdata)
     rm(tmp_pvs)
     colnames(eap[[i]]) <-
       c("ID_t", paste0(rep(c("eap", "se"), length(waves)), rep(waves, each = 2)))

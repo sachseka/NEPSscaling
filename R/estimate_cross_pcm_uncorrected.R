@@ -21,54 +21,26 @@
 #'
 #' @noRd
 
-estimate_cross_pcm_uncorrected <- function(
-                                           bgdata, imp, resp,
+estimate_cross_pcm_uncorrected <- function(bgdata, imp, resp,
                                            waves, frmY = NULL,
                                            ID_t, type, domain,
                                            SC, control, npv) {
   items <- rownames(xsi.fixed$cross[[domain]][[SC]][[gsub("_", "", waves)]])
-  res <- collapse_categories_pcm(
-    resp[, items], SC,
-    gsub("_", "", waves), domain
-  )
-  resp[, items] <- res$resp[, items]
-  B <- TAM::designMatrices(
-      modeltype = "PCM",
-      resp = resp[, items]
-  )$B
-  ind <- get_indicators_for_half_scoring(SC, domain, gsub("_", "", waves))
-  if (SC == "SC4" & domain == "SC" & waves == "_w1") {
-    B[which(items %in% ind[[1]]), , ] <-
-      (2/3) * B[which(items %in% ind[[1]]), , ]
-    B[which(items %in% ind[[2]]), , ] <- 0.5 * B[which(items %in% ind[[2]]), , ]
-  } else {
-    B[which(items %in% ind), , ] <- 0.5 * B[which(items %in% ind), , ]
-  }
+  res <- prepare_resp_b_cross(resp, items, waves, SC, domain)
+  resp <- res[["resp"]]
+  B <- res[["B"]]
+  
   times <- ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi)
   pvs <- list(NULL)
   EAP.rel <- NULL
   eap <- replicate(times, data.frame(ID_t = ID_t$ID_t), simplify = FALSE)
   for (i in 1:times) {
-    if (!is.null(imp)) {
-      bgdatacom <- imp[[i]]
-      for (f in seq(ncol(bgdatacom))) {
-        if (is.factor(bgdatacom[, f])) {
-          bgdatacom[, f] <- as.numeric(levels(bgdatacom[, f]))[bgdatacom[, f]]
-        } else if (is.character(bgdatacom[, f])) {
-          bgdatacom[, f] <- as.numeric(bgdatacom[, f])
-        }
-      }
-      frmY <-
-        as.formula(paste(
-          "~",
-          paste(colnames(bgdatacom)[-which(names(bgdatacom) == "ID_t")],
-            collapse = "+"
-          )
-        ))
-    }
+    res <- prepare_bgdata_frmY(imp, i, frmY)
+    bgdatacom <- res[["bgdatacom"]]
+    frmY <- res[["frmY"]]
+	
     # estimate IRT model
     mod <- list()
-
     mod[[1]] <- TAM::tam.mml(
       resp = resp[, items],
       dataY = if (is.null(bgdata)) {
@@ -97,18 +69,7 @@ estimate_cross_pcm_uncorrected <- function(
     )
     # post-processing of model
     res <- post_process_cross_tam_results(mod[[1]], npv, control,
-      Y = if (is.null(bgdata)) {
-        NULL
-      } else if (is.null(imp)) {
-        bgdata
-      } else {
-        bgdatacom
-      },
-      Y.pid = if (is.null(bgdata)) {
-        NULL
-      } else {
-        "ID_t"
-      },
+      imp, bgdatacom,
       eap, i, EAP.rel, regr.coeff, pvs, bgdata
     )
     eap <- res$eap

@@ -24,32 +24,28 @@ consider_test_rotation <- function(longitudinal, rotation, data, SC, wave,
       wave <- ifelse(SC == "SC4", "w7",
                      ifelse(SC == "SC3", "w6",
                             ifelse(SC == "SC2" & domain == "VO", "w3", "w4")))
-      position <- data.frame(
-                             ID_t = data[["ID_t"]],
-                             position = data[[paste0("tx80211_", wave)]]
-                             )
-      position[["position"]][
-          !is.na(position[["position"]]) &
-            (position[["position"]] %in% testlet_position[[SC]][[domain]][[wave]][, 1])] <- 1
+      position <- data.frame(ID_t = data[["ID_t"]],
+                             position = data[[paste0("tx80211_", wave)]])
       position[["position"]][
         !is.na(position[["position"]]) &
-          (position[["position"]] %in% testlet_position[[SC]][[domain]][[wave]][, 2])] <- 2
+          (position[["position"]] %in%
+             testlet_position[[SC]][[domain]][[wave]][, 1])] <- 1
+      position[["position"]][
+        !is.na(position[["position"]]) &
+          (position[["position"]] %in%
+             testlet_position[[SC]][[domain]][[wave]][, 2])] <- 2
       if (SC == "SC4" & domain == "MA") {
         testletSetting <- data.frame(
           ID_t = data[["ID_t"]],
           difficultTestlet = ifelse(
-                               data[["tx80211_w7"]] %in% c(285, 288,
-                                                      291:293, 296:303),
-                               TRUE,
-                               ifelse(is.na(data[["tx80211_w7"]]), NA,
-                                      FALSE)),
+            data[["tx80211_w7"]] %in% c(285, 288, 291:293, 296:303), TRUE,
+            ifelse(is.na(data[["tx80211_w7"]]), NA, FALSE)),
           atHome = ifelse(data[["tx80211_w7"]] %in% c(281:295), TRUE,
                           ifelse(is.na(data[["tx80211_w7"]]), NA, FALSE))
         )
       }
     }
-    return(list(rotation = rotation, Q = Q,
-                testletSetting = testletSetting,
+    return(list(rotation = rotation, Q = Q, testletSetting = testletSetting,
                 position = position))
   } else {
     if (rotation || (SC == "SC4" & domain %in% c("RE", "MA") & wave == "w7")) {
@@ -63,16 +59,17 @@ consider_test_rotation <- function(longitudinal, rotation, data, SC, wave,
       } else {
         position[["position"]] <- data[[paste0("tx80211_", wave)]]
         position[["position"]][
-            !is.na(position[["position"]]) &
-              (position[["position"]] %in% testlet_position[[SC]][[domain]][[wave]][, 1])] <- 1
-          position[["position"]][
-            !is.na(position[["position"]]) &
-              (position[["position"]] %in% testlet_position[[SC]][[domain]][[wave]][, 2])] <- 2
+          !is.na(position[["position"]]) &
+            (position[["position"]] %in%
+               testlet_position[[SC]][[domain]][[wave]][, 1])] <- 1
+        position[["position"]][
+          !is.na(position[["position"]]) &
+            (position[["position"]] %in%
+               testlet_position[[SC]][[domain]][[wave]][, 2])] <- 2
         if (SC == "SC4" & wave == "w7" & domain == "MA") {
-          position[["difficultTestlet"]] <-
-            ifelse(data[["tx80211_w7"]] %in% c(285, 288, 291:293, 296:303),
-                   TRUE,
-                   ifelse(is.na(data[["tx80211_w7"]]), NA, FALSE))
+          position[["difficultTestlet"]] <- ifelse(
+            data[["tx80211_w7"]] %in% c(285, 288, 291:293, 296:303), TRUE,
+            ifelse(is.na(data[["tx80211_w7"]]), NA, FALSE))
           position[["atHome"]] <-
             ifelse(data[["tx80211_w7"]] %in% c(281:295), TRUE,
                    ifelse(is.na(data[["tx80211_w7"]]), NA, FALSE))
@@ -80,16 +77,18 @@ consider_test_rotation <- function(longitudinal, rotation, data, SC, wave,
       }
       # possible NAs lead to further data selection
       position <- position[!is.na(position[["position"]]), ]
-      rotation <- rotation & length(unique(position[["position"]])) > 1 # T: with rotation, F: without rotation
+      rotation <- rotation & length(unique(position[["position"]])) > 1
       testletSetting <- position
       if (SC == "SC4" & domain == "MA" & wave == "w7") {
-        testletSetting <- testletSetting[, c("ID_t", "difficultTestlet", "atHome")]
+        testletSetting <-
+          testletSetting[, c("ID_t", "difficultTestlet", "atHome")]
       }
       if (rotation) {
         data <- data[data[["ID_t"]] %in% position[["ID_t"]], ]
         resp <- resp[resp[["ID_t"]] %in% position[["ID_t"]], ]
         ID_t <- ID_t[ID_t[["ID_t"]] %in% position[["ID_t"]], , drop = FALSE]
-        testletSetting <- testletSetting[testletSetting[["ID_t"]] %in% position[["ID_t"]], ]
+        testletSetting <-
+          testletSetting[testletSetting[["ID_t"]] %in% position[["ID_t"]], ]
         if (!is.null(bgdata)) {
           bgdata <- bgdata[bgdata[["ID_t"]] %in% position[["ID_t"]], ]
         }
@@ -98,13 +97,9 @@ consider_test_rotation <- function(longitudinal, rotation, data, SC, wave,
         # format position effect information
         position <- position[, "position", drop = FALSE]
       }
-      return(
-        list(
-          position = position, rotation = rotation, data = data,
-          resp = resp, ID_t = ID_t, bgdata = bgdata,
-          testletSetting = testletSetting
-        )
-      )
+      return(list(position = position, rotation = rotation, data = data,
+                  resp = resp, ID_t = ID_t, bgdata = bgdata,
+                  testletSetting = testletSetting))
     }
   }
 }

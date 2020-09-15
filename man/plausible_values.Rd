@@ -5,14 +5,24 @@
 \title{Function for estimating plausible values with NEPS competence data and NEPS
 scaled item parameters}
 \usage{
-plausible_values(SC, domain = c("MA", "RE", "SC", "IC", "LI", "EF", "NR",
-  "NT", "ORA", "ORB", "ST", "BA", "CD", "GR", "VO"), wave, path,
-  bgdata = NULL, npv = 10L, longitudinal = FALSE, rotation = TRUE,
-  min_valid = 3L, include_nr = TRUE, verbose = TRUE,
-  adjust_school_context = TRUE, control = list(EAP = FALSE, WLE =
-  FALSE, ML = list(nmi = 10L, ntheta = 2000, normal.approx = FALSE,
-  samp.regr = FALSE, theta.model = FALSE, np.adj = 8, na.grid = 5,
-  minbucket = 5, cp = 1e-04)))
+plausible_values(
+  SC,
+  domain = c("MA", "RE", "SC", "IC", "LI", "EF", "NR", "NT", "ORA", "ORB", "ST", "BA",
+    "CD", "GR", "VO"),
+  wave,
+  path,
+  bgdata = NULL,
+  npv = 10L,
+  longitudinal = FALSE,
+  rotation = TRUE,
+  min_valid = 3L,
+  include_nr = TRUE,
+  verbose = TRUE,
+  adjust_school_context = TRUE,
+  control = list(EAP = FALSE, WLE = FALSE, ML = list(nmi = 10L, ntheta = 2000,
+    normal.approx = FALSE, samp.regr = FALSE, theta.model = FALSE, np.adj = 8, na.grid =
+    5, minbucket = 5, cp = 1e-04))
+)
 }
 \arguments{
 \item{SC}{numeric. The starting cohort used for the analysis is

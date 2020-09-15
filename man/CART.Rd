@@ -5,8 +5,16 @@
 \title{Sequential Classification and Regression Trees
 adapted from package LaRA by J.-C. Gaasch (2017)}
 \usage{
-CART(X, itermcmc, burnin, nmi = 10, thin = 1, cartctrl1 = 5,
-  cartctrl2 = 1e-04, verbose = TRUE)
+CART(
+  X,
+  itermcmc,
+  burnin,
+  nmi = 10,
+  thin = 1,
+  cartctrl1 = 5,
+  cartctrl2 = 1e-04,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{X}{data frame containing person-level covariates. They can be numeric or factor
