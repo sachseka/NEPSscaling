@@ -33,11 +33,13 @@ set_not_enough_valid_resp_NA <- function(pv, eap, wle,
 #' @param valid_responses_per_person ...
 #' @param min_valid ...
 #' @param waves ...
+#' @param datalist ...
 #'
 #' @noRd
 
 set_not_enough_valid_resp_NA_long <- function(npv, waves, eap, wle, min_valid,
-                                              valid_responses_per_person) {
+                                              valid_responses_per_person,
+                                              datalist) {
   for (p in seq(npv)) {
     for (w in waves) {
       for (i in seq(nrow(valid_responses_per_person))) {

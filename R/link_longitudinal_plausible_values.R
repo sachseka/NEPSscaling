@@ -19,7 +19,8 @@ link_longitudinal_plausible_values <- function(datalist, npv, min_valid,
                                                waves, eap, wle,
                                                data, SC, domain, control) {
   res <- set_not_enough_valid_resp_NA_long(npv, waves, eap, wle, min_valid,
-                                           valid_responses_per_person)
+                                           valid_responses_per_person,
+                                           datalist)
   datalist <- res[["datalist"]]
   eap <- res[["eap"]]
   wle <- res[["wle"]]

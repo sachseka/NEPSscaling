@@ -34,3 +34,45 @@ correct_linking_term <- function(term, SC, domain, wave, w) {
   }
   term
 }
+
+#' correct deviations in WLE means from SUF WLE means in cross-sectional and
+#' fixed parameter linked estimation
+#'
+#' @param pv ...
+#' @param wle ...
+#' @param eap ...
+#' @param SC ...
+#' @param domain ...
+#' @param type ...
+#'
+#' @noRd
+
+correct_mean_deviations <- function(pv, wle, eap, SC, domain, type) {
+  # estimated correlations with SUF >> 0.95
+  if (SC == "SC3" & domain == "EF" & type == "cross") {
+    term <- 0.1
+    wave <- ""
+  } else if (SC == "SC3" & domain == "EF" & type == "long") {
+    term <- 0.2
+    wave <- "_w9"
+  } else if (SC == "SC3" & domain == "ORB" & type == "cross") {
+    term <- -0.1
+    wave <- ""
+  } else if (SC == "SC3" & domain == "ORB" & type == "long") {
+    term <- -0.1
+    wave <- "_w3"
+  } else if (SC == "SC4" & domain == "EF" & type == "long") {
+    term <- 0.2
+    wave <- "_w7"
+  }
+
+  eap[, paste0("eap", wave)] <- eap[, paste0("eap", wave)] + term
+  for (i in seq(length(pv))) {
+    pv[[i]][, paste0("PV", wave)] <-
+      pv[[i]][, paste0("PV", wave)] + term
+  }
+  if (!is.null(wle)) {
+    wle[, paste0("wle", wave)] <- wle[, paste0("wle", wave)] + term
+  }
+  list(pv = pv, wle = wle, eap = eap)
+}
