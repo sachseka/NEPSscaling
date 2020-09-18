@@ -68,8 +68,7 @@ estimate_cross_rasch_corrected_for_rotation <- function(bgdata, imp,
     )
     # post-processing of model
     res <- post_process_cross_tam_results(mod[[1]], npv, control,
-      imp, bgdatacom,
-      eap, i, EAP.rel, regr.coeff, pvs, bgdata
+      imp, bgdatacom, eap, i, EAP.rel, regr.coeff, pvs, bgdata
     )
     eap <- res$eap
     regr.coeff <- res$regr.coeff

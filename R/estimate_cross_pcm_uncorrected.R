@@ -69,8 +69,7 @@ estimate_cross_pcm_uncorrected <- function(bgdata, imp, resp,
     )
     # post-processing of model
     res <- post_process_cross_tam_results(mod[[1]], npv, control,
-      imp, bgdatacom,
-      eap, i, EAP.rel, regr.coeff, pvs, bgdata
+      imp, bgdatacom, eap, i, EAP.rel, regr.coeff, pvs, bgdata
     )
     eap <- res$eap
     regr.coeff <- res$regr.coeff

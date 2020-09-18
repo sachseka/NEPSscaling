@@ -5,7 +5,7 @@
 #' @param domain ...
 #' @param min_valid ...
 #'
-#' @noRD
+#' @noRd
 
 select_longitudinal_sc6_reading <- function(data, SC, domain, min_valid) {
   resp <- list()

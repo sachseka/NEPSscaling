@@ -16,6 +16,8 @@ summary.pv_obj <- function(object, ...) {
 
     if (get_type(pv_obj = pv_obj) == "longitudinal") {
         cat("\nItem parameters: \n")
+        new_items <- paste0("items_w", get_wave(pv_obj))
+        new_xsi <- paste0("xsi_w", get_wave(pv_obj))
         item_pars <- get_item_difficulties(pv_obj) %>%
             purrr::map(.f = function(mat) {
                 colnames(mat) <-
@@ -24,11 +26,8 @@ summary.pv_obj <- function(object, ...) {
                 mat}) %>%
             purrr::map(tibble::as_tibble, rownames = "items") %>%
             purrr::map(dplyr::rename, "pos" = "...1") %>%
-            purrr::map2(.x = .data, .y = get_wave(pv_obj),
-                        .f = function(df, wave) {
-                            names(df)[-2] <- paste(names(df)[-2], wave,
-                                                   sep = "_w")
-                            df}) %>%
+            purrr::map2(.y = new_items, ~dplyr::rename(.x, !!.y := "items")) %>%
+            purrr::map2(.y = new_xsi, ~dplyr::rename(.x, !!.y := "xsi")) %>%
             purrr::reduce(dplyr::full_join, by = "pos") %>%
             dplyr::select(-.data$pos) %>%
             dplyr::mutate_if(.predicate = is.numeric,

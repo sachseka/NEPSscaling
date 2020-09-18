@@ -291,6 +291,7 @@ plausible_values <- function(SC,
     include_nr, longitudinal, data, SC, domain, wave, waves)
   items_not_reached <- res[["nr"]]
   data <- res[["data"]]
+  include_nr <- res[["include_nr"]]
 
   # test data and test taker selection
   res <- select_test_responses_and_test_takers(
