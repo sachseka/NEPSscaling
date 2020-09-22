@@ -470,19 +470,19 @@ plausible_values <- function(SC,
     eap <- res[["eap"]]
   }
 
-  # correct deviations in SC3/SC4
-  if ((longitudinal & SC == "SC4" & domain == "EF") ||
-      (longitudinal & SC == "SC3" & domain == "EF") ||
-      (!longitudinal & SC == "SC3" & domain == "EF" & wave == "w9") ||
-      (longitudinal & SC == "SC3" & domain == "ORB") ||
-      (!longitudinal & SC == "SC3" & domain == "ORB" & wave == "w3")) {
-    res <- correct_mean_deviations(pv,
-                                   wle = if (control[["WLE"]]) {wle} else {NULL},
-                                   eap, SC, domain, type)
-    pv <- res[["pv"]]
-    wle <- res[["wle"]]
-    eap <- res[["eap"]]
-  }
+## correct deviations in SC3/SC4
+#if ((longitudinal & SC == "SC4" & domain == "EF") ||
+#    (longitudinal & SC == "SC3" & domain == "EF") ||
+#    (!longitudinal & SC == "SC3" & domain == "EF" & wave == "w9") ||
+#    (longitudinal & SC == "SC3" & domain == "ORB") ||
+#    (!longitudinal & SC == "SC3" & domain == "ORB" & wave == "w3")) {
+#  res <- correct_mean_deviations(pv,
+#                                 wle = if (control[["WLE"]]) {wle} else {NULL},
+#                                 eap, SC, domain, type)
+#  pv <- res[["pv"]]
+#  wle <- res[["wle"]]
+#  eap <- res[["eap"]]
+#}
 
   # calculate posterior mean of estimated eaps/plausible values
   MEAN <- colMeans(
@@ -530,7 +530,7 @@ plausible_values <- function(SC,
   }
   res[["comp_time"]] <- list(
     initial_time = t0,
-    input_check= t1 - t0,
+    input_check = t1 - t0,
     data_processing = t2 - t1,
     imputation = t3 - t2,
     estimation_time = t4 - t3,
