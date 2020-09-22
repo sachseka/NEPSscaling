@@ -7,10 +7,6 @@ Description: NEPSscaling allows users of NEPS data to estimate individual
              competence tests.
 Depends: R (>= 3.5.0),
 Imports: 
-    mvtnorm,
-    ucminf,
-    numDeriv,
-    rpart,
     haven (>= 1.1.1),
     TAM (>= 2.12-18),
     dplyr,
