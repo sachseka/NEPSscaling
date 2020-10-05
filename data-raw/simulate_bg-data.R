@@ -27,5 +27,6 @@ bg_data$math <- scale((bg_data$rea3_sc1 * 0.02 + bg_data$gender * 0.04 - bg_data
 psych::describe(bg_data)
 
 bg_data <- bg_data[, -2]
+bg_data$math <- c(bg_data$math)
 
-usethis::use_data(bg_data, pkg = "NEPScaling", overwrite = TRUE)
+usethis::use_data(bg_data, overwrite = TRUE)

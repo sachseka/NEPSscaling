@@ -4,7 +4,8 @@
 \name{xTargetCompetencies_sim}
 \alias{xTargetCompetencies_sim}
 \title{Competence items for plausible values estimation}
-\format{A data frame with 5330 rows and 30 variables:
+\format{
+A data frame with 5330 rows and 30 variables:
 \describe{
   \item{ID_t}{target IDs}
   \item{wave_w3}{competence test indicator for wave 3}
@@ -40,7 +41,8 @@
   \item{rea3054s_c}{...}
   \item{rea30550_c}{...}
   \item{rea3_sc1}{simulated reading WLE}
-}}
+}
+}
 \usage{
 xTargetCompetencies_sim
 }

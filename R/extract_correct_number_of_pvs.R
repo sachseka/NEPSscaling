@@ -8,7 +8,6 @@
 #' @noRd
 
 extract_correct_number_of_pvs <- function(bgdata, control, npv, pvs) {
-  ID_t <- NULL
   datalist <- list()
   d <- 1
   for (i in 1:ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1,
@@ -20,7 +19,9 @@ extract_correct_number_of_pvs <- function(bgdata, control, npv, pvs) {
         colnames(pvs[[i]][[j]])
       )]
       datalist[[d]] <- datalist[[d]] %>%
-        dplyr::select(ID_t, dplyr::everything())
+        dplyr::select(.data$ID_t, dplyr::everything()) %>%
+        dplyr::arrange(.data$ID_t)
+      names(datalist)[d] <- paste0("imp", i, "pv", j)
       d <- d + 1
     }
   }

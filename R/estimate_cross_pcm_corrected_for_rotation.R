@@ -17,57 +17,35 @@
 #' @param control List of control variables for plausible values estimation
 #'   algorithm
 #' @param npv Integer value fo number of plausible values to be returned by
-#'   `NEPScaling::plausible_values()`
+#'   `NEPSscaling::plausible_values()`
 #'
 #' @noRd
 
-estimate_cross_pcm_corrected_for_rotation <- function(
-                                                      bgdata, imp, frmY = NULL,
+estimate_cross_pcm_corrected_for_rotation <- function(bgdata, imp, frmY = NULL,
                                                       waves, ID_t, resp, type,
                                                       domain, SC, control, npv,
                                                       position) {
-  res <- collapse_categories_pcm(
-    resp[, item_labels[[SC]][[domain]][[gsub("_", "", waves)]] ], SC,
-    gsub("_", "", waves), domain
-  )
-  resp[, item_labels[[SC]][[domain]][[gsub("_", "", waves)]] ] <- res$resp
-  ind <- get_indicators_for_half_scoring(SC, domain, gsub("_", "", waves))
-  B <- TAM::designMatrices(
-    modeltype = "PCM",
-    resp = resp[, item_labels[[SC]][[domain]][[gsub("_", "", waves)]] ]
-  )$B
-  B[ind, , ] <- 0.5 * B[ind, , ]
+  items <- rownames(xsi.fixed$cross[[domain]][[SC]][[gsub("_", "", waves)]])
+  res <- prepare_resp_b_cross(resp, items, waves, SC, domain)
+  resp <- res[["resp"]]
+  B <- res[["B"]]
+  
+  times <- ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi)
   pvs <- list(NULL)
   EAP.rel <- NULL
-  regr.coeff <- NULL
-  eap <-
-    replicate(
-      ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi),
-      data.frame(ID_t = ID_t$ID_t),
-      simplify = FALSE
-    )
-  for (i in 1:ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1,
-    control$ML$nmi
-  )) {
-    if (!is.null(imp)) {
-      bgdatacom <- imp[[i]]
-      bgdatacom <- as.data.frame(apply(bgdatacom, 2, as.numeric))
-      frmY <-
-        as.formula(paste(
-          "~",
-          paste(colnames(bgdatacom)[-which(names(bgdatacom) == "ID_t")],
-            collapse = "+"
-          )
-        ))
-    }
+  eap <- replicate(times, data.frame(ID_t = ID_t$ID_t), simplify = FALSE)
+  for (i in 1:times) {
+    res <- prepare_bgdata_frmY(imp, i, frmY)
+    bgdatacom <- res[["bgdatacom"]]
+    frmY <- res[["frmY"]]
+	
     # estimate IRT model
     mod <- list()
-
     mod[[1]] <- TAM::tam.mml.mfr(
       formulaA = ~ 0 + item + item:step + position,
       facets = position,
       B = B,
-      resp = resp[, item_labels[[SC]][[domain]][[gsub("_", "", waves)]] ],
+      resp = resp[, items],
       dataY = if (is.null(bgdata)) {
         NULL
       } else if (is.null(imp)) {
@@ -78,27 +56,12 @@ estimate_cross_pcm_corrected_for_rotation <- function(
       formulaY = frmY,
       pid = resp$ID_t,
       irtmodel = "PCM2",
-      xsi.fixed = xsi.fixed[[type]][[domain]][[SC]][[gsub(
-        "_", "",
-        waves
-      ) ]],
+      xsi.fixed = xsi.fixed[[type]][[domain]][[SC]][[gsub("_", "", waves)]],
       verbose = FALSE
     )
     # post-processing of model
     res <- post_process_cross_tam_results(mod[[1]], npv, control,
-      Y = if (is.null(bgdata)) {
-        NULL
-      } else if (is.null(imp)) {
-        bgdata
-      } else {
-        bgdatacom
-      },
-      Y.pid = if (is.null(bgdata)) {
-        NULL
-      } else {
-        "ID_t"
-      },
-      eap, i, EAP.rel, regr.coeff, pvs, bgdata
+      imp, bgdatacom, eap, i, EAP.rel, regr.coeff, pvs, bgdata
     )
     eap <- res$eap
     regr.coeff <- res$regr.coeff

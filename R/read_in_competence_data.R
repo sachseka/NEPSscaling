@@ -12,6 +12,8 @@ read_in_competence_data <- function(path, SC, domain) {
   files <- list.files(path = path)
   if (SC == "SC5" & domain == "BA") {
     filepath <- paste0(path, files[grep("xEcoCAPI", files)])
+  } else if (SC == "SC1" & domain == "CD") {
+    filepath <- paste0(path, files[grep("xDirectMeasures", files)])
   } else {
     filepath <- paste0(path, files[grep("xTargetCompetencies", files)])
   }
@@ -28,6 +30,9 @@ read_in_competence_data <- function(path, SC, domain) {
           stop(cat(error_msg))
         }
       )
+    # test sjlabelled because of problems with labelled_spss class
+    # data <- haven::zap_labels(data
+    data <- sjlabelled::remove_all_labels(data)
   } else {
     data <-
       tryCatch(
@@ -37,6 +42,6 @@ read_in_competence_data <- function(path, SC, domain) {
         }
       )
   }
-  data <- data[order(data$ID_t), ]
+  data <- data[order(data[["ID_t"]]), ]
   data
 }

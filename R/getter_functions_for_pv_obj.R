@@ -10,7 +10,7 @@ get_starting_cohort <- function(pv_obj) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }
-  pv_obj$SC
+  pv_obj[["SC"]]
 }
 
 #' Get the domain for which plausible values have been estimated
@@ -23,7 +23,7 @@ get_domain <- function(pv_obj) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }
-  pv_obj$domain
+  pv_obj[["domain"]]
 }
 
 #' Get the wave for which plausible values have been estimated
@@ -36,7 +36,7 @@ get_wave <- function(pv_obj) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }
-  pv_obj$wave
+  pv_obj[["wave"]]
 }
 
 #' Get the type of estimation (longitudinal or cross-sectional)
@@ -49,7 +49,7 @@ get_type <- function(pv_obj) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }
-  if (pv_obj$type == "cross") {
+  if (pv_obj[["type"]] == "cross") {
     type <- "cross-sectional"
   } else {
     type <- "longitudinal"
@@ -67,7 +67,7 @@ get_rotation <- function(pv_obj) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }
-  pv_obj$rotation
+  pv_obj[["rotation"]]
 }
 
 #' Get the position (first or second) the test has been administered in
@@ -81,10 +81,10 @@ get_test_position <- function(pv_obj) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }
-  if (pv_obj$rotation == "Corrected For Test Position") {
-    return(pv_obj$position)
+  if (pv_obj[["rotation"]] == "Corrected For Test Position") {
+    return(pv_obj[["position"]])
   } else {
-    stop(pv_obj$rotation)
+    stop(pv_obj[["rotation"]])
   }
 }
 
@@ -99,7 +99,7 @@ get_min_valid <- function(pv_obj) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }
-  pv_obj$min_valid
+  pv_obj[["min_valid"]]
 }
 
 #' #' Get the estimation model
@@ -112,7 +112,7 @@ get_min_valid <- function(pv_obj) {
 #'   if (class(pv_obj) != "pv_obj") {
 #'     stop("pv_obj must be of class 'pv_obj'.")
 #'   }
-#'   pv_obj$model
+#'   pv_obj[["model"]]
 #' }
 
 #' Get the number of valid responses (i.e., non-missing) for each test taker
@@ -126,7 +126,7 @@ get_valid_responses_per_person <- function(pv_obj) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }
-  pv_obj$valid_responses_per_person
+  pv_obj[["valid_responses_per_person"]]
 }
 
 #' Get the number of plausible values returned by
@@ -140,7 +140,7 @@ get_npv <- function(pv_obj) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }
-  pv_obj$npv
+  pv_obj[["npv"]]
 }
 
 #' Get the list of control variables fed to
@@ -154,20 +154,20 @@ get_control <- function(pv_obj) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }
-  pv_obj$control
+  pv_obj[["control"]]
 }
 
-#' Get the overall mean of the plausible values
+#' Get the posterior means of the EAPs, WLEs, and plausible values
 #'
 #' @param pv_obj return object of function \code{NEPScaling::plausible_values()}
 #' @return the overall mean of the plausible values as a numeric value
 #'
 #' @export
-get_mean_pv <- function(pv_obj) {
+get_posterior_means <- function(pv_obj) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }
-  pv_obj$mean_PV
+  pv_obj[["posterior_means"]]
 }
 
 #' Get the complete list of estimated plausible values and their respective
@@ -181,7 +181,7 @@ get_pv_list <- function(pv_obj) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }
-  pv_obj$pv
+  pv_obj[["pv"]]
 }
 
 #' Get the i-th plausible value and its respective background data
@@ -197,7 +197,7 @@ get_pv_index <- function(pv_obj, index = 1) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }
-  pv_obj$pv[[index]]
+  pv_obj[["pv"]][[index]]
 }
 
 #' Get the estimated EAP values and standard errors for each person
@@ -210,8 +210,8 @@ get_eap <- function(pv_obj) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }
-  if (pv_obj$control$EAP) {
-    return(pv_obj$eap)
+  if (pv_obj[["control"]][["EAP"]]) {
+    return(pv_obj[["eap"]])
   } else {
     stop("EAPs have not been saved.")
   }
@@ -227,8 +227,8 @@ get_wle <- function(pv_obj) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }
-  if (pv_obj$control$WLE) {
-    return(pv_obj$wle)
+  if (pv_obj[["control"]][["WLE"]]) {
+    return(pv_obj[["wle"]])
   } else {
     stop("WLEs have not been saved.")
   }
@@ -244,7 +244,7 @@ get_eap_reliability <- function(pv_obj) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }
-  pv_obj$EAP_rel
+  pv_obj[["EAP_rel"]]
 }
 
 #' Get the WLE reliability of the plausible values
@@ -257,8 +257,8 @@ get_wle_reliability <- function(pv_obj) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }
-  if (pv_obj$control$WLE) {
-    return(pv_obj$WLE_rel)
+  if (pv_obj[["control"]][["WLE"]]) {
+    return(pv_obj[["WLE_rel"]])
   } else {
     stop("WLEs have not been saved.")
   }
@@ -276,7 +276,7 @@ get_regression_coefficients <- function(pv_obj) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }
-  pv_obj$regr_coeff
+  pv_obj[["regr_coeff"]]
 }
 
 #' Get the fixed item difficulties and their standard errors
@@ -290,7 +290,7 @@ get_item_difficulties <- function(pv_obj) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }
-  pv_obj$items
+  pv_obj[["items"]]
 }
 
 #' Get include_nr
@@ -304,7 +304,7 @@ get_include_nr <- function(pv_obj) {
     if (class(pv_obj) != "pv_obj") {
         stop("pv_obj must be of class 'pv_obj'.")
     }
-    pv_obj$include_nr
+    pv_obj[["include_nr"]]
 }
 
 #' Get the file path
@@ -317,5 +317,5 @@ get_path <- function(pv_obj) {
     if (class(pv_obj) != "pv_obj") {
         stop("pv_obj must be of class 'pv_obj'.")
     }
-    pv_obj$path
+    pv_obj[["path"]]
 }

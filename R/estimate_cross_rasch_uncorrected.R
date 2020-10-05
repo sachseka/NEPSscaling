@@ -27,33 +27,20 @@ estimate_cross_rasch_uncorrected <- function(
                                              waves, frmY = NULL,
                                              ID_t, type, domain,
                                              SC, control, npv) {
+  times <- ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi)
   pvs <- list(NULL)
   EAP.rel <- NULL
-  eap <-
-    replicate(
-      ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi),
-      data.frame(ID_t = ID_t$ID_t),
-      simplify = FALSE
-    )
-  for (i in 1:ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1,
-    control$ML$nmi
-  )) {
-    if (!is.null(imp)) {
-      bgdatacom <- imp[[i]]
-      bgdatacom <- as.data.frame(apply(bgdatacom, 2, as.numeric))
-      frmY <-
-        as.formula(paste(
-          "~",
-          paste(colnames(bgdatacom)[-which(names(bgdatacom) == "ID_t")],
-            collapse = "+"
-          )
-        ))
-    }
+  eap <- replicate(times, data.frame(ID_t = ID_t$ID_t), simplify = FALSE)
+  for (i in 1:times) {
+    res <- prepare_bgdata_frmY(imp, i, frmY)
+    bgdatacom <- res[["bgdatacom"]]
+    frmY <- res[["frmY"]]
     # estimate IRT model
     mod <- list()
 
+    items <- rownames(xsi.fixed$cross[[domain]][[SC]][[gsub("_", "", waves)]])
     mod[[1]] <- TAM::tam.mml(
-      resp = resp[, item_labels[[SC]][[domain]][[gsub("_", "", waves)]]],
+      resp = resp[, items],
       dataY = if (is.null(bgdata)) {
         NULL
       } else if (is.null(imp)) {
@@ -80,19 +67,7 @@ estimate_cross_rasch_uncorrected <- function(
     )
     # post-processing of model
     res <- post_process_cross_tam_results(mod[[1]], npv, control,
-      Y = if (is.null(bgdata)) {
-        NULL
-      } else if (is.null(imp)) {
-        bgdata
-      } else {
-        bgdatacom
-      },
-      Y.pid = if (is.null(bgdata)) {
-        NULL
-      } else {
-        "ID_t"
-      },
-      eap, i, EAP.rel, regr.coeff, pvs, bgdata
+      imp, bgdatacom, eap, i, EAP.rel, regr.coeff, pvs, bgdata
     )
     eap <- res$eap
     regr.coeff <- res$regr.coeff
