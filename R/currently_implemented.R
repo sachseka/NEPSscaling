@@ -17,7 +17,6 @@ Science: wave 6
 Cognitive Development: wave 1
 
 == SC2 ==
-Vocabulary: waves 1, 3 and 5
 Grammar: waves 1 and 3
 Math: waves 2, 3, 4 and 6
 Science: waves 1, 3 and 5

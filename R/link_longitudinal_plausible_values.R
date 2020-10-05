@@ -26,12 +26,12 @@ link_longitudinal_plausible_values <- function(datalist, npv, min_valid,
   wle <- res[["wle"]]
 
   # longitudinal subsamples
-  longitudinal_IDs <- identify_longitudinal_ids(SC, domain, data, waves, eap)
+  long_IDs <- identify_longitudinal_ids(SC, domain, data, waves, eap)
 
   # re-scaling for longitudinal link
   res <- scale_person_estimates(
     pv = datalist, wle = wle, eap = eap, SC = SC, domain = domain,
-    wave = gsub("_", "", waves), long_IDs = longitudinal_IDs
+    waves = waves, long_IDs = long_IDs
   )
 
   res

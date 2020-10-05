@@ -12,7 +12,7 @@ summary.pv_obj <- function(object, ...) {
     print.pv_obj(pv_obj)
 
     cat("\nMean of Plausible Values: \n")
-    print(round(get_mean_pv(pv_obj), 3))
+    print(round(get_posterior_means(pv_obj)$pv$total, 3))
 
     if (get_type(pv_obj = pv_obj) == "longitudinal") {
         cat("\nItem parameters: \n")

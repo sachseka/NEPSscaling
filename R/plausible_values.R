@@ -38,10 +38,8 @@
 #' EAPs will be returned as well; for \code{WLE = TRUE} WLEs are returned.
 #' Furthermore, additional control options for are collected in the list `ML`.
 #' `nmi` denotes the number of multiple impuations for missing covariate data
-#' (defaults to 10); `itermcmc` and `burnin` denote the number of iterations and
-#' and how many are later disregarded as a burnin period of the CART algorithm.
-#' `thin` allows the thinning of CART. `cartctrl1` defines the minimum number of
-#' observations in any terminal CART node (defaults to 5), `cartctrl2`
+#' (defaults to 10). `minbucket` defines the minimum number of
+#' observations in any terminal CART node (defaults to 5), `cp`
 #' determines the minimum decrease of overall lack of fit by each CART split
 #' (defaults to 0.0001).
 #'
@@ -50,7 +48,7 @@
 #' \describe{
 #' \item{SC}{Starting cohort that plausible values were estimated for}
 #' \item{domain}{Competence domain that plausible values were estimated for}
-#' \item{wave}{Wave that plausible values were estimated for}
+#' \item{wave}{Wave(s) that plausible values were estimated for}
 #' \item{type}{Whether cross-sectional ("cross") or longitudinal ("long")
 #' plausible values were estimated}
 #' \item{rotation}{In most assessments the position of the competence test was
@@ -59,6 +57,12 @@
 #' applied. Depending on the estimation context, this variable may have been
 #' automatically set by the function and thus differ from user input}
 #' \item{min_valid}{The minimum number of answers a test taker must have given}
+#' \item{include_nr}{Whether the number of not-reached missing values per
+#' person is to be used as a proxy for processing time}
+#' \item{adjust_school_context}{Whether the WLE competence value mean per school
+#' is to be used to approximate the multi-level structure of the data. Only
+#' applies to cohorts/waves that were assessed in school}
+#' \item{path}{The path leading to the SUF competence data}
 #' \item{valid_responses_per_person}{A \code{data.frame} containing the
 #' \code{ID_t} and the number of valid responses given by the respective
 #' individual}
@@ -66,22 +70,30 @@
 #' \item{control}{The control variables that were applied to fine-tune the
 #' estimation algorithms}
 #' \item{position}{A \code{data.frame} containing the \code{ID_t} and the
-#' position the respective individual got the testlet in (first or second)}
-#' \item{mean.PV}{The overall mean of all persons' abilities}
-#' \item{pv}{A list of \code{data.frame}s containing one plausible value each
-#' and the imputed data set that was used to estimate the plausible value.
-#' Additionally, if \code{include_nr} was specified, the background model is
-#' enriched by the number of not reached items (\code{nr}) per test taker as a
-#' proxy for response times.}
-#' \item{items}{The fixed item difficulty and the SE per item are returned as
-#' a `data.frame`}
+#' position the respective individual received the testlet in (first or second).
+#' Only applies if a rotated design has been estimated.}
+#' \item{posterior_means}{The overall mean of all persons' abilities for the 
+#' EAPs and WLEs (if estimated) as well as across all PVs and per PV 
+#' imputation.}
+#' \item{pv}{A list of \code{data.frame}s containing one plausible value per 
+#' wave each and the imputed data set that was used to estimate the plausible 
+#' value. Additionally, if \code{include_nr} was specified, the background model 
+#' is enriched by the number of not reached items (\code{not_reached}) per test 
+#' taker as a proxy for response times. Furthermore, if 
+#' \code{adjust_school_context} was specified, the background model is enriched
+#' by the average competence per school.}
 #' \item{eap}{A \code{data.frame} containing the \code{ID_t} and the ability
 #' EAP value for the respective individual}
+#' \item{EAP_rel}{The EAP reliability is returned}
 #' \item{wle}{A \code{data.frame} containing the \code{ID_t} and the ability
 #' WLE value for the respective individual}
-#' \item{regr.coeff}{The regression coefficients of the latent regression of
+#' \item{WLE_rel}{The WLE reliability is returned}
+#' \item{regr_coeff}{The regression coefficients of the latent regression of
 #' the ability}
-#' \item{EAP.rel}{The EAP reliability is returned}
+#' \item{items}{The fixed item difficulty parameters and the SE per item are 
+#' returned as a `data.frame`}
+#' \item{comp_time}{The total computation time as well as computation times for
+#' the various steps are returned}
 #' }
 #'
 #' @references Albert, J. H. (1992). Bayesian estimation of normal ogive item
@@ -224,6 +236,9 @@ plausible_values <- function(SC,
       "There were no competence tests for ", SC, " ", domain, " ",
       wave, ". Please check the NEPS documentation at https://neps-data.de."
     ), call. = FALSE)
+  }
+  if (SC == "SC2" && domain == "VO") {
+    stop("SC2 vocabulary is not available yet.", call. = FALSE)
   }
   if (longitudinal &&
       (
@@ -485,10 +500,9 @@ plausible_values <- function(SC,
 #}
 
   # calculate posterior mean of estimated eaps/plausible values
-  MEAN <- colMeans(
-    eap[, seq(2, (1 + 2 * length(waves)), 2), drop = FALSE], na.rm = TRUE
-  )
-  names(MEAN) <- gsub("_", "", waves)
+  MEAN <- calculate_posterior_means(eap, 
+                                    wle = if (control[["WLE"]]) {wle} else {NULL}, 
+                                    pv, waves, npv)
 
   t5 <- Sys.time()
 
@@ -512,7 +526,7 @@ plausible_values <- function(SC,
   if (rotation) {
     res[["position"]] <- data.frame(ID_t, position)
   }
-  res[["mean_PV"]] <- MEAN
+  res[["posterior_means"]] <- MEAN
   res[["pv"]] <- pv
   if (control[["EAP"]]) {
     res[["eap"]] <- eap

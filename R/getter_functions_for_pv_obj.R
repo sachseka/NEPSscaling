@@ -157,17 +157,17 @@ get_control <- function(pv_obj) {
   pv_obj[["control"]]
 }
 
-#' Get the overall mean of the plausible values
+#' Get the posterior means of the EAPs, WLEs, and plausible values
 #'
 #' @param pv_obj return object of function \code{NEPScaling::plausible_values()}
 #' @return the overall mean of the plausible values as a numeric value
 #'
 #' @export
-get_mean_pv <- function(pv_obj) {
+get_posterior_means <- function(pv_obj) {
   if (class(pv_obj) != "pv_obj") {
     stop("pv_obj must be of class 'pv_obj'.")
   }
-  pv_obj[["mean_PV"]]
+  pv_obj[["posterior_means"]]
 }
 
 #' Get the complete list of estimated plausible values and their respective
