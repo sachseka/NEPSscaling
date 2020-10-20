@@ -380,6 +380,7 @@ plausible_values <- function(SC,
   imp <- res[["imp"]]
   frmY <- res[["frmY"]]
   bgdata <- res[["bgdata"]]
+  loggedEvents <- res[["loggedEvents"]]
 
   # begin estimation of plausible values --------------------------------------
 
@@ -541,6 +542,9 @@ plausible_values <- function(SC,
     xsi.fixed[["long"]][[domain]][[SC]][gsub("_", "", waves)]
   } else {
     mod[[1]][["xsi"]]
+  }
+  if (!is.null(loggedEvents)) {
+    res[["loggedEvents"]] <- loggedEvents
   }
   res[["comp_time"]] <- list(
     initial_time = t0,

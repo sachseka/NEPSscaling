@@ -8,7 +8,7 @@
 #' @noRd
 
 impute_missing_data <- function(bgdata, verbose, control) {
-  imp <- frmY <- NULL
+  imp <- frmY <- loggedEvents <- NULL
   if (!is.null(bgdata)) {
     if (any(is.na(bgdata))) {
       if (verbose) {
@@ -21,12 +21,11 @@ impute_missing_data <- function(bgdata, verbose, control) {
       predictorMatrix <- matrix(1, ncol = ncol(bgdata), nrow = ncol(bgdata))
       diag(predictorMatrix) <- 0
       predictorMatrix[, which(names(bgdata) == "ID_t")] <- 0
-      imp <- complete(
-        mice(data = bgdata, m = control$ML$nmi, method = "cart",
-             minbucket = control$ML$minbucket, cp = control$ML$cp,
-             printFlag = verbose, predictorMatrix = predictorMatrix),
-        "all"
-      )
+      imp <- mice(data = bgdata, m = control$ML$nmi, method = "cart",
+                  minbucket = control$ML$minbucket, cp = control$ML$cp,
+                  printFlag = verbose, predictorMatrix = predictorMatrix)
+      loggedEvents <- imp$loggedEvents
+      imp <- complete(imp, "all")
     } else {
       bgdata <- as.data.frame(lapply(bgdata, as.numeric))
       imp <- NULL
@@ -40,5 +39,5 @@ impute_missing_data <- function(bgdata, verbose, control) {
         )
     }
   }
-  list(imp = imp, frmY = frmY, bgdata = bgdata)
+  list(imp = imp, frmY = frmY, bgdata = bgdata, loggedEvents = loggedEvents)
 }
