@@ -24,8 +24,9 @@ rm(list = ls())
 xsi.fixed <- list(cross = list(), long = list())
 
 # auxiliary for half scoring of ConQuest-Values
+devtools::load_all(path = "../NEPSscaling")
 pcitems <- function(SC, domain, wave){
-  NEPSscaling:::get_indicators_for_half_scoring(SC, domain, wave)
+  get_indicators_for_half_scoring(SC, domain, wave)
 }
 
 ### ----------------------------------------------------------------------------
@@ -389,7 +390,23 @@ items <- list(
                "reg50460_sc2g4_c","reg50510_sc2g4_c","reg5052s_sc2g4_c",
                "reg50530_sc2g4_c",
                "reg50540_sc2g4_c","reg5055s_sc2g4_c",#"reg50560_sc2g4_c",
-               "reg50570_sc2g4_c")
+               "reg50570_sc2g4_c"),
+        w9 = c("reg70110_sc2g7_c", "reg70120_sc2g7_c", "reg7013s_sc2g7_c",
+               "reg70140_sc2g7_c", "reg7015s_sc2g7_c", "reg7016s_sc2g7_c",
+               "reg70210_sc2g7_c", "reg70220_sc2g7_c", "reg7023s_sc2g7_c",
+               "reg7024s_sc2g7_c", "reg7024s_sc2g7_c_d",
+               "reg70250_sc2g7_c", "reg7026s_sc2g7_c", "reg70310_sc2g7_c",
+               "reg70320_sc2g7_c", "reg7033s_sc2g7_c", "reg7033s_sc2g7_c_d",
+               "reg70340_sc2g7_c", "reg70350_sc2g7_c", "reg70360_sc2g7_c",
+               "reg70410_sc2g7_c", "reg70420_sc2g7_c", "reg70430_sc2g7_c",
+               "reg70440_sc2g7_c", "reg7045s_sc2g7_c", "reg7045s_sc2g7_c_d",
+               "reg70460_sc2g7_c", "reg7051s_sc2g7_c", "reg70520_sc2g7_c",
+               "reg7053s_sc2g7_c", "reg70540_sc2g7_c", "reg7055s_sc2g7_c",
+               "reg70560_sc2g7_c", "reg70610_sc2g7_c", "reg70620_sc2g7_c",
+               "reg7063s_sc2g7_c", "reg70640_sc2g7_c", "reg70650_sc2g7_c",
+               "reg7066s_sc2g7_c", "reg70670_sc2g7_c", "reg7071s_sc2g7_c",
+               "reg70720_sc2g7_c", "reg70730_sc2g7_c", "reg70740_sc2g7_c",
+               "reg7075s_sc2g7_c")
       )
 x2w6 <- cbind(item = 1:length(items$w6),
               xsi = c(-2.68794, -1.97647, -1.52571, -1.11327, -0.42908,
@@ -402,8 +419,19 @@ x2w6 <- cbind(item = 1:length(items$w6),
 rownames(x2w6) <- items$w6
 colnames(x2w6)[1] <- ""
 x2w6[, 2][rownames(x2w6) %in% pcitems("SC2", "RE", "w6")] <-
-    x2w6[, 2][rownames(x2w6) %in% pcitems("SC2", "RE", "w6")]/2
+  x2w6[, 2][rownames(x2w6) %in% pcitems("SC2", "RE", "w6")]/2
 x2w6[, 2] <- x2w6[, 2] + (-0.567) # link to SC3 grade 5
+x2w9 <- cbind(item = 1:length(items$w9),
+              xsi = c(-0.68, -2.59, -1.46, -3.99, -1.85, -0.09, -2.67, -2.18,
+                      -1.06, 0.35, 0.04, -1.69, -0.5, -2.78, -1.7, 0.83, 0.64,
+                      -1.73, -2.44, -1.57, -2.96, -2.47, -2.98, -2.62, -0.52,
+                      -0.57, 0.53, -1.49, -2.14, -0.78, -0.29, -0.34, 0.07,
+                      -2.99, -0.84, -1.35, 0.06, -0.16, -0.14, -0.67, -0.36,
+                      0.75, 0.22, -1.4, -0.06))
+rownames(x2w9) <- items$w9
+colnames(x2w9)[1] <- ""
+x2w9[, 2][rownames(x2w9) %in% pcitems("SC2", "RE", "w9")] <-
+  x2w9[, 2][rownames(x2w9) %in% pcitems("SC2", "RE", "w9")]/2
 
 
 # SC3
@@ -633,7 +661,8 @@ item_diff_SC6_RE_w3 <- item_diff_SC6_RE_w3[1:30, ]
 xsi.fixed$cross[["RE"]] <-
   list(
     SC2 = list(
-      w6 = x2w6
+      w6 = x2w6,
+      w9 = x2w9
     ),
     SC3 = list(
       w1 = x3w1,

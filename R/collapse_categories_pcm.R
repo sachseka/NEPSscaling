@@ -1081,6 +1081,75 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
         resp[["reg5052s_sc2g4_c"]][resp[["reg5052s_sc2g4_c"]] == 4] <- 3
 
         # resp[["reg5055s_sc2g4_c"]][resp[["reg5055s_sc2g4_c"]] == 4] <- 3
+      } else if (wave == "w9") {
+        #
+        resp[["reg7013s_sc2g7_c"]][resp[["reg7013s_sc2g7_c"]] == 1] <- 0
+        resp[["reg7013s_sc2g7_c"]][resp[["reg7013s_sc2g7_c"]] == 2] <- 0
+        resp[["reg7013s_sc2g7_c"]][resp[["reg7013s_sc2g7_c"]] == 3] <- 1
+
+        resp[["reg7015s_sc2g7_c"]][resp[["reg7015s_sc2g7_c"]] == 1] <- 0
+        resp[["reg7015s_sc2g7_c"]][resp[["reg7015s_sc2g7_c"]] == 2] <- 1
+
+        resp[["reg7016s_sc2g7_c"]][resp[["reg7016s_sc2g7_c"]] == 1] <- 0
+        resp[["reg7016s_sc2g7_c"]][resp[["reg7016s_sc2g7_c"]] == 2] <- 1
+        resp[["reg7016s_sc2g7_c"]][resp[["reg7016s_sc2g7_c"]] == 3] <- 1
+        resp[["reg7016s_sc2g7_c"]][resp[["reg7016s_sc2g7_c"]] == 4] <- 2
+
+        resp[["reg7023s_sc2g7_c"]][resp[["reg7023s_sc2g7_c"]] == 1] <- 0
+        resp[["reg7023s_sc2g7_c"]][resp[["reg7023s_sc2g7_c"]] == 2] <- 1
+        resp[["reg7023s_sc2g7_c"]][resp[["reg7023s_sc2g7_c"]] == 3] <- 2
+
+        resp[["reg7026s_sc2g7_c"]][resp[["reg7026s_sc2g7_c"]] == 1] <- 0
+        resp[["reg7026s_sc2g7_c"]][resp[["reg7026s_sc2g7_c"]] == 2] <- 0
+        resp[["reg7026s_sc2g7_c"]][resp[["reg7026s_sc2g7_c"]] == 3] <- 0
+        resp[["reg7026s_sc2g7_c"]][resp[["reg7026s_sc2g7_c"]] == 4] <- 0
+        resp[["reg7026s_sc2g7_c"]][resp[["reg7026s_sc2g7_c"]] == 5] <- 1
+
+        resp[["reg7051s_sc2g7_c"]][resp[["reg7051s_sc2g7_c"]] == 1] <- 0
+        resp[["reg7051s_sc2g7_c"]][resp[["reg7051s_sc2g7_c"]] == 2] <- 0
+        resp[["reg7051s_sc2g7_c"]][resp[["reg7051s_sc2g7_c"]] == 3] <- 1
+
+        resp[["reg7053s_sc2g7_c"]][resp[["reg7053s_sc2g7_c"]] == 1] <- 0
+        resp[["reg7053s_sc2g7_c"]][resp[["reg7053s_sc2g7_c"]] == 2] <- 0
+        resp[["reg7053s_sc2g7_c"]][resp[["reg7053s_sc2g7_c"]] == 3] <- 1
+
+        resp[["reg7063s_sc2g7_c"]][resp[["reg7063s_sc2g7_c"]] == 1] <- 0
+        resp[["reg7063s_sc2g7_c"]][resp[["reg7063s_sc2g7_c"]] == 2] <- 0
+        resp[["reg7063s_sc2g7_c"]][resp[["reg7063s_sc2g7_c"]] == 3] <- 1
+
+        resp[["reg7066s_sc2g7_c"]][resp[["reg7066s_sc2g7_c"]] == 1] <- 0
+        resp[["reg7066s_sc2g7_c"]][resp[["reg7066s_sc2g7_c"]] == 2] <- 0
+        resp[["reg7066s_sc2g7_c"]][resp[["reg7066s_sc2g7_c"]] == 3] <- 0
+        resp[["reg7066s_sc2g7_c"]][resp[["reg7066s_sc2g7_c"]] == 4] <- 1
+
+        resp[["reg7071s_sc2g7_c"]][resp[["reg7071s_sc2g7_c"]] == 1] <- 0
+        resp[["reg7071s_sc2g7_c"]][resp[["reg7071s_sc2g7_c"]] == 2] <- 0
+        resp[["reg7071s_sc2g7_c"]][resp[["reg7071s_sc2g7_c"]] == 3] <- 1
+
+        resp[["reg7075s_sc2g7_c"]][resp[["reg7075s_sc2g7_c"]] == 1] <- 0
+        resp[["reg7075s_sc2g7_c"]][resp[["reg7075s_sc2g7_c"]] == 2] <- 0
+        resp[["reg7075s_sc2g7_c"]][resp[["reg7075s_sc2g7_c"]] == 3] <- 1
+        resp[["reg7075s_sc2g7_c"]][resp[["reg7075s_sc2g7_c"]] == 4] <- 1
+
+        resp[["reg7045s_sc2g7_c"]][resp[["reg7045s_sc2g7_c"]] == 1] <- 0
+        resp[["reg7045s_sc2g7_c"]][resp[["reg7045s_sc2g7_c"]] == 2] <- 1
+        resp[["reg7045s_sc2g7_c"]][resp[["reg7045s_sc2g7_c"]] == 3] <- 1
+
+        resp[["reg7045s_sc2g7_c_d"]][resp[["reg7045s_sc2g7_c_d"]] == 1] <- 0
+        resp[["reg7045s_sc2g7_c_d"]][resp[["reg7045s_sc2g7_c_d"]] == 2] <- 1
+        resp[["reg7045s_sc2g7_c_d"]][resp[["reg7045s_sc2g7_c_d"]] == 3] <- 1
+
+        resp[["reg7024s_sc2g7_c"]][resp[["reg7024s_sc2g7_c"]] == 1] <- 0
+        resp[["reg7024s_sc2g7_c"]][resp[["reg7024s_sc2g7_c"]] == 2] <- 1
+
+        resp[["reg7024s_sc2g7_c_d"]][resp[["reg7024s_sc2g7_c_d"]] == 1] <- 0
+        resp[["reg7024s_sc2g7_c_d"]][resp[["reg7024s_sc2g7_c_d"]] == 2] <- 1
+
+        resp[["reg7033s_sc2g7_c"]][resp[["reg7033s_sc2g7_c"]] == 1] <- 0
+        resp[["reg7033s_sc2g7_c"]][resp[["reg7033s_sc2g7_c"]] == 2] <- 1
+
+        resp[["reg7033s_sc2g7_c_d"]][resp[["reg7033s_sc2g7_c_d"]] == 1] <- 0
+        resp[["reg7033s_sc2g7_c_d"]][resp[["reg7033s_sc2g7_c_d"]] == 2] <- 1
       }
     } else if (domain == "SC") {
       if (wave == "w1") {

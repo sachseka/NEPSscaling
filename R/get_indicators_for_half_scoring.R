@@ -222,6 +222,13 @@ get_indicators_for_half_scoring <- function(SC, domain, wave) {
       if (wave == "w6") {
         ind <- c("reg5012s_sc2g4_c", "reg5016s_sc2g4_c", "reg5026s_sc2g4_c",
                  "reg5042s_sc2g4_c", "reg5052s_sc2g4_c", "reg5055s_sc2g4_c")
+      } else if (wave == "w9") {
+        ind <- c("reg7013s_sc2g7_c", "reg7015s_sc2g7_c", "reg7016s_sc2g7_c",
+                 "reg7023s_sc2g7_c", "reg7024s_sc2g7_c", "reg7024s_sc2g7_c_d",
+                 "reg7026s_sc2g7_c", "reg7033s_sc2g7_c", "reg7033s_sc2g7_c_d",
+                 "reg7045s_sc2g7_c", "reg7045s_sc2g7_c_d", "reg7051s_sc2g7_c",
+                 "reg7053s_sc2g7_c", "reg7055s_sc2g7_c", "reg7063s_sc2g7_c",
+                 "reg7066s_sc2g7_c", "reg7071s_sc2g7_c", "reg7075s_sc2g7_c")
       }
     } else if (domain == "SC") {
       if (wave == "w1") {
@@ -418,6 +425,8 @@ get_indicators_for_half_scoring2 <- function(SC, domain, wave) {
     if (domain == "RE") {
       if (wave == "w6") {
         ind <- c(2, 6, 13, 22, 27, 30)
+      } else if (wave == "w9") {
+        ind <- c() # TODO
       }
     } else if (domain == "SC") {
       if (wave == "w1") {

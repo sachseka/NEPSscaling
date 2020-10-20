@@ -13,6 +13,18 @@
 add_contextual_info <- function(path, SC, domain, waves, bgdata, data) {
   wle_vnames <- list(
     list( # longitudinal
+      SC2 = list(
+        RE = c("reg2_sc1u", "reg4_sc1u", "reg7_sc1u"),
+        SC = c("scg1_sc1u", "scg3_sc1u"),
+        MA = c("mag1_sc1u", "mag2_sc1u", "mag4_sc1u"),
+        VO = c("vog1_sc1u", "vog3_sc1u"),
+        GR = c("grg1_sc1u"),
+        NR = c("nrg2_sc1u"),
+        NT = c("ntg2_sc1u"),
+        IC = c("icg3_sc1u"),
+        ORA = c("org4_sc1a"),
+        ORB = c("org4_sc1b")
+      ),
       SC3 = list(
           MA = c("mag5_sc1u", "mag7_sc1u", "mag9_sc1u"),
           RE = c("reg5_sc1u", "reg7_sc1u", "reg9_sc1u"),
@@ -38,6 +50,18 @@ add_contextual_info <- function(path, SC, domain, waves, bgdata, data) {
       )
     ),
     list( # cross-sectional
+      SC2 = list(
+        RE = c("reg2_sc1", "reg4_sc1", "reg7_sc1"),
+        SC = c("scg1_sc1", "scg3_sc1"),
+        MA = c("mag1_sc1", "mag2_sc1", "mag4_sc1"),
+        VO = c("vog1_sc1", "vog3_sc1"),
+        GR = c("grg1_sc1"),
+        NR = c("nrg2_sc1"),
+        NT = c("ntg2_sc1"),
+        IC = c("icg3_sc1"),
+        ORA = c("org4_sc1a"),
+        ORB = c("org4_sc1b")
+      ),
       SC3 = list(
           MA = c(w1 = "mag5_sc1", w3 = "mag7_sc1", w5 = "mag9_sc1"),
           RE = c(w1 = "reg5_sc1", w3 = "reg7_sc1", w6 = "reg9_sc1"),
@@ -126,7 +150,7 @@ add_contextual_info <- function(path, SC, domain, waves, bgdata, data) {
                                dplyr::select(dplyr::matches("ID_t|_schavg")),
                              by = "ID_t") %>%
     dplyr::arrange(.data$ID_t)
-  
+
   bgdata
 }
 
