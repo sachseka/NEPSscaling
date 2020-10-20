@@ -10,6 +10,8 @@ create_loading_matrix_q_longitudinal <- function(SC, domain) {
   for (l in seq(length(item_labels[[SC]][[domain]]))) {
     len <- if (SC == "SC4" && domain ==  "MA" && l == 2) {
       31
+    } else if (SC == "SC2" && domain ==  "RE" && l == 2) {
+      45
     } else {
       length(item_labels[[SC]][[domain]][[l]])
     }
