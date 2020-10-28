@@ -4,3 +4,4 @@
 NEPScaling.Rproj
 *.Rproj
 data-raw/neps_raw/
+tests/test_strategy.txt
