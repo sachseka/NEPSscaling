@@ -204,8 +204,10 @@ plausible_values <- function(SC,
   if (missing(wave)) {
     stop(paste0(
       "Wave is missing, but must be provided.\n",
-      "Please note that, for longitudinal estimation, ",
-      "any of the waves in which the competence was assessed is fine."
+      "Please note that, for longitudinal estimation, you can use any of the ",
+      "waves in which the competence was assessed.\n",
+      "For example: if the competence was assessed in waves 1, 3, and 5, it ",
+      "is fine to use either 1 or 3 or 5."
     ),
     call. = FALSE
     )
@@ -525,6 +527,8 @@ plausible_values <- function(SC,
   res[["adjust_school_context"]] <- adjust_school_context
   res[["path"]] <- path
   res[["valid_responses_per_person"]] <- valid_responses_per_person
+  res[["n_testtakers"]] <-
+    colSums(!is.na(valid_responses_per_person[, -1, drop = FALSE]))
   res[["npv"]] <- npv
   res[["control"]] <- control
   if (rotation) {
