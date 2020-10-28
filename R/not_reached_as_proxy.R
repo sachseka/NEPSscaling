@@ -1,4 +1,13 @@
 #' not reached missing values as proxy for processing time
+#' @param include_nr logical; whether not-reached missings should be included
+#' as processing time proxies
+#' @param longitudinal logical; whether longitudinal pvs are to be estimated
+#' @param data data.frame; xTargetCompetencies
+#' @param SC character; starting cohort ("SCx")
+#' @param domain character; abbr. of competence domain (e.g. "RE", "SC")
+#' @param wave character; wave of test assessment ("wx")
+#' @param waves character; waves of test assessment in the longitudinal case
+#' ("_wx", "_wy")
 #' @noRd
 
 not_reached_as_proxy <- function(include_nr, longitudinal, data, SC, domain,

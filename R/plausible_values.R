@@ -72,14 +72,14 @@
 #' \item{position}{A \code{data.frame} containing the \code{ID_t} and the
 #' position the respective individual received the testlet in (first or second).
 #' Only applies if a rotated design has been estimated.}
-#' \item{posterior_means}{The overall mean of all persons' abilities for the 
-#' EAPs and WLEs (if estimated) as well as across all PVs and per PV 
+#' \item{posterior_means}{The overall mean of all persons' abilities for the
+#' EAPs and WLEs (if estimated) as well as across all PVs and per PV
 #' imputation.}
-#' \item{pv}{A list of \code{data.frame}s containing one plausible value per 
-#' wave each and the imputed data set that was used to estimate the plausible 
-#' value. Additionally, if \code{include_nr} was specified, the background model 
-#' is enriched by the number of not reached items (\code{not_reached}) per test 
-#' taker as a proxy for response times. Furthermore, if 
+#' \item{pv}{A list of \code{data.frame}s containing one plausible value per
+#' wave each and the imputed data set that was used to estimate the plausible
+#' value. Additionally, if \code{include_nr} was specified, the background model
+#' is enriched by the number of not reached items (\code{not_reached}) per test
+#' taker as a proxy for response times. Furthermore, if
 #' \code{adjust_school_context} was specified, the background model is enriched
 #' by the average competence per school.}
 #' \item{eap}{A \code{data.frame} containing the \code{ID_t} and the ability
@@ -90,7 +90,7 @@
 #' \item{WLE_rel}{The WLE reliability is returned}
 #' \item{regr_coeff}{The regression coefficients of the latent regression of
 #' the ability}
-#' \item{items}{The fixed item difficulty parameters and the SE per item are 
+#' \item{items}{The fixed item difficulty parameters and the SE per item are
 #' returned as a `data.frame`}
 #' \item{comp_time}{The total computation time as well as computation times for
 #' the various steps are returned}
@@ -204,8 +204,10 @@ plausible_values <- function(SC,
   if (missing(wave)) {
     stop(paste0(
       "Wave is missing, but must be provided.\n",
-      "Please note that, for longitudinal estimation, ",
-      "any of the waves in which the competence was assessed is fine."
+      "Please note that, for longitudinal estimation, you can use any of the ",
+      "waves in which the competence was assessed.\n",
+      "For example: if the competence was assessed in waves 1, 3, and 5, it ",
+      "is fine to use either 1 or 3 or 5."
     ),
     call. = FALSE
     )
@@ -501,8 +503,8 @@ plausible_values <- function(SC,
 #}
 
   # calculate posterior mean of estimated eaps/plausible values
-  MEAN <- calculate_posterior_means(eap, 
-                                    wle = if (control[["WLE"]]) {wle} else {NULL}, 
+  MEAN <- calculate_posterior_means(eap,
+                                    wle = if (control[["WLE"]]) {wle} else {NULL},
                                     pv, waves, npv)
 
   t5 <- Sys.time()
@@ -522,6 +524,8 @@ plausible_values <- function(SC,
   res[["adjust_school_context"]] <- adjust_school_context
   res[["path"]] <- path
   res[["valid_responses_per_person"]] <- valid_responses_per_person
+  res[["n_testtakers"]] <-
+    colSums(!is.na(valid_responses_per_person[, -1, drop = FALSE]))
   res[["npv"]] <- npv
   res[["control"]] <- control
   if (rotation) {
