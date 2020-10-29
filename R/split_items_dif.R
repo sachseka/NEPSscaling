@@ -1,6 +1,13 @@
-
+#' If large DIF occurred during the original scaling procedure, items may have
+#' been split accordingly 
+#' @param testletSetting data.frame; contains info about group memberships
+#' @param resp data.frame; response data
+#' @param longitudinal logical; whether estimation is to be longitudinal
+#' @param wave character; indicates wave with split in cross-sectional case
+#' because there is no selection prior to here
+#'
+#' @noRd
 split_SC4_math_items <- function(testletSetting, resp, longitudinal, wave) {
-
   if (longitudinal) {
     resp[[2]] <- tibble::add_column(resp[[2]],
       mag9d201_sc4g12_c_g = ifelse(
@@ -74,11 +81,18 @@ split_SC4_math_items <- function(testletSetting, resp, longitudinal, wave) {
       resp[["mag9r051_sc4g12_c"]] <- NULL
     }
   }
-
   resp
-
 }
 
+#' If large DIF occurred during the original scaling procedure, items may have
+#' been split accordingly 
+#' @param testletSetting data.frame; contains info about group memberships
+#' @param resp data.frame; response data
+#' @param longitudinal logical; whether estimation is to be longitudinal
+#' @param wave character; indicates wave with split in cross-sectional case
+#' because there is no selection prior to here
+#'
+#' @noRd
 split_SC2_reading_items <- function(testletSetting, resp, longitudinal, wave) {
   if (longitudinal) {
     resp[[2]] <- tibble::add_column(resp[[2]],
@@ -163,6 +177,5 @@ split_SC2_reading_items <- function(testletSetting, resp, longitudinal, wave) {
       ))
     }
   }
-
   resp
 }

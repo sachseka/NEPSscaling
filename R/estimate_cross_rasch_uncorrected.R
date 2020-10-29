@@ -21,9 +21,7 @@
 #'
 #' @noRd
 
-
-estimate_cross_rasch_uncorrected <- function(
-                                             bgdata, imp, resp,
+estimate_cross_rasch_uncorrected <- function(bgdata, imp, resp,
                                              waves, frmY = NULL,
                                              ID_t, type, domain,
                                              SC, control, npv) {
@@ -72,7 +70,6 @@ estimate_cross_rasch_uncorrected <- function(
     eap <- res$eap
     regr.coeff <- res$regr.coeff
     pvs <- res$pvs
-    mod[[1]] <- res$mod
     EAP.rel <- res$EAP.rel
   }
   res <- list(

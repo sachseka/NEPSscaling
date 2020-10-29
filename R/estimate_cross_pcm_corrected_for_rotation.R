@@ -66,7 +66,6 @@ estimate_cross_pcm_corrected_for_rotation <- function(bgdata, imp, frmY = NULL,
     eap <- res$eap
     regr.coeff <- res$regr.coeff
     pvs <- res$pvs
-    mod[[1]] <- res$mod
     EAP.rel <- res$EAP.rel
   }
   res <- list(

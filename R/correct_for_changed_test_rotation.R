@@ -1,12 +1,19 @@
-
-
+#' in some starting cohorts, the test rotation (e.g. MA-RE and RE-MA) was changed
+#' in later assessments (e.g. only MA-RE). In the longitudinal case, this change 
+#' needs to be corrected for the position effect due to fatigue etc.
+#'
+#' @param SC character; starting cohort ("SCx")
+#' @param domain character; abbr. of competence domain (e.g. "MA")
+#' @param position data.frame; contains the test rotation for each person
+#' @param wle data.frame; estimated weighted maximum likelihood estimates
+#' @param eap data.frame; estimated expected a posteriori values
+#' @param pv list of data.frames; estimated plausible values
+#' @noRd
 correct_for_changed_test_rotation <- function(SC, domain, position, wle, eap, pv) {
-
   res <- set_correction_term(SC, domain, wle, position)
   pos <- res[["pos"]]
   wave <- res[["wave"]]
   correction <- res[["correction"]]
-
   wle[position[["ID_t"]] %in% wle[["ID_t"]] &
         position[["position"]] %in% pos, paste0("wle_", wave)] <-
     wle[position[["ID_t"]] %in% wle[["ID_t"]] &
@@ -21,10 +28,8 @@ correct_for_changed_test_rotation <- function(SC, domain, position, wle, eap, pv
       pv[[i]][position[["ID_t"]] %in% wle[["ID_t"]] &
                 position[["position"]] %in% pos, paste0("PV_", wave)] + correction
   }
-
   list(wle = wle, eap = eap, pv = pv)
 }
-
 
 set_correction_term <- function(SC, domain, wle, position) {
   if (SC == "SC4") {

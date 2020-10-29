@@ -1,32 +1,31 @@
 #' Function for estimating plausible values with NEPS competence data and NEPS
 #' scaled item parameters
 #'
-#' @param SC           numeric. The starting cohort used for the analysis is
-#' indicated by an integer value (e.g., starting cohort one = 1).
-#' @param domain       character. The competence domain of interest is indicated
-#' by the domain abbreviation as used in the variable names (see Fuß, D.,
-#' Gnambs, T., Lockl, K., & Attig, M., 2019).
-#' @param wave         numeric. The wave of competence testing is indicated by
-#' an integer value (e.g., wave one = 1).
-#' @param path         character; file path leading to the location of the
-#' competence data
-#' @param bgdata       data frame containing background variables. Categorical
+#' @param SC numeric. The starting cohort used for the analysis is indicated by 
+#' an integer value (e.g., starting cohort one = 1).
+#' @param domain character. The competence domain of interest is indicated by 
+#' the domain abbreviation as used in the variable names (see Fuß, D., Gnambs, 
+#' T., Lockl, K., & Attig, M., 2019).
+#' @param wave numeric. The wave of competence testing is indicated by an 
+#' integer value (e.g., wave one = 1).
+#' @param path character; file path leading to the location of the competence 
+#' data
+#' @param bgdata data frame containing background variables. Categorical
 #' variables have to be specified as factors. If \code{bgdata = NULL}, plausible
 #' values are estimated without a background model. Missing data in the
 #' covariates is imputed using sequential classification and regression trees.
-#' @param npv          numeric; number of plausible values to be estimated;
-#' defaults to 10.
-#' @param min_valid       numeric; minimum number of valid responses for a test
+#' @param npv numeric; number of plausible values to be estimated; defaults to 
+#' 10.
+#' @param min_valid numeric; minimum number of valid responses for a test
 #' takers to be included in the estimation process. Defaults to 3 following NEPS
 #' scaling standards (see Pohl & Carstensen, 2012).
 #' @param longitudinal logical. TRUE indicating that a unidimensional model
 #' per measurement points is to be estimated and subsequently linked to form
 #' longitudinal estimates. Defaults to FALSE.
-#' @param rotation     logical. TRUE indicating that the competence scores
-#' should be corrected for the rotation design of the booklets. Defaults to
-#' TRUE. If both longitudinal and rotation are TRUE, test rotation is ignored
-#' and the argument rotation is set to FALSE.
-#' automatically.
+#' @param rotation logical. TRUE indicating that the competence scores should 
+#' be corrected for the rotation design of the booklets. Defaults to TRUE. If 
+#' both longitudinal and rotation are TRUE, test rotation is ignored and the 
+#' argument rotation is set to FALSE automatically.
 #' @param include_nr logical; whether the number of not-reached items as a proxy
 #' for processing speed should be included in the background model (the default
 #' is TRUE)
@@ -34,8 +33,8 @@
 #' included in the background models of SC3 and SC4 (the default is TRUE)
 #' @param verbose logical; whether progress should be displayed in the console
 #' (the default is TRUE)
-#' @param control      list of additional options. If \code{EAP = TRUE}, the
-#' EAPs will be returned as well; for \code{WLE = TRUE} WLEs are returned.
+#' @param control list of additional options. If \code{EAP = TRUE}, the EAPs 
+#' will be returned as well; for \code{WLE = TRUE} WLEs are returned.
 #' Furthermore, additional control options for are collected in the list `ML`.
 #' `nmi` denotes the number of multiple impuations for missing covariate data
 #' (defaults to 10). `minbucket` defines the minimum number of
@@ -264,6 +263,14 @@ plausible_values <- function(SC,
     stop("min_valid is too high. It excludes all possible test takers.",
          call. = FALSE)
   }
+  if (!is.null(bgdata)) {
+    if (!is.data.frame(bgdata)) {
+      stop("bgdata must be a data.frame.")
+    }
+    if (is.null(bgdata[["ID_t"]])) {
+      stop("ID_t must be included in bgdata.")
+    }
+  }
 
   # complement control lists
   res <- complement_control_lists(
@@ -275,9 +282,8 @@ plausible_values <- function(SC,
   control[["WLE"]] <- res[["WLE"]]
 
   # create auxiliary waves variable for longitudinal estimation
-  res <- create_waves_type_vars(longitudinal, SC, domain, wave)
-  type <- res[["type"]]
-  waves <- res[["waves"]]
+  waves <- create_waves_vars(longitudinal, SC, domain, wave)
+  type <- ifelse(longitudinal, "long", "cross")
 
   # school context only for SC2-4 while in school
   if (adjust_school_context) {
@@ -353,36 +359,31 @@ plausible_values <- function(SC,
     bgdata <- add_contextual_info(path, SC, domain, waves, bgdata, data)
   }
 
-  # consider test form rotation
-  res <- consider_test_rotation(
-    longitudinal, rotation, data, SC, wave, domain, resp, bgdata, ID_t
-  )
+  # test rotation and changes thereof
   if (longitudinal) {
-    rotation <- res[["rotation"]]
-    Q <- res[["Q"]]
-    if ((SC == "SC4" & domain %in% c("RE", "MA")) ||
-        (SC == "SC3" & domain == "RE") ||
-        (SC == "SC2" & domain %in% c("VO", "MA"))) {
-      position <- res[["position"]]
-    }
+    rotation <- FALSE
+    Q <- create_loading_matrix_q_longitudinal(SC, domain)
+    position <- get_rotation_change_info_longitudinal(SC, domain, data)
   } else {
-    if (rotation) {
-      position <- res[["position"]]
-      rotation <- res[["rotation"]]
-      data <- res[["data"]]
-      resp <- res[["resp"]]
-      ID_t <- res[["ID_t"]]
-      bgdata <- res[["bgdata"]]
-    }
+    res <- get_test_rotation_info_cross_sec(rotation, data, SC, wave, domain,
+                                            resp, bgdata, ID_t)
+    position <- res[["position"]]
+    rotation <- res[["rotation"]]
+    data <- res[["data"]]
+    resp <- res[["resp"]]
+    ID_t <- res[["ID_t"]]
+    bgdata <- res[["bgdata"]]
   }
 
   # split items if DIF was detected during original scaling procedure
   if (SC == "SC4" && domain == "MA") {
     resp <-
-      split_SC4_math_items(res[["testletSetting"]], resp, longitudinal, wave)
+      split_SC4_math_items(
+        get_item_split_info(SC, domain, data), resp, longitudinal, wave)
   } else if (SC == "SC2" && domain == "RE") {
     resp <-
-      split_SC2_reading_items(res[["testletSetting"]], resp, longitudinal, wave)
+      split_SC2_reading_items(
+        get_item_split_info(SC, domain, data), resp, longitudinal, wave)
   }
 
   # multiple imputation of missing covariate data -----------------------------
@@ -474,7 +475,7 @@ plausible_values <- function(SC,
     res <- link_longitudinal_plausible_values(
       datalist, npv, min_valid, valid_responses_per_person, waves, eap,
       wle = if (control[["WLE"]]) {wle} else {NULL},
-      data, SC, domain, control
+      data, SC, domain
     )
     pv <- res[["pv"]]
     wle <- res[["wle"]]

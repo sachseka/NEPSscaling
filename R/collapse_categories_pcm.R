@@ -1211,6 +1211,5 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
 	}
 	# SC, VO, CD: no need
   }
-  res <- list(resp = resp)
-  res
+  resp
 }

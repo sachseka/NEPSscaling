@@ -1,8 +1,8 @@
 #' Function to write pv_obj to file
 #'
-#' @param pv_obj    return object of function \code{NEPScaling::plausible_values()}
-#' @param ext       format (either SPSS, Stata (version 14) or Mplus compatible)
-#' @param path      path to the directory where the plausible values are going to
+#' @param pv_obj return object of function \code{NEPScaling::plausible_values()}
+#' @param ext format (either SPSS, Stata (version 14) or Mplus compatible)
+#' @param path path to the directory where the plausible values are going to
 #' be saved to
 #'
 #' @examples

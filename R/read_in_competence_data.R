@@ -31,7 +31,6 @@ read_in_competence_data <- function(path, SC, domain) {
         }
       )
     # test sjlabelled because of problems with labelled_spss class
-    # data <- haven::zap_labels(data
     data <- sjlabelled::remove_all_labels(data)
   } else {
     data <-

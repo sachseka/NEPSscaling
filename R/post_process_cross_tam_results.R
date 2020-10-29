@@ -1,4 +1,7 @@
-#' model post-processing in cross-sectional estimation
+#' model post-processing in cross-sectional estimation:
+#' impute pvs, add eaps, eap reliability, regression coefficients to 
+#' previous estimation results, discard unnecessary data provided by TAM
+#' and rename
 #'
 #' @param mod estimated TAM model
 #' @param npv number of plausible values to return
@@ -47,7 +50,5 @@ post_process_cross_tam_results <- function(mod, npv, control, imp,
   }
   colnames(eap[[i]]) <- c("ID_t", "eap", "se")
 
-  list(
-    eap = eap, regr.coeff = regr.coeff, pvs = pvs, mod = mod, EAP.rel = EAP.rel
-  )
+  list(eap = eap, regr.coeff = regr.coeff, pvs = pvs, EAP.rel = EAP.rel)
 }

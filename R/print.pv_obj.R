@@ -5,7 +5,6 @@
 #'
 #' @export
 
-
 print.pv_obj <- function(x, ...) {
   pv_obj <- x
   cat("Plausible Values Estimation with NEPSscaling\n")
@@ -47,6 +46,5 @@ print.pv_obj <- function(x, ...) {
   cat("Total computation time: ",
     paste(round(pv_obj[["comp_time"]]$total_comp_time, 1)),
     units(pv_obj[["comp_time"]]$total_comp_time), "\n")
-
 }
 

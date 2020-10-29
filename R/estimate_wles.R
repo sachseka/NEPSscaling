@@ -1,8 +1,8 @@
 #' estimate WLEs
 #'
-#' @param longitudinal ...
-#' @param waves ...
-#' @param mod ...
+#' @param longitudinal logical; whether estimation is longitudinal
+#' @param waves character vector; assessment waves ("_wx", "_wy")
+#' @param mod tam.obj; estimated irt model
 #'
 #' @noRd
 

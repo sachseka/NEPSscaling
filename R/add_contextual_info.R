@@ -9,8 +9,37 @@
 #'
 #' @return bgdata augmented by school competence averages
 #' @noRd
-
 add_contextual_info <- function(path, SC, domain, waves, bgdata, data) {
+  wle_vnames <- get_wle_vnames(waves, SC, domain) # below
+  # extract wles from data
+  data <- data[, c("ID_t", wle_vnames)]
+  waves <- waves[1:length(wle_vnames)]
+  # get school id data for SC and domain
+  school_data <- get_school_id_data(path) # below
+  # match wle to school id, get group average per school
+  school_data <- dplyr::left_join(data, school_data, by = "ID_t")
+  school_waves <-
+    names(school_data)[names(school_data) %in% paste0("school", waves)]
+  for (i in seq(length(waves))) {
+    w <- school_waves[i]
+    vn <- wle_vnames[i]
+    # NAs: correspond to missing WLEs and are ignored
+    for (j in unique(na.omit(school_data[[w]]))) {
+      school_data[which(school_data[[w]] == j), vn] <-
+        mean(school_data[[vn]][which(school_data[[w]] == j)], na.rm = TRUE)
+    }
+    names(school_data)[which(names(school_data) == vn)] <- paste0(vn, "_schavg")
+  }
+  bgdata <- dplyr::left_join(bgdata,
+                             school_data %>%
+                               dplyr::select(dplyr::matches("ID_t|_schavg")),
+                             by = "ID_t") %>%
+    dplyr::arrange(.data$ID_t)
+  bgdata
+}
+
+#' get wle variable names for the current SC/domain/waves
+get_wle_vnames <- function(waves, SC, domain) {
   wle_vnames <- list(
     list( # longitudinal
       SC2 = list(
@@ -87,22 +116,23 @@ add_contextual_info <- function(path, SC, domain, waves, bgdata, data) {
       )
     )
   )
-  # extract wles from data
   wle_vnames <- if (length(waves) > 1) {
     wle_vnames[[1]][[SC]][[domain]]
   } else {
     wle_vnames[[2]][[SC]][[domain]][[gsub("_", "", waves)]]
   }
-  data <- data[, c("ID_t", wle_vnames)]
-  waves <- waves[1:length(wle_vnames)]
+  wle_vnames
+}
 
-  # get school id data for SC and domain
+#' import CohortProfile which contains the school ID_i and convert it to wide 
+#' data format
+get_school_id_data <- function(path) {
   files <- list.files(path = path)
   filepath <- paste0(path, files[grep("CohortProfile", files)])
   filetype <- tools::file_ext(filepath)
   error_msg <- paste0(
-      "* Path '", filepath, "' may not contain CohortProfile.\n",
-      "* File format: '", filetype, "' might be wrong"
+    "* Path '", filepath, "' may not contain CohortProfile.\n",
+    "* File format: '", filetype, "' might be wrong"
   )
   if (filetype == "sav") {
     school_data <-
@@ -124,33 +154,12 @@ add_contextual_info <- function(path, SC, domain, waves, bgdata, data) {
   school_data <- dplyr::select(school_data, .data$ID_t, .data$wave, .data$ID_i)
   # missing school id: students did not participate in wave/test
   school_data$ID_i[school_data$ID_i < 0] <- NA
-
-  # match wle to school id, get group average per school
+  # convert from long into wide format
   school_data <- school_data %>%
     haven::zap_labels() %>%
     tidyr::pivot_wider(names_from = "wave",
                        names_prefix = "school_w",
                        values_from = "ID_i") %>%
     dplyr::mutate_all(as.numeric)
-  school_data <- dplyr::left_join(data, school_data, by = "ID_t")
-  school_waves <-
-    names(school_data)[names(school_data) %in% paste0("school", waves)]
-  for (i in seq(length(waves))) {
-    w <- school_waves[i]
-    vn <- wle_vnames[i]
-    # NAs: correspond to missing WLEs and are ignored
-    for (j in unique(na.omit(school_data[[w]]))) {
-      school_data[which(school_data[[w]] == j), vn] <-
-        mean(school_data[[vn]][which(school_data[[w]] == j)], na.rm = TRUE)
-    }
-    names(school_data)[which(names(school_data) == vn)] <- paste0(vn, "_schavg")
-  }
-  bgdata <- dplyr::left_join(bgdata,
-                             school_data %>%
-                               dplyr::select(dplyr::matches("ID_t|_schavg")),
-                             by = "ID_t") %>%
-    dplyr::arrange(.data$ID_t)
-
-  bgdata
+  school_data
 }
-

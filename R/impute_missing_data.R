@@ -1,8 +1,8 @@
 #' perform multiple imputation via cart
 #'
-#' @param bgdata ...
-#' @param verbose ...
-#' @param control ...
+#' @param bgdata data.frame of background data (incl. ID_t) or NULL
+#' @param verbose logical; whether stuff should be printed to the console
+#' @param control list of arguments for mice algorithm
 #'
 #' @importFrom mice mice complete
 #' @noRd

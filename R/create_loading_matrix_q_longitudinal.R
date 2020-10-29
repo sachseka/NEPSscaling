@@ -8,6 +8,7 @@
 create_loading_matrix_q_longitudinal <- function(SC, domain) {
   Q <- list()
   for (l in seq(length(item_labels[[SC]][[domain]]))) {
+    # if items were split due to DIF
     len <- if (SC == "SC4" && domain ==  "MA" && l == 2) {
       31
     } else if (SC == "SC2" && domain ==  "RE" && l == 2) {
