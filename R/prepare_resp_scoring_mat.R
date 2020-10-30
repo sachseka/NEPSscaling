@@ -7,11 +7,10 @@
 #' @param waves character; waves of longitudinal assessment ("_wx", "_wy")
 #' @param SC character; starting cohort ("SCx")
 #' @param domain character; competence domain (e.g., "RE", "MA")
-#' @param Q list of design / scoring matrices
 #'
 #' @noRd
-prepare_resp_q_longitudinal <- function(PCM, resp, items, waves, SC, domain,
-                                        Q) {
+prepare_resp_q_longitudinal <- function(PCM, resp, items, waves, SC, domain) {
+  Q <- create_loading_matrix_q_longitudinal(SC, domain)
   for (i in seq(length(PCM))) {
     if (PCM[[i]]) {
       resp[[i]][, items[[i]]] <- collapse_categories_pcm(

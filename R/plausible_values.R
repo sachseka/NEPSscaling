@@ -362,7 +362,6 @@ plausible_values <- function(SC,
   # test rotation and changes thereof
   if (longitudinal) {
     rotation <- FALSE
-    Q <- create_loading_matrix_q_longitudinal(SC, domain)
     position <- get_rotation_change_info_longitudinal(SC, domain, data)
   } else {
     res <- get_test_rotation_info_cross_sec(rotation, data, SC, wave, domain,
@@ -405,7 +404,7 @@ plausible_values <- function(SC,
 
   if (longitudinal) {
     res <- estimate_longitudinal(
-      bgdata, imp, frmY = frmY, resp, Q, PCM, ID_t, waves, type, domain, SC,
+      bgdata, imp, frmY = frmY, resp, PCM, ID_t, waves, type, domain, SC,
       control, npv
     )
   } else {

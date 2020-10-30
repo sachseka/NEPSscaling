@@ -19,17 +19,14 @@
 #'   algorithm
 #' @param npv Integer value fo number of plausible values to be returned by
 #'   `NEPScaling::plausible_values()`
-#' @param Q List of matrices detailing the item scoring (0.5 scoring for PCM
-#'   items)
 #'
 #' @noRd
 
-estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
-                                  PCM, ID_t, waves, type, domain, SC,
-                                  control, npv) {
+estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, PCM, ID_t, 
+                                  waves, type, domain, SC, control, npv) {
   items <- lapply(xsi.fixed$long[[domain]][[SC]], rownames)
 
-  res <- prepare_resp_q_longitudinal(PCM, resp, items, waves, SC, domain, Q)
+  res <- prepare_resp_q_longitudinal(PCM, resp, items, waves, SC, domain)
   resp <- res[["resp"]]
   Q <- res[["Q"]]
 
