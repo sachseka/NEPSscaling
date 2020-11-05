@@ -27,20 +27,22 @@ read_in_competence_data <- function(path, SC, domain) {
       tryCatch(
         haven::read_spss(file = filepath, user_na = TRUE),
         error = function(cnd) {
-          stop(cat(error_msg))
+          stop(cat(error_msg), call. = FALSE)
         }
       )
-    # test sjlabelled because of problems with labelled_spss class
-    data <- sjlabelled::remove_all_labels(data)
-  } else {
+  } else if (filetype == "dta") {
     data <-
       tryCatch(
-        haven::read_dta(file = filepath, user_na = TRUE),
+        haven::read_dta(file = filepath),
         error = function(cnd) {
-          stop(cat(error_msg))
+          stop(cat(error_msg), call. = FALSE)
         }
       )
+  } else {
+    stop(cat(error_msg), call. = FALSE)
   }
+  # sjlabelled because of problems with labelled_spss and tibble class
+  data <- sjlabelled::remove_all_labels(data)
   data <- data[order(data[["ID_t"]]), ]
   data
 }

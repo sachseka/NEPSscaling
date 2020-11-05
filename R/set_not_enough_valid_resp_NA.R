@@ -17,9 +17,9 @@ set_not_enough_valid_resp_NA <- function(pv, eap, wle,
   for (p in seq(npv)) {
     pv[[p]][valid_responses_per_person[["valid"]] < min_valid, "PV"] <- NA
   }
-  eap[valid_responses_per_person[["valid"]] < min_valid, "eap"] <- NA
+  eap[valid_responses_per_person[["valid"]] < min_valid, c("eap", "se")] <- NA
   if (!is.null(wle)) {
-    wle[valid_responses_per_person[["valid"]] < min_valid, "wle"] <- NA
+    wle[valid_responses_per_person[["valid"]] < min_valid, c("wle", "se")] <- NA
   }
   res <- list(pv = pv, eap = eap, wle = wle)
   res

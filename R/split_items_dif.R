@@ -103,11 +103,11 @@ split_SC2_reading_items <- function(testletSetting, resp, longitudinal, wave) {
                                     ),
                                     .after = "reg7024s_sc2g7_c"
     )
-    resp[[2]][["reg7024s_sc2g7_c"]] <- dplyr::mutate(reg7024s_sc2g7_c = ifelse(
+    resp[[2]][["reg7024s_sc2g7_c"]] <- ifelse(
       testletSetting[["easy"]][
         testletSetting[["ID_t"]] %in% resp[[2]][["ID_t"]]
       ], resp[[2]][["reg7024s_sc2g7_c"]], NA
-    ))
+    )
     resp[[2]] <- tibble::add_column(resp[[2]],
                                     reg7033s_sc2g7_c_d = ifelse(
                                       !testletSetting[["easy"]][
@@ -116,11 +116,11 @@ split_SC2_reading_items <- function(testletSetting, resp, longitudinal, wave) {
                                     ),
                                     .after = "reg7033s_sc2g7_c"
     )
-    resp[[2]][["reg7033s_sc2g7_c"]] <- dplyr::mutate(reg7024s_sc2g7_c = ifelse(
+    resp[[2]][["reg7033s_sc2g7_c"]] <- ifelse(
       testletSetting[["easy"]][
         testletSetting[["ID_t"]] %in% resp[[2]][["ID_t"]]
       ], resp[[2]][["reg7033s_sc2g7_c"]], NA
-    ))
+    )
     resp[[2]] <- tibble::add_column(resp[[2]],
                                     reg7045s_sc2g7_c_d = ifelse(
                                       !testletSetting[["easy"]][
@@ -129,11 +129,11 @@ split_SC2_reading_items <- function(testletSetting, resp, longitudinal, wave) {
                                     ),
                                     .after = "reg7045s_sc2g7_c"
     )
-    resp[[2]][["reg7045s_sc2g7_c"]] <- dplyr::mutate(reg7024s_sc2g7_c = ifelse(
+    resp[[2]][["reg7045s_sc2g7_c"]] <- ifelse(
       testletSetting[["easy"]][
         testletSetting[["ID_t"]] %in% resp[[2]][["ID_t"]]
       ], resp[[2]][["reg7045s_sc2g7_c"]], NA
-    ))
+    )
   } else {
     if (wave == "w9") {
       resp <- tibble::add_column(resp,
@@ -144,11 +144,11 @@ split_SC2_reading_items <- function(testletSetting, resp, longitudinal, wave) {
                                  ),
                                  .after = "reg7024s_sc2g7_c"
       )
-      resp[["reg7024s_sc2g7_c"]] <- dplyr::mutate(reg7024s_sc2g7_c = ifelse(
+      resp[["reg7024s_sc2g7_c"]] <- ifelse(
         testletSetting[["easy"]][
           testletSetting[["ID_t"]] %in% resp[["ID_t"]]
         ], resp[["reg7024s_sc2g7_c"]], NA
-      ))
+      )
       resp <- tibble::add_column(resp,
                                  reg7033s_sc2g7_c_d = ifelse(
                                    !testletSetting[["easy"]][
@@ -157,11 +157,11 @@ split_SC2_reading_items <- function(testletSetting, resp, longitudinal, wave) {
                                  ),
                                  .after = "reg7033s_sc2g7_c"
       )
-      resp[["reg7033s_sc2g7_c"]] <- dplyr::mutate(reg7024s_sc2g7_c = ifelse(
+      resp[["reg7033s_sc2g7_c"]] <- ifelse(
         testletSetting[["easy"]][
           testletSetting[["ID_t"]] %in% resp[["ID_t"]]
         ], resp[["reg7033s_sc2g7_c"]], NA
-      ))
+      )
       resp <- tibble::add_column(resp,
                                  reg7045s_sc2g7_c_d = ifelse(
                                    !testletSetting[["easy"]][
@@ -170,11 +170,11 @@ split_SC2_reading_items <- function(testletSetting, resp, longitudinal, wave) {
                                  ),
                                  .after = "reg7045s_sc2g7_c"
       )
-      resp[["reg7045s_sc2g7_c"]] <- dplyr::mutate(reg7024s_sc2g7_c = ifelse(
+      resp[["reg7045s_sc2g7_c"]] <- ifelse(
         testletSetting[["easy"]][
           testletSetting[["ID_t"]] %in% resp[["ID_t"]]
         ], resp[["reg7045s_sc2g7_c"]], NA
-      ))
+      )
     }
   }
   resp

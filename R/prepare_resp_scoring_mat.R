@@ -1,6 +1,6 @@
 #' prepare competence data and scoring matrix
 #'
-#' @param PCM logical; whether there are partial credit items in the response 
+#' @param PCM logical; whether there are partial credit items in the response
 #' data
 #' @param resp list of data.frames containing containing the responses per wave
 #' @param items list of item names per wave
@@ -10,7 +10,7 @@
 #'
 #' @noRd
 prepare_resp_q_longitudinal <- function(PCM, resp, items, waves, SC, domain) {
-  Q <- create_loading_matrix_q_longitudinal(SC, domain)
+  Q <- create_loading_matrix_q_longitudinal(SC, domain, items)
   for (i in seq(length(PCM))) {
     if (PCM[[i]]) {
       resp[[i]][, items[[i]]] <- collapse_categories_pcm(
