@@ -296,10 +296,10 @@ plausible_values <- function(SC,
     } else {
       # some starting cohorts transition into or out of school, thus, specific
       # waves have to be checked in the cross-sectional case
-      if (!(SC == "SC2" & wave %in% c("w3", "w4", "w5", "w6", "w9") ||
+      if (!(SC == "SC2" & wave %in% c("w3", "w4", "w5", "w6", "w9")) ||
             !(SC == "SC3" & wave %in% c("w1", "w2", "w3", "w5", "w6", "w7",
                                         "w8", "w9")) ||
-            !(SC == "SC4" & wave %in% c("w1", "w2", "w3", "w5", "w7")))) {
+            !(SC == "SC4" & wave %in% c("w1", "w2", "w3", "w5", "w7"))) {
         adjust_school_context <- FALSE
       }
     }

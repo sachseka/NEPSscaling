@@ -25,36 +25,35 @@ plausible_values(
 )
 }
 \arguments{
-\item{SC}{numeric. The starting cohort used for the analysis is
-indicated by an integer value (e.g., starting cohort one = 1).}
+\item{SC}{numeric. The starting cohort used for the analysis is indicated by 
+an integer value (e.g., starting cohort one = 1).}
 
-\item{domain}{character. The competence domain of interest is indicated
-by the domain abbreviation as used in the variable names (see Fuß, D.,
-Gnambs, T., Lockl, K., & Attig, M., 2019).}
+\item{domain}{character. The competence domain of interest is indicated by 
+the domain abbreviation as used in the variable names (see Fuß, D., Gnambs, 
+T., Lockl, K., & Attig, M., 2019).}
 
-\item{wave}{numeric. The wave of competence testing is indicated by
-an integer value (e.g., wave one = 1).}
+\item{wave}{numeric. The wave of competence testing is indicated by an 
+integer value (e.g., wave one = 1).}
 
-\item{path}{character; file path leading to the location of the
-competence data}
+\item{path}{character; file path leading to the location of the competence 
+data}
 
 \item{bgdata}{data frame containing background variables. Categorical
 variables have to be specified as factors. If \code{bgdata = NULL}, plausible
 values are estimated without a background model. Missing data in the
 covariates is imputed using sequential classification and regression trees.}
 
-\item{npv}{numeric; number of plausible values to be estimated;
-defaults to 10.}
+\item{npv}{numeric; number of plausible values to be estimated; defaults to 
+10.}
 
 \item{longitudinal}{logical. TRUE indicating that a unidimensional model
 per measurement points is to be estimated and subsequently linked to form
 longitudinal estimates. Defaults to FALSE.}
 
-\item{rotation}{logical. TRUE indicating that the competence scores
-should be corrected for the rotation design of the booklets. Defaults to
-TRUE. If both longitudinal and rotation are TRUE, test rotation is ignored
-and the argument rotation is set to FALSE.
-automatically.}
+\item{rotation}{logical. TRUE indicating that the competence scores should 
+be corrected for the rotation design of the booklets. Defaults to TRUE. If 
+both longitudinal and rotation are TRUE, test rotation is ignored and the 
+argument rotation is set to FALSE automatically.}
 
 \item{min_valid}{numeric; minimum number of valid responses for a test
 takers to be included in the estimation process. Defaults to 3 following NEPS
@@ -70,8 +69,8 @@ is TRUE)}
 \item{adjust_school_context}{logical; whether the school context should be
 included in the background models of SC3 and SC4 (the default is TRUE)}
 
-\item{control}{list of additional options. If \code{EAP = TRUE}, the
-EAPs will be returned as well; for \code{WLE = TRUE} WLEs are returned.
+\item{control}{list of additional options. If \code{EAP = TRUE}, the EAPs 
+will be returned as well; for \code{WLE = TRUE} WLEs are returned.
 Furthermore, additional control options for are collected in the list `ML`.
 `nmi` denotes the number of multiple impuations for missing covariate data
 (defaults to 10). `minbucket` defines the minimum number of
@@ -109,14 +108,14 @@ estimation algorithms}
 \item{position}{A \code{data.frame} containing the \code{ID_t} and the
 position the respective individual received the testlet in (first or second).
 Only applies if a rotated design has been estimated.}
-\item{posterior_means}{The overall mean of all persons' abilities for the 
-EAPs and WLEs (if estimated) as well as across all PVs and per PV 
+\item{posterior_means}{The overall mean of all persons' abilities for the
+EAPs and WLEs (if estimated) as well as across all PVs and per PV
 imputation.}
-\item{pv}{A list of \code{data.frame}s containing one plausible value per 
-wave each and the imputed data set that was used to estimate the plausible 
-value. Additionally, if \code{include_nr} was specified, the background model 
-is enriched by the number of not reached items (\code{not_reached}) per test 
-taker as a proxy for response times. Furthermore, if 
+\item{pv}{A list of \code{data.frame}s containing one plausible value per
+wave each and the imputed data set that was used to estimate the plausible
+value. Additionally, if \code{include_nr} was specified, the background model
+is enriched by the number of not reached items (\code{not_reached}) per test
+taker as a proxy for response times. Furthermore, if
 \code{adjust_school_context} was specified, the background model is enriched
 by the average competence per school.}
 \item{eap}{A \code{data.frame} containing the \code{ID_t} and the ability
@@ -127,7 +126,7 @@ WLE value for the respective individual}
 \item{WLE_rel}{The WLE reliability is returned}
 \item{regr_coeff}{The regression coefficients of the latent regression of
 the ability}
-\item{items}{The fixed item difficulty parameters and the SE per item are 
+\item{items}{The fixed item difficulty parameters and the SE per item are
 returned as a `data.frame`}
 \item{comp_time}{The total computation time as well as computation times for
 the various steps are returned}
