@@ -5,7 +5,7 @@ Authors@R: person("Anna", "Scharl", email = "anna.scharl@lifbi.de", role = c("au
 Description: NEPSscaling allows users of NEPS data to estimate individual 
              competence values in the form of plausible values for NEPS 
              competence tests.
-Depends: R (>= 3.5.0),
+Depends: R (>= 4.0.0),
 Imports: 
     haven (>= 1.1.1),
     TAM (>= 2.12-18),
