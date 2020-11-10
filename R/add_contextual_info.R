@@ -142,14 +142,16 @@ get_school_id_data <- function(path) {
           stop(cat(error_msg))
         }
       )
-  } else {
+  } else if (filetype == "dta") {
     school_data <-
       tryCatch(
-        haven::read_dta(file = filepath, user_na = FALSE),
+        haven::read_dta(file = filepath),
         error = function(cnd) {
           stop(cat(error_msg))
         }
       )
+  } else {
+    stop(error_msg, call. = FALSE)
   }
   school_data <- dplyr::select(school_data, .data$ID_t, .data$wave, .data$ID_i)
   # missing school id: students did not participate in wave/test

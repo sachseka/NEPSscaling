@@ -11,11 +11,7 @@ print.pv_obj <- function(x, ...) {
   cat("\nStarting Cohort: ", get_starting_cohort(pv_obj = pv_obj), "\n")
   cat("Domain: ", get_domain(pv_obj = pv_obj), "\n")
   cat("Wave(s): ", get_wave(pv_obj = pv_obj), "\n")
-  cat("Test takers per wave: ",
-    colSums(!is.na(
-      get_valid_responses_per_person(pv_obj = pv_obj)[, -1, drop = FALSE]
-      )),
-    "\n")
+  cat("Test takers per wave: ", get_n_testtakers(pv_obj = pv_obj), "\n")
   cat("EAP reliability: ",
     round(unlist(get_eap_reliability(pv_obj = pv_obj)), 3), "\n")
 

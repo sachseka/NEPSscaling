@@ -48,6 +48,8 @@ select_test_responses_and_test_takers <- function(longitudinal, SC, domain,
     data <- data[data[["ID_t"]] %in% resp[["ID_t"]], ]
     data <- data[order(data[["ID_t"]]), ]
     if (SC == "SC4" & domain == "ST") {
+      names(resp)[which(names(resp) == "stg12cmt06_c")] <- "stg12mt06_c"
+      names(resp)[which(names(resp) == "stg12cpd03_c")] <- "stg12pd03_c"
       items <-
         c("stg12nhs_c", "stg12egs_c", "stg12mts_c", "stg12cws_c", "stg12pds_c")
       for (i in items) {

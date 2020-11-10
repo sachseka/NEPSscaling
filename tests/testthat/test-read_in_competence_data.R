@@ -1,7 +1,5 @@
 context("read_in_competence_data")
 
-#TODO: check whether missings are correctly read in!
-
 data <- result <- data.frame(ID_t = 1:100,
                              var1 = c(1:90, rep(-94, 10)))
 data$var1 <- haven::labelled_spss(
