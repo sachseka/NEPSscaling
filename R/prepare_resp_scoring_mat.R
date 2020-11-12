@@ -13,8 +13,8 @@ prepare_resp_q_longitudinal <- function(PCM, resp, items, waves, SC, domain) {
   Q <- create_loading_matrix_q_longitudinal(SC, domain, items)
   for (i in seq(length(PCM))) {
     if (PCM[[i]]) {
-      resp[[i]][, items[[i]]] <- collapse_categories_pcm(
-        resp[[i]][, items[[i]]], SC, gsub("_", "", waves)[i], domain
+      resp[[i]] <- collapse_categories_pcm(
+        resp[[i]], SC, gsub("_", "", waves)[i], domain
       )
       ind <- get_indicators_for_half_scoring(
         SC, domain, gsub("_", "", waves[i])
@@ -40,8 +40,8 @@ prepare_resp_q_longitudinal <- function(PCM, resp, items, waves, SC, domain) {
 #'
 #' @noRd
 prepare_resp_b_cross <- function(resp, items, waves, SC, domain) {
-  resp[, items] <- collapse_categories_pcm(
-    resp[, items], SC, gsub("_", "", waves), domain
+  resp <- collapse_categories_pcm(
+    resp, SC, gsub("_", "", waves), domain
   )
   ind <- get_indicators_for_half_scoring(SC, domain, gsub("_", "", waves))
   B <- TAM::designMatrices(modeltype = "PCM", resp = resp[, items])$B
