@@ -8,35 +8,43 @@ context("create_loading_matrix_q_longitudinal")
 
 test_that("correct dimensions of Q matrix list", {
   # length of list of Qs
-  expect_equal(length(create_loading_matrix_q_longitudinal("SC1", "MA")),
+  items <- lapply(xsi.fixed$long[["MA"]][["SC1"]], rownames)
+  expect_equal(length(create_loading_matrix_q_longitudinal("SC1", "MA", items)),
                2)
-  expect_equal(length(create_loading_matrix_q_longitudinal("SC2", "RE")),
+  items <- lapply(xsi.fixed$long[["RE"]][["SC2"]], rownames)
+  expect_equal(length(create_loading_matrix_q_longitudinal("SC2", "RE", items)),
                2)
-  expect_equal(length(create_loading_matrix_q_longitudinal("SC4", "MA")),
+  items <- lapply(xsi.fixed$long[["MA"]][["SC4"]], rownames)
+  expect_equal(length(create_loading_matrix_q_longitudinal("SC4", "MA", items)),
                3)
   # nrow of specific Qs
-  expect_equal(nrow(create_loading_matrix_q_longitudinal("SC1", "MA")[[1]]),
+  items <- lapply(xsi.fixed$long[["MA"]][["SC1"]], rownames)
+  expect_equal(nrow(create_loading_matrix_q_longitudinal("SC1", "MA", items)[[1]]),
                20)
-  expect_equal(nrow(create_loading_matrix_q_longitudinal("SC1", "MA")[[2]]),
+  expect_equal(nrow(create_loading_matrix_q_longitudinal("SC1", "MA", items)[[2]]),
                25)
-  expect_equal(nrow(create_loading_matrix_q_longitudinal("SC2", "MA")[[1]]),
+  items <- lapply(xsi.fixed$long[["MA"]][["SC2"]], rownames)
+  expect_equal(nrow(create_loading_matrix_q_longitudinal("SC2", "MA", items)[[1]]),
                26)
-  expect_equal(nrow(create_loading_matrix_q_longitudinal("SC2", "MA")[[2]]),
+  expect_equal(nrow(create_loading_matrix_q_longitudinal("SC2", "MA", items)[[2]]),
                21)
-  expect_equal(nrow(create_loading_matrix_q_longitudinal("SC2", "RE")[[1]]),
+  items <- lapply(xsi.fixed$long[["RE"]][["SC2"]], rownames)
+  expect_equal(nrow(create_loading_matrix_q_longitudinal("SC2", "RE", items)[[1]]),
                31)
-  expect_equal(nrow(create_loading_matrix_q_longitudinal("SC2", "RE")[[2]]),
+  expect_equal(nrow(create_loading_matrix_q_longitudinal("SC2", "RE", items)[[2]]),
                45)
-  expect_equal(nrow(create_loading_matrix_q_longitudinal("SC4", "MA")[[1]]),
+  items <- lapply(xsi.fixed$long[["MA"]][["SC4"]], rownames)
+  expect_equal(nrow(create_loading_matrix_q_longitudinal("SC4", "MA", items)[[1]]),
                22)
-  expect_equal(nrow(create_loading_matrix_q_longitudinal("SC4", "MA")[[2]]),
+  expect_equal(nrow(create_loading_matrix_q_longitudinal("SC4", "MA", items)[[2]]),
                31)
-  expect_equal(nrow(create_loading_matrix_q_longitudinal("SC4", "MA")[[3]]),
+  expect_equal(nrow(create_loading_matrix_q_longitudinal("SC4", "MA", items)[[3]]),
                52)
-  expect_equal(nrow(create_loading_matrix_q_longitudinal("SC4", "RE")[[1]]),
+  items <- lapply(xsi.fixed$long[["RE"]][["SC4"]], rownames)
+  expect_equal(nrow(create_loading_matrix_q_longitudinal("SC4", "RE", items)[[1]]),
                31)
-  expect_equal(nrow(create_loading_matrix_q_longitudinal("SC4", "RE")[[2]]),
+  expect_equal(nrow(create_loading_matrix_q_longitudinal("SC4", "RE", items)[[2]]),
                41)
-  expect_equal(nrow(create_loading_matrix_q_longitudinal("SC4", "RE")[[3]]),
+  expect_equal(nrow(create_loading_matrix_q_longitudinal("SC4", "RE", items)[[3]]),
                36)
 })

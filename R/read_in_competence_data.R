@@ -27,7 +27,7 @@ read_in_competence_data <- function(path, SC, domain) {
       tryCatch(
         haven::read_spss(file = filepath, user_na = TRUE),
         error = function(cnd) {
-          stop(cat(error_msg), call. = FALSE)
+          stop(error_msg, call. = FALSE)
         }
       )
   } else if (filetype == "dta") {
@@ -35,11 +35,11 @@ read_in_competence_data <- function(path, SC, domain) {
       tryCatch(
         haven::read_dta(file = filepath),
         error = function(cnd) {
-          stop(cat(error_msg), call. = FALSE)
+          stop(error_msg, call. = FALSE)
         }
       )
   } else {
-    stop(cat(error_msg), call. = FALSE)
+    stop(error_msg, call. = FALSE)
   }
   # sjlabelled because of problems with labelled_spss and tibble class
   data <- sjlabelled::remove_all_labels(data)

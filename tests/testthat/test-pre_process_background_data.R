@@ -1,12 +1,11 @@
 context("pre_process_background_data")
 
-bgdata <- data.frame(ID_t = 1:100, var = 1)
-data <- data.frame(ID_t = 100:1)
-include_nr <- TRUE
-items_not_reached <- data.frame(ID_t = 1:100, not_reached = 1)
-min_valid <- 3
-
 test_that("pre_process_background_data: bgdata = NULL", {
+  data <- data.frame(ID_t = 100:1)
+  items_not_reached <- data.frame(ID_t = 1:100, not_reached = 1)
+  min_valid <- 3
+  include_nr <- TRUE
+  
   # bgdata = NULL
   result <- list(
     data = data,
@@ -29,7 +28,14 @@ test_that("pre_process_background_data: bgdata = NULL", {
   expect_equal(test, result)
 })
 
+
 test_that("pre_process_background_data: min_valid > 0", {
+  bgdata <- data.frame(ID_t = 1:100, var = 1)
+  data <- data.frame(ID_t = 100:1)
+  include_nr <- TRUE
+  items_not_reached <- data.frame(ID_t = 1:100, not_reached = 1)
+  min_valid <- 3
+  
   # bgdata = data
   result <- list(
     data = data,
@@ -82,9 +88,13 @@ test_that("pre_process_background_data: min_valid > 0", {
   expect_equal(test, result)
 })
 
-bgdata <- data.frame(ID_t = 1:100, var = 1)
-data <- data.frame(ID_t = 90:1, dummy = 1)
 test_that("pre_process_background_data: min_valid  = 0", {
+  include_nr <- TRUE
+  items_not_reached <- data.frame(ID_t = 1:100, not_reached = 1)
+  min_valid <- 3
+  bgdata <- data.frame(ID_t = 1:100, var = 1)
+  data <- data.frame(ID_t = 90:1, dummy = 1)
+  
   # data < bgdata
   result <- list(
     data = data.frame(ID_t = 1:100, dummy = c(rep(1, 90), rep(NA, 10))),
@@ -123,5 +133,3 @@ test_that("pre_process_background_data: min_valid  = 0", {
   expect_equal(names(test), c("data", "bgdata", "ID_t"))
   expect_equivalent(test, result)
 })
-
-rm(bgdata, data, items_not_reached, include_nr, min_valid)

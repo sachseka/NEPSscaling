@@ -1,8 +1,9 @@
 context("prepare_resp_b_cross")
 
-waves <- "_w1"
-
 test_that("prepare_resp_b_cross: general case, e.g., SC5/MA w1", {
+  
+  waves <- "_w1"
+  
   resp <- data.frame(ID_t = 1:100,
                      mas1q02s_c = rep(0:4, 20),
                      dummy = rep(0:3, 25))
@@ -28,7 +29,11 @@ test_that("prepare_resp_b_cross: general case, e.g., SC5/MA w1", {
   expect_equal(test, result)
 })
 
+
 test_that("prepare_resp_b_cross: exception for SC4 science", {
+  
+  waves <- "_w1"
+  
   resp <- data.frame(ID_t = 1:100,
                      scg9012s_c = rep(0:4, 20),
                      scg9052s_c = rep(0:4, 20),
@@ -76,5 +81,3 @@ test_that("prepare_resp_b_cross: exception for SC4 science", {
   )
   expect_equal(test, result)
 })
-
-rm(waves)

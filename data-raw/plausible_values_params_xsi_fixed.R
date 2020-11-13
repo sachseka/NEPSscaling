@@ -367,7 +367,7 @@ xsi.fixed$long[["MA"]] <-
       w9 = x6w9
     )
   )
-rm(xsi, x4w10, x5w1, x6w3, x5w12, x6w9, items, dat, pcm)
+rm(list = ls()[-which(ls() %in% c("pcitems", "xsi.fixed"))])
 
 ### ----------------------------------------------------------------------------
 ### reading competence
@@ -688,7 +688,8 @@ xsi.fixed$cross[["RE"]] <-
 xsi.fixed$long[["RE"]] <-
   list(
     SC2 = list(
-      w6 = x2w6
+      w6 = x2w6,
+      w9 = x2w9
     ),
     SC3 = list(
       w1 = x3w1,
@@ -711,6 +712,7 @@ xsi.fixed$long[["RE"]] <-
       w9 = x6w9
     )
   )
+rm(list = ls()[-which(ls() %in% c("pcitems", "xsi.fixed"))])
 
 
 ### ----------------------------------------------------------------------------
@@ -946,6 +948,7 @@ xsi.fixed$long[["IC"]] <-
     SC5 = list(w5 = x5w5),
     SC6 = list(w5 = x6w5)
   )
+rm(list = ls()[-which(ls() %in% c("pcitems", "xsi.fixed"))])
 
 
 ### ----------------------------------------------------------------------------
@@ -1218,6 +1221,7 @@ xsi.fixed$long[["SC"]] <-
     SC5 = list(w5 = x5w5),
     SC6 = list(w5 = x6w5)
   )
+rm(list = ls()[-which(ls() %in% c("pcitems", "xsi.fixed"))])
 
 ### ----------------------------------------------------------------------------
 ### English as a foreign language
@@ -1330,6 +1334,7 @@ xsi.fixed$long[["EF"]] <-
     ),
     SC5 = list(w12 = x5w12)
   )
+rm(list = ls()[-which(ls() %in% c("pcitems", "xsi.fixed"))])
 
 ### ----------------------------------------------------------------------------
 ### Business Administration competence
@@ -1359,6 +1364,7 @@ rownames(x5w7) <- items
 colnames(x5w7)[1] <- ""
 
 xsi.fixed$cross[["BA"]][["SC5"]][["w7"]] <- x5w7
+rm(list = ls()[-which(ls() %in% c("pcitems", "xsi.fixed"))])
 
 ### ----------------------------------------------------------------------------
 ### Listening comprehension Russian
@@ -1416,6 +1422,7 @@ xsi.fixed$long[["NR"]] <- list(
   ),
   SC4 = list(w2 = x4w2)
 )
+rm(list = ls()[-which(ls() %in% c("pcitems", "xsi.fixed"))])
 
 ### ----------------------------------------------------------------------------
 ### Listening comprehension Turkish
@@ -1473,6 +1480,7 @@ xsi.fixed$long[["NT"]] <- list(
   ),
   SC4 = list(w2 = x4w2)
 )
+rm(list = ls()[-which(ls() %in% c("pcitems", "xsi.fixed"))])
 
 ### ----------------------------------------------------------------------------
 ### Scientific thinking
@@ -1502,6 +1510,7 @@ rownames(x4w7) <- items
 colnames(x4w7)[1] <- ""
 
 xsi.fixed$cross[["ST"]][["SC4"]][["w7"]] <- x4w7
+rm(list = ls()[-which(ls() %in% c("pcitems", "xsi.fixed"))])
 
 ### ----------------------------------------------------------------------------
 ### Listening comprehension German
@@ -1524,6 +1533,7 @@ x3w6[, 2][rownames(x3w6) %in% pcitems("SC3", "LI", "w6")] <-
   x3w6[, 2][rownames(x3w6) %in% pcitems("SC3", "LI", "w6")]/2
 
 xsi.fixed$cross[["LI"]][["SC3"]][["w6"]] <- x3w6
+rm(list = ls()[-which(ls() %in% c("pcitems", "xsi.fixed"))])
 
 
 ### ----------------------------------------------------------------------------
@@ -2071,6 +2081,7 @@ xsi.fixed$long[["ORB"]] <- list(
     w5 = x3w5b
   )
 )
+rm(list = ls()[-which(ls() %in% c("pcitems", "xsi.fixed"))])
 
 ### ----------------------------------------------------------------------------
 ### Vocabulary
@@ -2348,6 +2359,7 @@ xsi.fixed$long[["VO"]] <- list(
     w5 = x2w5
   )
 )
+rm(list = ls()[-which(ls() %in% c("pcitems", "xsi.fixed"))])
 
 
 
@@ -2375,6 +2387,7 @@ xsi.fixed$long[["GR"]] <- list(
     w3 = x2w3
   )
 )
+rm(list = ls()[-which(ls() %in% c("pcitems", "xsi.fixed"))])
 
 
 
@@ -2403,6 +2416,7 @@ xsi.fixed$cross[["CD"]] <- list(
     w1 = x1w1
   )
 )
+rm(list = ls()[-which(ls() %in% c("pcitems", "xsi.fixed"))])
 
 
 # order item difficulties alphabetically

@@ -1,17 +1,18 @@
 context("prepare_bgdata_frmY")
 
-imp <- list(
-  data.frame(ID_t = 1:100,
-             var1 = as.factor(rep(1:4, 25)),
-             var2 = as.character(rep(1:4, 25)),
-             var3 = rep(1:4, 25)),
-  data.frame(ID_t = 1:100,
-             var1 = as.factor(rep(5:8, 25)),
-             var2 = as.character(rep(5:8, 25)),
-             var3 = rep(5:8, 25))
-)
-
 test_that("with imputed bgdata", {
+  
+  imp <- list(
+    data.frame(ID_t = 1:100,
+               var1 = as.factor(rep(1:4, 25)),
+               var2 = as.character(rep(1:4, 25)),
+               var3 = rep(1:4, 25)),
+    data.frame(ID_t = 1:100,
+               var1 = as.factor(rep(5:8, 25)),
+               var2 = as.character(rep(5:8, 25)),
+               var3 = rep(5:8, 25))
+  )
+  
   test <- prepare_bgdata_frmY(imp, 1L, NULL)
   expect_equal(names(test), c("bgdatacom", "frmY"))
   expect_equal(test[[1]], data.frame(ID_t = 1:100,
@@ -35,5 +36,3 @@ test_that("without imputed bgdata", {
   expect_equal(test[[1]], NULL)
   expect_equal(test[[2]], NULL)
 })
-
-rm(imp)

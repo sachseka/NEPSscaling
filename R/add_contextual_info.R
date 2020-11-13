@@ -39,6 +39,13 @@ add_contextual_info <- function(path, SC, domain, waves, bgdata, data) {
 }
 
 #' get wle variable names for the current SC/domain/waves
+#' 
+#' @param SC starting cohort; String
+#' @param domain competence domain; String
+#' @param waves String vector
+#'
+#' @return character vector
+#' @noRd
 get_wle_vnames <- function(waves, SC, domain) {
   wle_vnames <- list(
     list( # longitudinal
@@ -126,6 +133,11 @@ get_wle_vnames <- function(waves, SC, domain) {
 
 #' import CohortProfile which contains the school ID_i and convert it to wide 
 #' data format
+#' 
+#' @param path file path leading to NEPS competence data (String)
+#'
+#' @return data.frame with school id per wave and student
+#' @noRd
 get_school_id_data <- function(path) {
   files <- list.files(path = path)
   filepath <- paste0(path, files[grep("CohortProfile", files)])
@@ -139,7 +151,7 @@ get_school_id_data <- function(path) {
       tryCatch(
         haven::read_spss(file = filepath, user_na = FALSE),
         error = function(cnd) {
-          stop(cat(error_msg))
+          stop(error_msg, call. = FALSE)
         }
       )
   } else if (filetype == "dta") {
@@ -147,7 +159,7 @@ get_school_id_data <- function(path) {
       tryCatch(
         haven::read_dta(file = filepath),
         error = function(cnd) {
-          stop(cat(error_msg))
+          stop(error_msg, call. = FALSE)
         }
       )
   } else {

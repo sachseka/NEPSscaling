@@ -1,12 +1,11 @@
 context("select_test_responses_and_test_takers: no test of min_valid; see sc6 long for this!")
 
-SC <- "SC6"
-domain <- "RE"
-wave <- "w9"
-
-min_valid <- 3
-
 test_that("select_test_responses_and_test_takers: longitudinal, general case, e.g. SC5/RE", {
+  domain <- "RE"
+  wave <- "w9"
+  
+  min_valid <- 3
+  
   data <- data.frame(ID_t = 1:100,
                      res10110_c = 1:100,
                      res1012s_c = 1:100,
@@ -35,7 +34,15 @@ test_that("select_test_responses_and_test_takers: longitudinal, general case, e.
   expect_equal(test, result)
 })
 
+
 test_that("select_test_responses_and_test_takers: cross-sec, general case, e.g. SC6/RE/w9", {
+  
+  SC <- "SC6"
+  domain <- "RE"
+  wave <- "w9"
+  
+  min_valid <- 3
+  
   data <- cbind(
     data.frame(ID_t = 1:100,
                dummy = 0),
@@ -54,7 +61,13 @@ test_that("select_test_responses_and_test_takers: cross-sec, general case, e.g. 
   expect_equal(test, result)
 })
 
+
 test_that("select_test_responses_and_test_takers: cross-sec, SC6/RE/w3+5", {
+  SC <- "SC6"
+  domain <- "RE"
+
+  min_valid <- 3
+  
   wave <- "w3"
   data <- cbind(
     data.frame(ID_t = 1:100,
@@ -96,7 +109,10 @@ test_that("select_test_responses_and_test_takers: cross-sec, SC6/RE/w3+5", {
   expect_equal(test, result)
 })
 
+
 test_that("select_test_responses_and_test_takers: cross-sec, SC4/ST", {
+  min_valid <- 3
+  
   data <- cbind(
     data.frame(ID_t = 1:100, dummy = 0),
     as.data.frame(replicate(length(item_labels[["SC4"]][["ST"]][["w7"]]), 1:100))
@@ -120,5 +136,3 @@ test_that("select_test_responses_and_test_takers: cross-sec, SC4/ST", {
 
 #TODO: English imputation is done in this step, but tested in a separate file
 #TODO: SC6/RE longitudinal tested in separate file
-
-rm(domain, min_valid, SC, wave)
