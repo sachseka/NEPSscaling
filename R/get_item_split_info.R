@@ -22,8 +22,8 @@ get_item_split_info <- function(SC, domain, data) {
     testletSetting <- data.frame(
       ID_t = data[["ID_t"]],
       easy = ifelse(
-        data[["tx80220_w9"]] %in% c(751, 753, 757), TRUE, # TODO: might be tx80211_w9 in SUF!
-        ifelse(is.na(data[["tx80220_w9"]]), NA, FALSE))
+        data[["tx80211_w9"]] %in% c(751, 753, 757), TRUE,
+        ifelse(is.na(data[["tx80211_w9"]]), NA, FALSE))
     )
   }
   testletSetting

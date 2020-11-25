@@ -25,7 +25,7 @@ xsi.fixed <- list(cross = list(), long = list())
 
 # auxiliary for half scoring of ConQuest-Values
 devtools::load_all(path = "../NEPSscaling")
-pcitems <- function(SC, domain, wave){
+pcitems <- function(SC, domain, wave) {
   get_indicators_for_half_scoring(SC, domain, wave)
 }
 
@@ -254,6 +254,7 @@ x4w7long[, 2][rownames(x4w7long) %in% pcitems("SC4", "MA", "w7")] <-
   x4w7long[, 2][rownames(x4w7long) %in% pcitems("SC4", "MA", "w7")]/2
 load("data-raw/item_difficulty_SC4_MA_w7.RData")
 x4w7 <- item_difficulty_SC4_MA_w7
+colnames(x4w7) <- c("", "xsi")
 rm(item_difficulty_SC4_MA_w7)
 x4w10 <- xsi
 rownames(x4w10) <- NEPSscaling:::item_labels$SC4$MA$w10
@@ -630,6 +631,7 @@ xsi <- readODS::read_ods(
   path = "data-raw/neps_raw/b110_114_116_alte_schwierigkeiten.ods",
   col_names = FALSE
 )
+names(xsi) <- c("item", "xsi")
 
 # match correct difficulties to cohort
 items <- list(

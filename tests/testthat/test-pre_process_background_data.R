@@ -133,3 +133,22 @@ test_that("pre_process_background_data: min_valid  = 0", {
   expect_equal(names(test), c("data", "bgdata", "ID_t"))
   expect_equivalent(test, result)
 })
+
+test_that("pre_process_background_data: exclude completely missing variables", {
+  bgdata <- data.frame(ID_t = 1:100, var1 = 1, var2 = NA)
+  data <- data.frame(ID_t = 100:1)
+  include_nr <- TRUE
+  items_not_reached <- data.frame(ID_t = 1:100, not_reached = 1)
+  min_valid <- 3
+  
+  # bgdata = data
+  result <- list(
+    data = data,
+    bgdata = bgdata[, -3],
+    ID_t = data.frame(ID_t = 100:1)
+  )
+  test <- pre_process_background_data(bgdata, data, include_nr = FALSE,
+                                      items_not_reached, min_valid)
+  expect_equal(names(test), c("data", "bgdata", "ID_t"))
+  expect_equivalent(test, result)
+})

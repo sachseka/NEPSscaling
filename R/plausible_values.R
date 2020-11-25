@@ -1,20 +1,20 @@
 #' Function for estimating plausible values with NEPS competence data and NEPS
 #' scaled item parameters
 #'
-#' @param SC numeric. The starting cohort used for the analysis is indicated by 
+#' @param SC numeric. The starting cohort used for the analysis is indicated by
 #' an integer value (e.g., starting cohort one = 1).
-#' @param domain character. The competence domain of interest is indicated by 
-#' the domain abbreviation as used in the variable names (see Fuß, D., Gnambs, 
+#' @param domain character. The competence domain of interest is indicated by
+#' the domain abbreviation as used in the variable names (see Fuß, D., Gnambs,
 #' T., Lockl, K., & Attig, M., 2019).
-#' @param wave numeric. The wave of competence testing is indicated by an 
+#' @param wave numeric. The wave of competence testing is indicated by an
 #' integer value (e.g., wave one = 1).
-#' @param path character; file path leading to the location of the competence 
+#' @param path character; file path leading to the location of the competence
 #' data
 #' @param bgdata data frame containing background variables. Categorical
 #' variables have to be specified as factors. If \code{bgdata = NULL}, plausible
 #' values are estimated without a background model. Missing data in the
 #' covariates is imputed using sequential classification and regression trees.
-#' @param npv numeric; number of plausible values to be estimated; defaults to 
+#' @param npv numeric; number of plausible values to be estimated; defaults to
 #' 10.
 #' @param min_valid numeric; minimum number of valid responses for a test
 #' takers to be included in the estimation process. Defaults to 3 following NEPS
@@ -22,9 +22,9 @@
 #' @param longitudinal logical. TRUE indicating that a unidimensional model
 #' per measurement points is to be estimated and subsequently linked to form
 #' longitudinal estimates. Defaults to FALSE.
-#' @param rotation logical. TRUE indicating that the competence scores should 
-#' be corrected for the rotation design of the booklets. Defaults to TRUE. If 
-#' both longitudinal and rotation are TRUE, test rotation is ignored and the 
+#' @param rotation logical. TRUE indicating that the competence scores should
+#' be corrected for the rotation design of the booklets. Defaults to TRUE. If
+#' both longitudinal and rotation are TRUE, test rotation is ignored and the
 #' argument rotation is set to FALSE automatically.
 #' @param include_nr logical; whether the number of not-reached items as a proxy
 #' for processing speed should be included in the background model (the default
@@ -33,7 +33,7 @@
 #' included in the background models of SC3 and SC4 (the default is TRUE)
 #' @param verbose logical; whether progress should be displayed in the console
 #' (the default is TRUE)
-#' @param control list of additional options. If \code{EAP = TRUE}, the EAPs 
+#' @param control list of additional options. If \code{EAP = TRUE}, the EAPs
 #' will be returned as well; for \code{WLE = TRUE} WLEs are returned.
 #' Furthermore, additional control options for are collected in the list `ML`.
 #' `nmi` denotes the number of multiple impuations for missing covariate data
@@ -56,6 +56,8 @@
 #' applied. Depending on the estimation context, this variable may have been
 #' automatically set by the function and thus differ from user input}
 #' \item{min_valid}{The minimum number of answers a test taker must have given}
+#' \item{n_testtakers}{The number of persons for who plausible values are
+#' estimated (per waves)}
 #' \item{include_nr}{Whether the number of not-reached missing values per
 #' person is to be used as a proxy for processing time}
 #' \item{adjust_school_context}{Whether the WLE competence value mean per school
@@ -74,23 +76,29 @@
 #' \item{posterior_means}{The overall mean of all persons' abilities for the
 #' EAPs and WLEs (if estimated) as well as across all PVs and per PV
 #' imputation.}
-#' \item{pv}{A list of \code{data.frame}s containing one plausible value per
-#' wave each and the imputed data set that was used to estimate the plausible
-#' value. Additionally, if \code{include_nr} was specified, the background model
-#' is enriched by the number of not reached items (\code{not_reached}) per test
+#' \item{pv}{A list of \code{npv} \code{data.frame}s containing one plausible
+#' value per wave each and the imputed data set that was used to estimate the
+#' plausible value. The data sets are sampled randomly from \code{npv} *
+#' \code{nmi} estimated data sets. Accordingly, some imputations might not be
+#' present in the output data. This extends to reliability estimates and latent
+#' regression coefficients that are also estimated per model / imputed data set.
+#' Additionally, if \code{include_nr} was specified, the background model is
+#' enriched by the number of not reached items (\code{not_reached}) per test
 #' taker as a proxy for response times. Furthermore, if
 #' \code{adjust_school_context} was specified, the background model is enriched
 #' by the average competence per school.}
 #' \item{eap}{A \code{data.frame} containing the \code{ID_t} and the ability
 #' EAP value for the respective individual}
-#' \item{EAP_rel}{The EAP reliability is returned}
+#' \item{EAP_rel}{The EAP reliability is returned for each sampled model}
 #' \item{wle}{A \code{data.frame} containing the \code{ID_t} and the ability
 #' WLE value for the respective individual}
 #' \item{WLE_rel}{The WLE reliability is returned}
 #' \item{regr_coeff}{The regression coefficients of the latent regression of
-#' the ability}
+#' the ability are returned for each sampled model.}
 #' \item{items}{The fixed item difficulty parameters and the SE per item are
-#' returned as a `data.frame`}
+#' returned as a `data.frame`. The SE and, if rotation == TRUE, position
+#' effect (e.g., position1 signifies the effect of receiving the test in
+#' first position) are estimated by the package.}
 #' \item{comp_time}{The total computation time as well as computation times for
 #' the various steps are returned}
 #' }
@@ -112,10 +120,11 @@
 #' variables from complex samples. \emph{Psychometrika, 56}(2), 177-196.
 #' @references Pohl, S., & Carstensen, C. H. (2012). NEPS technical report -
 #' Scaling the data of the competence tests.
-#' @references Scharl, A., Carstensen, C. H., & Gnambs, T. (2019).
+#' @references Scharl, A., Carstensen, C. H., & Gnambs, T. (2020).
 #' \emph{Estimating Plausible Values with NEPS Data: An Example Using Reading
-#' Competence in Starting Cohort 6 (NEPS Survey Paper No. XX)}. Bamberg: Leibniz
+#' Competence in Starting Cohort 6 (NEPS Survey Paper No. 71)}. Leibniz
 #' Institute for Educational Trajectories, National Educational Panel Study.
+#' https://doi.org/10.5157/NEPS:SP71:1.0
 #' @references Tanner, M. A., & Wong, W. H. (1987). The calculation of posterior
 #' distributions by data augmentation. \emph{Journal of the American Statistical
 #' Association}, \emph{82}(398), 528-549.
@@ -232,14 +241,15 @@ plausible_values <- function(SC,
   if (!grepl("/$", path)) {
     path <- paste0(path, "/")
   }
+  if (SC == "SC2" & domain == "VO") {
+    stop("Vocabulary is not yet available for starting cohort 2.",
+         call. = FALSE)
+  }
   if (is.null(item_labels[[SC]][[domain]][[wave]])) {
     stop(paste0(
       "There were no competence tests for ", SC, " ", domain, " ",
       wave, ". Please check the NEPS documentation at https://neps-data.de."
     ), call. = FALSE)
-  }
-  if (SC == "SC2" && domain == "VO") {
-    stop("SC2 vocabulary is not available yet.", call. = FALSE)
   }
   if (longitudinal &&
       (
@@ -296,9 +306,9 @@ plausible_values <- function(SC,
     } else {
       # some starting cohorts transition into or out of school, thus, specific
       # waves have to be checked in the cross-sectional case
-      if (!(SC == "SC2" & wave %in% c("w3", "w4", "w5", "w6", "w9")) ||
+      if (!(SC == "SC2" & wave %in% c("w3", "w4", "w5", "w6", "w9")) &&
             !(SC == "SC3" & wave %in% c("w1", "w2", "w3", "w5", "w6", "w7",
-                                        "w8", "w9")) ||
+                                        "w8", "w9")) &&
             !(SC == "SC4" & wave %in% c("w1", "w2", "w3", "w5", "w7"))) {
         adjust_school_context <- FALSE
       }

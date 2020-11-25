@@ -89,14 +89,14 @@ post_process_long_tam_results <- function(mod, npv, control, imp,
   ) %>% dplyr::arrange(.data$ID_t)
   if (j == 1) {
     EAP.rel[[i]] <- mod$EAP.rel
-    regr.coeff[[i]] <- quiet(TAM::tam.se(mod)$beta)
+    regr.coeff[[i]] <- suppressWarnings(quiet(TAM::tam.se(mod)$beta))
     rownames(regr.coeff[[i]]) <-
       c("Intercept",
         names(bgdata[, -which(names(bgdata) == "ID_t"), drop = FALSE]))
     colnames(regr.coeff[[i]]) <- paste0(c("coeff", "se"), waves[j])
   } else {
     EAP.rel[[i]] <- c(EAP.rel[[i]], mod$EAP.rel)
-    tmp <- quiet(TAM::tam.se(mod)$beta)
+    tmp <- suppressWarnings(quiet(TAM::tam.se(mod)$beta))
     colnames(tmp) <- paste0(c("coeff", "se"), waves[j])
     regr.coeff[[i]] <- cbind(regr.coeff[[i]], tmp)
   }
