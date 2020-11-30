@@ -1,25 +1,23 @@
-#' extract correct number of plausible values from pvs object
+#' extract correct number of plausible values (npv) from pvs object
 #'
-#' @param datalist ...
-#' @param regr.coeff ...
-#' @param EAP.rel ...
-#' @param longitudinal ...
+#' @param datalist list of data.frames; contains npv PVs and completed bgdata
+#' @param regr.coeff list of matrices or matrix; contains latent regression 
+#' coefficients
+#' @param EAP.rel list of vectors or vector; contains EAP reliabilities
+#' @param longitudinal logical; whether estimation is longitudinal in design
 #'
 #' @noRd
 
 discard_not_used_imputations <- function(datalist, regr.coeff, EAP.rel,
                                          longitudinal) {
-
   # names of pvs:
   keep <- names(datalist)
   keep <- as.numeric(stringr::str_match(keep, "imp\\s*(.*?)\\s*pv")[, 2])
   keep <- unique(sort(keep))
-
   # if only one imputation was sampled or no bgdata supplied, exit
   if (length(keep) == 1) {
     return(list(regr.coeff = regr.coeff, EAP.rel = EAP.rel))
   }
-
   # keep only those EAP reliability / regression coefficients with imputations
   if (longitudinal) {
     # list of length nmi of EAP rels for each wave
@@ -35,6 +33,5 @@ discard_not_used_imputations <- function(datalist, regr.coeff, EAP.rel,
     keep <- sort(c(keep, keep - 1))
     regr.coeff <- regr.coeff[, keep]
   }
-
   list(regr.coeff = regr.coeff, EAP.rel = EAP.rel)
 }

@@ -9,7 +9,7 @@ load(file = "data-raw/link_constant.RData")
 SC <- "SC2"
 
 # Reading
-link_constant[[SC]][["RE"]][["w9"]] <- 0 # !
+link_constant[[SC]][["RE"]][["w9"]] <- 0.49
 
 # Mathematics
 link_constant[[SC]][["MA"]][["w3"]] <- 1.3522

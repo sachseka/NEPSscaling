@@ -3,15 +3,17 @@
 #' @param bgdata Background data given by user (either NULL or a data.frame)
 #' @param npv Integer value fo number of plausible values to be returned by
 #'   `NEPScaling::plausible_values()`
-#' @param j ...
-#' @param control ...
-#' @param mod ...
-#' @param imp ...
-#' @param bgdatacom ...
+#' @param j numeric; 1 (cross) or number of wave (long)
+#' @param control list of arguments for TAM::tam.pv() routine
+#' @param mod tam.obj
+#' @param imp imputations of bgdata or NULL
+#' @param bgdata data.frame; complete background data or NULL
+#' @param bgdatacom data.frame; completed background data or NULL
 #'
 #' @noRd
 #'
-impute_pvs <- function(mod, npv, control, bgdata, imp, bgdatacom = NULL, waves, j) {
+impute_pvs <- function(mod, npv, control, bgdata, imp, bgdatacom = NULL, 
+                       waves, j) {
     pmod <- TAM::tam.pv(mod,
                         nplausible = npv,
                         ntheta = control$ML$ntheta,

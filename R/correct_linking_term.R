@@ -1,10 +1,10 @@
 #' correct linking term because of deviations from SUF WLE means
 #'
-#' @param term ...
-#' @param SC ...
-#' @param domain ...
-#' @param waves_ ...
-#' @param w ...
+#' @param term numeric; correction term for linking
+#' @param SC character; starting cohorts ("SCx")
+#' @param domain character; abbr. of competence domain (e.g. "MA")
+#' @param waves_ character vector; assessment waves ("wx", "wy")
+#' @param w numeric; current wave
 #'
 #' @noRd
 
@@ -42,45 +42,3 @@ correct_linking_term <- function(term, SC, domain, waves_, w) {
   }
   term
 }
-
-# #' correct deviations in WLE means from SUF WLE means in cross-sectional and
-# #' fixed parameter linked estimation
-# #'
-# #' @param pv ...
-# #' @param wle ...
-# #' @param eap ...
-# #' @param SC ...
-# #' @param domain ...
-# #' @param type ...
-# #'
-# #' @noRd
-#
-# correct_mean_deviations <- function(pv, wle, eap, SC, domain, type) {
-#   # estimated correlations with SUF >> 0.95
-#   if (SC == "SC3" & domain == "EF" & type == "cross") {
-#     term <- 0.1
-#     waves_ <- ""
-#   } else if (SC == "SC3" & domain == "EF" & type == "long") {
-#     term <- 0.2
-#     waves_ <- "_w9"
-#   } else if (SC == "SC3" & domain == "ORB" & type == "cross") {
-#     term <- -0.1
-#     waves_ <- ""
-#   } else if (SC == "SC3" & domain == "ORB" & type == "long") {
-#     term <- -0.1
-#     waves_ <- "_w3"
-#   } else if (SC == "SC4" & domain == "EF" & type == "long") {
-#     term <- 0.2
-#     waves_ <- "_w7"
-#   }
-#
-#   eap[, paste0("eap", waves_)] <- eap[, paste0("eap", waves_)] + term
-#   for (i in seq(length(pv))) {
-#     pv[[i]][, paste0("PV", waves_)] <-
-#       pv[[i]][, paste0("PV", waves_)] + term
-#   }
-#   if (!is.null(wle)) {
-#     wle[, paste0("wle", waves_)] <- wle[, paste0("wle", waves_)] + term
-#   }
-#   list(pv = pv, wle = wle, eap = eap)
-# }

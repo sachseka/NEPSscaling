@@ -54,39 +54,6 @@ scale_person_estimates <- function(pv, wle, eap, SC, domain, waves, long_IDs) {
   list(pv = pv, wle = wle, eap = eap)
 }
 
-# scale_person_estimates <- function(pv, wle, eap, SC, domain, wave, long_IDs) {
-#   if (SC == "SC6" && domain == "RE") {
-#     res <- rescale_sc6_reading(SC, domain, long_IDs, eap, pv, wle)
-#     eap <- res[["eap"]]
-#     wle <- res[["wle"]]
-#     pv <- res[["pv"]]
-#   } else if ((SC %in% c("SC3", "SC4") & domain == "EF") ||
-#              domain %in% c("ORA", "ORB", "NR", "NT")) { # already linked via item parameters!
-#     return(list(pv = pv, wle = wle, eap = eap))
-#   } else {
-#     for (w in seq(2, length(wave))) {
-#       MEAN <- get_mean_linking(
-#         SC, domain, long_IDs = long_IDs[[w - 1]],
-#         eap1 = eap[, c("ID_t", paste0("eap_", wave[w - 1]))],
-#         eap2 = eap[, c("ID_t", paste0("eap_", wave[w]))]
-#       )
-#       term <- MEAN[2] - MEAN[1] - link_constant[[SC]][[domain]][[wave[w] ]]
-#       term <- correct_linking_term(term, SC, domain, wave, w)
-#
-#       eap[, paste0("eap_", wave[w])] <- eap[, paste0("eap_", wave[w])] - term
-#       for (i in seq(length(pv))) {
-#         pv[[i]][, paste0("PV_", wave[w])] <-
-#           pv[[i]][, paste0("PV_", wave[w])] - term
-#       }
-#       if (!is.null(wle)) {
-#         wle[, paste0("wle_", wave[w])] <- wle[, paste0("wle_", wave[w])] - term
-#       }
-#     }
-#   }
-#   list(pv = pv, wle = wle, eap = eap)
-# }
-
-
 #' Re-scale plausible values to fit linked distributions for SC6
 #' (incl. refreshment sample)
 #' @param pv plausible values
@@ -138,29 +105,3 @@ rescale_sc6_reading <- function(SC, domain, long_IDs, eap, pv, wle) {
   }
   list(eap = eap, pv = pv, wle = wle)
 }
-
-# rescale_sc6_reading <- function(SC, domain, long_IDs, eap, pv, wle) {
-#   MEAN <- get_mean_linking(SC, domain, long_IDs, eap1 = eap, eap2 = NULL)
-#   # original sample
-#   term1 <- MEAN[3] - MEAN[1] - link_constant[[SC]][[domain]][["w9"]][["B67"]]
-#   # refreshment sample
-#   term2 <- MEAN[4] - MEAN[2] - link_constant[[SC]][[domain]][["w9"]][["B69"]]
-#
-#   eap[eap[["ID_t"]] %in% long_IDs[["w3"]], "eap_w9"] <-
-#     eap[eap[["ID_t"]] %in% long_IDs[["w3"]], "eap_w9"] - term1
-#   eap[eap[["ID_t"]] %in% long_IDs[["w5"]], "eap_w9"] <-
-#     eap[eap[["ID_t"]] %in% long_IDs[["w5"]], "eap_w9"] - term2
-#   for (i in seq(length(pv))) {
-#     pv[[i]][pv[[i]][["ID_t"]] %in% long_IDs[["w3"]], "PV_w9"] <-
-#       pv[[i]][pv[[i]][["ID_t"]] %in% long_IDs[["w3"]], "PV_w9"] - term1
-#     pv[[i]][pv[[i]][["ID_t"]] %in% long_IDs[["w5"]], "PV_w9"] <-
-#       pv[[i]][pv[[i]][["ID_t"]] %in% long_IDs[["w5"]], "PV_w9"] - term2
-#   }
-#   if (!is.null(wle)) {
-#     wle[wle[["ID_t"]] %in% long_IDs[["w3"]], "wle_w9"] <-
-#       wle[wle[["ID_t"]] %in% long_IDs[["w3"]], "wle_w9"] - term1
-#     wle[wle[["ID_t"]] %in% long_IDs[["w5"]], "wle_w9"] <-
-#       wle[wle[["ID_t"]] %in% long_IDs[["w5"]], "wle_w9"] - term2
-#   }
-#   list(eap = eap, pv = pv, wle = wle)
-# }

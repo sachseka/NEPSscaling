@@ -319,3 +319,16 @@ get_path <- function(pv_obj) {
     }
     pv_obj[["path"]]
 }
+
+#' Get the number of test takers
+#'
+#' @param pv_obj return object of function \code{NEPScaling::plausible_values()}
+#' @return a string of the file path leading to the competence data
+#'
+#' @export
+get_n_testtakers <- function(pv_obj) {
+    if (class(pv_obj) != "pv_obj") {
+        stop("pv_obj must be of class 'pv_obj'.")
+    }
+    pv_obj[["n_testtakers"]]
+}

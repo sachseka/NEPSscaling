@@ -29,33 +29,26 @@ not_reached_as_proxy <- function(include_nr, longitudinal, data, SC, domain,
         nr[["items_not_reached_w3"]][is.na(data[["rea3_sc1u"]])] <- NA
         nr[["items_not_reached_w5"]][is.na(data[["rea5_sc1u"]])] <- NA
       }
-      # ID_t always > 1 value -> ignore in check for constant nr values
-      if (any(lapply(lapply(nr, unique), length) == 1)) {
-        ind <- which(lapply(lapply(nr, unique), length) == 1)
-        if (length(ind) == length(sel)) {
-          include_nr <- FALSE
-          nr <- NULL
-          message(
-            "The number of not-reached missing values is constant. ",
-            "Thus, it is not considered in the background model."
-          )
-        } else {
-          nr <- nr[, -ind]
-          message(names(ind), " is constant. It is excluded from the ",
-                  "background model.")
-        }
-      }
     } else {
-      sel <- names(data) %in% item_labels[[SC]][[domain]][[wave]]
-      nr <- data.frame(ID_t = data[["ID_t"]],
-               items_not_reached = rowSums(data[, sel] == -94, na.rm = TRUE))
-      if (length(unique(nr[["items_not_reached"]])) == 1) {
+      sel <- list(names(data) %in% item_labels[[SC]][[domain]][[wave]])
+      nr <- data.frame(
+	          ID_t = data[["ID_t"]],
+              items_not_reached = rowSums(data[, sel[[1]]] == -94, na.rm = TRUE))
+    }
+    # ID_t always > 1 value -> ignore in check for constant nr values
+    if (any(lapply(lapply(nr, unique), length) == 1)) {
+      ind <- which(lapply(lapply(nr, unique), length) == 1)
+      if (length(ind) == length(sel)) {
         include_nr <- FALSE
         nr <- NULL
         message(
           "The number of not-reached missing values is constant. ",
           "Thus, it is not considered in the background model."
         )
+      } else {
+        nr <- nr[, -ind]
+        message(names(ind), " is constant. It is excluded from the ",
+                "background model.")
       }
     }
   }

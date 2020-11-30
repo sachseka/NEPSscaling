@@ -3,9 +3,10 @@
 #' @param bgdata Background data given by user (either NULL or a data.frame)
 #' @param npv Integer value fo number of plausible values to be returned by
 #'   `NEPScaling::plausible_values()`
-#' @param i ...
-#' @param pvs ...
-#' @param tmp_pvs ...
+#' @param i numeric; number of current imputation
+#' @param pvs list of lists; output containing the pvs of all waves in one
+#' data.frame per imputation
+#' @param tmp_pvs list; contains the raw estimation of TAM::tam.pv()
 #'
 #' @noRd
 

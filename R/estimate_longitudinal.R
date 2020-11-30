@@ -19,17 +19,14 @@
 #'   algorithm
 #' @param npv Integer value fo number of plausible values to be returned by
 #'   `NEPScaling::plausible_values()`
-#' @param Q List of matrices detailing the item scoring (0.5 scoring for PCM
-#'   items)
 #'
 #' @noRd
 
-estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
-                                  PCM, ID_t, waves, type, domain, SC,
-                                  control, npv) {
+estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, PCM, ID_t,
+                                  waves, type, domain, SC, control, npv) {
   items <- lapply(xsi.fixed$long[[domain]][[SC]], rownames)
 
-  res <- prepare_resp_q_longitudinal(PCM, resp, items, waves, SC, domain, Q)
+  res <- prepare_resp_q_longitudinal(PCM, resp, items, waves, SC, domain)
   resp <- res[["resp"]]
   Q <- res[["Q"]]
 
@@ -68,28 +65,13 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, Q,
         Q = Q[[j]],
         verbose = FALSE
       )
-      # impute plausible values
-      tmp_pvs[[j]] <- impute_pvs(mod[[j]], npv, control, bgdata, imp, bgdatacom, 
-                                 waves, j)
-      eap[[i]] <- suppressWarnings(
-        dplyr::left_join(
-          eap[[i]], mod[[j]]$person[, grep("pid|EAP", names(mod[[j]]$person))],
-          by = c("ID_t" = "pid")
-        )
-      ) %>% dplyr::arrange(.data$ID_t)
-      if (j == 1) {
-        EAP.rel[[i]] <- mod[[j]]$EAP.rel
-        regr.coeff[[i]] <- quiet(TAM::tam.se(mod[[j]])$beta)
-        rownames(regr.coeff[[i]]) <-
-          c("Intercept",
-            names(bgdata[, -which(names(bgdata) == "ID_t"), drop = FALSE]))
-        colnames(regr.coeff[[i]]) <- paste0(c("coeff", "se"), waves[j])
-      } else {
-        EAP.rel[[i]] <- c(EAP.rel[[i]], mod[[j]]$EAP.rel)
-        tmp <- quiet(TAM::tam.se(mod[[j]])$beta)
-        colnames(tmp) <- paste0(c("coeff", "se"), waves[j])
-        regr.coeff[[i]] <- cbind(regr.coeff[[i]], tmp)
-      }
+      res <- post_process_long_tam_results(mod[[j]], npv, control, imp,
+                                           bgdatacom, eap, i, j, EAP.rel,
+                                           regr.coeff, bgdata, waves)
+      tmp_pvs[[j]] <- res[["tmp_pvs"]]
+      eap <- res[["eap"]]
+      regr.coeff <- res[["regr.coeff"]]
+      EAP.rel <- res[["EAP.rel"]]
     }
     pvs <- reformat_longitudinal_tmp_pvs(npv, pvs, i, tmp_pvs, bgdata)
     rm(tmp_pvs)

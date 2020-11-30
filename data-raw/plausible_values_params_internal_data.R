@@ -52,8 +52,23 @@ item_labels <-
                "reg50410_sc2g4_c","reg5042s_sc2g4_c","reg50430_sc2g4_c","reg50440_sc2g4_c",
                "reg50460_sc2g4_c","reg50510_sc2g4_c","reg5052s_sc2g4_c","reg50530_sc2g4_c",
                "reg50540_sc2g4_c","reg5055s_sc2g4_c",#"reg50560_sc2g4_c",
-               "reg50570_sc2g4_c")#,
-#         w9 = c()
+               "reg50570_sc2g4_c"),
+        w9 = c("reg70110_sc2g7_c", "reg70120_sc2g7_c", "reg7013s_sc2g7_c",
+               "reg70140_sc2g7_c", "reg7015s_sc2g7_c", "reg7016s_sc2g7_c",
+               "reg70210_sc2g7_c", "reg70220_sc2g7_c", "reg7023s_sc2g7_c",
+               "reg7024s_sc2g7_c", #"reg7024s_sc2g7_c_d"
+               "reg70250_sc2g7_c", "reg7026s_sc2g7_c", "reg70310_sc2g7_c",
+               "reg70320_sc2g7_c", "reg7033s_sc2g7_c", #"reg7033s_sc2g7_c_d"
+               "reg70340_sc2g7_c", "reg70350_sc2g7_c", "reg70360_sc2g7_c",
+               "reg70410_sc2g7_c", "reg70420_sc2g7_c", "reg70430_sc2g7_c",
+               "reg70440_sc2g7_c", "reg7045s_sc2g7_c", #"reg7045s_sc2g7_c_d"
+               "reg70460_sc2g7_c", "reg7051s_sc2g7_c", "reg70520_sc2g7_c",
+               "reg7053s_sc2g7_c", "reg70540_sc2g7_c", "reg7055s_sc2g7_c",
+               "reg70560_sc2g7_c", "reg70610_sc2g7_c", "reg70620_sc2g7_c",
+               "reg7063s_sc2g7_c", "reg70640_sc2g7_c", "reg70650_sc2g7_c",
+               "reg7066s_sc2g7_c", "reg70670_sc2g7_c", "reg7071s_sc2g7_c",
+               "reg70720_sc2g7_c", "reg70730_sc2g7_c", "reg70740_sc2g7_c",
+               "reg7075s_sc2g7_c")
       ),
       MA = list(
         w2 = c("mak2z221_c","mak2z231_c","mak2z101_c","mak2r111_c",

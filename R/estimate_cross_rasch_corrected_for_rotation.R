@@ -73,7 +73,6 @@ estimate_cross_rasch_corrected_for_rotation <- function(bgdata, imp,
     eap <- res$eap
     regr.coeff <- res$regr.coeff
     pvs <- res$pvs
-    mod[[1]] <- res$mod
     EAP.rel <- res$EAP.rel
   }
   res <- list(

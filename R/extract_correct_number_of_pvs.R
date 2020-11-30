@@ -1,9 +1,9 @@
 #' extract correct number of plausible values from pvs object
 #'
-#' @param bgdata ...
-#' @param control ...
-#' @param npv ...
-#' @param pvs ...
+#' @param bgdata data.frame or NULL; background data
+#' @param control list; contains number of multiple imputations
+#' @param npv numeric; number of plausible values
+#' @param pvs list of data.frames; contains completed bgdata and pvs
 #'
 #' @noRd
 

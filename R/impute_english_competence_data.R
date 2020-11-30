@@ -1,9 +1,9 @@
 #' because of a large amount of missing data in the subitems of PCM items,
 #' subitems have been imputed according to their Rasch solution probability
 #'
-#' @param resp ...
-#' @param SC ...
-#' @param wave ...
+#' @param resp data.frame; response data, contains ID_t
+#' @param SC character; starting cohort ("SCx")
+#' @param wave character; assessment wave ("wx")
 #'
 #' @noRd
 

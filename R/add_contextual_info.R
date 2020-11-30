@@ -9,13 +9,61 @@
 #'
 #' @return bgdata augmented by school competence averages
 #' @noRd
-
 add_contextual_info <- function(path, SC, domain, waves, bgdata, data) {
+  wle_vnames <- get_wle_vnames(waves, SC, domain) # below
+  # extract wles from data
+  data <- data[, c("ID_t", wle_vnames)]
+  waves <- waves[1:length(wle_vnames)]
+  # get school id data for SC and domain
+  school_data <- get_school_id_data(path) # below
+  # match wle to school id, get group average per school
+  school_data <- dplyr::left_join(data, school_data, by = "ID_t")
+  school_waves <-
+    names(school_data)[names(school_data) %in% paste0("school", waves)]
+  for (i in seq(length(waves))) {
+    w <- school_waves[i]
+    vn <- wle_vnames[i]
+    # NAs: correspond to missing WLEs and are ignored
+    for (j in unique(na.omit(school_data[[w]]))) {
+      school_data[which(school_data[[w]] == j), vn] <-
+        mean(school_data[[vn]][which(school_data[[w]] == j)], na.rm = TRUE)
+    }
+    names(school_data)[which(names(school_data) == vn)] <- paste0(vn, "_schavg")
+  }
+  bgdata <- dplyr::left_join(bgdata,
+                             school_data %>%
+                               dplyr::select(dplyr::matches("ID_t|_schavg")),
+                             by = "ID_t") %>%
+    dplyr::arrange(.data$ID_t)
+  bgdata
+}
+
+#' get wle variable names for the current SC/domain/waves
+#'
+#' @param SC starting cohort; String
+#' @param domain competence domain; String
+#' @param waves String vector
+#'
+#' @return character vector
+#' @noRd
+get_wle_vnames <- function(waves, SC, domain) {
   wle_vnames <- list(
     list( # longitudinal
+      SC2 = list(
+        RE = c("reg4_sc1u", "reg7_sc1u"),
+        SC = c("scg1_sc1u", "scg3_sc1u"),
+        MA = c("mag1_sc1u", "mag2_sc1u", "mag4_sc1u"),
+        VO = c("vog1_sc1u", "vog3_sc1u"),
+        GR = c("grg1_sc1u"),
+        NR = c("nrg2_sc1u"),
+        NT = c("ntg2_sc1u"),
+        IC = c("icg3_sc1u"),
+        ORA = c("org4_sc1a"),
+        ORB = c("org4_sc1b")
+      ),
       SC3 = list(
-          MA = c("mag5_sc1u", "mag7_sc1u", "mag9_sc1u"),
-          RE = c("reg5_sc1u", "reg7_sc1u", "reg9_sc1u"),
+          MA = c("mag5_sc1u", "mag7_sc1u", "mag9_sc1u", "mag12_sc1u"),
+          RE = c("reg5_sc1u", "reg7_sc1u", "reg9_sc1u", "reg12_sc1u"),
           ORA = c("org5_sc1a", "org7_sc1a", "org9_sc1a"),
           ORB = c("org5_sc1b", "org7_sc1b", "org9_sc1b"),
           SC = c("scg6_sc1", "scg9_sc1u", "scg11_sc1"),
@@ -38,9 +86,21 @@ add_contextual_info <- function(path, SC, domain, waves, bgdata, data) {
       )
     ),
     list( # cross-sectional
+      SC2 = list(
+        RE = c(w6 = "reg4_sc1", w9 = "reg7_sc1"),
+        SC = c(w3 = "scg1_sc1", w5 = "scg3_sc1"),
+        MA = c(w3 = "mag1_sc1", w4 = "mag2_sc1", w6 = "mag4_sc1"),
+        VO = c(w3 = "vog1_sc1", w5 = "vog3_sc1"),
+        GR = c(w3 = "grg1_sc1"),
+        NR = c(w4 = "nrg2_sc1"),
+        NT = c(w4 = "ntg2_sc1"),
+        IC = c(w5 = "icg3_sc1"),
+        ORA = c(w6 = "org4_sc1a"),
+        ORB = c(w6 = "org4_sc1b")
+      ),
       SC3 = list(
-          MA = c(w1 = "mag5_sc1", w3 = "mag7_sc1", w5 = "mag9_sc1"),
-          RE = c(w1 = "reg5_sc1", w3 = "reg7_sc1", w6 = "reg9_sc1"),
+          MA = c(w1 = "mag5_sc1", w3 = "mag7_sc1", w5 = "mag9_sc1", w9 = "mag12_sc1"),
+          RE = c(w1 = "reg5_sc1", w3 = "reg7_sc1", w6 = "reg9_sc1", w9 = "reg12_sc1"),
           ORA = c(w1 = "org5_sc1a", w3 = "org7_sc1a", w5 = "org9_sc1a"),
           ORB = c(w1 = "org5_sc1b", w3 = "org7_sc1b", w5 = "org9_sc1b"),
           SC = c(w2 = "scg6_sc1", w5 = "scg9_sc1", w8 = "scg11_sc1"),
@@ -63,70 +123,57 @@ add_contextual_info <- function(path, SC, domain, waves, bgdata, data) {
       )
     )
   )
-  # extract wles from data
   wle_vnames <- if (length(waves) > 1) {
     wle_vnames[[1]][[SC]][[domain]]
   } else {
     wle_vnames[[2]][[SC]][[domain]][[gsub("_", "", waves)]]
   }
-  data <- data[, c("ID_t", wle_vnames)]
-  waves <- waves[1:length(wle_vnames)]
+  wle_vnames
+}
 
-  # get school id data for SC and domain
+#' import CohortProfile which contains the school ID_i and convert it to wide
+#' data format
+#'
+#' @param path file path leading to NEPS competence data (String)
+#'
+#' @return data.frame with school id per wave and student
+#' @noRd
+get_school_id_data <- function(path) {
   files <- list.files(path = path)
   filepath <- paste0(path, files[grep("CohortProfile", files)])
   filetype <- tools::file_ext(filepath)
   error_msg <- paste0(
-      "* Path '", filepath, "' may not contain CohortProfile.\n",
-      "* File format: '", filetype, "' might be wrong"
+    "* Path '", filepath, "' may not contain CohortProfile.\n",
+    "* File format: '", filetype, "' might be wrong"
   )
   if (filetype == "sav") {
     school_data <-
       tryCatch(
         haven::read_spss(file = filepath, user_na = FALSE),
         error = function(cnd) {
-          stop(cat(error_msg))
+          stop(error_msg, call. = FALSE)
+        }
+      )
+  } else if (filetype == "dta") {
+    school_data <-
+      tryCatch(
+        haven::read_dta(file = filepath),
+        error = function(cnd) {
+          stop(error_msg, call. = FALSE)
         }
       )
   } else {
-    school_data <-
-      tryCatch(
-        haven::read_dta(file = filepath, user_na = FALSE),
-        error = function(cnd) {
-          stop(cat(error_msg))
-        }
-      )
+    stop(error_msg, call. = FALSE)
   }
   school_data <- dplyr::select(school_data, .data$ID_t, .data$wave, .data$ID_i)
   # missing school id: students did not participate in wave/test
   school_data$ID_i[school_data$ID_i < 0] <- NA
-
-  # match wle to school id, get group average per school
+  # convert from long into wide format
   school_data <- school_data %>%
     haven::zap_labels() %>%
     tidyr::pivot_wider(names_from = "wave",
                        names_prefix = "school_w",
                        values_from = "ID_i") %>%
     dplyr::mutate_all(as.numeric)
-  school_data <- dplyr::left_join(data, school_data, by = "ID_t")
-  school_waves <-
-    names(school_data)[names(school_data) %in% paste0("school", waves)]
-  for (i in seq(length(waves))) {
-    w <- school_waves[i]
-    vn <- wle_vnames[i]
-    # NAs: correspond to missing WLEs and are ignored
-    for (j in unique(na.omit(school_data[[w]]))) {
-      school_data[which(school_data[[w]] == j), vn] <-
-        mean(school_data[[vn]][which(school_data[[w]] == j)], na.rm = TRUE)
-    }
-    names(school_data)[which(names(school_data) == vn)] <- paste0(vn, "_schavg")
-  }
-  bgdata <- dplyr::left_join(bgdata,
-                             school_data %>%
-                               dplyr::select(dplyr::matches("ID_t|_schavg")),
-                             by = "ID_t") %>%
-    dplyr::arrange(.data$ID_t)
-  
-  bgdata
+  school_data
 }
-

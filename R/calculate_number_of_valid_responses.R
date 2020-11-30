@@ -1,8 +1,8 @@
 #' calculate number of valid responses per person
 #'
-#' @param longitudinal ...
-#' @param resp ...
-#' @param waves ...
+#' @param longitudinal logical; whether the estimation is longitudinal
+#' @param resp list of data.frames or data.frames; contains responses and ID_t
+#' @param waves character vector; assessment waves ("_wx", "_wy", ...)
 #'
 #' @return data.frame
 #'

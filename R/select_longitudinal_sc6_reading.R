@@ -1,9 +1,9 @@
 #' Because of resampling in wave 5, two distinct samples have the same items
 #'
-#' @param data ...
-#' @param SC ..
-#' @param domain ...
-#' @param min_valid ...
+#' @param data data.frame; xTargetCompetencies
+#' @param SC character; starting cohort ("SCx")
+#' @param domain character; abbr. of competence domain (e.g., "RE")
+#' @param min_valid numeric; minimum number of required valid responses
 #'
 #' @noRd
 
