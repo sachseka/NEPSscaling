@@ -25,6 +25,10 @@
 estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, PCM, ID_t,
                                   waves, type, domain, SC, control, npv) {
   items <- lapply(xsi.fixed$long[[domain]][[SC]], rownames)
+  if (SC == "SC2" && domain == "SC") {
+    items <- items[-length(items)]
+    PCM <- PCM[-length(PCM)]
+  }
 
   res <- prepare_resp_q_longitudinal(PCM, resp, items, waves, SC, domain)
   resp <- res[["resp"]]

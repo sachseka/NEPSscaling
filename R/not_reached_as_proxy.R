@@ -17,6 +17,9 @@ not_reached_as_proxy <- function(include_nr, longitudinal, data, SC, domain,
     if (longitudinal) {
       sel <- lapply(item_labels[[SC]][[domain]],
               function(it) {names(data) %in% it})
+      if (SC == "SC2" && domain == "SC") {
+        sel <- sel[-length(sel)]
+      }
       # in the longitudinal case, missing test taking for later time points
       # causes problems in imputation, if include_nr = TRUE, bgdata = NULL,
       # thus, remove NAs from data

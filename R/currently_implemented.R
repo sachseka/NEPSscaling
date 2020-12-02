@@ -19,7 +19,7 @@ Cognitive Development: wave 1
 == SC2 ==
 Grammar: waves 1 and 3
 Math: waves 2, 3, 4 and 6
-Science: waves 1, 3 and 5
+Science: waves 1, 3, 5 and 9
 Native Russian: wave 4
 Native Turkish: wave 4
 Reading: waves 6 and 9
