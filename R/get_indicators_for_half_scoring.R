@@ -62,6 +62,9 @@ get_indicators_for_half_scoring <- function(SC, domain, wave) {
         ind <- c("mag1d09s_sc2g2_c", "mag2g12s_c")
       } else if (wave == "w6") {
         ind <- c()
+      } else if (wave == "w9") {
+        # TODO: might be collapsed differently!!!
+        ind <- c()#c("mag7d06s_c", "mag7r02s_sc2g7_c")
       }
     }
   } else if (SC == "SC3") {

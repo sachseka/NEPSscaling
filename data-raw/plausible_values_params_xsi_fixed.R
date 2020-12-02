@@ -88,7 +88,17 @@ items <- list(
      "mag4d031_c", #"mag5q140_sc2g4_c",
      "mag4v111_c", "mag4r041_c", "mag4r042_c",
      "mag4q051_c", "mag4q091_c", "mag4q092_c", "mag4d14s_c", "mag5v071_sc2g4_c",
-     "mag5r191_sc2g4_c", "mag4d081_c")
+     "mag5r191_sc2g4_c", "mag4d081_c"),
+w9 = c("mag7q011_c", "mag7d061_sc2g7_c", "mag7r071_c",
+       "mag5v271_sc2g7_c", "mag4q011_sc2g7_c", "mag7r081_sc2g7_c",
+       "mag7v031_sc2g7_c", "mag7d06s_c", "mag5q301_sc2g7_c",
+       "mag7v021_c", "mag7r02s_sc2g7_c", "mag4q060_sc2g7_c",
+       "mag4d031_sc2g7_c", "mag9q181_sc2g7_c", "mag4v111_sc2g7_c",
+       "mag7q041_sc2g7_c", "mag7d042_sc2g7_c", "mag5r251_sc2g7_c",
+       "mag7d031_c", "mag5v321_sc2g7_c", "mag5r191_sc2g7_c",
+       "mag7q041_c", "mag9v091_sc2g7_c", "mag9d151_sc2g7_c",
+       "mag9v121_sc2g7_c", "mag7r091_sc2g7_c", "mag7q051_c",
+       "mag7v071_sc2g7_c")
 )
 x2w2 <- cbind(item = 1:length(items$w2),
               xsi = c(-2.688, -0.269, -0.031, -0.209, 1.624, 1.978,
@@ -128,7 +138,13 @@ x2w6 <- cbind(item = 1:length(items$w6),
 rownames(x2w6) <- items$w6
 colnames(x2w6)[1] <- ""
 x2w6[, 2][rownames(x2w6) %in% pcitems("SC2", "MA", "w6")] <-
-    x2w6[, 2][rownames(x2w6) %in% pcitems("SC2", "MA", "w6")]/2
+  x2w6[, 2][rownames(x2w6) %in% pcitems("SC2", "MA", "w6")]/2
+x2w9 <- cbind(item = 1:length(items$w9),
+              xsi = c()) # TODO
+rownames(x2w9) <- items$w9
+colnames(x2w9)[1] <- ""
+x2w9[, 2][rownames(x2w9) %in% pcitems("SC2", "MA", "w9")] <-
+  x2w9[, 2][rownames(x2w9) %in% pcitems("SC2", "MA", "w9")]/2
 
 
 

@@ -52,7 +52,7 @@ get_wle_vnames <- function(waves, SC, domain) {
       SC2 = list(
         RE = c("reg4_sc1u", "reg7_sc1u"),
         SC = c("scg1_sc1u", "scg3_sc1u"),
-        MA = c("mag1_sc1u", "mag2_sc1u", "mag4_sc1u"),
+        MA = c("mag1_sc1u", "mag2_sc1u", "mag4_sc1u", "mag7_sc1u"),
         VO = c("vog1_sc1u", "vog3_sc1u"),
         GR = c("grg1_sc1u"),
         NR = c("nrg2_sc1u"),
@@ -89,7 +89,7 @@ get_wle_vnames <- function(waves, SC, domain) {
       SC2 = list(
         RE = c(w6 = "reg4_sc1", w9 = "reg7_sc1"),
         SC = c(w3 = "scg1_sc1", w5 = "scg3_sc1", w9 = "scg7_sc1"),
-        MA = c(w3 = "mag1_sc1", w4 = "mag2_sc1", w6 = "mag4_sc1"),
+        MA = c(w3 = "mag1_sc1", w4 = "mag2_sc1", w6 = "mag4_sc1", w9 = "mag7_sc1"),
         VO = c(w3 = "vog1_sc1", w5 = "vog3_sc1"),
         GR = c(w3 = "grg1_sc1"),
         NR = c(w4 = "nrg2_sc1"),

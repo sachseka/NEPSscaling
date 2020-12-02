@@ -14,13 +14,14 @@ link_constant[[SC]][["RE"]][["w9"]] <- 0.49
 # Mathematics
 link_constant[[SC]][["MA"]][["w3"]] <- 1.3522
 link_constant[[SC]][["MA"]][["w4"]] <- 0.874# 2.226
-# data <- haven::read_sav("../SUFs/SC2/SC2_xTargetCompetencies_D_8-0-1.sav") # no TR
 link_constant[[SC]][["MA"]][["w6"]] <- 2.394# 4.620
-# as.numeric(data %>%
-# filter(wave_w6 == 1 & wave_w4 == 1) %>%
-# select(mag4_sc1u, mag2_sc1u) %>%
-# mutate(const = mag4_sc1u - mag2_sc1u) %>%
-# summarise_at(vars(const), mean, na.rm = TRUE))
+data <- haven::read_sav("../SUFs/SC2/SC2_xTargetCompetencies_D_9-0-0_beta.sav") # no TR
+link_constant[[SC]][["MA"]][["w9"]] <-
+    as.numeric(data %>%
+                   filter(wave_w6 == 1 & wave_w9 == 1) %>%
+                   select(mag4_sc1u, mag7_sc1u) %>%
+                   mutate(const = mag7_sc1u - mag4_sc1u) %>%
+                   summarise_at(vars(const), mean, na.rm = TRUE))
 
 # Information and Communication Technology literacy
 # link_constant[[SC]][["IC"]][["w5"]] <- 0 # !

@@ -98,8 +98,17 @@ item_labels <-
                "mag4d031_c", #"mag5q140_sc2g4_c",
                "mag4v111_c", "mag4r041_c", "mag4r042_c", "mag4q051_c", "mag4q091_c",
                "mag4q092_c", "mag4d14s_c", "mag5v071_sc2g4_c",
-               "mag5r191_sc2g4_c", "mag4d081_c")#,
-#         w9 = c()
+               "mag5r191_sc2g4_c", "mag4d081_c"),
+        w9 = c("mag7q011_c", "mag7d061_sc2g7_c", "mag7r071_c",
+               "mag5v271_sc2g7_c", "mag4q011_sc2g7_c", "mag7r081_sc2g7_c",
+               "mag7v031_sc2g7_c", "mag7d06s_c", "mag5q301_sc2g7_c",
+               "mag7v021_c", "mag7r02s_sc2g7_c", "mag4q060_sc2g7_c",
+               "mag4d031_sc2g7_c", "mag9q181_sc2g7_c", "mag4v111_sc2g7_c",
+               "mag7q041_sc2g7_c", "mag7d042_sc2g7_c", "mag5r251_sc2g7_c",
+               "mag7d031_c", "mag5v321_sc2g7_c", "mag5r191_sc2g7_c",
+               "mag7q041_c", "mag9v091_sc2g7_c", "mag9d151_sc2g7_c",
+               "mag9v121_sc2g7_c", "mag7r091_sc2g7_c", "mag7q051_c",
+               "mag7v071_sc2g7_c")
       ),
       IC = list(
         w5 = c("icg3052x_c","icg3350x_c","icg3021x_c","icg3610x_c",
@@ -265,27 +274,27 @@ item_labels <-
       ),
       GR = list(
         w1 = c("grk1a101_c","grk1a202_c","grk1a303_c","grk1a404_c",
-"grk1b105_c","grk1b206_c","grk1b307_c","grk1b408_c",
-"grk1c109_c","grk1c210_c","grk1c311_c","grk1c412_c",
-"grk1d113_c","grk1d214_c","grk1e115_c","grk1e216_c",
-"grk1f117_c","grk1f218_c","grk1g119_c","grk1g220_c",
-"grk1h121_c","grk1h222_c","grk1i123_c","grk1i224_c",
-"grk1j125_c","grk1j226_c","grk1k127_c","grk1k228_c",
-"grk1l129_c","grk1l230_c","grk1m131_c","grk1m232_c",
-"grk1n133_c","grk1n234_c","grk1o135_c","grk1o236_c",
-"grk1p137_c","grk1p238_c","grk1q139_c","grk1q240_c",
-"grk1r141_c","grk1r242_c","grk1s143_c","grk1s244_c",
-"grk1t145_c","grk1t246_c","grk1u147_c","grk1u248_c"),
+               "grk1b105_c","grk1b206_c","grk1b307_c","grk1b408_c",
+               "grk1c109_c","grk1c210_c","grk1c311_c","grk1c412_c",
+               "grk1d113_c","grk1d214_c","grk1e115_c","grk1e216_c",
+               "grk1f117_c","grk1f218_c","grk1g119_c","grk1g220_c",
+               "grk1h121_c","grk1h222_c","grk1i123_c","grk1i224_c",
+               "grk1j125_c","grk1j226_c","grk1k127_c","grk1k228_c",
+               "grk1l129_c","grk1l230_c","grk1m131_c","grk1m232_c",
+               "grk1n133_c","grk1n234_c","grk1o135_c","grk1o236_c",
+               "grk1p137_c","grk1p238_c","grk1q139_c","grk1q240_c",
+               "grk1r141_c","grk1r242_c","grk1s143_c","grk1s244_c",
+               "grk1t145_c","grk1t246_c","grk1u147_c","grk1u248_c"),
         w3 = c("grg1d101_c","grg1d202_c","grg1j103_c","grg1j204_c",
-"grg1k105_c","grg1k206_c","grg1l107_c","grg1l208_c",
-"grg1m109_c","grg1m210_c","grg1n111_c","grg1n212_c",
-"grg1o113_c","grg1o214_c","grg1o315_c","grg1o416_c",
-"grg1p117_c","grg1p218_c","grg1p319_c","grg1p420_c",
-"grg1q121_c","grg1q222_c","grg1q323_c","grg1q424_c",
-"grg1r125_c","grg1r226_c","grg1r327_c","grg1r428_c",
-"grg1s129_c","grg1s230_c","grg1s331_c","grg1s432_c",
-"grg1t133_c","grg1t234_c","grg1t335_c","grg1t436_c",
-"grg1u137_c","grg1u238_c","grg1u339_c","grg1u440_c")
+               "grg1k105_c","grg1k206_c","grg1l107_c","grg1l208_c",
+               "grg1m109_c","grg1m210_c","grg1n111_c","grg1n212_c",
+               "grg1o113_c","grg1o214_c","grg1o315_c","grg1o416_c",
+               "grg1p117_c","grg1p218_c","grg1p319_c","grg1p420_c",
+               "grg1q121_c","grg1q222_c","grg1q323_c","grg1q424_c",
+               "grg1r125_c","grg1r226_c","grg1r327_c","grg1r428_c",
+               "grg1s129_c","grg1s230_c","grg1s331_c","grg1s432_c",
+               "grg1t133_c","grg1t234_c","grg1t335_c","grg1t436_c",
+               "grg1u137_c","grg1u238_c","grg1u339_c","grg1u440_c")
       )
     ),
     SC3 = list(
@@ -1177,8 +1186,9 @@ testlet_position <- list(
   SC2 = list(
     RE = list(
       w6 = matrix(c(405,
-                    405), 1, 2)#,
-      # w9 = matrix(c(NA, NA), 1, 2)
+                    405), 1, 2),
+      w9 = matrix(c(751, 752, 753, 754, 757, 758,
+                    751, 752, 753, 754, 757, 758), 6, 2)
     ),
     MA = list(
       w2 = matrix(c(152,
@@ -1188,8 +1198,9 @@ testlet_position <- list(
       w4 = matrix(c(391,
                     391), 1, 2),
       w6 = matrix(c(405,
-                    405), 1, 2)#,
-      # w9 = matrix(c(NA, NA), 1, 2)
+                    405), 1, 2),
+      w9 = matrix(c(751, 752, 753, 754, 755, 756,
+                    751, 752, 753, 754, 755, 756), 6, 2)
     ),
     IC = list(
       w5 = matrix(c(366, 367,
@@ -1417,82 +1428,6 @@ testlet_position <- list(
     )
   )
 )
-
-# # wle variable names for calculating longitudinal IDs
-# wle_names <- list(
-#   SC1 = list(
-#     CD = list(w1 = "cdn1_sc1"),
-#     SC = list(w6 = "scn6_sc1"),
-#     MA = list(
-#       w5 = "man5_sc1", w7 = "man7_sc1u"
-#     )
-#   ),
-#   SC2 = list(
-#     SC = list(
-#       w1 = "sck1_sc1u", w3 = "scg1_sc1u", w5 = "scg3_sc1u"
-#     ),
-#     MA = list(
-#       w2 = "mak2_sc1u", w3 = "mag1_sc1u", w4 = "mag2_sc1u", w6 = "mag4_sc1u"
-#     ),
-#     VO = list(
-#       w1 = "vok1_sc1u", w3 ="vog1_sc1u", w5 = "vog3_sc1u"
-#     ),
-#     GR = list(w1 = "grk1_sc1u", w3 = "grg1_sc1u"),
-#     RE = list(
-#       w4 = "reg2_sc1u", w6 = "reg4_sc1u"
-#     ),
-#     NR = list(w4 = "nrg2_sc1u"),
-#     NT = list(w4 = "ntg2_sc1u"),
-#     IC = list(w5 = "icg3_sc1u"),
-#     ORA = list(w6 = "org4_sc1a"),
-#     ORB = list(w6 = "org4_sc1b")
-#   ),
-#   SC3 = list(
-#     MA = list(
-#       w1 = "mag5_sc1u", w3 = "mag7_sc1u", w5 = "mag9_sc1u", w9 = "mag12_sc1u"
-#     ),
-#     RE = list(
-#       w1 = "reg5_sc1u", w3 = "reg7_sc1u", w6 = "reg9_sc1u", w9 = "reg12_sc1u"
-#     ),
-#     ORA = list(w1 = "org5_sc1a", w3 = "org7_sc1a", w5 = "org9_sc1a"), # !
-#     ORB = list(w1 = "org5_sc1b", w3 = "org7_sc1b", w5 = "org9_sc1b"), # !
-#     SC = list(
-#       w2 = "scg6_sc1", w5 = "scg9_sc1u", w8 = "scg11_sc1" # !
-#     ),
-#     IC = list(
-#       w2 = "icg6_sc1u", w5 = "icg9_sc1u", w9 = "icg12_sc1u"
-#     ),
-#     NR = list(w3 = "nrg7_sc1", w6 = "nrg9_sc3g9_sc1"), # !
-#     NT = list(w3 = "ntg7_sc1", w6 = "ntg9_sc3g9_sc1"), # !
-#     LI = list(w6 = "lig9_sc1u"),
-#     EF = list(w7 = "efg10_sc1u", w9 = "efg12_sc1u"),
-#     ST = list(w9 = "stg12_sc1u")
-#   ),
-#   SC4 = list(
-#     SC = list(w1 = "scg9_sc1u", w5 = "scg11_sc1u"),
-#     MA = list(w1 = "mag9_sc1u", w7 = "mag12_sc1u", w10 = "maa10_sc1u"),
-#     IC = list(w1 = "icg9_sc1u", w7 = "icg12_sc1u"),
-#     NR = list(w2 = "nrg9_sc1u"),
-#     NT = list(w2 = "ntg9_sc1u"),
-#     RE = list(w2 = "reg9_sc1u", w7 = "reg12_sc1u", w10 = "rea10_sc1u"),
-#     EF = list(w3 = "efg10_sc1u", w7 = "efg12_sc1u"),
-#     ST = list(w7 = "stg12_sc1u")
-#   ),
-#   SC5 = list(
-#     MA = list(w1 = "mas1_sc1u", w12 = "mas12_sc1u"),
-#     RE = list(w1 = "res1_sc1u", w12 = "res12_sc1u"),
-#     SC = list(w5 = "scs3_sc1u"),
-#     IC = list(w5 = "ics3_sc1u"),
-#     BA = list(w7 = "bas7_sc1u"),
-#     EF = list(w12 = "efs12_sc1u")
-#   ),
-#   SC6 = list(
-#     MA = list(w3 = "maa3_sc1u", w9 = "maa9_sc1u"),
-#     RE = list(w3 = "rea3_sc1u", w5 = "rea5_sc1u", w9 = "rea9_sc1u"),
-#     SC = list(w5 = "sca5_sc1u"),
-#     IC = list(w5 = "ica5_sc1u")
-#   )
-# )
 
 # item difficulties for competence tests
 load(file = "data-raw/xsi_fixed.RData")
