@@ -131,8 +131,14 @@ item_labels <-
                "scg32220_c","scg33710_c","scg36210_c","scg36920_c",
                "scg32620_c","scg31510_c","scg30310_c","scg3641s_c",
                "scg30520_c","scg37410_c","scg33310_c","scg3091s_c",
-               "scg33610_c","scg32910_c")#,
-#         w9 = c()
+               "scg33610_c","scg32910_c"),
+        w9 = c("scg9611s_c", "scg96120_c", "scg91030_c", "scg91040_c",
+               "scg91050_c", "scg96420_c", "scg9042s_c", "scg9043s_c",
+               "scg90110_c", "scg9012s_c", "scg90510_c", "scg9052s_c",
+               "scg91110_c", "scg91120_c", "scg97410_c", "scg6142s_c",
+               "scg6144s_c", "scg90320_c", "scg90330_c", "scg9061s_c",
+               "scg90630_c", "scg9651s_c", "scg96530_c", "scg90930_c",
+               "scg9621s_c", "scg96220_c")
       ),
       NR = list(
         w4 = c("nrg20101_c", "nrg20102_c", "nrg20103_c", "nrg20104_c", "nrg20105_c",
@@ -1195,8 +1201,9 @@ testlet_position <- list(
       w3 = matrix(c(270, 271, 273, 274, 275, 276, 277, NA,
                     252, 253, 254, 255, 256, 257, 258, 259), 8, 2),
       w5 = matrix(c(366, 367,
-                    366, 367), 2, 2)#,
-      # w9 = matrix(c(NA, NA), 1, 2)
+                    366, 367), 2, 2),
+      w9 = matrix(c(757, 758,
+                    755, 756), 2, 2)
     ),
     NR = list(
       w4 = matrix(c(391,

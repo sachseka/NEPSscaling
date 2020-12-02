@@ -266,6 +266,13 @@ plausible_values <- function(SC,
       "set longitudinal = FALSE."
     ), call. = FALSE)
   }
+  if (longitudinal && SC == "SC2" && domain == "SC" && wave == "w9") {
+    stop(paste0("Please note that Starting Cohort 2's science tests can only ",
+                "be linked longitudinally up to wave 5. Wave 9 test data does ",
+                "not share any common test information and can, thus, not be ",
+                "connected to previous assessment waves. It can only be ",
+                "analysed cross-sectionally."), call. = FALSE)
+  }
   if (min_valid < 0) {
     stop("min_valid must be greater than or equal to 0.", call. = FALSE)
   }

@@ -1158,6 +1158,9 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
         # data already collapsed in SUF (according to TR)
       } else if (wave == "w5") {
         # data already collapsed in SUF (according to TR)
+      } else if (wave == "w9") {
+        # data already collapsed in SUF
+        # (cf. TR; although some categories are still <200)
       }
     } else if (domain == "MA") {
       # if (wave == "w2") {

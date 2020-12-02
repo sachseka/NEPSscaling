@@ -88,7 +88,7 @@ get_wle_vnames <- function(waves, SC, domain) {
     list( # cross-sectional
       SC2 = list(
         RE = c(w6 = "reg4_sc1", w9 = "reg7_sc1"),
-        SC = c(w3 = "scg1_sc1", w5 = "scg3_sc1"),
+        SC = c(w3 = "scg1_sc1", w5 = "scg3_sc1", w9 = "scg7_sc1"),
         MA = c(w3 = "mag1_sc1", w4 = "mag2_sc1", w6 = "mag4_sc1"),
         VO = c(w3 = "vog1_sc1", w5 = "vog3_sc1"),
         GR = c(w3 = "grg1_sc1"),

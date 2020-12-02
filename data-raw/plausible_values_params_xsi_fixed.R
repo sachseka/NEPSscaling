@@ -1000,7 +1000,14 @@ w5 = c("scg30109_c","scg33510_c","scg3181s_c","scg37110_c",
 "scg32220_c","scg33710_c","scg36210_c","scg36920_c",
 "scg32620_c","scg31510_c","scg30310_c","scg3641s_c",
 "scg30520_c","scg37410_c","scg33310_c","scg3091s_c",
-"scg33610_c","scg32910_c")
+"scg33610_c","scg32910_c"),
+w9 = c("scg9611s_c", "scg96120_c", "scg91030_c", "scg91040_c",
+       "scg91050_c", "scg96420_c", "scg9042s_c", "scg9043s_c",
+       "scg90110_c", "scg9012s_c", "scg90510_c", "scg9052s_c",
+       "scg91110_c", "scg91120_c", "scg97410_c", "scg6142s_c",
+       "scg6144s_c", "scg90320_c", "scg90330_c", "scg9061s_c",
+       "scg90630_c", "scg9651s_c", "scg96530_c", "scg90930_c",
+       "scg9621s_c", "scg96220_c")
 )
 x2w1 <- cbind(item = 1:length(items$w1),
               xsi = c(-1.481, -0.515, -1.749, -0.568, -1.337, 0.026,
@@ -1031,6 +1038,15 @@ rownames(x2w5) <- items$w5
 colnames(x2w5)[1] <- ""
 x2w5[, 2][rownames(x2w5) %in% pcitems("SC2", "SC", "w5")] <-
   x2w5[, 2][rownames(x2w5) %in% pcitems("SC2", "SC", "w5")]/2
+x2w9 <- cbind(item = 1:length(items$w9),
+              xsi = c(-0.811, -1.047, 0.097, -1.328, -0.237, 0.103, -1.270,
+                      -0.193, -0.473, -1.570, -0.228, -0.956, 0.173, 1.250,
+                      2.116, -2.503, -1.723, -0.431, 0.611, 0.610, 0.097,
+                      -1.016, -0.086, -0.500, -0.806, -0.129))
+rownames(x2w9) <- items$w9
+colnames(x2w9)[1] <- ""
+x2w9[, 2][rownames(x2w9) %in% pcitems("SC2", "SC", "w9")] <-
+  x2w9[, 2][rownames(x2w9) %in% pcitems("SC2", "SC", "w9")]/2
 
 
 # SC3
@@ -1185,7 +1201,8 @@ xsi.fixed$cross[["SC"]] <-
     SC2 = list(
       w1 = x2w1,
       w3 = x2w3,
-      w5 = x2w5
+      w5 = x2w5,
+      w9 = x2w9
     ),
     SC3 = list(
       w2 = x3w2,
@@ -1208,7 +1225,8 @@ xsi.fixed$long[["SC"]] <-
     SC2 = list(
       w1 = x2w1,
       w3 = x2w3,
-      w5 = x2w5
+      w5 = x2w5,
+      w9 = x2w9 # note: this wave cannot be linked to previous waves because of a lack of common test items!
     ),
     SC3 = list(
       w2 = x3w2,
