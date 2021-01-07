@@ -139,12 +139,15 @@ rownames(x2w6) <- items$w6
 colnames(x2w6)[1] <- ""
 x2w6[, 2][rownames(x2w6) %in% pcitems("SC2", "MA", "w6")] <-
   x2w6[, 2][rownames(x2w6) %in% pcitems("SC2", "MA", "w6")]/2
-x2w9 <- cbind(item = 1:length(items$w9),
-              xsi = c()) # TODO
-rownames(x2w9) <- items$w9
-colnames(x2w9)[1] <- ""
-x2w9[, 2][rownames(x2w9) %in% pcitems("SC2", "MA", "w9")] <-
-  x2w9[, 2][rownames(x2w9) %in% pcitems("SC2", "MA", "w9")]/2
+# x2w9 <- cbind(item = 1:length(items$w9),
+#               xsi = c()) # TODO
+# rownames(x2w9) <- items$w9
+# colnames(x2w9)[1] <- ""
+# x2w9[, 2][rownames(x2w9) %in% pcitems("SC2", "MA", "w9")] <-
+#   x2w9[, 2][rownames(x2w9) %in% pcitems("SC2", "MA", "w9")]/2
+load("data-raw/item_difficulty_SC2_MA_w9.RData")
+x2w9 <- item_difficulty_SC2_MA_w9
+rm(item_difficulty_SC2_MA_w9)
 
 
 
@@ -330,7 +333,8 @@ xsi.fixed$cross[["MA"]] <-
       w2 = x2w2,
       w3 = x2w3,
       w4 = x2w4,
-      w6 = x2w6
+      w6 = x2w6,
+      w9 = x2w9
     ),
     SC3 = list(
       w1 = x3w1,
@@ -362,7 +366,8 @@ xsi.fixed$long[["MA"]] <-
       w2 = x2w2,
       w3 = x2w3,
       w4 = x2w4,
-      w6 = x2w6
+      w6 = x2w6,
+      w9 = x2w9
     ),
     SC3 = list(
       w1 = x3w1,

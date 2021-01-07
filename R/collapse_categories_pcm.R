@@ -1204,8 +1204,8 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
         resp[["mag7d06s_c"]][resp[["mag7d06s_c"]] %in% c(1, 2, 3)] <- 0
         resp[["mag7d06s_c"]][resp[["mag7d06s_c"]] %in% c(4, 5)] <- 1
 
-        resp[["mag7r02s_c"]][resp[["mag7r02s_c"]] %in% c(1, 2)] <- 0
-        resp[["mag7r02s_c"]][resp[["mag7r02s_c"]] == 3] <- 1
+        resp[["mag7r02s_sc2g7_c"]][resp[["mag7r02s_sc2g7_c"]] %in% c(1, 2)] <- 0
+        resp[["mag7r02s_sc2g7_c"]][resp[["mag7r02s_sc2g7_c"]] == 3] <- 1
       }
     }
   } else if (SC == "SC1") {

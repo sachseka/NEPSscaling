@@ -1,7 +1,7 @@
 context("correct_for_changed_test_rotation")
 
 test_that("rotation change: test SC2", {
-  
+
   position <- data.frame(ID_t = 1:100,
                          position = rep(1:2, 50))
   eap <- data.frame(ID_t = 1:100,
@@ -16,7 +16,7 @@ test_that("rotation change: test SC2", {
                                 PV_w1 = rep(0, 100),
                                 PV_w3 = rep(0, 100),
                                 PV_w4 = rep(0, 100)), simplify = FALSE)
-  
+
   result <- list(
     wle = data.frame(ID_t = 1:100,
                      wle_w1 = rep(0.03, 100),
@@ -70,7 +70,7 @@ test_that("rotation change: test SC3", {
     data.frame(ID_t = 1:100,
                PV_w6 = rep(0, 100))
   )
-  
+
   result <- list(
     wle = data.frame(ID_t = 1:100,
                      wle_w6 = rep(c(0, 0.174), 50)),
@@ -99,7 +99,7 @@ test_that("rotation change: test SC4", {
     data.frame(ID_t = 1:100,
                PV_w7 = rep(0, 100))
   )
-  
+
   result <- list(
     wle = data.frame(ID_t = 1:100,
                      wle_w7 = rep(c(0, 0.164), 50)),

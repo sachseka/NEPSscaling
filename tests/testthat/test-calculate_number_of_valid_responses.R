@@ -9,9 +9,9 @@ test_that("number of valid responses (cross-sectional)", {
   resp$item1[1:10] <- NA
   resp$item2[11:20] <- NA
   resp$item3[6:15] <- NA
-  
+
   waves <- c("_w1", "_w2")
-  
+
   test <- calculate_number_of_valid_responses(longitudinal, resp, waves)
   expect_equal(test$valid, c(rep(2, 5), rep(1, 10), rep(2, 5), rep(3, 80)))
 })
@@ -27,9 +27,9 @@ test_that("number of valid responses (longitudinal)", {
   resp$item3[6:15] <- NA
   longitudinal <- TRUE
   resp <- list(resp, resp)
-  
+
   waves <- c("_w1", "_w2")
-  
+
   test <- calculate_number_of_valid_responses(longitudinal, resp, waves)
   expect_equal(test$valid_w1, c(rep(2, 5), rep(1, 10), rep(2, 5), rep(3, 80)))
   expect_equal(test$valid_w2, c(rep(2, 5), rep(1, 10), rep(2, 5), rep(3, 80)))
