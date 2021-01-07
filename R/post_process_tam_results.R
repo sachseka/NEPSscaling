@@ -14,12 +14,14 @@
 #' @param regr.coeff list of regression coefficients of latent regression
 #' @param pvs list of estimated plausible values
 #' @param bgdata background data (can be NULL)
+#' @param info_crit list; AIC, BIC
 #'
 #' @noRd
 
 post_process_cross_tam_results <- function(mod, npv, control, imp,
                                            bgdatacom = NULL, eap, i,
-                                           EAP.rel, regr.coeff, pvs, bgdata) {
+                                           EAP.rel, regr.coeff, pvs, bgdata,
+                                           info_crit) {
   # impute plausible values
   tmp_pvs <- impute_pvs(mod, npv, control, bgdata, imp, bgdatacom, "", 1)
   eap[[i]] <- suppressWarnings(
@@ -35,10 +37,16 @@ post_process_cross_tam_results <- function(mod, npv, control, imp,
     rownames(regr.coeff) <-
       c("Intercept",
         names(bgdata[, -which(names(bgdata) == "ID_t"), drop = FALSE]))
+    info_crit <- matrix(c(AIC(mod), BIC(mod)), nrow = 2, ncol = 1)
+    rownames(info_crit) <- c("AIC", "BIC")
+    colnames(info_crit) <- paste0("imp", i)
   } else if (i > 1) {
     tmp <- suppressWarnings(quiet(TAM::tam.se(mod)$beta))
     colnames(tmp) <- paste0("imp", i, "_", c("coeff", "se"))
     regr.coeff <- cbind(regr.coeff, tmp)
+    tmp <- matrix(c(AIC(mod), BIC(mod)), nrow = 2, ncol = 1)
+    colnames(tmp) <- paste0("imp", i)
+    info_crit <- cbind(info_crit, tmp)
   }
   pvs[[i]] <- lapply(tmp_pvs, function(x) {
     x[, -which(colnames(x) == "pweights")]
@@ -50,7 +58,8 @@ post_process_cross_tam_results <- function(mod, npv, control, imp,
   }
   colnames(eap[[i]]) <- c("ID_t", "eap", "se")
 
-  list(eap = eap, regr.coeff = regr.coeff, pvs = pvs, EAP.rel = EAP.rel)
+  list(eap = eap, regr.coeff = regr.coeff, pvs = pvs, EAP.rel = EAP.rel,
+       info_crit = info_crit)
 }
 
 
@@ -72,13 +81,14 @@ post_process_cross_tam_results <- function(mod, npv, control, imp,
 #' @param regr.coeff list of regression coefficients of latent regression
 #' @param bgdata background data (can be NULL)
 #' @param waves character vector; assessment waves ("_wx", "_wy")
+#' @param info_crit list; AIC, BIC
 #'
 #' @noRd
 
 post_process_long_tam_results <- function(mod, npv, control, imp,
                                           bgdatacom = NULL, eap, i, j,
                                           EAP.rel, regr.coeff, bgdata,
-                                          waves) {
+                                          waves, info_crit) {
   # impute plausible values
   tmp_pvs <- impute_pvs(mod, npv, control, bgdata, imp, bgdatacom, waves, j)
   eap[[i]] <- suppressWarnings(
@@ -94,13 +104,19 @@ post_process_long_tam_results <- function(mod, npv, control, imp,
       c("Intercept",
         names(bgdata[, -which(names(bgdata) == "ID_t"), drop = FALSE]))
     colnames(regr.coeff[[i]]) <- paste0(c("coeff", "se"), waves[j])
+    info_crit[[i]] <- matrix(c(AIC(mod), BIC(mod)), nrow = 2, ncol = 1)
+    rownames(info_crit[[i]]) <- c("AIC", "BIC")
+    colnames(info_crit[[i]]) <- gsub("_", "", waves[j])
   } else {
     EAP.rel[[i]] <- c(EAP.rel[[i]], mod$EAP.rel)
     tmp <- suppressWarnings(quiet(TAM::tam.se(mod)$beta))
     colnames(tmp) <- paste0(c("coeff", "se"), waves[j])
     regr.coeff[[i]] <- cbind(regr.coeff[[i]], tmp)
+    tmp <- matrix(c(AIC(mod), BIC(mod)), nrow = 2, ncol = 1)
+    colnames(tmp) <- gsub("_", "", waves[j])
+    info_crit[[i]] <- cbind(info_crit[[i]], tmp)
   }
 
   list(eap = eap, regr.coeff = regr.coeff, tmp_pvs = tmp_pvs,
-       EAP.rel = EAP.rel)
+       EAP.rel = EAP.rel, info_crit = info_crit)
 }

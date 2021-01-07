@@ -456,6 +456,7 @@ plausible_values <- function(SC,
   EAP.rel <- res[["EAP.rel"]]
   regr.coeff <- res[["regr.coeff"]]
   mod <- res[["mod"]]
+  info_crit <- res[["info_crit"]]
 
   # Begin post-processing of estimated data -----------------------------------
 
@@ -480,7 +481,7 @@ plausible_values <- function(SC,
 
   # keep only those regr. coefficients / EAP reliabilities of kept imputations
   res <- discard_not_used_imputations(datalist, regr.coeff, EAP.rel,
-                                      longitudinal)
+                                      longitudinal, info_crit)
   regr.coeff <- res[["regr.coeff"]]
   EAP.rel <- res[["EAP.rel"]]
 
@@ -558,6 +559,7 @@ plausible_values <- function(SC,
   if (rotation) {
     res[["position"]] <- data.frame(ID_t, position)
   }
+  res[["information_criteria"]] <- info_crit
   res[["posterior_means"]] <- MEAN
   res[["pv"]] <- pv
   if (control[["EAP"]]) {
