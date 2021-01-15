@@ -89,6 +89,10 @@
 #' by the average competence per school.}
 #' \item{eap}{A \code{data.frame} containing the \code{ID_t} and the ability
 #' EAP value for the respective individual}
+#' \item{treeplot}{A \code{list} containing the ggplot objects for the
+#' constructed CART trees per imputation}
+#' \item{variable_importance}{A \code{list} containing the variable importance
+#' statistics for the predictor variables per imputation}
 #' \item{EAP_rel}{The EAP reliability is returned for each sampled model}
 #' \item{wle}{A \code{data.frame} containing the \code{ID_t} and the ability
 #' WLE value for the respective individual}
@@ -168,6 +172,8 @@
 #' @importFrom utils flush.console
 #' @importFrom rlang .data
 #' @importFrom stats na.omit
+#' @import rpart
+#' @import ggplot2
 #'
 #' @export
 
@@ -409,7 +415,8 @@ plausible_values <- function(SC,
   imp <- res[["imp"]]
   frmY <- res[["frmY"]]
   bgdata <- res[["bgdata"]]
-  loggedEvents <- res[["loggedEvents"]]
+  variable_importance <- res[["variable_importance"]]
+  treeplot <- res[["treeplot"]]
 
   # begin estimation of plausible values --------------------------------------
 
@@ -481,9 +488,13 @@ plausible_values <- function(SC,
 
   # keep only those regr. coefficients / EAP reliabilities of kept imputations
   res <- discard_not_used_imputations(datalist, regr.coeff, EAP.rel,
-                                      longitudinal, info_crit)
+                                      longitudinal, info_crit, treeplot,
+                                      variable_importance)
   regr.coeff <- res[["regr.coeff"]]
   EAP.rel <- res[["EAP.rel"]]
+  info_crit <- res[["info_crit"]]
+  treeplot <- res[["treeplot"]]
+  variable_importance <- res[["variable_importance"]]
 
   # linking of longitudinal plausible values ----------------------------------
 
@@ -576,8 +587,11 @@ plausible_values <- function(SC,
   } else {
     mod[[1]][["xsi"]]
   }
-  if (!is.null(loggedEvents)) {
-    res[["loggedEvents"]] <- loggedEvents
+  if (!is.null(treeplot)) {
+    res[["treeplot"]] <- treeplot
+  }
+  if (!is.null(variable_importance)) {
+    res[["variable_importance"]] <- variable_importance
   }
   res[["comp_time"]] <- list(
     initial_time = t0,
