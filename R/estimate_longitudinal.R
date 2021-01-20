@@ -81,9 +81,7 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, PCM, ID_t,
     }
     pvs <- reformat_longitudinal_tmp_pvs(npv, pvs, i, tmp_pvs, bgdata)
     rm(tmp_pvs)
-    colnames(eap[[i]]) <-
-      c("ID_t", paste0(rep(c("eap", "se"), length(waves)), rep(waves, each = 2)))
-  }
+    }
   res <- list(
     eap = eap, pvs = pvs, EAP.rel = EAP.rel,
     regr.coeff = regr.coeff, mod = mod, info_crit = info_crit

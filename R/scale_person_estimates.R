@@ -31,24 +31,22 @@ scale_person_estimates <- function(pv, wle, eap, SC, domain, waves, long_IDs) {
         wle1 = wle[, c("ID_t", paste0("wle", waves[w - 1]))],
         wle2 = wle[, c("ID_t", paste0("wle", waves[w]))],
         pv = pv, waves = waves, w = w)
-      term <-
-        MEAN$eap[2] - MEAN$eap[1] - link_constant[[SC]][[domain]][[waves_[w]]]
-      term <- correct_linking_term(term, SC, domain, waves_, w)
-      eap[, paste0("eap", waves[w])] <- eap[, paste0("eap", waves[w])] - term
-      for (i in seq(length(pv))) {
-        term <- MEAN$pv[[i]][2] - MEAN$pv[[i]][1] -
-          link_constant[[SC]][[domain]][[waves_[w]]]
-        term <- correct_linking_term(term, SC, domain, waves_, w)
-        pv[[i]][, paste0("PV", waves[w])] <-
-          pv[[i]][, paste0("PV", waves[w])] - term
-      }
+      term <- calculate_link_terms(MEAN, SC, domain, waves_, w)
+      term$eap <- correct_linking_term(term$eap, SC, domain, waves_, w)
       if (!is.null(wle)) {
-        term <-
-          MEAN$wle[2] - MEAN$wle[1] - link_constant[[SC]][[domain]][[waves_[w]]]
-        term <- correct_linking_term(term, SC, domain, waves_, w)
-        wle[, paste0("wle", waves[w])] <-
-          wle[, paste0("wle", waves[w])] - term
+        term$wle <- correct_linking_term(term$wle, SC, domain, waves_, w)
       }
+      for (i in seq(length(pv))) {
+        term$pv[[i]] <- correct_linking_term(term$pv[[i]], SC, domain, waves_, w)
+      }
+      res <- apply_linking(eap = eap[, paste0("eap", waves[w])], pv,
+                           wle = if (is.null(wle)) {NULL} else {wle[, paste0("wle", waves[w])]},
+                           term, long_IDs = NULL, waves, w)
+      eap[, paste0("eap", waves[w])] <- res$eap
+      if (!is.null(wle)) {
+        wle[, paste0("wle", waves[w])] <- res$wle
+      }
+      pv <- res$pv
     }
   }
   list(pv = pv, wle = wle, eap = eap)
@@ -71,37 +69,75 @@ scale_person_estimates <- function(pv, wle, eap, SC, domain, waves, long_IDs) {
 rescale_sc6_reading <- function(SC, domain, long_IDs, eap, pv, wle) {
   MEAN <- get_mean_linking(SC = SC, domain = domain, long_IDs = long_IDs,
                            eap1 = eap, wle1 = wle, pv = pv)
-  term1_eap <-
-    MEAN$eap[3] - MEAN$eap[1] - 
-    link_constant[[SC]][[domain]][["w9"]][["B67"]] - 0.08
-  term2_eap <-
-    MEAN$eap[4] - MEAN$eap[2] - 
-    link_constant[[SC]][[domain]][["w9"]][["B69"]] - 0.15
-  eap[eap[["ID_t"]] %in% long_IDs[["w3"]], "eap_w9"] <-
-    eap[eap[["ID_t"]] %in% long_IDs[["w3"]], "eap_w9"] - term1_eap
-  eap[eap[["ID_t"]] %in% long_IDs[["w5"]], "eap_w9"] <-
-    eap[eap[["ID_t"]] %in% long_IDs[["w5"]], "eap_w9"] - term2_eap
+  term <- calculate_link_terms(MEAN, SC, domain, waves_ = NULL, w = NULL)
+  res <- apply_linking_resc6(eap, pv, wle, term, long_IDs)
+  res
+}
+
+
+
+calculate_link_terms <- function(MEAN, SC, domain, waves_, w) {
+  term <- list()
+  if (SC == "SC6" & domain == "RE") {
+    term[["eap"]] <- c(MEAN$eap[3] - MEAN$eap[1] -
+                         link_constant[[SC]][[domain]][["w9"]][["B67"]] - 0.08,
+                       MEAN$eap[4] - MEAN$eap[2] -
+                         link_constant[[SC]][[domain]][["w9"]][["B69"]] - 0.15)
+    if (!is.null(MEAN$wle)) {
+      term[["wle"]] <- c(MEAN$wle[3] - MEAN$wle[1] -
+                           link_constant[[SC]][[domain]][["w9"]][["B67"]] - 0.08,
+                         MEAN$wle[4] - MEAN$wle[2] -
+                           link_constant[[SC]][[domain]][["w9"]][["B69"]] - 0.15)
+    }
+    for (i in seq(length(MEAN$pv))) {
+      term[["pv"]][[i]] <- c(MEAN$pv[[i]][3] - MEAN$pv[[i]][1] -
+                               link_constant[[SC]][[domain]][["w9"]][["B67"]] - 0.08,
+                             MEAN$pv[[i]][4] - MEAN$pv[[i]][2] -
+                               link_constant[[SC]][[domain]][["w9"]][["B69"]] - 0.15)
+    }
+  } else {
+    term[["eap"]] <- MEAN$eap[2] - MEAN$eap[1] -
+      link_constant[[SC]][[domain]][[waves_[w]]]
+    if (!is.null(MEAN$wle)) {
+      term[["wle"]] <- MEAN$wle[2] - MEAN$wle[1] -
+        link_constant[[SC]][[domain]][[waves_[w]]]
+    }
+    for (i in seq(length(MEAN$pv))) {
+      term[["pv"]][[i]] <- MEAN$pv[[i]][2] - MEAN$pv[[i]][1] -
+        link_constant[[SC]][[domain]][[waves_[w]]]
+    }
+  }
+  term
+}
+
+apply_linking <- function(eap, pv, wle, term, waves, w) {
+  eap <- eap - term$eap
   for (i in seq(length(pv))) {
-    term1_pv <-
-      MEAN$pv[[i]][3] - MEAN$pv[[i]][1] - 
-      link_constant[[SC]][[domain]][["w9"]][["B67"]] - 0.08
-    term2_pv <-
-      MEAN$pv[[i]][4] - MEAN$pv[[i]][2] - 
-      link_constant[[SC]][[domain]][["w9"]][["B69"]] - 0.15
-    pv[[i]][pv[[i]][["ID_t"]] %in% long_IDs[["w3"]], "PV_w9"] <-
-      pv[[i]][pv[[i]][["ID_t"]] %in% long_IDs[["w3"]], "PV_w9"] - term1_pv
-    pv[[i]][pv[[i]][["ID_t"]] %in% long_IDs[["w5"]], "PV_w9"] <-
-      pv[[i]][pv[[i]][["ID_t"]] %in% long_IDs[["w5"]], "PV_w9"] - term2_pv
+    pv[[i]][, paste0("PV", waves[w])] <-
+      pv[[i]][, paste0("PV", waves[w])] - term$pv[[i]]
   }
   if (!is.null(wle)) {
-    term1_wle <-
-      MEAN$wle[3] - MEAN$wle[1] - link_constant[[SC]][[domain]][["w9"]][["B67"]]
-    term2_wle <-
-      MEAN$wle[4] - MEAN$wle[2] - link_constant[[SC]][[domain]][["w9"]][["B69"]]
+    wle <- wle - term$wle
+  }
+  list(eap = eap, pv = pv, wle = wle)
+}
+
+apply_linking_resc6 <- function(eap, pv, wle, term, long_IDs) {
+  eap[eap[["ID_t"]] %in% long_IDs[["w3"]], "eap_w9"] <-
+    eap[eap[["ID_t"]] %in% long_IDs[["w3"]], "eap_w9"] - term$eap[[1]]
+  eap[eap[["ID_t"]] %in% long_IDs[["w5"]], "eap_w9"] <-
+    eap[eap[["ID_t"]] %in% long_IDs[["w5"]], "eap_w9"] - term$eap[[2]]
+  for (i in seq(length(pv))) {
+    pv[[i]][pv[[i]][["ID_t"]] %in% long_IDs[["w3"]], "PV_w9"] <-
+      pv[[i]][pv[[i]][["ID_t"]] %in% long_IDs[["w3"]], "PV_w9"] - term$pv[[i]][[1]]
+    pv[[i]][pv[[i]][["ID_t"]] %in% long_IDs[["w5"]], "PV_w9"] <-
+      pv[[i]][pv[[i]][["ID_t"]] %in% long_IDs[["w5"]], "PV_w9"] - term$pv[[i]][[2]]
+  }
+  if (!is.null(wle)) {
     wle[wle[["ID_t"]] %in% long_IDs[["w3"]], "wle_w9"] <-
-      wle[wle[["ID_t"]] %in% long_IDs[["w3"]], "wle_w9"] - term1_wle + 0.08
+      wle[wle[["ID_t"]] %in% long_IDs[["w3"]], "wle_w9"] - term$wle[[1]]
     wle[wle[["ID_t"]] %in% long_IDs[["w5"]], "wle_w9"] <-
-      wle[wle[["ID_t"]] %in% long_IDs[["w5"]], "wle_w9"] - term2_wle + 0.15
+      wle[wle[["ID_t"]] %in% long_IDs[["w5"]], "wle_w9"] - term$wle[[2]]
   }
   list(eap = eap, pv = pv, wle = wle)
 }

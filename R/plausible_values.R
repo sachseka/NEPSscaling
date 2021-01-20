@@ -172,8 +172,6 @@
 #' @importFrom utils flush.console
 #' @importFrom rlang .data
 #' @importFrom stats na.omit
-#' @import rpart
-#' @import ggplot2
 #'
 #' @export
 
@@ -310,22 +308,7 @@ plausible_values <- function(SC,
 
   # school context only for SC2-4 while in school
   if (adjust_school_context) {
-    if (longitudinal) {
-      # some starting cohorts are never assessed in school context, thus, they
-      # can be excluded as a whole in the longitudinal case
-      if (SC %in% c("SC1", "SC5", "SC6")) {
-        adjust_school_context <- FALSE
-      }
-    } else {
-      # some starting cohorts transition into or out of school, thus, specific
-      # waves have to be checked in the cross-sectional case
-      if (!(SC == "SC2" & wave %in% c("w3", "w4", "w5", "w6", "w9")) &&
-            !(SC == "SC3" & wave %in% c("w1", "w2", "w3", "w5", "w6", "w7",
-                                        "w8", "w9")) &&
-            !(SC == "SC4" & wave %in% c("w1", "w2", "w3", "w5", "w7"))) {
-        adjust_school_context <- FALSE
-      }
-    }
+    adjust_school_context <- was_assessed_in_school(longitudinal, SC, wave)
   }
 
   # Begin data pre-processing -------------------------------------------------
@@ -340,8 +323,8 @@ plausible_values <- function(SC,
   data <- read_in_competence_data(path, SC, domain)
 
   # number of not-reached items as processing time proxy
-  res <- not_reached_as_proxy(
-    include_nr, longitudinal, data, SC, domain, wave, waves)
+  res <- not_reached_as_proxy(include_nr, longitudinal, data, SC, domain, wave,
+                              waves)
   items_not_reached <- res[["nr"]]
   data <- res[["data"]]
   include_nr <- res[["include_nr"]]
@@ -354,11 +337,7 @@ plausible_values <- function(SC,
   resp <- res[["resp"]]
 
   # check for Partial Credit Items
-  PCM <- (if (longitudinal) {
-    lapply(resp, function(x) {max(apply(x[, -1], 2, max, na.rm = TRUE)) > 1})
-  } else {
-    max(apply(resp[, -1], 2, max, na.rm = TRUE)) > 1
-  })
+  PCM <- is_PCM(longitudinal, resp)
 
   # process background data ---------------------------------------------------
 
@@ -511,8 +490,9 @@ plausible_values <- function(SC,
     if (SC == "SC4" & domain %in% c("MA", "RE") ||
         (SC == "SC3" & domain == "RE") ||
         (SC == "SC2" & domain %in% c("VO", "MA"))) {
-      res <- correct_for_changed_test_rotation(SC, domain, position, wle, eap,
-                                               pv)
+      res <- correct_for_changed_test_rotation(SC, domain, position,
+                                               wle = if (control[["WLE"]]) {wle} else {NULL},
+                                               eap, pv)
       pv <- res[["pv"]]
       wle <- res[["wle"]]
       eap <- res[["eap"]]
@@ -526,20 +506,6 @@ plausible_values <- function(SC,
     wle <- res[["wle"]]
     eap <- res[["eap"]]
   }
-
-## correct deviations in SC3/SC4
-#if ((longitudinal & SC == "SC4" & domain == "EF") ||
-#    (longitudinal & SC == "SC3" & domain == "EF") ||
-#    (!longitudinal & SC == "SC3" & domain == "EF" & wave == "w9") ||
-#    (longitudinal & SC == "SC3" & domain == "ORB") ||
-#    (!longitudinal & SC == "SC3" & domain == "ORB" & wave == "w3")) {
-#  res <- correct_mean_deviations(pv,
-#                                 wle = if (control[["WLE"]]) {wle} else {NULL},
-#                                 eap, SC, domain, type)
-#  pv <- res[["pv"]]
-#  wle <- res[["wle"]]
-#  eap <- res[["eap"]]
-#}
 
   # calculate posterior mean of estimated eaps/plausible values
   MEAN <- calculate_posterior_means(eap,

@@ -1,5 +1,5 @@
 #' in some starting cohorts, the test rotation (e.g. MA-RE and RE-MA) was changed
-#' in later assessments (e.g. only MA-RE). In the longitudinal case, this change 
+#' in later assessments (e.g. only MA-RE). In the longitudinal case, this change
 #' needs to be corrected for the position effect due to fatigue etc.
 #'
 #' @param SC character; starting cohort ("SCx")
@@ -14,21 +14,9 @@ correct_for_changed_test_rotation <- function(SC, domain, position, wle, eap, pv
   pos <- res[["pos"]]
   wave <- res[["wave"]]
   correction <- res[["correction"]]
-  wle[position[["ID_t"]] %in% wle[["ID_t"]] &
-        position[["position"]] %in% pos, paste0("wle_", wave)] <-
-    wle[position[["ID_t"]] %in% wle[["ID_t"]] &
-          position[["position"]] %in% pos, paste0("wle_", wave)] + correction
-  eap[position[["ID_t"]] %in% wle[["ID_t"]] &
-        position[["position"]] %in% pos, paste0("eap_", wave)] <-
-    eap[position[["ID_t"]] %in% wle[["ID_t"]] &
-          position[["position"]] %in% pos, paste0("eap_", wave)] + correction
-  for (i in seq(length(pv))) {
-    pv[[i]][position[["ID_t"]] %in% wle[["ID_t"]] &
-              position[["position"]] %in% pos, paste0("PV_", wave)] <-
-      pv[[i]][position[["ID_t"]] %in% wle[["ID_t"]] &
-                position[["position"]] %in% pos, paste0("PV_", wave)] + correction
-  }
-  list(wle = wle, eap = eap, pv = pv)
+  res <- apply_correction_for_changed_test_rotation(pos, wave, correction,
+                                                    wle, eap, pv)
+  res
 }
 
 set_correction_term <- function(SC, domain, wle, position) {
@@ -65,4 +53,25 @@ set_correction_term <- function(SC, domain, wle, position) {
     }
   }
   list(correction = correction, pos = pos, wave = wave)
+}
+
+apply_correction_for_changed_test_rotation <- function(pos, wave, correction,
+                                                       wle, eap, pv) {
+  if (!is.null(wle)) {
+    wle[position[["ID_t"]] %in% wle[["ID_t"]] &
+          position[["position"]] %in% pos, paste0("wle_", wave)] <-
+      wle[position[["ID_t"]] %in% wle[["ID_t"]] &
+            position[["position"]] %in% pos, paste0("wle_", wave)] + correction
+  }
+  eap[position[["ID_t"]] %in% wle[["ID_t"]] &
+        position[["position"]] %in% pos, paste0("eap_", wave)] <-
+    eap[position[["ID_t"]] %in% wle[["ID_t"]] &
+          position[["position"]] %in% pos, paste0("eap_", wave)] + correction
+  for (i in seq(length(pv))) {
+    pv[[i]][position[["ID_t"]] %in% wle[["ID_t"]] &
+              position[["position"]] %in% pos, paste0("PV_", wave)] <-
+      pv[[i]][position[["ID_t"]] %in% wle[["ID_t"]] &
+                position[["position"]] %in% pos, paste0("PV_", wave)] + correction
+  }
+  list(wle = wle, eap = eap, pv = pv)
 }

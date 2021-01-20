@@ -16,36 +16,62 @@ discard_not_used_imputations <- function(datalist, regr.coeff, EAP.rel,
                                          longitudinal, info_crit, treeplot,
                                          variable_importance) {
   # names of pvs:
-  keep <- names(datalist)
-  keep <- as.numeric(stringr::str_match(keep, "imp\\s*(.*?)\\s*pv")[, 2])
-  keep <- unique(sort(keep))
+  keep <- determine_used_imputations(datalist)
   # if only one imputation was sampled or no bgdata supplied, exit
   if (length(keep) == 1) {
-    return(list(regr.coeff = regr.coeff, EAP.rel = EAP.rel))
+    return(list(regr.coeff = regr.coeff, EAP.rel = EAP.rel,
+                info_crit = info_crit, treeplot = treeplot,
+                variable_importance = variable_importance))
   }
   # keep only those EAP reliability / regression coefficients with imputations
   if (longitudinal) {
-    # list of length nmi of EAP rels for each wave
-    EAP.rel <- EAP.rel[keep]
-    regr.coeff <- regr.coeff[keep]
-    info_crit <- info_crit[keep]
-    treeplot <- treeplot[keep]
-    variable_importance <- variable_importance[keep]
-    names(EAP.rel) <- names(regr.coeff) <- names(info_crit) <-
-      names(treeplot) <- names(variable_importance) <- paste0("imp", keep)
+    res <- select_used_imputations_long(EAP.rel, regr.coeff, info_crit,
+                                        treeplot, variable_importance, keep[[1]])
   } else {
-    # vector of length nmi
-    EAP.rel <- EAP.rel[keep]
-    treeplot <- treeplot[keep]
-    variable_importance <- variable_importance[keep]
-    info_crit <- info_crit[, keep]
-    names(EAP.rel) <- names(info_crit) <- names(treeplot) <-
-      names(variable_importance) <- paste0("imp", keep)
-    # matrix of coefficient + se per imputation: 11 22 33 44 ...
-    keep <- 2 * keep
-    keep <- sort(c(keep, keep - 1))
-    regr.coeff <- regr.coeff[, keep]
+    res <- select_used_imputations_cross(EAP.rel, regr.coeff, info_crit,
+                                         treeplot, variable_importance, keep)
   }
+  res
+}
+
+determine_used_imputations <- function(datalist) {
+  keep <- names(datalist)
+  keep <- as.numeric(stringr::str_match(keep, "imp\\s*(.*?)\\s*pv")[, 2])
+  keep <- unique(sort(keep))
+
+  # matrix of coefficient + se per imputation: 11 22 33 44 ...
+  keep2 <- 2 * keep
+  keep2 <- sort(c(keep2, keep2 - 1))
+
+  list(keep, keep2)
+}
+
+select_used_imputations_long <- function(EAP.rel, regr.coeff, info_crit,
+                                         treeplot, variable_importance, keep) {
+  # list of length nmi of EAP rels for each wave
+  EAP.rel <- EAP.rel[keep]
+  regr.coeff <- regr.coeff[keep]
+  info_crit <- info_crit[keep]
+  treeplot <- treeplot[keep]
+  variable_importance <- variable_importance[keep]
+  names(EAP.rel) <- names(regr.coeff) <- names(info_crit) <-
+    names(treeplot) <- names(variable_importance) <- paste0("imp", keep)
+
+  list(regr.coeff = regr.coeff, EAP.rel = EAP.rel, info_crit = info_crit,
+       treeplot = treeplot, variable_importance = variable_importance)
+}
+
+select_used_imputations_cross <- function(EAP.rel, regr.coeff, info_crit,
+                                          treeplot, variable_importance, keep) {
+  # vector of length nmi
+  EAP.rel <- EAP.rel[keep[[1]]]
+  treeplot <- treeplot[keep[[1]]]
+  variable_importance <- variable_importance[keep[[1]]]
+  info_crit <- info_crit[, keep[[1]]]
+  names(EAP.rel) <- names(info_crit) <- names(treeplot) <-
+    names(variable_importance) <- paste0("imp", keep[[1]])
+  regr.coeff <- regr.coeff[, keep[[2]]]
+
   list(regr.coeff = regr.coeff, EAP.rel = EAP.rel, info_crit = info_crit,
        treeplot = treeplot, variable_importance = variable_importance)
 }

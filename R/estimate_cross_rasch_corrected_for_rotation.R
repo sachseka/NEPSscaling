@@ -27,6 +27,8 @@ estimate_cross_rasch_corrected_for_rotation <- function(bgdata, imp,
                                                         ID_t, type, domain,
                                                         SC, control, npv) {
   times <- ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi)
+  items <- rownames(xsi.fixed$cross[[domain]][[SC]][[gsub("_", "", waves)]])
+
   pvs <- list(NULL)
   EAP.rel <- info_crit <- regr.coeff <- NULL
   eap <- replicate(times, data.frame(ID_t = ID_t$ID_t), simplify = FALSE)
@@ -37,7 +39,6 @@ estimate_cross_rasch_corrected_for_rotation <- function(bgdata, imp,
     # estimate IRT model
     mod <- list()
 
-    items <- rownames(xsi.fixed$cross[[domain]][[SC]][[gsub("_", "", waves)]])
     mod[[1]] <- TAM::tam.mml.mfr(
       resp = resp[, items],
       facets = position,

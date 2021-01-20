@@ -19,7 +19,9 @@ Imports:
     purrr,
     sjlabelled,
     stringr,
-    vctrs
+    vctrs,
+    ggplot2,
+    rpart
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

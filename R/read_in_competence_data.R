@@ -8,41 +8,10 @@
 #' @noRd
 
 read_in_competence_data <- function(path, SC, domain) {
-  # get competence data for SC and domain
-  files <- list.files(path = path)
-  if (SC == "SC5" & domain == "BA") {
-    filepath <- paste0(path, files[grep("xEcoCAPI", files)])
-  } else if (SC == "SC1" & domain == "CD") {
-    filepath <- paste0(path, files[grep("xDirectMeasures", files)])
-  } else {
-    filepath <- paste0(path, files[grep("xTargetCompetencies", files)])
-  }
+  filepath <- determine_file_path(path, SC, domain, school = FALSE)
   filetype <- tools::file_ext(filepath)
-  error_msg <- paste0(
-    "* Path '", filepath, "' may not lead to competence files.\n",
-    "* File format: '", filetype, "' might be wrong"
-  )
-  if (filetype == "sav") {
-    data <-
-      tryCatch(
-        haven::read_spss(file = filepath, user_na = TRUE),
-        error = function(cnd) {
-          stop(error_msg, call. = FALSE)
-        }
-      )
-  } else if (filetype == "dta") {
-    data <-
-      tryCatch(
-        haven::read_dta(file = filepath),
-        error = function(cnd) {
-          stop(error_msg, call. = FALSE)
-        }
-      )
-  } else {
-    stop(error_msg, call. = FALSE)
-  }
-  # sjlabelled because of problems with labelled_spss and tibble class
-  data <- sjlabelled::remove_all_labels(data)
+  error_msg <- create_error_msg(filepath, filetype, school = FALSE)
+  data <- import_data(filetype, filepath, error_msg, school = FALSE)
   data <- data[order(data[["ID_t"]]), ]
   data
 }

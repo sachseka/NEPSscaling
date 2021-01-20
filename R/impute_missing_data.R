@@ -17,26 +17,24 @@ impute_missing_data <- function(bgdata, verbose, control) {
         )
         flush.console()
       }
-      res <- CART(X = bgdata, minbucket = control$ML$minbucket, 
+      res <- CART(X = bgdata, minbucket = control$ML$minbucket,
                   cp = control$ML$cp, nmi = control$ML$nmi, verbose = verbose)
       imp <- res$imp
+      imp <- purrr::map(.x = imp, .f = reformat_bgdata_as_numeric)
       treeplot <- res$treeplot
       variable_importance <- res$variable_importance
     } else {
-      bgdata <- as.data.frame(lapply(bgdata, as.numeric))
+      bgdata <- reformat_bgdata_as_numeric(bgdata)
       imp <- NULL
-      frmY <-
-        as.formula(
-          paste("~", paste(colnames(bgdata[, -which(colnames(bgdata) == "ID_t"),
-                                           drop = FALSE
-          ]),
-          collapse = "+"
-          ))
-        )
+      frmY <- create_formula(bgdata)
     }
   }
   list(imp = imp, frmY = frmY, bgdata = bgdata, treeplot = treeplot,
        variable_importance = variable_importance)
+}
+
+reformat_bgdata_as_numeric <- function(dat) {
+  as.data.frame(lapply(dat, as.numeric))
 }
 
 

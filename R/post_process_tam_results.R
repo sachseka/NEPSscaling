@@ -24,10 +24,39 @@ post_process_cross_tam_results <- function(mod, npv, control, imp,
                                            info_crit) {
   # impute plausible values
   tmp_pvs <- impute_pvs(mod, npv, control, bgdata, imp, bgdatacom, "", 1)
+
+  res <- gather_additional_parameters_cross(eap, mod, EAP.rel, regr.coeff,
+                                            info_crit, i)
+  eap <- res$eap
+  EAP.rel <- res$EAP.rel
+  regr.coeff <- res$regr.coeff
+  info_crit <- res$info_crit
+
+  pvs <- reformat_cross_tmp_pvs(pvs, tmp_pvs, bgdata, npv, i)
+
+  list(eap = eap, regr.coeff = regr.coeff, pvs = pvs, EAP.rel = EAP.rel,
+       info_crit = info_crit)
+}
+
+reformat_cross_tmp_pvs <- function(pvs, tmp_pvs, bgdata, npv, i) {
+  pvs[[i]] <- lapply(tmp_pvs, function(x) {
+    x[, -which(colnames(x) == "pweights")]
+  })
+  if (is.null(bgdata)) {
+    for (n in 1:npv) {
+      names(pvs[[i]][[n]])[which(names(pvs[[i]][[n]]) == "pid")] <- "ID_t"
+    }
+  }
+  pvs
+}
+
+gather_additional_parameters_cross <- function(eap, mod, EAP.rel, regr.coeff,
+                                               info_crit, i) {
   eap[[i]] <- suppressWarnings(
     dplyr::left_join(eap[[i]], mod$person[, grep("pid|EAP", names(mod$person))],
                      by = c("ID_t" = "pid"))) %>%
     dplyr::arrange(.data$ID_t)
+  colnames(eap[[i]]) <- c("ID_t", "eap", "se")
   EAP.rel <- c(EAP.rel, mod$EAP.rel)
   # se estimation gives warning "In sqrt(-1/info_pp) : NaNs produced" because
   # item difficulty parameters are fixed --> suppress warnings!
@@ -48,20 +77,9 @@ post_process_cross_tam_results <- function(mod, npv, control, imp,
     colnames(tmp) <- paste0("imp", i)
     info_crit <- cbind(info_crit, tmp)
   }
-  pvs[[i]] <- lapply(tmp_pvs, function(x) {
-    x[, -which(colnames(x) == "pweights")]
-  })
-  if (is.null(bgdata)) {
-    for (n in 1:npv) {
-      names(pvs[[i]][[n]])[which(names(pvs[[i]][[n]]) == "pid")] <- "ID_t"
-    }
-  }
-  colnames(eap[[i]]) <- c("ID_t", "eap", "se")
-
-  list(eap = eap, regr.coeff = regr.coeff, pvs = pvs, EAP.rel = EAP.rel,
+  list(eap = eap, EAP.rel = EAP.rel, regr.coeff = regr.coeff,
        info_crit = info_crit)
 }
-
 
 
 #' model post-processing in longitudinal estimation:
@@ -91,12 +109,24 @@ post_process_long_tam_results <- function(mod, npv, control, imp,
                                           waves, info_crit) {
   # impute plausible values
   tmp_pvs <- impute_pvs(mod, npv, control, bgdata, imp, bgdatacom, waves, j)
+
+  res <- gather_additional_parameters_long(eap, mod, EAP.rel, regr.coeff,
+                                           info_crit, i, j)
+
+  list(eap = res$eap, regr.coeff = res$regr.coeff, tmp_pvs = tmp_pvs,
+       EAP.rel = res$EAP.rel, info_crit = res$info_crit)
+}
+
+gather_additional_parameters_long <- function(eap, mod, EAP.rel, regr.coeff,
+                                              info_crit, i, j) {
   eap[[i]] <- suppressWarnings(
     dplyr::left_join(
       eap[[i]], mod$person[, grep("pid|EAP", names(mod$person))],
       by = c("ID_t" = "pid")
     )
   ) %>% dplyr::arrange(.data$ID_t)
+  colnames(eap[[i]])[c(j*2, j*2 + 1)] <- paste0(c("eap", "se"), waves[j])
+
   if (j == 1) {
     EAP.rel[[i]] <- mod$EAP.rel
     regr.coeff[[i]] <- suppressWarnings(quiet(TAM::tam.se(mod)$beta))
@@ -116,7 +146,6 @@ post_process_long_tam_results <- function(mod, npv, control, imp,
     colnames(tmp) <- gsub("_", "", waves[j])
     info_crit[[i]] <- cbind(info_crit[[i]], tmp)
   }
-
-  list(eap = eap, regr.coeff = regr.coeff, tmp_pvs = tmp_pvs,
-       EAP.rel = EAP.rel, info_crit = info_crit)
+  list(eap = eap, regr.coeff = regr.coeff, EAP.rel = EAP.rel,
+       info_crit = info_crit)
 }

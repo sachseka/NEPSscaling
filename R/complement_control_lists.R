@@ -12,10 +12,13 @@ complement_control_lists <- function(c_E, c_W, c_T) {
 
   # default values
   control_ML <- list(
-    nmi = 10L, ntheta = 2000, normal.approx = FALSE,
-    samp.regr = FALSE, theta.model = FALSE, np.adj = 8,
-    na.grid = 5, itermcmc = 100, burnin = 50, thin = 1,
-    cartctrl1 = 5, cartctrl2 = 0.0001
+    nmi = 10L, ntheta = 2000,
+    normal.approx = FALSE,
+    samp.regr = FALSE,
+    theta.model = FALSE,
+    np.adj = 8, na.grid = 5,
+    minbucket = 5,
+    cp = 0.0001
   )
   control_ML[names(c_T)] <- c_T
 
