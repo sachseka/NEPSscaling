@@ -26,7 +26,7 @@ post_process_cross_tam_results <- function(mod, npv, control, imp,
   tmp_pvs <- impute_pvs(mod, npv, control, bgdata, imp, bgdatacom, "", 1)
 
   res <- gather_additional_parameters_cross(eap, mod, EAP.rel, regr.coeff,
-                                            info_crit, i)
+                                            info_crit, i, bgdata)
   eap <- res$eap
   EAP.rel <- res$EAP.rel
   regr.coeff <- res$regr.coeff
@@ -51,7 +51,7 @@ reformat_cross_tmp_pvs <- function(pvs, tmp_pvs, bgdata, npv, i) {
 }
 
 gather_additional_parameters_cross <- function(eap, mod, EAP.rel, regr.coeff,
-                                               info_crit, i) {
+                                               info_crit, i, bgdata) {
   eap[[i]] <- suppressWarnings(
     dplyr::left_join(eap[[i]], mod$person[, grep("pid|EAP", names(mod$person))],
                      by = c("ID_t" = "pid"))) %>%
@@ -111,14 +111,14 @@ post_process_long_tam_results <- function(mod, npv, control, imp,
   tmp_pvs <- impute_pvs(mod, npv, control, bgdata, imp, bgdatacom, waves, j)
 
   res <- gather_additional_parameters_long(eap, mod, EAP.rel, regr.coeff,
-                                           info_crit, i, j)
+                                           info_crit, i, j, waves, bgdata)
 
   list(eap = res$eap, regr.coeff = res$regr.coeff, tmp_pvs = tmp_pvs,
        EAP.rel = res$EAP.rel, info_crit = res$info_crit)
 }
 
 gather_additional_parameters_long <- function(eap, mod, EAP.rel, regr.coeff,
-                                              info_crit, i, j) {
+                                              info_crit, i, j, waves, bgdata) {
   eap[[i]] <- suppressWarnings(
     dplyr::left_join(
       eap[[i]], mod$person[, grep("pid|EAP", names(mod$person))],

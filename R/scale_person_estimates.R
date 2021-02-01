@@ -41,9 +41,9 @@ scale_person_estimates <- function(pv, wle, eap, SC, domain, waves, long_IDs) {
       }
       res <- apply_linking(eap = eap[, paste0("eap", waves[w])], pv,
                            wle = if (is.null(wle)) {NULL} else {wle[, paste0("wle", waves[w])]},
-                           term, long_IDs = NULL, waves, w)
+                           term, waves, w)
       eap[, paste0("eap", waves[w])] <- res$eap
-      if (!is.null(wle)) {
+      if (!is.null(wle)) {6
         wle[, paste0("wle", waves[w])] <- res$wle
       }
       pv <- res$pv

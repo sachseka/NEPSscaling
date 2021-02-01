@@ -22,7 +22,7 @@ not_reached_as_proxy <- function(include_nr, longitudinal, data, SC, domain,
   }
   # set user-defined missings to NA
   data[data < -15] <- NA # assumption: WLEs this low are not to be expected
-  list(nr = nr, data = data, include_nr = include_nr)
+  list(nr = nr, data = data, include_nr = ifelse(is.null(nr), FALSE, TRUE))
 }
 
 remove_constant_not_reached <- function(nr, sel) {
@@ -30,7 +30,6 @@ remove_constant_not_reached <- function(nr, sel) {
   if (any(lapply(lapply(nr, unique), length) == 1)) {
     ind <- which(lapply(lapply(nr, unique), length) == 1)
     if (length(ind) == length(sel)) {
-      include_nr <- FALSE
       nr <- NULL
       message(
         "The number of not-reached missing values is constant. ",
@@ -66,9 +65,9 @@ calculate_not_reached_per_person <- function(data, sel, waves, SC, domain,
   nr <- data.frame(ID_t = data[["ID_t"]])
   for (s in seq(length(sel))) {
     nr[[paste0("items_not_reached", waves[s])]] <-
-      rowSums(data[, sel[[s]]] == -94, na.rm = TRUE)
+      rowSums(data[, sel[[s]], drop = FALSE] == -94, na.rm = TRUE)
   }
-  if (longitdudinal & SC == "SC6" & domain == "RE") {
+  if (longitudinal & SC == "SC6" & domain == "RE") {
     nr[["items_not_reached_w3"]][is.na(data[["rea3_sc1u"]])] <- NA
     nr[["items_not_reached_w5"]][is.na(data[["rea5_sc1u"]])] <- NA
   }

@@ -22,10 +22,10 @@ seqcart <- function(
   treeplot <- list()
   variable_importance <- list()
   i <- 1
-  for(k in misord){
+  for (k in misord) {
     yobs <- dataimp[INDOBS[, k], k]
-    Xobs <- dataimp[INDOBS[, k], !(names(dataimp)%in%k), drop = FALSE]
-    Xmis <- dataimp[INDMIS[, k], !(names(dataimp)%in%k), drop = FALSE]
+    Xobs <- dataimp[INDOBS[, k], !(names(dataimp) %in% k), drop = FALSE]
+    Xmis <- dataimp[INDMIS[, k], !(names(dataimp) %in% k), drop = FALSE]
     rpartmethod <- ifelse(is.factor(yobs), "class", "anova")
     tree <- rpart::rpart(yobs ~., data = cbind(yobs, Xobs), method = rpartmethod,
       control = rpart::rpart.control(minbucket = control1, cp = control2))
@@ -36,9 +36,9 @@ seqcart <- function(
     leafmis <- predict(tree, Xmis, "vector")
     dataimp[INDMIS[, k], k] <- sapply(leafmis, function(x){
       donorpool <- yobs[leafdonor == x]
-      if(length(donorpool) == 1){
+      if (length(donorpool) == 1) {
         obs <- donorpool
-      }else{
+      } else {
         di <- sort(runif(length(donorpool) - 1))
         obs <- sample(x = donorpool, size = 1, prob = (c(di, 1) - c(0, di)))
       }

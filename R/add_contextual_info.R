@@ -23,7 +23,7 @@ add_contextual_info <- function(path, SC, domain, waves, bgdata, data) {
   school_data <- dplyr::left_join(data, school_data, by = "ID_t")
 
   # get group average per school
-  school_data <- calculate_school_average(school_data, waves) # below
+  school_data <- calculate_school_average(school_data, waves, wle_vnames) # below
 
   bgdata <- combine_with_bgdata(bgdata, school_data) # below
   bgdata
@@ -152,7 +152,7 @@ convert_to_wide <- function(school_data) {
 }
 
 
-calculate_school_average <- function(school_data, waves) {
+calculate_school_average <- function(school_data, waves, wle_vnames) {
   school_waves <-
     names(school_data)[names(school_data) %in% paste0("school", waves)]
   for (i in seq(length(waves))) {

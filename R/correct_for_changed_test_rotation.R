@@ -15,7 +15,7 @@ correct_for_changed_test_rotation <- function(SC, domain, position, wle, eap, pv
   wave <- res[["wave"]]
   correction <- res[["correction"]]
   res <- apply_correction_for_changed_test_rotation(pos, wave, correction,
-                                                    wle, eap, pv)
+                                                    wle, eap, pv, position)
   res
 }
 
@@ -56,7 +56,7 @@ set_correction_term <- function(SC, domain, wle, position) {
 }
 
 apply_correction_for_changed_test_rotation <- function(pos, wave, correction,
-                                                       wle, eap, pv) {
+                                                       wle, eap, pv, position) {
   if (!is.null(wle)) {
     wle[position[["ID_t"]] %in% wle[["ID_t"]] &
           position[["position"]] %in% pos, paste0("wle_", wave)] <-

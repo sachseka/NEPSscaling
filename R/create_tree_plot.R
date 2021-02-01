@@ -38,10 +38,10 @@ create_tree_plot <- function(tree, variable) {
     dat$yend[i] <- dat$y[which(dat$parent[i] == dat$nodeID)]
   }
 
-  p <- ggplot2::ggplot(data = dat, mapping = ggplot2::aes(x = x, y = y)) +
+  p <- ggplot2::ggplot(data = dat, mapping = ggplot2::aes(x = .data$x, y = .data$y)) +
     ggplot2::geom_point() +
-    ggplot2::geom_segment(ggplot2::aes(xend = xend, yend = yend)) +
-    ggplot2::geom_label(ggplot2::aes(label = split)) +
+    ggplot2::geom_segment(ggplot2::aes(xend = .data$xend, yend = .data$yend)) +
+    ggplot2::geom_label(ggplot2::aes(label = .data$split)) +
     ggplot2::theme_void() +
     ggplot2::ggtitle(variable)
 

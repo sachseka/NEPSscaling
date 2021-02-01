@@ -54,8 +54,11 @@ select_used_imputations_long <- function(EAP.rel, regr.coeff, info_crit,
   info_crit <- info_crit[keep]
   treeplot <- treeplot[keep]
   variable_importance <- variable_importance[keep]
-  names(EAP.rel) <- names(regr.coeff) <- names(info_crit) <-
+  names(EAP.rel) <- names(regr.coeff) <- names(info_crit) <- paste0("imp", keep)
+  
+  if (!is.null(treeplot)) {
     names(treeplot) <- names(variable_importance) <- paste0("imp", keep)
+  }
 
   list(regr.coeff = regr.coeff, EAP.rel = EAP.rel, info_crit = info_crit,
        treeplot = treeplot, variable_importance = variable_importance)
@@ -68,9 +71,12 @@ select_used_imputations_cross <- function(EAP.rel, regr.coeff, info_crit,
   treeplot <- treeplot[keep[[1]]]
   variable_importance <- variable_importance[keep[[1]]]
   info_crit <- info_crit[, keep[[1]]]
-  names(EAP.rel) <- names(info_crit) <- names(treeplot) <-
-    names(variable_importance) <- paste0("imp", keep[[1]])
+  names(EAP.rel) <- names(info_crit) <- paste0("imp", keep[[1]])
   regr.coeff <- regr.coeff[, keep[[2]]]
+  
+  if (!is.null(treeplot)) {
+    names(treeplot) <- names(variable_importance) <- paste0("imp", keep[[1]])
+  }
 
   list(regr.coeff = regr.coeff, EAP.rel = EAP.rel, info_crit = info_crit,
        treeplot = treeplot, variable_importance = variable_importance)

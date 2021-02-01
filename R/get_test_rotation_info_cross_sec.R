@@ -13,7 +13,7 @@
 
 get_test_rotation_info_cross_sec <- function(rotation, data, SC, wave,
                                              domain, resp, bgdata, ID_t) {
-  position <- create_facet(data, SC, wave)
+  position <- create_facet(data, SC, wave, domain)
   rotation <- adjust_rotation_indicator(rotation, position)
   if (rotation) {
     res <- adjust_data_with_rotation_info(data, resp, ID_t, bgdata, position)
@@ -28,7 +28,7 @@ get_test_rotation_info_cross_sec <- function(rotation, data, SC, wave,
 }
 
 
-create_facet <- function(data, SC, wave) {
+create_facet <- function(data, SC, wave, domain) {
   position <- data[, "ID_t", drop = FALSE]
   # construct facet to correct for rotation design
   if ((SC == "SC1" & wave %in% c("w1", "w7")) |
@@ -63,11 +63,11 @@ adjust_rotation_indicator <- function(rotation, position) {
 }
 
 adjust_data_with_rotation_info <- function(data, resp, ID_t, bgdata, position) {
-  data <- data[data[["ID_t"]] %in% position[["ID_t"]], ]
-  resp <- resp[resp[["ID_t"]] %in% position[["ID_t"]], ]
+  data <- data[data[["ID_t"]] %in% position[["ID_t"]], , drop = FALSE]
+  resp <- resp[resp[["ID_t"]] %in% position[["ID_t"]], , drop = FALSE]
   ID_t <- ID_t[ID_t[["ID_t"]] %in% position[["ID_t"]], , drop = FALSE]
   if (!is.null(bgdata)) {
-    bgdata <- bgdata[bgdata[["ID_t"]] %in% position[["ID_t"]], ]
+    bgdata <- bgdata[bgdata[["ID_t"]] %in% position[["ID_t"]], , drop = FALSE]
   }
   # # possible NAs in position variable treated as third group
   # position[is.na(position[["position"]]), "position"] <- 3
