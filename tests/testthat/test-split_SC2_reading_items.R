@@ -1,7 +1,7 @@
 context("split_SC2_reading_items")
 
 test_that("split_SC2_reading_items: longitudinal", {
-  
+
   testletSetting <- data.frame(ID_t = 1:100,
                                easy = c(rep(TRUE, 50), rep(FALSE, 50)))
   resp <- list(
@@ -29,7 +29,7 @@ test_that("split_SC2_reading_items: longitudinal", {
 
 
 test_that("split_SC2_reading_items: cross-sectional", {
-  
+
   testletSetting <- data.frame(ID_t = 1:100,
                                easy = c(rep(TRUE, 50), rep(FALSE, 50)))
   resp <- data.frame(ID_t = 1:100,
@@ -51,7 +51,7 @@ test_that("split_SC2_reading_items: cross-sectional", {
 
 
 test_that("split_SC2_reading_items: cross-sectional - wrong wave", {
-  
+
   testletSetting <- data.frame(ID_t = 1:100,
                                easy = c(rep(TRUE, 50), rep(FALSE, 50)))
   resp <- data.frame(ID_t = 1:100,
@@ -63,4 +63,3 @@ test_that("split_SC2_reading_items: cross-sectional - wrong wave", {
                                wave = "w1")
   expect_equal(test, result)
 })
-

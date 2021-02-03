@@ -47,6 +47,10 @@ get_indicators_for_half_scoring <- function(SC, domain, wave) {
         ind <- c("scg1652s_c", "scg1091s_c", "scg1011s_c")
       } else if (wave == "w5") {
         ind <- c("scg3181s_c", "scg3131s_c", "scg3641s_c", "scg3091s_c")
+      } else if (wave == "w9") {
+        ind <- c("scg9611s_c", "scg9042s_c", "scg9043s_c", "scg9012s_c",
+                 "scg9052s_c", "scg6142s_c", "scg6144s_c", #"scg9061s_c",
+                 "scg9651s_c", "scg9621s_c")
       }
     } else if (domain == "MA") {
       if (wave == "w2") {
@@ -58,6 +62,9 @@ get_indicators_for_half_scoring <- function(SC, domain, wave) {
         ind <- c("mag1d09s_sc2g2_c", "mag2g12s_c")
       } else if (wave == "w6") {
         ind <- c()
+      } else if (wave == "w9") {
+        # TODO: might be collapsed differently!!!
+        ind <- c()#c("mag7d06s_c", "mag7r02s_sc2g7_c")
       }
     }
   } else if (SC == "SC3") {

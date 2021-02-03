@@ -25,13 +25,17 @@
 estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, PCM, ID_t,
                                   waves, type, domain, SC, control, npv) {
   items <- lapply(xsi.fixed$long[[domain]][[SC]], rownames)
+  if (SC == "SC2" && domain == "SC") {
+    items <- items[-length(items)]
+    PCM <- PCM[-length(PCM)]
+  }
 
   res <- prepare_resp_q_longitudinal(PCM, resp, items, waves, SC, domain)
   resp <- res[["resp"]]
   Q <- res[["Q"]]
 
   times <- ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi)
-  pvs <- EAP.rel <- regr.coeff <- replicate(times, list(), simplify = FALSE)
+  pvs <- EAP.rel <- regr.coeff <- info_crit <- replicate(times, list(), simplify = FALSE)
   eap <- replicate(times, data.frame(ID_t = ID_t$ID_t), simplify = FALSE)
   for (i in 1:times) {
     res <- prepare_bgdata_frmY(imp, i, frmY)
@@ -67,20 +71,20 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, PCM, ID_t,
       )
       res <- post_process_long_tam_results(mod[[j]], npv, control, imp,
                                            bgdatacom, eap, i, j, EAP.rel,
-                                           regr.coeff, bgdata, waves)
+                                           regr.coeff, bgdata, waves,
+                                           info_crit)
       tmp_pvs[[j]] <- res[["tmp_pvs"]]
       eap <- res[["eap"]]
       regr.coeff <- res[["regr.coeff"]]
       EAP.rel <- res[["EAP.rel"]]
+      info_crit <- res[["info_crit"]]
     }
     pvs <- reformat_longitudinal_tmp_pvs(npv, pvs, i, tmp_pvs, bgdata)
     rm(tmp_pvs)
-    colnames(eap[[i]]) <-
-      c("ID_t", paste0(rep(c("eap", "se"), length(waves)), rep(waves, each = 2)))
-  }
+    }
   res <- list(
     eap = eap, pvs = pvs, EAP.rel = EAP.rel,
-    regr.coeff = regr.coeff, mod = mod
+    regr.coeff = regr.coeff, mod = mod, info_crit = info_crit
   )
   res
 }

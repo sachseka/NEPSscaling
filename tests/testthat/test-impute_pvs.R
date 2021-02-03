@@ -1,8 +1,7 @@
 context("impute_pvs")
 
-library(TAM)
-data(data.sim.rasch)
-mod <- tam.mml(data.sim.rasch, verbose = FALSE)
+data(data.sim.rasch, package = "TAM")
+mod <- TAM::tam.mml(data.sim.rasch, verbose = FALSE)
 
 npv <- 3
 control <- list(ML = list(
@@ -37,7 +36,5 @@ test_that("with and without background data", {
   expect_equal(names(test[[npv]][1]), "ID_t")
   expect_equal(names(test[[npv]][4]), "PV_w1")
 })
-
-detach("package:TAM")
 
 rm(bgdata, control, data.sim.rasch, mod, j, npv, waves)

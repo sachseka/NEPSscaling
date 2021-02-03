@@ -89,6 +89,10 @@
 #' by the average competence per school.}
 #' \item{eap}{A \code{data.frame} containing the \code{ID_t} and the ability
 #' EAP value for the respective individual}
+#' \item{treeplot}{A \code{list} containing the ggplot objects for the
+#' constructed CART trees per imputation}
+#' \item{variable_importance}{A \code{list} containing the variable importance
+#' statistics for the predictor variables per imputation}
 #' \item{EAP_rel}{The EAP reliability is returned for each sampled model}
 #' \item{wle}{A \code{data.frame} containing the \code{ID_t} and the ability
 #' WLE value for the respective individual}
@@ -164,10 +168,9 @@
 #' The function will only work with NEPS data. To access NEPS data see
 #' https://www.neps-data.de/en-us/datacenter/dataaccess.aspx.
 #'
-#' @importFrom stats as.formula
+#' @importFrom stats as.formula na.omit AIC BIC predict runif
 #' @importFrom utils flush.console
 #' @importFrom rlang .data
-#' @importFrom stats na.omit
 #'
 #' @export
 
@@ -266,6 +269,13 @@ plausible_values <- function(SC,
       "set longitudinal = FALSE."
     ), call. = FALSE)
   }
+  if (longitudinal && SC == "SC2" && domain == "SC" && wave == "w9") {
+    stop(paste0("Please note that Starting Cohort 2's science tests can only ",
+                "be linked longitudinally up to wave 5. Wave 9 test data does ",
+                "not share any common test information and can, thus, not be ",
+                "connected to previous assessment waves. It can only be ",
+                "analysed cross-sectionally."), call. = FALSE)
+  }
   if (min_valid < 0) {
     stop("min_valid must be greater than or equal to 0.", call. = FALSE)
   }
@@ -297,22 +307,7 @@ plausible_values <- function(SC,
 
   # school context only for SC2-4 while in school
   if (adjust_school_context) {
-    if (longitudinal) {
-      # some starting cohorts are never assessed in school context, thus, they
-      # can be excluded as a whole in the longitudinal case
-      if (SC %in% c("SC1", "SC5", "SC6")) {
-        adjust_school_context <- FALSE
-      }
-    } else {
-      # some starting cohorts transition into or out of school, thus, specific
-      # waves have to be checked in the cross-sectional case
-      if (!(SC == "SC2" & wave %in% c("w3", "w4", "w5", "w6", "w9")) &&
-            !(SC == "SC3" & wave %in% c("w1", "w2", "w3", "w5", "w6", "w7",
-                                        "w8", "w9")) &&
-            !(SC == "SC4" & wave %in% c("w1", "w2", "w3", "w5", "w7"))) {
-        adjust_school_context <- FALSE
-      }
-    }
+    adjust_school_context <- was_assessed_in_school(longitudinal, SC, wave)
   }
 
   # Begin data pre-processing -------------------------------------------------
@@ -327,8 +322,8 @@ plausible_values <- function(SC,
   data <- read_in_competence_data(path, SC, domain)
 
   # number of not-reached items as processing time proxy
-  res <- not_reached_as_proxy(
-    include_nr, longitudinal, data, SC, domain, wave, waves)
+  res <- not_reached_as_proxy(include_nr, longitudinal, data, SC, domain, wave,
+                              waves)
   items_not_reached <- res[["nr"]]
   data <- res[["data"]]
   include_nr <- res[["include_nr"]]
@@ -341,11 +336,7 @@ plausible_values <- function(SC,
   resp <- res[["resp"]]
 
   # check for Partial Credit Items
-  PCM <- (if (longitudinal) {
-    lapply(resp, function(x) {max(apply(x[, -1], 2, max, na.rm = TRUE)) > 1})
-  } else {
-    max(apply(resp[, -1], 2, max, na.rm = TRUE)) > 1
-  })
+  PCM <- is_PCM(longitudinal, resp)
 
   # process background data ---------------------------------------------------
 
@@ -402,13 +393,14 @@ plausible_values <- function(SC,
   imp <- res[["imp"]]
   frmY <- res[["frmY"]]
   bgdata <- res[["bgdata"]]
-  loggedEvents <- res[["loggedEvents"]]
+  variable_importance <- res[["variable_importance"]]
+  treeplot <- res[["treeplot"]]
 
   # begin estimation of plausible values --------------------------------------
 
   t3 <- Sys.time()
   if (verbose) {
-    cat("Begin estimation... ", paste(t3), "\nThis might take some time.\n")
+    cat("\nBegin estimation... ", paste(t3), "\nThis might take some time.\n")
     flush.console()
   }
 
@@ -449,6 +441,7 @@ plausible_values <- function(SC,
   EAP.rel <- res[["EAP.rel"]]
   regr.coeff <- res[["regr.coeff"]]
   mod <- res[["mod"]]
+  info_crit <- res[["info_crit"]]
 
   # Begin post-processing of estimated data -----------------------------------
 
@@ -473,9 +466,13 @@ plausible_values <- function(SC,
 
   # keep only those regr. coefficients / EAP reliabilities of kept imputations
   res <- discard_not_used_imputations(datalist, regr.coeff, EAP.rel,
-                                      longitudinal)
+                                      longitudinal, info_crit, treeplot,
+                                      variable_importance)
   regr.coeff <- res[["regr.coeff"]]
   EAP.rel <- res[["EAP.rel"]]
+  info_crit <- res[["info_crit"]]
+  treeplot <- res[["treeplot"]]
+  variable_importance <- res[["variable_importance"]]
 
   # linking of longitudinal plausible values ----------------------------------
 
@@ -492,8 +489,9 @@ plausible_values <- function(SC,
     if (SC == "SC4" & domain %in% c("MA", "RE") ||
         (SC == "SC3" & domain == "RE") ||
         (SC == "SC2" & domain %in% c("VO", "MA"))) {
-      res <- correct_for_changed_test_rotation(SC, domain, position, wle, eap,
-                                               pv)
+      res <- correct_for_changed_test_rotation(SC, domain, position,
+                                               wle = if (control[["WLE"]]) {wle} else {NULL},
+                                               eap, pv)
       pv <- res[["pv"]]
       wle <- res[["wle"]]
       eap <- res[["eap"]]
@@ -507,20 +505,6 @@ plausible_values <- function(SC,
     wle <- res[["wle"]]
     eap <- res[["eap"]]
   }
-
-## correct deviations in SC3/SC4
-#if ((longitudinal & SC == "SC4" & domain == "EF") ||
-#    (longitudinal & SC == "SC3" & domain == "EF") ||
-#    (!longitudinal & SC == "SC3" & domain == "EF" & wave == "w9") ||
-#    (longitudinal & SC == "SC3" & domain == "ORB") ||
-#    (!longitudinal & SC == "SC3" & domain == "ORB" & wave == "w3")) {
-#  res <- correct_mean_deviations(pv,
-#                                 wle = if (control[["WLE"]]) {wle} else {NULL},
-#                                 eap, SC, domain, type)
-#  pv <- res[["pv"]]
-#  wle <- res[["wle"]]
-#  eap <- res[["eap"]]
-#}
 
   # calculate posterior mean of estimated eaps/plausible values
   MEAN <- calculate_posterior_means(eap,
@@ -551,6 +535,7 @@ plausible_values <- function(SC,
   if (rotation) {
     res[["position"]] <- data.frame(ID_t, position)
   }
+  res[["information_criteria"]] <- info_crit
   res[["posterior_means"]] <- MEAN
   res[["pv"]] <- pv
   if (control[["EAP"]]) {
@@ -567,8 +552,11 @@ plausible_values <- function(SC,
   } else {
     mod[[1]][["xsi"]]
   }
-  if (!is.null(loggedEvents)) {
-    res[["loggedEvents"]] <- loggedEvents
+  if (!is.null(treeplot)) {
+    res[["treeplot"]] <- treeplot
+  }
+  if (!is.null(variable_importance)) {
+    res[["variable_importance"]] <- variable_importance
   }
   res[["comp_time"]] <- list(
     initial_time = t0,

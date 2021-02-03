@@ -88,7 +88,17 @@ items <- list(
      "mag4d031_c", #"mag5q140_sc2g4_c",
      "mag4v111_c", "mag4r041_c", "mag4r042_c",
      "mag4q051_c", "mag4q091_c", "mag4q092_c", "mag4d14s_c", "mag5v071_sc2g4_c",
-     "mag5r191_sc2g4_c", "mag4d081_c")
+     "mag5r191_sc2g4_c", "mag4d081_c"),
+w9 = c("mag7q011_c", "mag7d061_sc2g7_c", "mag7r071_c",
+       "mag5v271_sc2g7_c", "mag4q011_sc2g7_c", "mag7r081_sc2g7_c",
+       "mag7v031_sc2g7_c", "mag7d06s_c", "mag5q301_sc2g7_c",
+       "mag7v021_c", "mag7r02s_sc2g7_c", "mag4q060_sc2g7_c",
+       "mag4d031_sc2g7_c", "mag9q181_sc2g7_c", "mag4v111_sc2g7_c",
+       "mag7q041_sc2g7_c", "mag7d042_sc2g7_c", "mag5r251_sc2g7_c",
+       "mag7d031_c", "mag5v321_sc2g7_c", "mag5r191_sc2g7_c",
+       "mag7q041_c", "mag9v091_sc2g7_c", "mag9d151_sc2g7_c",
+       "mag9v121_sc2g7_c", "mag7r091_sc2g7_c", "mag7q051_c",
+       "mag7v071_sc2g7_c")
 )
 x2w2 <- cbind(item = 1:length(items$w2),
               xsi = c(-2.688, -0.269, -0.031, -0.209, 1.624, 1.978,
@@ -128,7 +138,16 @@ x2w6 <- cbind(item = 1:length(items$w6),
 rownames(x2w6) <- items$w6
 colnames(x2w6)[1] <- ""
 x2w6[, 2][rownames(x2w6) %in% pcitems("SC2", "MA", "w6")] <-
-    x2w6[, 2][rownames(x2w6) %in% pcitems("SC2", "MA", "w6")]/2
+  x2w6[, 2][rownames(x2w6) %in% pcitems("SC2", "MA", "w6")]/2
+# x2w9 <- cbind(item = 1:length(items$w9),
+#               xsi = c()) # TODO
+# rownames(x2w9) <- items$w9
+# colnames(x2w9)[1] <- ""
+# x2w9[, 2][rownames(x2w9) %in% pcitems("SC2", "MA", "w9")] <-
+#   x2w9[, 2][rownames(x2w9) %in% pcitems("SC2", "MA", "w9")]/2
+load("data-raw/item_difficulty_SC2_MA_w9.RData")
+x2w9 <- item_difficulty_SC2_MA_w9
+rm(item_difficulty_SC2_MA_w9)
 
 
 
@@ -314,7 +333,8 @@ xsi.fixed$cross[["MA"]] <-
       w2 = x2w2,
       w3 = x2w3,
       w4 = x2w4,
-      w6 = x2w6
+      w6 = x2w6,
+      w9 = x2w9
     ),
     SC3 = list(
       w1 = x3w1,
@@ -346,7 +366,8 @@ xsi.fixed$long[["MA"]] <-
       w2 = x2w2,
       w3 = x2w3,
       w4 = x2w4,
-      w6 = x2w6
+      w6 = x2w6,
+      w9 = x2w9
     ),
     SC3 = list(
       w1 = x3w1,
@@ -1000,7 +1021,14 @@ w5 = c("scg30109_c","scg33510_c","scg3181s_c","scg37110_c",
 "scg32220_c","scg33710_c","scg36210_c","scg36920_c",
 "scg32620_c","scg31510_c","scg30310_c","scg3641s_c",
 "scg30520_c","scg37410_c","scg33310_c","scg3091s_c",
-"scg33610_c","scg32910_c")
+"scg33610_c","scg32910_c"),
+w9 = c("scg9611s_c", "scg96120_c", "scg91030_c", "scg91040_c",
+       "scg91050_c", "scg96420_c", "scg9042s_c", "scg9043s_c",
+       "scg90110_c", "scg9012s_c", "scg90510_c", "scg9052s_c",
+       "scg91110_c", "scg91120_c", "scg97410_c", "scg6142s_c",
+       "scg6144s_c", "scg90320_c", "scg90330_c", "scg9061s_c",
+       "scg90630_c", "scg9651s_c", "scg96530_c", "scg90930_c",
+       "scg9621s_c", "scg96220_c")
 )
 x2w1 <- cbind(item = 1:length(items$w1),
               xsi = c(-1.481, -0.515, -1.749, -0.568, -1.337, 0.026,
@@ -1031,6 +1059,15 @@ rownames(x2w5) <- items$w5
 colnames(x2w5)[1] <- ""
 x2w5[, 2][rownames(x2w5) %in% pcitems("SC2", "SC", "w5")] <-
   x2w5[, 2][rownames(x2w5) %in% pcitems("SC2", "SC", "w5")]/2
+x2w9 <- cbind(item = 1:length(items$w9),
+              xsi = c(-0.811, -1.047, 0.097, -1.328, -0.237, 0.103, -1.270,
+                      -0.193, -0.473, -1.570, -0.228, -0.956, 0.173, 1.250,
+                      2.116, -2.503, -1.723, -0.431, 0.611, 0.610, 0.097,
+                      -1.016, -0.086, -0.500, -0.806, -0.129))
+rownames(x2w9) <- items$w9
+colnames(x2w9)[1] <- ""
+x2w9[, 2][rownames(x2w9) %in% pcitems("SC2", "SC", "w9")] <-
+  x2w9[, 2][rownames(x2w9) %in% pcitems("SC2", "SC", "w9")]/2
 
 
 # SC3
@@ -1185,7 +1222,8 @@ xsi.fixed$cross[["SC"]] <-
     SC2 = list(
       w1 = x2w1,
       w3 = x2w3,
-      w5 = x2w5
+      w5 = x2w5,
+      w9 = x2w9
     ),
     SC3 = list(
       w2 = x3w2,
@@ -1208,7 +1246,8 @@ xsi.fixed$long[["SC"]] <-
     SC2 = list(
       w1 = x2w1,
       w3 = x2w3,
-      w5 = x2w5
+      w5 = x2w5,
+      w9 = x2w9 # note: this wave cannot be linked to previous waves because of a lack of common test items!
     ),
     SC3 = list(
       w2 = x3w2,

@@ -411,7 +411,7 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
         resp[["icg9140s_c"]][resp[["icg9140s_c"]] == 3] <- 2
         resp[["icg9140s_c"]][resp[["icg9140s_c"]] == 4] <- 3
       } else if (wave == "w7") {
-        # Already collapsed in SUF! TODO
+        # Already collapsed in SUF!
         # resp[["icg12013s_c"]][resp[["icg12013s_c"]] %in% c(1, 2)] <- 0
         # resp[["icg12013s_c"]][resp[["icg12013s_c"]] == 3] <- 1
 
@@ -484,7 +484,7 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
         # resp[["icg12046s_c"]][resp[["icg12046s_c"]] == 6] <- 5
       }
     } else if (domain == "SC") {
-      if (wave == "w1") { #TODO
+      if (wave == "w1") {
         resp[["scg9012s_c"]][resp[["scg9012s_c"]] == 1] <- 0
         resp[["scg9012s_c"]][resp[["scg9012s_c"]] == 2] <- 1
         resp[["scg9012s_c"]][resp[["scg9012s_c"]] == 3] <- 2
@@ -501,7 +501,7 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
         resp[["scg9042s_c"]][resp[["scg9042s_c"]] == 4] <- 3
       } else if (wave == "w5") {
         # collapsed in SUF!
-        # TODO: CMC-items 14, 16, 17, 18, 19 and 21 were reduced to a 0 and 1
+        # CMC-items 14, 16, 17, 18, 19 and 21 were reduced to a 0 and 1
         # scoring since they showed a decrease in one or two of their step
         # parameters instead of an increase.
         # https://www.neps-data.de/Portals/0/Survey%20Papers/SP_VI.pdf
@@ -1158,6 +1158,9 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
         # data already collapsed in SUF (according to TR)
       } else if (wave == "w5") {
         # data already collapsed in SUF (according to TR)
+      } else if (wave == "w9") {
+        # data already collapsed in SUF
+        # (cf. TR; although some categories are still <200)
       }
     } else if (domain == "MA") {
       # if (wave == "w2") {
@@ -1196,6 +1199,13 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
         resp[["mag4d14s_c"]][resp[["mag4d14s_c"]] %in% c(2, 3)] <- 0
         resp[["mag4d14s_c"]][resp[["mag4d14s_c"]] == 4] <- 0
         resp[["mag4d14s_c"]][resp[["mag4d14s_c"]] == 5] <- 1
+      } else if (wave == "w9") {
+        # TODO: without TR!!!
+        resp[["mag7d06s_c"]][resp[["mag7d06s_c"]] %in% c(1, 2, 3)] <- 0
+        resp[["mag7d06s_c"]][resp[["mag7d06s_c"]] %in% c(4, 5)] <- 1
+
+        resp[["mag7r02s_sc2g7_c"]][resp[["mag7r02s_sc2g7_c"]] %in% c(1, 2)] <- 0
+        resp[["mag7r02s_sc2g7_c"]][resp[["mag7r02s_sc2g7_c"]] == 3] <- 1
       }
     }
   } else if (SC == "SC1") {

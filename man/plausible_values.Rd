@@ -126,6 +126,10 @@ taker as a proxy for response times. Furthermore, if
 by the average competence per school.}
 \item{eap}{A \code{data.frame} containing the \code{ID_t} and the ability
 EAP value for the respective individual}
+\item{treeplot}{A \code{list} containing the ggplot objects for the
+constructed CART trees per imputation}
+\item{variable_importance}{A \code{list} containing the variable importance
+statistics for the predictor variables per imputation}
 \item{EAP_rel}{The EAP reliability is returned for each sampled model}
 \item{wle}{A \code{data.frame} containing the \code{ID_t} and the ability
 WLE value for the respective individual}

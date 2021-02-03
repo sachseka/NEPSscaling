@@ -17,10 +17,7 @@ select_test_responses_and_test_takers <- function(longitudinal, SC, domain,
     } else {
       resp <- list()
       for (i in seq(length(item_labels[[SC]][[domain]]))) {
-        resp[[i]] <-
-          data[, names(data) %in% c("ID_t", item_labels[[SC]][[domain]][[i]])]
-        resp[[i]] <- resp[[i]][rowSums(!is.na(resp[[i]][, -1])) >= min_valid, ]
-        resp[[i]] <- resp[[i]][order(resp[[i]][["ID_t"]]), ]
+        resp[[i]] <- select_data(data, SC, domain, wave = i, min_valid)
         if (SC %in% c("SC3", "SC4") & domain == "EF") {
           resp[[i]] <- impute_english_competence_data(resp[[i]], SC, wave = i)
         }
@@ -36,31 +33,47 @@ select_test_responses_and_test_takers <- function(longitudinal, SC, domain,
     # estimating simultaneously might cause problems because of different
     # information available for background model (large quantities of missing data)
     if (SC == "SC6" & domain == "RE") {
-      if (wave == "w3") {
-        data <- data[data[["wave_w3"]] == 1, ]
-      } else if (wave == "w5") {
-        data <- data[data[["wave_w3"]] == 0 & data[["wave_w5"]] == 1, ]
-      }
+      data <- select_correct_cross_sc6_reading_subsample(data, wave)
     }
-    resp <- data[, c("ID_t", item_labels[[SC]][[domain]][[wave]])]
-    resp <- resp[rowSums(!is.na(resp[, -1])) >= min_valid, ]
-    resp <- resp[order(resp[["ID_t"]]), ]
+    resp <- select_data(data, SC, domain, wave, min_valid)
     data <- data[data[["ID_t"]] %in% resp[["ID_t"]], ]
     data <- data[order(data[["ID_t"]]), ]
     if (SC == "SC4" & domain == "ST") {
-      names(resp)[which(names(resp) == "stg12cmt06_c")] <- "stg12mt06_c"
-      names(resp)[which(names(resp) == "stg12cpd03_c")] <- "stg12pd03_c"
-      items <-
-        c("stg12nhs_c", "stg12egs_c", "stg12mts_c", "stg12cws_c", "stg12pds_c")
-      for (i in items) {
-        resp[[i]] <- rowSums(resp[, grep(substr(i, 1, 7), names(resp))],
-                             na.rm = TRUE)
-      }
-      resp <- resp[, c("ID_t", items)]
+      resp <- aggregate_scientific_thinking_items(resp)
     }
     if (SC %in% c("SC3", "SC4") & domain == "EF") {
       resp <- impute_english_competence_data(resp, SC, wave)
     }
   }
   list(resp = resp, data = data)
+}
+
+
+select_data <- function(data, SC, domain, wave, min_valid) {
+  resp <- data[, c("ID_t", item_labels[[SC]][[domain]][[wave]])]
+  resp <- resp[rowSums(!is.na(resp[, -1])) >= min_valid, ]
+  resp <- resp[order(resp[["ID_t"]]), ]
+  resp
+}
+
+select_correct_cross_sc6_reading_subsample <- function(data, wave) {
+  if (wave == "w3") {
+    data <- data[data[["wave_w3"]] == 1, ]
+  } else if (wave == "w5") {
+    data <- data[data[["wave_w3"]] == 0 & data[["wave_w5"]] == 1, ]
+  }
+  data
+}
+
+aggregate_scientific_thinking_items <- function(resp) {
+  names(resp)[which(names(resp) == "stg12cmt06_c")] <- "stg12mt06_c"
+  names(resp)[which(names(resp) == "stg12cpd03_c")] <- "stg12pd03_c"
+  items <-
+    c("stg12nhs_c", "stg12egs_c", "stg12mts_c", "stg12cws_c", "stg12pds_c")
+  for (i in items) {
+    resp[[i]] <- rowSums(resp[, grep(substr(i, 1, 7), names(resp))],
+                         na.rm = TRUE)
+  }
+  resp <- resp[, c("ID_t", items)]
+  resp
 }

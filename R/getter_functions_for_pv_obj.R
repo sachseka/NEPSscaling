@@ -327,8 +327,22 @@ get_path <- function(pv_obj) {
 #'
 #' @export
 get_n_testtakers <- function(pv_obj) {
-    if (class(pv_obj) != "pv_obj") {
-        stop("pv_obj must be of class 'pv_obj'.")
-    }
-    pv_obj[["n_testtakers"]]
+  if (class(pv_obj) != "pv_obj") {
+    stop("pv_obj must be of class 'pv_obj'.")
+  }
+  pv_obj[["n_testtakers"]]
+}
+
+
+#' Get information criteria
+#'
+#' @param pv_obj return object of function \code{NEPScaling::plausible_values()}
+#' @return a list of matrices or a matrix of AIC and BIC
+#'
+#' @export
+get_info_criteria <- function(pv_obj) {
+  if (class(pv_obj) != "pv_obj") {
+    stop("pv_obj must be of class 'pv_obj'.")
+  }
+  pv_obj[["information_criteria"]]
 }
