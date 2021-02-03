@@ -24,12 +24,12 @@ seqcart <- function(
   i <- 1
   for (k in misord) {
     yobs <- dataimp[INDOBS[, k], k]
-    Xobs <- dataimp[INDOBS[, k], !(names(dataimp) %in% k), drop = FALSE]
-    Xmis <- dataimp[INDMIS[, k], !(names(dataimp) %in% k), drop = FALSE]
+    Xobs <- dataimp[INDOBS[, k], !(names(dataimp) %in% c("ID_t", k)), drop = FALSE]
+    Xmis <- dataimp[INDMIS[, k], !(names(dataimp) %in% c("ID_t", k)), drop = FALSE]
     rpartmethod <- ifelse(is.factor(yobs), "class", "anova")
     tree <- rpart::rpart(yobs ~., data = cbind(yobs, Xobs), method = rpartmethod,
       control = rpart::rpart.control(minbucket = control1, cp = control2))
-    treeplot[[i]] <- create_tree_plot(tree, k)
+    treeplot[[i]] <- create_tree_plot(tree, k, sapply(Xobs, is.factor))
     variable_importance[[i]] <- tree$variable.importance
     leafdonor <- floor(as.numeric(row.names(tree$frame[tree$where, ])))
     tree$frame$yval <- as.numeric(row.names(tree$frame))

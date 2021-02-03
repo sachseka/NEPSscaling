@@ -400,7 +400,7 @@ plausible_values <- function(SC,
 
   t3 <- Sys.time()
   if (verbose) {
-    cat("Begin estimation... ", paste(t3), "\nThis might take some time.\n")
+    cat("\nBegin estimation... ", paste(t3), "\nThis might take some time.\n")
     flush.console()
   }
 
