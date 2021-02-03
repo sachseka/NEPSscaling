@@ -5,7 +5,7 @@
 #' @return ggplot2 plot object
 #' @noRd
 
-create_tree_plot <- function(tree, variable, is_factor) {
+create_tree_plot <- function(tree, variable) {#, is_factor) {
   # rn <- rownames(tree$splits)
   # tmp <- as.data.frame(tree$splits)
   # tmp$var <- rn
@@ -57,5 +57,5 @@ create_tree_plot <- function(tree, variable, is_factor) {
   #
   # p
 
-  paste0(capture.output(print(tree)), collapse = "\n")
+  paste(variable, paste0(capture.output(print(tree)), collapse = "\n"))
 }

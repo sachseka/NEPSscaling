@@ -169,7 +169,7 @@
 #' https://www.neps-data.de/en-us/datacenter/dataaccess.aspx.
 #'
 #' @importFrom stats as.formula na.omit AIC BIC predict runif
-#' @importFrom utils flush.console
+#' @importFrom utils flush.console capture.output
 #' @importFrom rlang .data
 #'
 #' @export
