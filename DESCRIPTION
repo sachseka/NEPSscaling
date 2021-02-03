@@ -15,7 +15,6 @@ Imports:
     magrittr,
     tidyr,
     rlang,
-    mice,
     purrr,
     sjlabelled,
     stringr,
