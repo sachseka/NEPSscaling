@@ -244,10 +244,6 @@ plausible_values <- function(SC,
   if (!grepl("/$", path)) {
     path <- paste0(path, "/")
   }
-  if (SC == "SC2" & domain == "VO") {
-    stop("Vocabulary is not yet available for starting cohort 2.",
-         call. = FALSE)
-  }
   if (is.null(item_labels[[SC]][[domain]][[wave]])) {
     stop(paste0(
       "There were no competence tests for ", SC, " ", domain, " ",

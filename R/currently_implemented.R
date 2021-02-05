@@ -13,7 +13,7 @@ cross-sectional and longitudinal research
 
 == SC1 ==
 Math: waves 5 and 7
-Science: wave 6
+Science: waves 6 and 8
 Cognitive Development: wave 1
 
 == SC2 ==
@@ -25,6 +25,7 @@ Native Turkish: wave 4
 Reading: waves 6 and 9
 ICT: wave 5
 Orthography: wave 6
+Vocabulary: waves 1, 3 and 5
 
 == SC3 ==
 Reading: waves 1, 3, 6 and 9
