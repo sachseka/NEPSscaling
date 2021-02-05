@@ -31,7 +31,7 @@ get_test_rotation_info_cross_sec <- function(rotation, data, SC, wave,
 create_facet <- function(data, SC, wave, domain) {
   position <- data[, "ID_t", drop = FALSE]
   # construct facet to correct for rotation design
-  if ((SC == "SC1" & wave %in% c("w1", "w7")) |
+  if ((SC == "SC1" & wave %in% c("w1", "w7", "w8")) |
       (SC == "SC4" & wave %in% c("w3")) |
       (SC == "SC5" & wave %in% c("w7")) |
       (SC == "SC2" & wave %in% c("w6"))) {

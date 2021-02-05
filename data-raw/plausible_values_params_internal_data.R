@@ -38,8 +38,16 @@ item_labels <-
         "sck16020_sc1n6_c", "sck10510_sc1n6_c", "sck10530_sc1n6_c",
         "sck1162s_sc1n6_c", "sck10710_sc1n6_c", "sck10720_sc1n6_c",
         "scn60100_c", "sck11330_sc1n6_c", "sck10910_sc1n6_c",
-        "scn61800_c", "sck16210_sc1n6_c")#,
-#        w8 = c()
+        "scn61800_c", "sck16210_sc1n6_c"),
+        w8 = c(
+          "scg10820_sc1n8_c", "scg10840_sc1n8_c", "scg11510_sc1n8_c",
+          "scg16510_sc1n8_c", "scg1652s_sc1n8_c", "scg10920_sc1n8_c",
+          "scg1011s_sc1n8_c", "scg11110_sc1n8_c", "scg11130_sc1n8_c",
+          "scg16530_sc1n8_c", "scg16020_sc1n8_c", "scg16030_sc1n8_c",
+          "scg11610_sc1n8_c", "scg10310_sc1n8_c", "scg10520_sc1n8_c",
+          "scg16310_sc1n8_c", "scg16220_sc1n8_c", "scg33710_sc1n8_c",
+          "scg31010_sc1n8_c", "scg30109_sc1n8_c"
+        )
       )
     ),
     SC2 = list(
@@ -1179,8 +1187,8 @@ testlet_position <- list(
     ),
     SC = list(
       w6 = matrix(c(600,
-                    600), 1, 2)#,
-      # w8 = matrix(c(NA, NA), 1, 2)
+                    600), 1, 2),
+      w8 = matrix(c(NA, NA), 1, 2)
     )
   ),
   SC2 = list(

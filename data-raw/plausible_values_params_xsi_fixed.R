@@ -988,7 +988,15 @@ items <- list(
         "sck1162s_sc1n6_c", "sck10710_sc1n6_c", "sck10720_sc1n6_c",
         "scn60100_c", "sck11330_sc1n6_c", "sck10910_sc1n6_c",
         "scn61800_c", "sck16210_sc1n6_c"),
-        w8 = c()
+        w8 = c(
+          "scg10820_sc1n8_c", "scg10840_sc1n8_c", "scg11510_sc1n8_c",
+          "scg16510_sc1n8_c", "scg1652s_sc1n8_c", "scg10920_sc1n8_c",
+          "scg1011s_sc1n8_c", "scg11110_sc1n8_c", "scg11130_sc1n8_c",
+          "scg16530_sc1n8_c", "scg16020_sc1n8_c", "scg16030_sc1n8_c",
+          "scg11610_sc1n8_c", "scg10310_sc1n8_c", "scg10520_sc1n8_c",
+          "scg16310_sc1n8_c", "scg16220_sc1n8_c", "scg33710_sc1n8_c",
+          "scg31010_sc1n8_c", "scg30109_sc1n8_c"
+        )
       )
 x1w6 <- cbind(item = 1:length(items$w6),
               xsi = c(-1.852, -0.695, -2.219, 0.215, -0.433, -1.558,
@@ -999,6 +1007,17 @@ rownames(x1w6) <- items$w6
 colnames(x1w6)[1] <- ""
 x1w6[, 2][rownames(x1w6) %in% pcitems("SC1", "SC", "w6")] <-
   x1w6[, 2][rownames(x1w6) %in% pcitems("SC1", "SC", "w6")]/2
+x1w8 <- cbind(item = 1:length(items$w8),
+              xsi = c(
+                      -1.509, -0.002, 0.956, -1.069, -0.831, -2.294,
+                      1.590, -1.638, -1.433, 1.618, 2.038, -1.186,
+                      0.018, 0.030, -1.084, -0.720, -0.177, 0.578, 0.371,
+                      -0.759
+                      ))
+rownames(x1w8) <- items$w8
+colnames(x1w8)[1] <- ""
+x1w8[, 2][rownames(x1w8) %in% pcitems("SC1", "SC", "w8")] <-
+  x1w8[, 2][rownames(x1w8) %in% pcitems("SC1", "SC", "w8")]/2
 
 # SC2
 items <- list(
@@ -1217,7 +1236,8 @@ colnames(x6w5)[1] <- ""
 xsi.fixed$cross[["SC"]] <-
   list(
     SC1 = list(
-      w6 = x1w6
+      w6 = x1w6,
+      w8 = x1w8
     ),
     SC2 = list(
       w1 = x2w1,
@@ -1241,7 +1261,8 @@ xsi.fixed$cross[["SC"]] <-
 xsi.fixed$long[["SC"]] <-
   list(
     SC1 = list(
-      w6 = x1w6
+      w6 = x1w6,
+      w8 = x1w8
     ),
     SC2 = list(
       w1 = x2w1,
