@@ -13,7 +13,7 @@ cross-sectional and longitudinal research
 
 == SC1 ==
 Math: waves 5 and 7
-Science: wave 6
+Science: waves 6 and 8
 Cognitive Development: wave 1
 
 == SC2 ==

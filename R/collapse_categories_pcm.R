@@ -1210,16 +1210,27 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
     }
   } else if (SC == "SC1") {
     if (domain == "MA") {
-	  if (wave == "w5") {
-	    # 1: no need
-		# 5: 1 --> 0, 2 --> 1, 3 --> 2
-		resp[["man5r14s_c"]][resp[["man5r14s_c"]] == 1] <- 0
-		resp[["man5r14s_c"]][resp[["man5r14s_c"]] == 2] <- 1
-		resp[["man5r14s_c"]][resp[["man5r14s_c"]] == 3] <- 2
-	  }
-	  # wave 7: no polytomous items
-	}
-	# SC, VO, CD: no need
+      if (wave == "w5") {
+        # 1: no need
+        # 5: 1 --> 0, 2 --> 1, 3 --> 2
+        resp[["man5r14s_c"]][resp[["man5r14s_c"]] == 1] <- 0
+        resp[["man5r14s_c"]][resp[["man5r14s_c"]] == 2] <- 1
+        resp[["man5r14s_c"]][resp[["man5r14s_c"]] == 3] <- 2
+      }
+      # wave 7: no polytomous items
+    }
+    if (domain == "SC") {
+      if (wave == "w8") { # collapsed in SUF
+        #resp[["scg1652s_sc1n8_c"]][resp[["scg1652s_sc1n8_c"]] %in% c(1, 2)] <- 0
+        #resp[["scg1652s_sc1n8_c"]][resp[["scg1652s_sc1n8_c"]] == 3] <- 1
+        #resp[["scg1652s_sc1n8_c"]][resp[["scg1652s_sc1n8_c"]] == 4] <- 2
+
+        #resp[["scg1011s_sc1n8_c"]][resp[["scg1011s_sc1n8_c"]] %in% c(1, 2)] <- 0
+        #resp[["scg1011s_sc1n8_c"]][resp[["scg1011s_sc1n8_c"]] == 3] <- 1
+        #resp[["scg1011s_sc1n8_c"]][resp[["scg1011s_sc1n8_c"]] == 4] <- 2
+      }
+    }
+    # SC, VO, CD: no need
   }
   resp
 }

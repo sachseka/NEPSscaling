@@ -14,7 +14,7 @@ get_indicators_for_half_scoring <- function(SC, domain, wave) {
       if (wave == "w6") {
         ind <- c("scn6130s_c", "sck1102s_sc1n6_c", "sck1162s_sc1n6_c")
       } else if (wave == "w8") {
-        ind <- c()
+        ind <- c("scg1652s_sc1n8_c", "scg1011s_sc1n8_c")
       }
     } else if (domain == "MA") {
       if (wave == "w5") {
