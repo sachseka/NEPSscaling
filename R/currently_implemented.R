@@ -25,7 +25,7 @@ Native Turkish: wave 4
 Reading: waves 6 and 9
 ICT: wave 5
 Orthography: wave 6
-Vocabulary: waves 1, 3, and 5
+Vocabulary: waves 1, 3 and 5
 
 == SC3 ==
 Reading: waves 1, 3, 6 and 9
