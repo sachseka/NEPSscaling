@@ -180,7 +180,7 @@ items <- list(
          "mag12v122_sc3g12_c", "mag12r011_sc3g12_c", "mag12v061_sc3g12_c",
          "mag12r091_sc3g12_c", "mag9r051_sc3g12_c", "mag12q081_sc3g12_c",
          "mag12d021_sc3g12_c", "mag12q051_sc3g12_c", "mag9d201_sc3g12_c",
-         "mag9v121_sc3g12_c", "mas1q021s_sc3g12_c", "mas1d081_sc3g12_c",
+         "mag9v121_sc3g12_c", "mas1q02s_sc3g12_c", "mas1d081_sc3g12_c",
          "maa3d112_sc3g12_c", "mag9r061_sc3g12_c", "maa3r011_sc3g12_c",
          "mag12d071_sc3g12_c", "mag12r041_sc3g12_c", "mag12v131_sc3g12_c",
          "mag12d031_sc3g12_c", "maa3d131_sc3g12_c", "maa3d132_sc3g12_c",
