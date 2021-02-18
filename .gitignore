@@ -5,3 +5,4 @@ NEPScaling.Rproj
 *.Rproj
 data-raw/neps_raw/
 tests/test_strategy.txt
+tests/testthat/testthat-problems.rds

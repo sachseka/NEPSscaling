@@ -1,33 +1,74 @@
-#
-# This is the user-interface definition of a Shiny web application. You can
-# run the application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
 library(shiny)
 
-# Define UI for application that draws a histogram
-shinyUI(fluidPage(
+shinyUI(
+  navbarPage(
+    title = "NEPSscaling ",
+    inverse = TRUE,
 
-    # Application title
-    titlePanel("NEPSscaling"),
+    # print output to shiny: https://stackoverflow.com/questions/30474538/possible-to-show-console-messages-written-with-message-in-a-shiny-ui/30490698#3049069844446666666
+    shinyjs::useShinyjs(),
 
-    # Sidebar with a slider input for number of bins
-    sidebarLayout(
+    tabPanel(
+      icon("laptop"),
+      sidebarLayout(
         sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
+          "Load Data", fileInput("bgdata_file", h3("File Input")),
+          "Load State",
+          fileInput("state_file", h3("File Input"))
         ),
-
-        # Show a plot of the generated distribution
         mainPanel(
-            plotOutput("distPlot")
+          tabsetPanel(
+            tabPanel("Manage", plotOutput("plot")),
+            tabPanel("Estimate Plausible Values", verbatimTextOutput("summary")),
+            tabPanel("Visualize Estimates", tableOutput("table")),
+            tabPanel("Explore Estimates", tableOutput("table")),
+            tabPanel("Summary Statistics", tableOutput("table"))
+          )
         )
+      )
+    ),
+
+    navbarMenu(
+      icon("power-off"),
+      tabPanel(
+        "Stop",
+        DT::dataTableOutput("table")
+      ),
+      tabPanel(
+        "Save State",
+        DT::dataTableOutput("table")
+      ),
+      tabPanel(
+        "Leave",
+        DT::dataTableOutput("table")
+      )
+    ),
+    navbarMenu(
+      icon("question-circle"),
+      tabPanel(
+        "Help",
+        DT::dataTableOutput("table")
+      ),
+      tabPanel(
+        "About",
+        DT::dataTableOutput("table")
+      ),
+      tabPanel(
+        "Useful Links",
+        DT::dataTableOutput("table")
+      ),
+      tabPanel(
+        "Background Information Plausible Values",
+        DT::dataTableOutput("table")
+      ),
+      tabPanel(
+        "Background Information CART",
+        DT::dataTableOutput("table")
+      ),
+      tabPanel(
+        "Report Issue",
+        DT::dataTableOutput("table")
+      )
     )
-))
+  )
+)
