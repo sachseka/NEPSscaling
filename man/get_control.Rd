@@ -3,17 +3,17 @@
 \name{get_control}
 \alias{get_control}
 \title{Get the list of control variables fed to
-\code{NEPScaling::plausible_values()}}
+\code{NEPSscaling::plausible_values()}}
 \usage{
 get_control(pv_obj)
 }
 \arguments{
-\item{pv_obj}{return object of function \code{NEPScaling::plausible_values()}}
+\item{pv_obj}{return object of function \code{NEPSscaling::plausible_values()}}
 }
 \value{
 the list of control variables for the estimation algorithms
 }
 \description{
 Get the list of control variables fed to
-\code{NEPScaling::plausible_values()}
+\code{NEPSscaling::plausible_values()}
 }

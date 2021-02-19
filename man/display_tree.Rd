@@ -5,10 +5,18 @@
 \title{Display the tree structure returned by the CART algorithm built to impute
 one missing variable}
 \usage{
-display_tree(tree)
+display_tree(pv_obj, imputation, variable)
 }
 \arguments{
-\item{tree}{string representation of the tree}
+\item{pv_obj}{An object of class "pv_obj" containing at least the sublist
+"treeplot"}
+
+\item{imputation}{Integer or character string value. If it is supplied as an
+integer it signifies the index of the imputation (ranging from 1 to max.
+control$ML$nmi) to choose the imputed variable from. As a character string it
+supplies the name of the imputation (e.g., "imp2").}
+
+\item{variable}{A character string. Name of the variable to be displayed.}
 }
 \value{
 a ggplot2 plot object representing the tree structure

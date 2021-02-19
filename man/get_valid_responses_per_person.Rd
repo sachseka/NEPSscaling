@@ -4,7 +4,7 @@
 \alias{get_valid_responses_per_person}
 \title{#' Get the estimation model
 #'
-#' @param pv_obj return object of function \code{NEPScaling::plausible_values()}
+#' @param pv_obj return object of function \code{NEPSscaling::plausible_values()}
 #' @return the estimation model as a String
 #'
 #' @export
@@ -19,7 +19,7 @@ Get the number of valid responses (i.e., non-missing) for each test taker}
 get_valid_responses_per_person(pv_obj)
 }
 \arguments{
-\item{pv_obj}{return object of function \code{NEPScaling::plausible_values()}}
+\item{pv_obj}{return object of function \code{NEPSscaling::plausible_values()}}
 }
 \value{
 a data.frame containing the number of valid responses per person
@@ -28,7 +28,7 @@ as an integer value
 \description{
 #' Get the estimation model
 #'
-#' @param pv_obj return object of function \code{NEPScaling::plausible_values()}
+#' @param pv_obj return object of function \code{NEPSscaling::plausible_values()}
 #' @return the estimation model as a String
 #'
 #' @export

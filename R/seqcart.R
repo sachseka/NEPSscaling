@@ -21,7 +21,6 @@ seqcart <- function(
 
   treeplot <- list()
   variable_importance <- list()
-  i <- 1
   for (k in misord) {
     yobs <- dataimp[INDOBS[, k], k]
     Xobs <- dataimp[INDOBS[, k], !(names(dataimp) %in% c("ID_t", k)), drop = FALSE]
@@ -29,8 +28,8 @@ seqcart <- function(
     rpartmethod <- ifelse(is.factor(yobs), "class", "anova")
     tree <- rpart::rpart(yobs ~., data = cbind(yobs, Xobs), method = rpartmethod,
       control = rpart::rpart.control(minbucket = control1, cp = control2))
-    treeplot[[i]] <- create_tree_plot(tree, k)#, sapply(Xobs, is.factor))
-    variable_importance[[i]] <- tree$variable.importance
+    treeplot[[k]] <- create_tree_plot(tree, k)#, sapply(Xobs, is.factor))
+    variable_importance[[k]] <- tree$variable.importance
     leafdonor <- floor(as.numeric(row.names(tree$frame[tree$where, ])))
     tree$frame$yval <- as.numeric(row.names(tree$frame))
     leafmis <- predict(tree, Xmis, "vector")
@@ -44,7 +43,6 @@ seqcart <- function(
       }
       return(obs)
     })
-    i <- i + 1
   }
   list(dataimp = dataimp,
        treeplot = treeplot,

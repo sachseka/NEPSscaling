@@ -8,7 +8,7 @@ background data}
 get_pv_list(pv_obj)
 }
 \arguments{
-\item{pv_obj}{return object of function \code{NEPScaling::plausible_values()}}
+\item{pv_obj}{return object of function \code{NEPSscaling::plausible_values()}}
 }
 \value{
 the list of npv plausible values and their respective background data
