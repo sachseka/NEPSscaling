@@ -3,17 +3,17 @@
 \name{get_npv}
 \alias{get_npv}
 \title{Get the number of plausible values returned by
-\code{NEPScaling::plausible_values()}}
+\code{NEPSscaling::plausible_values()}}
 \usage{
 get_npv(pv_obj)
 }
 \arguments{
-\item{pv_obj}{return object of function \code{NEPScaling::plausible_values()}}
+\item{pv_obj}{return object of function \code{NEPSscaling::plausible_values()}}
 }
 \value{
 the number of plausible values as an integer value
 }
 \description{
 Get the number of plausible values returned by
-\code{NEPScaling::plausible_values()}
+\code{NEPSscaling::plausible_values()}
 }

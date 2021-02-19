@@ -7,7 +7,7 @@
 get_wle_reliability(pv_obj)
 }
 \arguments{
-\item{pv_obj}{return object of function \code{NEPScaling::plausible_values()}}
+\item{pv_obj}{return object of function \code{NEPSscaling::plausible_values()}}
 }
 \value{
 the WLE reliability of the plausible values as a numeric value

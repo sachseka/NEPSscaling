@@ -7,7 +7,7 @@
 get_eap(pv_obj)
 }
 \arguments{
-\item{pv_obj}{return object of function \code{NEPScaling::plausible_values()}}
+\item{pv_obj}{return object of function \code{NEPSscaling::plausible_values()}}
 }
 \value{
 a data.frame containing the EAPs and their respective standard errors

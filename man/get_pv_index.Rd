@@ -7,7 +7,7 @@
 get_pv_index(pv_obj, index = 1)
 }
 \arguments{
-\item{pv_obj}{return object of function \code{NEPScaling::plausible_values()}}
+\item{pv_obj}{return object of function \code{NEPSscaling::plausible_values()}}
 
 \item{index}{the index for the plausible values ranging from 1 to npv
 (defaults to 1)}

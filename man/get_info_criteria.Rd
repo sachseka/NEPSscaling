@@ -7,7 +7,7 @@
 get_info_criteria(pv_obj)
 }
 \arguments{
-\item{pv_obj}{return object of function \code{NEPScaling::plausible_values()}}
+\item{pv_obj}{return object of function \code{NEPSscaling::plausible_values()}}
 }
 \value{
 a list of matrices or a matrix of AIC and BIC
