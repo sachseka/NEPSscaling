@@ -8,7 +8,7 @@ taker to be considered during the estimation}
 get_min_valid(pv_obj)
 }
 \arguments{
-\item{pv_obj}{return object of function \code{NEPScaling::plausible_values()}}
+\item{pv_obj}{return object of function \code{NEPSscaling::plausible_values()}}
 }
 \value{
 the minimum number of valid responses as an integer value
