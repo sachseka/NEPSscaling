@@ -365,3 +365,28 @@ get_imputation_names <- function(pv_obj) {
   }
   names(pv_obj[["treeplot"]])
 }
+
+
+#' Get tree representation of specific imputation.
+#'
+#' For each imputed variable, a CART was constructed. This function returns its
+#' character representation.
+#'
+#' @param pv_obj return object of function \code{NEPSscaling::plausible_values()}
+#' @param imputation Integer or character string value. If it is supplied as an
+#' integer it signifies the index of the imputation (ranging from 1 to max.
+#' control$ML$nmi) to choose the imputed variable from. As a character string it
+#' supplies the name of the imputation (e.g., "imp2").
+#' @param variable A character string. Name of the variable to be displayed.
+#' @return a character vector containing the tree structure
+#'
+#' @export
+
+get_imputation_tree <- function(pv_obj, imputation, variable) {
+  if (class(pv_obj) != "pv_obj") {
+    stop("pv_obj must be of class 'pv_obj'.")
+  }
+  tree <- pv_obj[["treeplot"]][[imputation]][[variable]]
+  cat(tree)
+  invisible(tree)
+}

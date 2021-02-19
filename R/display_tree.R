@@ -44,13 +44,17 @@ display_tree <- function(pv_obj, imputation, variable) {
 
   dat <- as.data.frame(do.call(rbind, tree))
   names(dat) <- cn
+  dat$node <- as.numeric(dat$node)
+  if (any(duplicated(dat$node))) {
+    stop("The impuation tree for ", variable, " is too complex to be converted into a ggplot. Please use get_imputation_tree(...) to inspect the character representation")
+  }
   dat$label <- paste0(dat$split, "\n(n = ", dat$n, ")")
 
-  dat$parent <- floor(as.numeric(dat$node) / 2)
+  dat$parent <- floor(dat$node / 2)
   dat$parent[dat$parent == 0] <- 1
-  dat$level <- floor(log(as.numeric(dat$node), base = 2))
-  dat$position <- as.numeric(dat$node) - 2^dat$level + 1
-  dat$y <- 1 - (1 / (floor(log(max(as.numeric(dat$node)), base = 2)) + 1)) * dat$level
+  dat$level <- floor(log(dat$node, base = 2))
+  dat$position <- dat$node - 2^dat$level + 1
+  dat$y <- 1 - (1 / (floor(log(max(dat$node), base = 2)) + 1)) * dat$level
   dat$x <- (1 / (2^dat$level + 1)) * dat$position
   dat$xend <- dat$yend <- 0
   for (i in 1:nrow(dat)) {

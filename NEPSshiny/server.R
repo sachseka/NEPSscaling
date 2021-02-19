@@ -125,14 +125,19 @@ shinyServer(function(input, output, session) {
   # --------------------------- CREATE CART Plot -----------------------------
   # TODO: add customization of treeplot?
   cart_plot <- eventReactive(input$display_cart, {
-    req(pv_obj)
-    display_tree(pv_obj$treeplot)
+    req(pv_obj, input$imputation_number, input$imputed_variable)
+    display_tree(pv_obj, input$imputation_number, input$imputed_variable)
   })
   output$cart_plot <- renderPlot(cart_plot())
 
   # --------------------------- CREATE DISTR Plots for pv_obj$pvs ------------
   # one page suffices if columns (incl. PV columns) can be selected here!
   # only!!!! averaged values!!!!
+  distribution_plot <- eventReactive(input$display_distribution, {
+    req(pv_obj)
+    # build plot
+  })
+  output$distribution_plot <- renderPlot(distribution_plot())
 
   # output$plot <- renderPlot({
   #     if (req(input$plotType) == "histogram") {
@@ -150,7 +155,7 @@ shinyServer(function(input, output, session) {
   # tables, formats: LaTeX, data.frame
 
   # ------------------------ SAVE SHINY STATE --------------------------------
-  # == pv_obj as RDS?
+  # == pv_obj as RDS
   output$save_state <- downloadHandler(
     filename = "pv_obj.rds",
     content = function(fname) {
@@ -162,7 +167,7 @@ shinyServer(function(input, output, session) {
   # ------------------------ EXPORT PV_OBJ -----------------------------------
   # formats: spss, stata, mplus
   # https://stackoverflow.com/questions/28228892/download-multiple-csv-files-in-a-zipped-folder-in-shiny
-  output$export <- downloadHandler(
+  output$export_pv_obj <- downloadHandler(
     filename = "export_pv_obj.zip",
     content = function(fname) {
       req(pv_obj)
@@ -178,7 +183,28 @@ shinyServer(function(input, output, session) {
 
   # ------------------------ SAVE GGPLOTS ------------------------------------
   # png, jpeg
-
+  # easier: save button just below the create button for each plot
+  output$download_distribution_plot <- downloadHandler(
+    filename = function() {
+      req(input$plotname)
+      paste0(input$plotname, ".png")
+    },
+    content = function(fname) {
+      ggplot2::ggsave(filename = fname, plot = distribution_plot())
+    }
+  )
+  output$download_cart_plot <- downloadHandler(
+    filename = function() {
+      req(input$imputation_number, input$imputed_variable)
+      paste0(
+        "tree_imputation_", input$imputation_number, "_",
+        input$imputed_variable, ".png"
+      )
+    },
+    content = function(fname) {
+      ggplot2::ggsave(filename = fname, plot = distribution_plot())
+    }
+  )
 
   # ------------------------ SAVE TABLES -------------------------------------
   # tsv? LaTex? Excel?
