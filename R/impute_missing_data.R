@@ -11,9 +11,9 @@ impute_missing_data <- function(bgdata, verbose, control) {
   if (!is.null(bgdata)) {
     if (any(is.na(bgdata))) {
       if (verbose) {
-        cat(
+        message(
           "Begin multiple imputation of missing background data... ",
-          paste(Sys.time()), "\n"
+          paste(Sys.time())
         )
         flush.console()
       }

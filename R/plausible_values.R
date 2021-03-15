@@ -310,7 +310,7 @@ plausible_values <- function(SC,
 
   t1 <- Sys.time()
   if (verbose) {
-    cat("Begin pre-processing of data... ", paste(t1), "\n")
+    message("Begin pre-processing of data... ", paste(t1))
     flush.console()
   }
 
@@ -396,7 +396,7 @@ plausible_values <- function(SC,
 
   t3 <- Sys.time()
   if (verbose) {
-    cat("\nBegin estimation... ", paste(t3), "\nThis might take some time.\n")
+    message("\nBegin estimation... ", paste(t3), "\nThis might take some time.")
     flush.console()
   }
 
@@ -443,7 +443,7 @@ plausible_values <- function(SC,
 
   t4 <- Sys.time()
   if (verbose) {
-    cat("Finished estimation. Begin post-processing... ", paste(t4), "\n")
+    message("Finished estimation. Begin post-processing... ", paste(t4))
     flush.console()
   }
 
@@ -508,6 +508,11 @@ plausible_values <- function(SC,
                                     pv, waves, npv)
 
   t5 <- Sys.time()
+
+  if (verbose) {
+    message("Done!")
+    flush.console()
+  }
 
   # collect output object -----------------------------------------------------
 

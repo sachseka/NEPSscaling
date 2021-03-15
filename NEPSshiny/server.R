@@ -1,211 +1,645 @@
-#
-# This is the server logic of a Shiny web application. You can run the
-# application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
-#### ACHTUNG
-# Environment weglassen: nur 1 bgdata hochladen und 1 pv_obj je session
-# Plots/Summaries etc. für Imputationen und PVs an einer Stelle anbieten (= Unterseite weglassen)
-# --> Arbeiten mit denselben Methoden auf derselben Datenstruktur
-
 
 library(shiny)
+library(xtable)
+
+
+filter_data <- function(filter_op, filter_var, filter_val, out) {
+  switch(filter_op,
+    "<" = dplyr::filter(out, .data[[filter_var]] < filter_val),
+    ">" = dplyr::filter(out, .data[[filter_var]] > filter_val),
+    "<=" = dplyr::filter(out, .data[[filter_var]] <= filter_val),
+    ">=" = dplyr::filter(out, .data[[filter_var]] >= filter_val),
+    "==" = dplyr::filter(out, .data[[filter_var]] == filter_val),
+    "!=" = dplyr::filter(out, .data[[filter_var]] != filter_val),
+    showNotification(paste("Filter operator", filter_op, "not valid."),
+                     type = "error")
+  )
+}
+
+export_files <- function(format, name) {
+  switch(format,
+         "SPSS" = paste0(name, "_", 1:10, ".sav"),
+         "Stata" = paste0(name, "_", 1:10, ".dta"),
+         "Mplus" = c(paste0(name, "_", 1:10, ".dat"), "content_file.dat"))
+}
+
+#https://stackoverflow.com/questions/2547402/how-to-find-the-statistical-mode/8189441#8189441
+Mode <- function(x) {
+  ux <- unique(x)
+  ux[which.max(tabulate(match(x, ux)))]
+}
 
 shinyServer(function(input, output, session) {
+  values <- reactiveValues(
+    pv_obj = NULL
+  )
 
-  # ---------------------------- UPLOAD PREVIOUS STATE -----------------------
+  ############################################################################
+  #                                    UPLOAD
+  ############################################################################
+
+  # ------------------------------ UPLOAD STATE ------------------------------
   # previous state == pv_obj as rds
-  observeEvent(input$import_state, { # actionButton!
-    req(input$state_file)
+  observe({
+    req(input$import_state)
+    validate(need(tools::file_ext(input$import_state$datapath) == "rds",
+                  "pv_obj must be stored as '.rds' file."))
 
-    if (!grepl("rds$", tolower(tools::file_ext(input$state_file$name)))) {
-      validate("Previous estimation not stored as RDS file.")
+    out <- readRDS(file = input$import_state$datapath)
+
+    if (class(out) != "pv_obj") {
+      showNotification("pv_obj must be of class 'pv_obj'.", type = "error")
+    } else {
+      values$pv_obj <- out
     }
-    pv_obj <- readRDS(file = input$state_file$datapath) # fileInput input
+
+    if (!input$metric & !isTruthy(input$nominal) & !isTruthy(input$ordinal)) {
+      updateSelectInput(session = session, inputId = "ordinal",
+                        label = "Select ordinal variables",
+                        choices = names(out$pv[[1]]))
+      updateSelectInput(session = session, inputId = "nominal",
+                        label = "Select nominal variables",
+                        choices = names(out$pv[[1]]))
+      showNotification("Please specify the scale levels of the data under 'Manage'.",
+                       type = "message")
+    }
+
+    updateSelectInput(session, inputId = "imputation",
+                      choices = names(out$treeplot),
+                      selected = "")
+    updateSelectInput(session, inputId = "variable",
+                      choices = names(out$treeplot[[1]]),
+                      selected = "")
+    updateSelectInput(session, inputId = "fill",
+                      choices = unique(c(input$nominal, input$ordinal)),
+                      selected = "")
+    updateSelectInput(session, inputId = "x",
+                      choices = names(out$pv[[1]]),
+                      selected = "")
+    updateSelectInput(session, inputId = "y",
+                      choices = names(out$pv[[1]]),
+                      selected = "")
   })
 
   # ---------------------------- UPLOAD BGDATA -------------------------------
   # https://mastering-shiny.org/action-transfer.html
-  bgdata <- eventReactive(input$import_bgdata, { # actionButton!
-    req(input$bgdata_filepath)
-    filetype <- tools::file_ext(input$bgdata_file$name)
+  bgdata_raw <- reactive({
+    req(input$import_bgdata)
+    filetype <- tools::file_ext(input$import_bgdata$datapath)
 
-    if (grepl("rds$", tolower(filetype))) {
-      readRDS(file = input$bgdata_file$datapath)
-    } else if (grepl("sav$", tolower(filetype))) {
-      haven::read_spss(file = input$bgdata_file$datapath)
-    } else if (grepl("dta$", tolower(filetype))) {
-      haven::read_dta(file = input$bgdata_file$datapath)
-    } else {
+    out <- switch(
+      filetype,
+      rds = readRDS(file = input$import_bgdata$datapath),
+      sav = haven::read_spss(file = input$import_bgdata$datapath),
+      dta = haven::read_dta(file = input$import_bgdata$datapath),
       validate(paste0(
         "Format of bgdata (", filetype, ") not recognized.\n",
-        "Needs: RDS, SPSS or Stata format."
+        "Needs: R object (.rds), SPSS (.sav) or Stata (.dta) format."
       ))
+    )
+
+    if (!is.data.frame(out)) {
+      showNotification("bgdata must be a data.frame.", type = "error")
+      return(NULL)
     }
+
+    updateSelectInput(session = session, inputId = "ordinal",
+                      label = "Select ordinal variables", choices = names(out))
+    updateSelectInput(session = session, inputId = "nominal",
+                      label = "Select nominal variables", choices = names(out))
+
+    updateSelectInput(session = session, inputId = "bgdata_select_cols",
+                      label = "Select columns", choices = names(out),
+                      selected = "")
+    updateSelectInput(session = session, inputId = "bgdata_sort_cases",
+                      label = "Sort by", choices = names(out),
+                      selected = "")
+
+    out
   })
 
+  bgdata <- reactive({
+    req(bgdata_raw())
+    nominal <- input$nominal
+    ordinal <- input$ordinal
+    out <- bgdata_raw()
+
+    if (!input$metric & is.null(nominal) & is.null(ordinal)) {
+      showNotification("Please specify the scale levels of the data.",
+                       type = "message")
+      return(NULL)
+    }
+
+    if (!is.null(ordinal) | !is.null(nominal)) {
+      sel <- unique(c(ordinal, nominal))
+      if (length(sel) == 1) {
+        out[[sel]] <- forcats::as_factor(out[[sel]])
+      } else {
+        out[, sel] <- lapply(out[, sel], forcats::as_factor)
+      }
+    }
+
+    out
+  })
+  # output$bgdata <- renderDataTable(head(bgdata()))
+
+  ############################################################################
+  #                            MANIPULATE
+  ############################################################################
 
   # ---------------------------- DISPLAY BGDATA ------------------------------
   # select columns, filter by values, select rows
   # paged table
-  bgdata_display <- eventReactive(input$display_bgdata, {
-    req(input$filter_var)
+  bgdata_display <- reactive({
+    req(bgdata())
     out <- bgdata()
-    # TODO: mehrere Variablen in Vektorform bringen!
-    if (TRUE) { # variables for selection have been chosen
-      sel <- names(out)[names(out %in% input$select_var)]
-      out <- out %>% dplyr::select(sel)
+
+    if (isTruthy(input$bgdata_select_cols)) { # variables for selection have been chosen
+      sel <- names(out)[names(out) %in% input$bgdata_select_cols]
+      out <- out[, sel, drop = FALSE]
     }
-    # TODO: Loop über mehrere Filter, evtl. erst in Vektorform parsen
-    # kommt auf Format von input$filter_var an: Liste von Filtern? String von Filtern?
-    if (TRUE) { # variables for filter, test each, then filter
-      filter_op <- stringr::str_extract(input$filter_var, "[<>=!]+")
-      filter_var <- stringr::word(input$filter_var, 1, sep = "[ <>!=]")
-      filter_val <- sub(".*[ <>!=]", "", input$filter_var)
-      switch(
-        filter_op,
-        "<" = out <- out %>%
-          dplyr::filter(rlang::.data[[filter_var]] < filter_val),
-        ">" = out <- out %>%
-          dplyr::filter(rlang::.data[[filter_var]] > filter_val),
-        ">=" = out <- out %>%
-          dplyr::filter(rlang::.data[[filter_var]] >= filter_val),
-        "<=" = out <- out %>%
-          dplyr::filter(rlang::.data[[filter_var]] <= filter_val),
-        "==" = out <- out %>%
-          dplyr::filter(rlang::.data[[filter_var]] == filter_val),
-        "!=" = out <- out %>%
-          dplyr::filter(rlang::.data[[filter_var]] != filter_val),
-        showNotification("Filter operator not valid.")
-      )
+
+    # bildet nur &, nicht | ab, wobei man | auch als & umformulieren kann
+    if (isTruthy(input$bgdata_filter_rows)) {
+      for (f in input$bgdata_filter_rows) { # swap f for input$bgdata_filter_rows if no loop is required!
+        filter_op <- stringr::str_extract(f, "[<>=!]+")
+        filter_var <- stringr::word(f, 1, sep = "[ <>!=]")
+        filter_val <- sub(".*[ <>!=]", "", f)
+        out <- filter_data(filter_op, filter_var, filter_val, out)
+      }
     }
-    # TODO: Sortierung noch mit einbauen (dplyr::arrange())
+
+    if (isTruthy(input$bgdata_sort_cases)) {
+      if (input$bgdata_ascending) {
+        out <- dplyr::arrange(out, .data[[input$bgdata_sort_cases]])
+      } else {
+        out <- dplyr::arrange(out, dplyr::desc(.data[[input$bgdata_sort_cases]]))
+      }
+    }
     out
   })
-  output$bgdata_display <- renderTable(bgdata_display())
+  output$bgdata_display <- renderDataTable(
+    bgdata_display(),
+    options = list(pageLength = 50)
+  )
 
   # ---------------------------- ESTIMATE PVS --------------------------------
 
-  pv_obj <- eventReactive(input$estimate, {
-    # TODO: input$path: what format? character or fileInput?
+  observeEvent(input$estimate_pv_obj, {
+
     req(
-      bgdata(), input$SC, input$domain, input$wave, input$path, input$npv,
-      input$longitudinal, input$rotation, input$min_valid,
-      input$include_nr, input$verbose, input$adjust_school_context,
-      input$control
+      bgdata(), input$select_starting_cohort, input$select_domain,
+      input$select_wave, input$path_to_data
     )
+
     # print output to shiny to monitor progress:
     # https://stackoverflow.com/questions/30474538/possible-to-show-console-messages-written-with-message-in-a-shiny-ui/30490698#30490698
     withCallingHandlers(
       {
         shinyjs::html("plausible_values_progress", "")
-        plausible_values(
-          SC = input$SC, domain = input$domain, wave = input$wave,
-          path = input$path, bgdata = bgdata(), npv = input$npv,
+        out <- plausible_values(
+          SC = as.numeric(input$select_starting_cohort),
+          domain = input$select_domain,
+          wave = as.numeric(input$select_wave),
+          path = gsub("\\\\", "/", input$path_to_data),
+          bgdata = bgdata(),
+          npv = as.numeric(input$npv),
           longitudinal = input$longitudinal,
-          rotation = input$rotation, min_valid = input$min_valid,
-          include_nr = input$include_nr, verbose = input$verbose,
+          rotation = input$rotation,
+          min_valid = as.numeric(input$min_valid),
+          include_nr = input$include_nr,
+          verbose = input$verbose,
           adjust_school_context = input$adjust_school_context,
-          control = input$control
+          control = list(WLE = input$WLE, EAP = input$EAP,
+                         ML = list(nmi = input$nmi))
         )
       },
       message = function(m) {
-        # TODO: Konsolen-Output in NEPSscaling evtl. anpassen z.B. in CART
-        # https://stackoverflow.com/questions/5953718/overwrite-current-output-in-the-r-console/62059670#62059670
-        # Farben anpassen für message: gerade selbe Farbe wie Errors -- r package crayon works
         shinyjs::html(id = "plausible_values_progress", html = m$message)
+      }#,
+      # error = function(e) print(sys.calls())
+    )
+
+    values$pv_obj <- out
+
+    updateSelectInput(session, inputId = "imputation",
+                      choices = names(out$treeplot),
+                      selected = "")
+    updateSelectInput(session, inputId = "variable",
+                      choices = names(out$treeplot[[1]]),
+                      selected = "")
+    updateSelectInput(session, inputId = "fill",
+                      choices = unique(c(input$nominal, input$ordinal)),
+                      selected = "")
+    updateSelectInput(session, inputId = "x",
+                      choices = names(out$pv[[1]]),
+                      selected = "")
+    updateSelectInput(session, inputId = "y",
+                      choices = names(out$pv[[1]]),
+                      selected = "")
+
+  })
+
+  # ------------------------- SUMMARY OF PV_OBJ ------------------------------
+
+  output$summary <- renderText({
+    req(values$pv_obj)
+    paste(capture.output(print(values$pv_obj)), collapse = "\n")
+  })
+
+  # ------------------------- ITEM DIFFICULTIES ------------------------------
+
+  output$item_difficulties <- renderTable({
+    req(values$pv_obj)
+    if (get_type(pv_obj = values$pv_obj) == "longitudinal") {
+      new_items <- paste0("items_w", get_wave(values$pv_obj))
+      new_xsi <- paste0("xsi_w", get_wave(values$pv_obj))
+      get_item_difficulties(values$pv_obj) %>%
+        purrr::map(.f = function(mat) {
+          colnames(mat) <- vctrs::vec_as_names(colnames(mat), repair = "unique",
+                                               quiet = TRUE)
+          mat}) %>%
+        purrr::map(tibble::as_tibble, rownames = "items") %>%
+        purrr::map(dplyr::rename, "pos" = "...1") %>%
+        purrr::map2(.y = new_items, ~dplyr::rename(.x, !!.y := "items")) %>%
+        purrr::map2(.y = new_xsi, ~dplyr::rename(.x, !!.y := "xsi")) %>%
+        purrr::reduce(dplyr::full_join, by = "pos") %>%
+        dplyr::select(-.data$pos) %>%
+        dplyr::mutate_if(.predicate = is.numeric,
+                         .funs = round, digits = 3) %>%
+        as.data.frame()
+    } else {
+      items <- data.frame(rownames(get_item_difficulties(values$pv_obj)),
+                          round(get_item_difficulties(values$pv_obj), 3))
+      names(items) <- c("Items", "xsi", "se")
+      items
+    }
+  },
+    caption = "Item Difficulty Parameters. SE of fixed parameters is set to 0.",
+    caption.placement = getOption("xtable.caption.placement", "top"),
+    caption.width = getOption("xtable.caption.width", NULL)
+  )
+
+
+  # ------------------------ AVERAGE IMPUTED DATA ----------------------------
+
+  average_pvs <- reactive({
+    req(values$pv_obj)
+
+    out <- values$pv_obj$pv[[1]]
+
+    tmp <- replicate(length(names(out)[-1]),
+                     data.frame(ID_t = out[["ID_t"]]), simplify = FALSE)
+    names(tmp) <- names(out)[-1]
+    for (i in seq(get_npv(values$pv_obj))) {
+      for (var in names(out)[-1]) {
+        tmp[[var]] <- dplyr::left_join(tmp[[var]],
+                                       values$pv_obj$pv[[i]][, c("ID_t", var)],
+                                       by = "ID_t")
+      }
+    }
+    tmp <- lapply(names(tmp), function(x) {
+      if (x %in% input$ordinal) {
+        as.factor(apply(tmp[[x]][, -1], 1, median, na.rm = TRUE))
+      } else if (x %in% input$nominal) {
+        as.factor(apply(tmp[[x]][, -1], 1, Mode))
+      } else {
+        apply(tmp[[x]][, -1], 1, mean, na.rm = TRUE)
+      }
+    })
+    out[, -1] <- as.data.frame(tmp)
+    out
+  })
+
+  # ----------------------- DISPLAY AVERAGE IMPUTATIONS ----------------------
+  # select columns, filter by values, select rows
+  # paged table
+  imputations_display <- reactive({
+    req(average_pvs())
+    out <- average_pvs()
+
+    if (isTruthy(input$imputations_select_cols)) { # variables for selection have been chosen
+      sel <- names(out)[names(out) %in% input$imputations_select_cols]
+      out <- out[, sel, drop = FALSE]
+    }
+
+    # bildet nur &, nicht | ab, wobei man | auch als & umformulieren kann
+    if (isTruthy(input$imputations_filter_rows)) {
+      for (f in input$imputations_filter_rows) { # swap f for input$imputations_filter_rows if no loop is required!
+        filter_op <- stringr::str_extract(f, "[<>=!]+")
+        filter_var <- stringr::word(f, 1, sep = "[ <>!=]")
+        filter_val <- sub(".*[ <>!=]", "", f)
+        out <- filter_data(filter_op, filter_var, filter_val, out)
+      }
+    }
+
+    if (isTruthy(input$imputations_sort_cases)) {
+      if (input$imputations_ascending) {
+        out <- dplyr::arrange(out, .data[[input$imputations_sort_cases]])
+      } else {
+        out <- dplyr::arrange(out, dplyr::desc(.data[[input$imputations_sort_cases]]))
+      }
+    }
+    out
+  })
+  output$imputations_display <- renderDataTable(
+    imputations_display(),
+    options = list(pageLength = 50)
+  )
+
+  # --------------------------- CREATE CART PLOT -----------------------------
+
+  cart_plot <- eventReactive(input$cart_plot, {
+    req(values$pv_obj, input$imputation, input$variable)
+    tryCatch(
+      display_tree(values$pv_obj, input$imputation, input$variable),
+      error = function(e) {
+        showNotification(e$message, type = "error")
       }
     )
   })
-
-  # --------------------------- CREATE CART Plot -----------------------------
-  # TODO: add customization of treeplot?
-  cart_plot <- eventReactive(input$display_cart, {
-    req(pv_obj, input$imputation_number, input$imputed_variable)
-    display_tree(pv_obj, input$imputation_number, input$imputed_variable)
-  })
   output$cart_plot <- renderPlot(cart_plot())
 
-  # --------------------------- CREATE DISTR Plots for pv_obj$pvs ------------
-  # one page suffices if columns (incl. PV columns) can be selected here!
-  # only!!!! averaged values!!!!
-  distribution_plot <- eventReactive(input$display_distribution, {
-    req(pv_obj)
-    # build plot
-  })
-  output$distribution_plot <- renderPlot(distribution_plot())
+  # ------------------- CREATE VARIABLE IMPORTANCE PLOT ----------------------
 
-  # output$plot <- renderPlot({
-  #     if (req(input$plotType) == "histogram") {
-  #         hist(dataset())
-  #     } else if (input$plotType == "scatter") {
-  #         qplot(dataset(), aes(x = x, y = y))
-  #     }
-  # })
+  variable_importance_plot <- eventReactive(input$variable_importance_plot, {
+    req(values$pv_obj, input$imputation, input$variable)
+    display_variable_importance(values$pv_obj, input$imputation, input$variable)
+  })
+  output$variable_importance_plot <- renderPlot(variable_importance_plot())
+
+  # -------------------- CREATE DISTR Plots for pv_obj$pvs -------------------
+
+  plot_geom <- reactive({
+    switch(input$geom,
+           "Histogram" = ggplot2::geom_histogram(),
+           "Density plot" = ggplot2::geom_density(),
+           "Scatter plot" = ggplot2::geom_point()
+    )
+  })
+
+  plot_theme <- reactive({
+    switch(input$theme,
+           "Gray" = ggplot2::theme_gray(),
+           "Black and white" = ggplot2::theme_bw(),
+           "Linedraw" = ggplot2::theme_linedraw(),
+           "Light" = ggplot2::theme_light(),
+           "Dark" = ggplot2::theme_dark(),
+           "Minimal" = ggplot2::theme_minimal(),
+           "Classic" = ggplot2::theme_classic(),
+           "Void" = ggplot2::theme_void()
+    )
+  })
+
+  plot_title <- reactive({ggplot2::ggtitle(input$title)})
+
+  plot_xlab <- reactive({
+    if (isTruthy(input$xlab)) {
+      return(ggplot2::xlab(input$xlab))
+    } else if (isTruthy(input$x)) {
+      return(ggplot2::xlab(input$x))
+    }
+  })
+
+  plot_ylab <- reactive({
+    if (isTruthy(input$ylab)) {
+      return(ggplot2::ylab(input$ylab))
+    } else if (isTruthy(input$y)) {
+      return(ggplot2::ylab(input$y))
+    }
+  })
+
+  imputation_plot <- eventReactive(input$plot, {
+    req(average_pvs(), input$geom, input$x)
+
+    # aesthetics: x, y
+    gplot <- ggplot2::ggplot(
+      average_pvs(),
+      ggplot2::aes(x = .data[[input$x]])
+    )
+    if (isTruthy(input$y) & input$geom == "Scatter plot") {
+      gplot <- gplot + ggplot2::aes(y = .data[[input$y]])
+    }
+
+    # aesthetics: fill
+    if (isTruthy(input$fill)) {
+      gplot <- gplot + ggplot2::aes(fill = .data[[input$fill]],
+                                    color = .data[[input$fill]])
+    }
+
+    # build plot
+    gplot <- gplot +
+      plot_geom() +
+      plot_title() +
+      plot_xlab() +
+      plot_ylab() +
+      plot_theme()
+
+    gplot
+  })
+  output$plot <- renderPlot(imputation_plot())
 
   # --------------------------- CREATE REGRESSION TABLES ---------------------
-  # formats: LaTeX, data.frame
-
+  regression_table <- reactive({
+    req(values$pv_obj)
+    tmp <- get_regression_coefficients(values$pv_obj)
+    if (get_type(values$pv_obj) == "longitudinal") {
+      tmp <- (tmp %>% purrr::reduce(`+`)) / length(get_eap_reliability(values$pv_obj))
+      tab <- data.frame(
+        Variable = paste(rownames(tmp), "Wave",
+                         rep(get_wave(values$pv_obj), each = nrow(tmp))),
+        N = as.character(rep(get_n_testtakers(values$pv_obj), each = nrow(tmp))),
+        b = unname(unlist(tmp[, seq(1, ncol(tmp), 2)])),
+        se = unname(unlist(tmp[, seq(2, ncol(tmp), 2)]))
+      )
+    } else {
+      tab <- as.data.frame(matrix(0, ncol = 4, nrow = nrow(tmp)))
+      for (i in seq(1, ncol(tmp), by = 2)) {
+        tab[, -c(1, 2)] <- (tab[, -c(1, 2)] + tmp[, c(i, i + 1)]) / 2
+      }
+      colnames(tab) <- c("Variable", "N", "b", "se")
+      tab$Variable <- rownames(tmp)
+      tab$N <- as.character(get_n_testtakers(values$pv_obj))
+    }
+    tab[["95% CI"]] <- paste0("[", round(tab$b - 1.96 * tab$se, 3),"; ",
+                              round(tab$b + 1.96 * tab$se, 3), "]")
+    tab$b <- as.character(round(tab$b, 3))
+    tab$se <- as.character(round(tab$se, 3))
+    tab
+  })
+  output$regression_table <- renderTable({
+      regression_table()
+    },
+    caption = "Latent Regression Weights with 95% CI based on normal distribution",
+    caption.placement = getOption("xtable.caption.placement", "top"),
+    caption.width = getOption("xtable.caption.width", NULL)
+  )
 
   # --------------------------- CREATE SUMMARY STATISTICS --------------------
-  # tables, formats: LaTeX, data.frame
+  imputation_table <- reactive({
+    req(average_pvs())
+    out <- psych::describe(average_pvs())
+    out$vars <- rownames(out)
+    out
+  })
+  output$imputation_table <- renderTable({
+      imputation_table()
+    },
+    caption = "Descriptive Statistics of Average Imputated Data Sets",
+    caption.placement = getOption("xtable.caption.placement", "top"),
+    caption.width = getOption("xtable.caption.width", NULL)
+  )
 
-  # ------------------------ SAVE SHINY STATE --------------------------------
+
+  ############################################################################
+  #                            DOWNLOAD
+  ############################################################################
+
+  # ------------------------- DOWNLOAD PV_OBJ --------------------------------
   # == pv_obj as RDS
-  output$save_state <- downloadHandler(
-    filename = "pv_obj.rds",
-    content = function(fname) {
-      req(pv_obj)
-      saveRDS(pv_obj, file = input$state_file$datapath)
+  output$download_pv_obj <- downloadHandler(
+    filename = function() {
+      req(input$pv_obj_name)
+      paste0(input$pv_obj_name, ".rds")
+    },
+    content = function(file) {
+      req(values$pv_obj)
+      saveRDS(values$pv_obj, file = file)
     }
   )
 
-  # ------------------------ EXPORT PV_OBJ -----------------------------------
+  # --------------------------- EXPORT PV_OBJ --------------------------------
   # formats: spss, stata, mplus
-  # https://stackoverflow.com/questions/28228892/download-multiple-csv-files-in-a-zipped-folder-in-shiny
+  # https://stackoverflow.com/a/43939912
   output$export_pv_obj <- downloadHandler(
-    filename = "export_pv_obj.zip",
-    content = function(fname) {
-      req(pv_obj)
-      # get vector of file names (different for each file extension)
-      files <- c()
-      write_pv(pv_obj = pv_obj, path = input$state_file$datapath, ext = input$ext)
+    filename = function() {
+      rep(input$pv_obj_name)
+      paste0(input$pv_obj_name, ".zip")
+    },
+    content = function(zipfile) {
+      req(values$pv_obj, input$export_format)
+      owd <- setwd(tempdir())
+      on.exit(setwd(owd))
 
-      zip(zipfile = fname, files = files)
+      # vector of file names for pv_obj$pv data.frames
+      files <- export_files(input$export_format, input$pv_obj_name)
+      if (input$export_format == "SPSS") {
+        for (i in seq(length(values$pv_obj$pv))) {
+          haven::write_sav(values$pv_obj$pv[[i]], path = files[i])
+        }
+      } else if (input$export_format == "Stata") {
+        for (i in seq(length(values$pv_obj$pv))) {
+          colnames(values$pv_obj[["pv"]][[i]]) <-
+            gsub("[[:punct:]]", "_", colnames(values$pv_obj[["pv"]][[i]]))
+          haven::write_dta(values$pv_obj$pv[[i]], path = files[i])
+        }
+      } else if (input$export_format == "Mplus") {
+        for (i in 1:length(values$pv_obj[["pv"]])) {
+          write.table(values$pv_obj[["pv"]][[i]], file = files[i],
+                      dec = ".", sep = ",", row.names = FALSE)
+        }
+        write(x = paste0(files[-length(files)], collapse = "\n"),
+              file = files[length(files)])
+      }
+
+      zip(zipfile = zipfile, files = files)
     },
     contentType = "application/zip"
   )
 
 
   # ------------------------ SAVE GGPLOTS ------------------------------------
-  # png, jpeg
-  # easier: save button just below the create button for each plot
-  output$download_distribution_plot <- downloadHandler(
+
+  # distribution plots for imputations / plausible values
+  output$download_plot <- downloadHandler(
     filename = function() {
-      req(input$plotname)
-      paste0(input$plotname, ".png")
+      req(input$plot_name, input$plot_format)
+      ext <- switch(input$plot_format,
+                    "png" = ".png",
+                    "RData" = ".RData")
+      paste0(input$plot_name, ext)
     },
-    content = function(fname) {
-      ggplot2::ggsave(filename = fname, plot = distribution_plot())
+    content = function(file) {
+      if (input$plot_format == "RData") {
+        gplot <- imputation_plot()
+        save(gplot, file = file)
+      } else {
+        ggplot2::ggsave(filename = file, plot = imputation_plot())
+      }
     }
   )
-  output$download_cart_plot <- downloadHandler(
+
+  # cart plot for single variables' imputation
+  output$download_cart <- downloadHandler(
     filename = function() {
-      req(input$imputation_number, input$imputed_variable)
-      paste0(
-        "tree_imputation_", input$imputation_number, "_",
-        input$imputed_variable, ".png"
-      )
+      req(input$cart_name, input$cart_format)
+      ext <- switch(input$cart_format,
+                    "png" = ".png",
+                    "RData" = ".RData")
+      paste0(input$cart_name, ext)
     },
-    content = function(fname) {
-      ggplot2::ggsave(filename = fname, plot = distribution_plot())
+    content = function(file) {
+      if (input$cart_format == "RData") {
+        gplot <- cart_plot()
+        save(gplot, file = file)
+      } else {
+        ggplot2::ggsave(filename = file, plot = cart_plot())
+      }
+    }
+  )
+
+  # variable_importance plot for single variables' imputation
+  output$download_variable_importance <- downloadHandler(
+    filename = function() {
+      req(input$variable_importance_name, input$variable_importance_format)
+      ext <- switch(input$variable_importance_format,
+                    "png" = ".png",
+                    "RData" = ".RData")
+      paste0(input$variable_importance_name, ext)
+    },
+    content = function(file) {
+      if (input$variable_importance_format == "RData") {
+        gplot <- variable_importance_plot()
+        save(gplot, file = file)
+      } else {
+        ggplot2::ggsave(filename = file, plot = variable_importance_plot())
+      }
     }
   )
 
   # ------------------------ SAVE TABLES -------------------------------------
-  # tsv? LaTex? Excel?
+
+  output$download_descriptive <- downloadHandler(
+    filename = function() {
+      # req(input$descriptive_name, input$descriptive_format)
+      # ext <- switch(input$descriptive_format,
+      #               "tsv" = ".tsv",
+      #               "LaTeX" = ".tex")
+      # paste0(input$descriptive_name, ext)
+      req(input$descriptive_name)
+      paste0(input$descriptive_name, "tsv")
+    },
+    content = function(file) {
+      # if (input$descriptive_format == "tsv") {
+      #   vroom::vroom_write(imputation_table(), file, progress = FALSE)
+      # } else {
+      #   vroom::vroom_write_lines(
+      #     xtable(imputation_table(),
+      #            caption = "Descriptive statistics",
+      #            label = "tab:desc"),
+      #     file)
+      # }
+      vroom::vroom_write(imputation_table(), file, progress = FALSE)
+    }
+  )
+
+  output$download_regression <- downloadHandler(
+    filename = function() {
+      req(input$regression_name)
+      paste0(input$regression_name, "tsv")
+    },
+    content = function(file) {
+      vroom::vroom_write(regression_table(), file, progress = FALSE)
+    }
+  )
 })

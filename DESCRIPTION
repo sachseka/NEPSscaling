@@ -21,7 +21,13 @@ Imports:
     vctrs,
     ggplot2,
     rpart,
-    shiny
+    shiny,
+    shinythemes,
+    shinydashboard,
+    bslib,
+    vroom,
+    forcats,
+    xtable
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

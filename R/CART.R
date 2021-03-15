@@ -34,7 +34,7 @@ CART <- function(
 
   out <- list(imp = list(), treeplot = list(), variable_importance = list())
   i <- 1
-  for(ii in 1:itermcmc){
+  for (ii in 1:itermcmc) {
     res <- seqcart(X, xmisord, XOBS, XMIS, minbucket, cp)
     X <- res$dataimp
     treeplot <- res$treeplot
@@ -46,7 +46,7 @@ CART <- function(
       i <- i + 1
     }
     if (verbose) {
-      cat('\r', "Finished:", round(ii/itermcmc * 100), "%")
+      message('\r', "Finished:", round(ii/itermcmc * 100), "%", appendLF = FALSE)
       flush.console()
     }
   }
