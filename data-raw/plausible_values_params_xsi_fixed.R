@@ -217,6 +217,8 @@ x3w5[, 2][rownames(x3w5) %in% pcitems("SC3", "MA", "w5")] <-
   x3w5[, 2][rownames(x3w5) %in% pcitems("SC3", "MA", "w5")]/2
 load("data-raw/item_difficulty_SC3_MA_w9.RData")
 x3w9 <- item_difficulty_SC3_MA_w9
+rownames(x3w9)[14] <- "mas1q02s_sc3g12_c"
+
 rm(item_difficulty_SC3_MA_w9)
 
 
