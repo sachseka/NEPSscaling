@@ -12,6 +12,8 @@ summary.pv_obj <- function(object, ...) {
 
   cat("\nMean of Plausible Values: \n")
   print(round(get_posterior_means(pv_obj)$pv$total, 3))
+  cat("\nVariance of Plausible Values: \n")
+  print(round(get_posterior_variances(pv_obj)$pv$total, 3))
   if (get_type(pv_obj = pv_obj) == "longitudinal") {
     cat("\nItem parameters: \n")
     new_items <- paste0("items_w", get_wave(pv_obj))

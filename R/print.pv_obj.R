@@ -13,7 +13,7 @@ print.pv_obj <- function(x, ...) {
   cat("Wave(s): ", get_wave(pv_obj = pv_obj), "\n")
   cat("Test takers per wave: ", get_n_testtakers(pv_obj = pv_obj), "\n")
   cat("Number of estimated plausible values: ", get_npv(pv_obj = pv_obj), "\n")
-  cat("Number of sampled imputations / completed data: ", 
+  cat("Number of sampled imputations / completed data: ",
       length(get_eap_reliability(pv_obj = pv_obj)), "\n")
 
   if (get_type(pv_obj = pv_obj) == "longitudinal") {
@@ -24,10 +24,17 @@ print.pv_obj <- function(x, ...) {
     rownames(tmp) <- names(get_eap_reliability(pv_obj = pv_obj))
     print(round(tmp, 3))
     if (nrow(get_regression_coefficients(pv_obj = pv_obj)[[1]]) > 1) {
-      cat("\nVariables in background model: ",
-        paste(rownames(get_regression_coefficients(pv_obj = pv_obj)[[1]])[-1],
-            collapse = ", "),
-        "\n")
+      if (get_type(pv_obj = pv_obj) == "longitudinal") {
+        cat("\nVariables in background model: ",
+            paste(get_regression_coefficients(pv_obj = pv_obj)[[1]]$Variable[-1],
+                  collapse = ", "),
+            "\n")
+      } else {
+        cat("\nVariables in background model: ",
+            paste(rownames(get_regression_coefficients(pv_obj = pv_obj)[[1]])[-1],
+                  collapse = ", "),
+            "\n")
+      }
     } else {
       cat("\nVariables in background model:  none\n")
     }

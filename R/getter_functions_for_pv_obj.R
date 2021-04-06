@@ -157,6 +157,19 @@ get_posterior_means <- function(pv_obj) {
   pv_obj[["posterior_means"]]
 }
 
+#' Get the posterior variances of the EAPs, WLEs, and plausible values
+#'
+#' @param pv_obj return object of function \code{NEPSscaling::plausible_values()}
+#' @return the overall mean of the plausible values as a numeric value
+#'
+#' @export
+get_posterior_variances <- function(pv_obj) {
+  if (class(pv_obj) != "pv_obj") {
+    stop("pv_obj must be of class 'pv_obj'.")
+  }
+  pv_obj[["posterior_variances"]]
+}
+
 #' Get the complete list of estimated plausible values and their respective
 #' background data
 #'

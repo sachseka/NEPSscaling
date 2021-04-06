@@ -510,8 +510,11 @@ plausible_values <- function(SC,
     eap <- res[["eap"]]
   }
 
-  # calculate posterior mean of estimated eaps/plausible values
+  # calculate posterior moments of estimated eaps/plausible values
   MEAN <- calculate_posterior_means(eap,
+                                    wle = if (control[["WLE"]]) {wle} else {NULL},
+                                    pv, waves, npv)
+  VAR <- calculate_posterior_variances(eap,
                                     wle = if (control[["WLE"]]) {wle} else {NULL},
                                     pv, waves, npv)
 
@@ -546,6 +549,7 @@ plausible_values <- function(SC,
   }
   res[["information_criteria"]] <- info_crit
   res[["posterior_means"]] <- MEAN
+  res[["posterior_variances"]] <- VAR
   res[["pv"]] <- pv
   if (control[["EAP"]]) {
     res[["eap"]] <- eap
