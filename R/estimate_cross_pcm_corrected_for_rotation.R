@@ -36,7 +36,11 @@ estimate_cross_pcm_corrected_for_rotation <- function(bgdata, imp, frmY = NULL,
   eap <- replicate(times, data.frame(ID_t = ID_t$ID_t), simplify = FALSE)
   for (i in 1:times) {
     res <- prepare_bgdata_frmY(imp, i, frmY)
-    bgdatacom <- res[["bgdatacom"]]
+    if (is.null(res[["bgdatacom"]])) {
+      bgdatacom <- bgdata
+    } else {
+      bgdatacom <- res[["bgdatacom"]]
+    }
     frmY <- res[["frmY"]]
 
     # estimate IRT model
@@ -46,10 +50,8 @@ estimate_cross_pcm_corrected_for_rotation <- function(bgdata, imp, frmY = NULL,
       facets = position,
       B = B,
       resp = resp[, items],
-      dataY = if (is.null(bgdata)) {
+      dataY = if (is.null(bgdatacom)) {
         NULL
-      } else if (is.null(imp)) {
-        bgdata[, -which(names(bgdata) == "ID_t"), drop = FALSE]
       } else {
         bgdatacom[, -which(names(bgdatacom) == "ID_t"), drop = FALSE]
       },
@@ -61,7 +63,7 @@ estimate_cross_pcm_corrected_for_rotation <- function(bgdata, imp, frmY = NULL,
     )
     # post-processing of model
     res <- post_process_cross_tam_results(mod[[1]], npv, control,
-      imp, bgdatacom, eap, i, EAP.rel, regr.coeff, pvs, bgdata, info_crit
+      imp, bgdatacom, eap, i, EAP.rel, regr.coeff, pvs, info_crit, frmY
     )
     eap <- res$eap
     regr.coeff <- res$regr.coeff

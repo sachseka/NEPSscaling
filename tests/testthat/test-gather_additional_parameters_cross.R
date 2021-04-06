@@ -41,4 +41,3 @@ test_that("gather_additional_parameters_cross", {
                                                        i = 2, bgdata),
                     result2)
 })
-rm(data.sim.rasch)

@@ -1,26 +1,23 @@
 library(shinythemes)
 library(shiny)
-library(shinydashboard)
 library(bslib)
 
 
-
 shinyUI(
-  navbarPage(
+  navbarPage(id="navbar",
     theme = bs_theme(
       bg = "#E8E6F4", fg = "black", primary = "#24195D", secondary = "#1D0E46",
+      "font-size-base" = "1.25rem",
       base_font = font_google("Open Sans"),
       code_font = font_google("Open Sans")
     ),
     title = "NEPSscaling",
-    titlePanel(div(
-      column(width = 1),
-      column(width = 1, tags$img(src = "NEPS_Logo_web_de.jpg", height = 40, width = 100))
-    )),
-    titlePanel(div(
-      column(width = 1),
-      column(width = 1, tags$img(src = "LIfBi_Logo_solo _RZ_RGB.jpg", height = 50, width = 55))
-    )),
+    tabPanel(
+      fluidRow(
+        column(12, offset = 1, img(height = 50, width = 160, src = "NEPS_Logo_web_de.jpg")),
+        column(12, offset = 1, img(height = 50, width = 55, src = "LIfBi_Logo_solo_RZ_RGB.jpg"))),
+    fluidRow("Instructions for using this app:"),
+    fluidRow("To start the analysis, press:",   icon("laptop"))),
     inverse = FALSE,
     tags$head(
       tags$style(
@@ -40,11 +37,12 @@ shinyUI(
     navbarMenu(
       icon("power-off"),
       tabPanel(
-        "Stop",
+        "Stop",value="stop",
         DT::dataTableOutput("table1")
       ),
       tabPanel(
         "Save State",
+        bookmarkButton(),
         DT::dataTableOutput("table2")
       ),
       tabPanel(
@@ -60,6 +58,7 @@ shinyUI(
       ),
       tabPanel(
         "About",
+        fluidRow("Informations"),
         DT::dataTableOutput("table5")
       ),
       tabPanel(
@@ -81,6 +80,8 @@ shinyUI(
     ),
     tabPanel(
       icon("laptop"),
+
+
       ## ---------------------------------sidebar----------------------------------
       sidebarLayout(
         sidebarPanel(
@@ -182,7 +183,7 @@ shinyUI(
           # Conditional Panel for Visualize Estimates
           conditionalPanel(
             condition = "input.conditionedPanels==3",
-            checkboxGroupInput("checkGroup1",
+            radioButtons("checkGroup1",
               label = h3("Visualizations"),
               choices = list(
                 "Distribution of plausible values" = 1,
@@ -191,7 +192,7 @@ shinyUI(
               selected = 1
             ),
             # Weiteres Conditional Panel
-            checkboxGroupInput("checkGroup2",
+            radioButtons("checkGroup2",
               label = h3("Visualizations"),
               choices = list(
                 "Lables" = 1,
@@ -237,7 +238,7 @@ shinyUI(
           # Conditional Panel for Summary Statistics
           conditionalPanel(
             condition = "input.conditionedPanels==5",
-            checkboxGroupInput("checkGroup3",
+            radioButtons("checkGroup3",
               label = h3("Summaries for"),
               choices = list(
                 "Plausible values" = 1,
@@ -246,7 +247,7 @@ shinyUI(
               selected = 1
             ),
             hr(),
-            checkboxGroupInput("checkGroup4",
+            radioButtons("checkGroup4",
               label = h3(),
               choices = list(
                 "Lables" = 1,
@@ -332,3 +333,7 @@ shinyUI(
     )
   )
 )
+
+
+enableBookmarking(store = "url")
+#shinyApp(ui, server)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/getter_functions_for_pv_obj.R
 \name{get_imputation_names}
 \alias{get_imputation_names}
-\title{Get names of used imputations.}
+\title{Get the names of used imputations.}
 \usage{
 get_imputation_names(pv_obj)
 }

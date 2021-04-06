@@ -377,3 +377,24 @@ get_imputation_tree <- function(pv_obj, imputation, variable) {
   cat(tree)
   invisible(tree)
 }
+
+
+#' Get exclude_for_wave
+#'
+#' In the longitudinal case, it might not be wanted that all background variables
+#' are used in the background model of the plausible values for all time points.
+#' The list exclude_for_wave contains which variables are NOT used in the
+#' background model of the given wave.
+#'
+#' @param pv_obj return object of function \code{NEPSscaling::plausible_values()}
+#' @return a list of matrices or a matrix of AIC and BIC
+#'
+#' @export
+get_exclude_for_wave <- function(pv_obj) {
+  if (class(pv_obj) != "pv_obj") {
+    stop("pv_obj must be of class 'pv_obj'.")
+  }
+  pv_obj[["exclude_for_wave"]]
+}
+
+

@@ -34,3 +34,13 @@ was_assessed_in_school <- function(longitudinal, SC, wave) {
   }
   TRUE
 }
+
+extract_bgdata_variables <- function(bgdatacom, exclude_for_wave, waves, j) {
+  if (gsub("_", "", waves[j]) %in% names(exclude_for_wave)) {
+    bgdatacom[
+      , -which(names(bgdatacom) %in% exclude_for_wave[[gsub("_", "", waves[j])]])
+    ]
+  } else {
+    bgdatacom
+  }
+}

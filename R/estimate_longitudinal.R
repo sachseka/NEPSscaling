@@ -19,11 +19,15 @@
 #'   algorithm
 #' @param npv Integer value fo number of plausible values to be returned by
 #'   `NEPScaling::plausible_values()`
+#' @param exclude_for_wave list of vectors (named after the waves); contains
+#' variables that are NOT to be used in the background model of the specified
+#' wave
 #'
 #' @noRd
 
 estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, PCM, ID_t,
-                                  waves, type, domain, SC, control, npv) {
+                                  waves, type, domain, SC, control, npv,
+                                  exclude_for_wave) {
   items <- lapply(xsi.fixed$long[[domain]][[SC]], rownames)
   if (SC == "SC2" && domain == "SC") {
     items <- items[-length(items)]
@@ -35,30 +39,44 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, PCM, ID_t,
   Q <- res[["Q"]]
 
   times <- ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi)
-  pvs <- EAP.rel <- regr.coeff <- info_crit <- replicate(times, list(), simplify = FALSE)
+  pvs <- EAP.rel <- info_crit <- replicate(times, list(), simplify = FALSE)
+  regr.coeff <- replicate(
+      n = times, simplify = FALSE,
+      expr = data.frame(Variable = if (!is.null(bgdata)) {
+        c("Intercept", colnames(model.matrix(create_formula(bgdata), bgdata))[-1])
+      } else {
+        "Intercept"
+      })
+    )
   eap <- replicate(times, data.frame(ID_t = ID_t$ID_t), simplify = FALSE)
   for (i in 1:times) {
     res <- prepare_bgdata_frmY(imp, i, frmY)
-    bgdatacom <- res[["bgdatacom"]]
     frmY <- res[["frmY"]]
+    if (is.null(res[["bgdatacom"]])) {
+      bgdatacom <- bgdata
+    } else {
+      bgdatacom <- res[["bgdatacom"]]
+    }
 
-    # estimate IRT model
     mod <- tmp_pvs <- list()
     for (j in seq(length(waves))) {
+      # extract bgdata specific for wave
+      tmp_bgdata <- bgdatacom
+      if (!is.null(exclude_for_wave)) {
+        tmp_bgdata <- extract_bgdata_variables(bgdatacom, exclude_for_wave,
+                                               waves, j)
+        frmY <- create_formula(tmp_bgdata)
+      }
+
+      # estimate IRT model
       mod[[j]] <- TAM::tam.mml(
         resp = resp[[j]][, items[[j]]],
-        dataY = if (is.null(bgdata)) {
+        dataY = if (is.null(tmp_bgdata)) {
           NULL
-        } else if (is.null(imp)) {
-          bgdata[
-            bgdata$ID_t %in% resp[[j]]$ID_t,
-            -which(names(bgdata) == "ID_t"),
-            drop = FALSE
-          ]
         } else {
-          bgdatacom[
-            bgdatacom$ID_t %in% resp[[j]]$ID_t,
-            -which(names(bgdatacom) == "ID_t"),
+          tmp_bgdata[
+            tmp_bgdata$ID_t %in% resp[[j]]$ID_t,
+            -which(names(tmp_bgdata) == "ID_t"),
             drop = FALSE
           ]
         },
@@ -71,8 +89,8 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, PCM, ID_t,
       )
       res <- post_process_long_tam_results(mod[[j]], npv, control, imp,
                                            bgdatacom, eap, i, j, EAP.rel,
-                                           regr.coeff, bgdata, waves,
-                                           info_crit)
+                                           regr.coeff, tmp_bgdata, waves,
+                                           info_crit, frmY)
       tmp_pvs[[j]] <- res[["tmp_pvs"]]
       eap <- res[["eap"]]
       regr.coeff <- res[["regr.coeff"]]

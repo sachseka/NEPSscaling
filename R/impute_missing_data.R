@@ -20,11 +20,9 @@ impute_missing_data <- function(bgdata, verbose, control) {
       res <- CART(X = bgdata, minbucket = control$ML$minbucket,
                   cp = control$ML$cp, nmi = control$ML$nmi, verbose = verbose)
       imp <- res$imp
-      imp <- purrr::map(.x = imp, .f = reformat_bgdata_as_numeric)
       treeplot <- res$treeplot
       variable_importance <- res$variable_importance
     } else {
-      bgdata <- reformat_bgdata_as_numeric(bgdata)
       imp <- NULL
       frmY <- create_formula(bgdata)
     }

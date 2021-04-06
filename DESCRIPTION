@@ -18,15 +18,12 @@ Imports:
     purrr,
     sjlabelled,
     stringr,
-    vctrs,
     ggplot2,
+    forcats,
     rpart,
     shiny,
     shinythemes,
-    shinydashboard,
     bslib,
-    vroom,
-    forcats,
     xtable
 License: GPL-3
 Encoding: UTF-8

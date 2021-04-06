@@ -3,6 +3,13 @@ library(shiny)
 library(xtable)
 
 
+server = function(input,output,session) {
+  observe({
+    if (input$navbar == "stop")
+      stopApp()
+ })
+}
+
 filter_data <- function(filter_op, filter_var, filter_val, out) {
   switch(filter_op,
     "<" = dplyr::filter(out, .data[[filter_var]] < filter_val),
@@ -133,9 +140,9 @@ shinyServer(function(input, output, session) {
     if (!is.null(ordinal) | !is.null(nominal)) {
       sel <- unique(c(ordinal, nominal))
       if (length(sel) == 1) {
-        out[[sel]] <- forcats::as_factor(out[[sel]])
+        out[[sel]] <- as.factor(out[[sel]])
       } else {
-        out[, sel] <- lapply(out[, sel], forcats::as_factor)
+        out[, sel] <- lapply(out[, sel], as.factor)
       }
     }
 
@@ -256,8 +263,7 @@ shinyServer(function(input, output, session) {
       new_xsi <- paste0("xsi_w", get_wave(values$pv_obj))
       get_item_difficulties(values$pv_obj) %>%
         purrr::map(.f = function(mat) {
-          colnames(mat) <- vctrs::vec_as_names(colnames(mat), repair = "unique",
-                                               quiet = TRUE)
+          colnames(mat) <- base::make.names(colnames(mat), unique = TRUE)
           mat}) %>%
         purrr::map(tibble::as_tibble, rownames = "items") %>%
         purrr::map(dplyr::rename, "pos" = "...1") %>%
@@ -444,14 +450,15 @@ shinyServer(function(input, output, session) {
     req(values$pv_obj)
     tmp <- get_regression_coefficients(values$pv_obj)
     if (get_type(values$pv_obj) == "longitudinal") {
-      tmp <- (tmp %>% purrr::reduce(`+`)) / length(get_eap_reliability(values$pv_obj))
       tab <- data.frame(
-        Variable = paste(rownames(tmp), "Wave",
-                         rep(get_wave(values$pv_obj), each = nrow(tmp))),
-        N = as.character(rep(get_n_testtakers(values$pv_obj), each = nrow(tmp))),
-        b = unname(unlist(tmp[, seq(1, ncol(tmp), 2)])),
-        se = unname(unlist(tmp[, seq(2, ncol(tmp), 2)]))
+        Variable = paste(tmp[[1]]$Variable, "Wave",
+                         rep(get_wave(values$pv_obj), each = nrow(tmp[[1]]))),
+        N = as.character(rep(get_n_testtakers(values$pv_obj), each = nrow(tmp[[1]])))
       )
+      tmp <- lapply(tmp, function(x) x[,-1]) %>%
+        purrr::reduce(`+`) / length(tmp)
+      tab[["b"]] <- unname(unlist(tmp[, seq(1, ncol(tmp), 2)]))
+      tab[["se"]] <- unname(unlist(tmp[, seq(2, ncol(tmp), 2)]))
     } else {
       tab <- as.data.frame(matrix(0, ncol = 4, nrow = nrow(tmp)))
       for (i in seq(1, ncol(tmp), by = 2)) {
@@ -617,7 +624,7 @@ shinyServer(function(input, output, session) {
       #               "LaTeX" = ".tex")
       # paste0(input$descriptive_name, ext)
       req(input$descriptive_name)
-      paste0(input$descriptive_name, "tsv")
+      paste0(input$descriptive_name, ".tsv")
     },
     content = function(file) {
       # if (input$descriptive_format == "tsv") {
@@ -629,17 +636,19 @@ shinyServer(function(input, output, session) {
       #            label = "tab:desc"),
       #     file)
       # }
-      vroom::vroom_write(imputation_table(), file, progress = FALSE)
+      write.table(x = imputation_table(), file = file, sep = "\t",
+                  quote = FALSE, row.names = FALSE)
     }
   )
 
   output$download_regression <- downloadHandler(
     filename = function() {
       req(input$regression_name)
-      paste0(input$regression_name, "tsv")
+      paste0(input$regression_name, ".tsv")
     },
     content = function(file) {
-      vroom::vroom_write(regression_table(), file, progress = FALSE)
+      write.table(x = regression_table(), file = file, sep = "\t",
+                  quote = FALSE, row.names = FALSE)
     }
   )
 })

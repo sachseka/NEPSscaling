@@ -2,19 +2,7 @@
 % Please edit documentation in R/getter_functions_for_pv_obj.R
 \name{get_valid_responses_per_person}
 \alias{get_valid_responses_per_person}
-\title{#' Get the estimation model
-#'
-#' @param pv_obj return object of function \code{NEPSscaling::plausible_values()}
-#' @return the estimation model as a String
-#'
-#' @export
-get_model <- function(pv_obj) {
-  if (class(pv_obj) != "pv_obj") {
-    stop("pv_obj must be of class 'pv_obj'.")
-  }
-  pv_obj[["model"]]
-}
-Get the number of valid responses (i.e., non-missing) for each test taker}
+\title{Get the number of valid responses (i.e., non-missing) for each test taker}
 \usage{
 get_valid_responses_per_person(pv_obj)
 }
@@ -26,17 +14,5 @@ a data.frame containing the number of valid responses per person
 as an integer value
 }
 \description{
-#' Get the estimation model
-#'
-#' @param pv_obj return object of function \code{NEPSscaling::plausible_values()}
-#' @return the estimation model as a String
-#'
-#' @export
-get_model <- function(pv_obj) {
-  if (class(pv_obj) != "pv_obj") {
-    stop("pv_obj must be of class 'pv_obj'.")
-  }
-  pv_obj[["model"]]
-}
 Get the number of valid responses (i.e., non-missing) for each test taker
 }

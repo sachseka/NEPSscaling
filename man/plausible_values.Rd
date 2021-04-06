@@ -19,6 +19,7 @@ plausible_values(
   include_nr = TRUE,
   verbose = TRUE,
   adjust_school_context = TRUE,
+  exclude_for_wave = NULL,
   control = list(EAP = FALSE, WLE = FALSE, ML = list(nmi = 10L, ntheta = 2000,
     normal.approx = FALSE, samp.regr = FALSE, theta.model = FALSE, np.adj = 8, na.grid =
     5, minbucket = 5, cp = 1e-04))
@@ -68,6 +69,14 @@ is TRUE)}
 
 \item{adjust_school_context}{logical; whether the school context should be
 included in the background models of SC3 and SC4 (the default is TRUE)}
+
+\item{exclude_for_wave}{list; only applies to the longitudinal case. If
+some variables shall be used for one time point, but not the other, the item
+is listed in a character vector for the wave it should NOT be used. E.g.,
+\code{list(w3 = "gender")} excludes the variable gender for wave 3. The
+assessment waves can be looked up with \code{currently_implemented()}. Please
+note that there has to be at least one background variable per specified
+wave left. Otherwise, an error will be thrown.}
 
 \item{control}{list of additional options. If \code{EAP = TRUE}, the EAPs
 will be returned as well; for \code{WLE = TRUE} WLEs are returned.

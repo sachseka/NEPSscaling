@@ -17,6 +17,8 @@ CART <- function(
 ){
   ANYXMIS <- any(is.na(X))
   if(ANYXMIS){
+    X <- sjlabelled::remove_all_labels(X)
+    X <- as.data.frame(X)
     XOBS <- !is.na(X)
     XMIS <- is.na(X)
     xmisord <- names(sort(colSums(XMIS)))[sort(colSums(XMIS)) > 0]
