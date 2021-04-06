@@ -40,6 +40,8 @@
 #' wave left. Otherwise, an error will be thrown.
 #' @param verbose logical; whether progress should be displayed in the console
 #' (the default is TRUE)
+#' @param seed integer; seed for random number generators in plausible values
+#' estimation
 #' @param control list of additional options. If \code{EAP = TRUE}, the EAPs
 #' will be returned as well; for \code{WLE = TRUE} WLEs are returned.
 #' Furthermore, additional control options for are collected in the list `ML`.
@@ -198,6 +200,7 @@ plausible_values <- function(SC,
                              verbose = TRUE,
                              adjust_school_context = TRUE,
                              exclude_for_wave = NULL,
+                             seed = NULL,
                              control = list(
                                EAP = FALSE, WLE = FALSE,
                                ML = list(
@@ -294,6 +297,13 @@ plausible_values <- function(SC,
     if (is.null(bgdata[["ID_t"]])) {
       stop("ID_t must be included in bgdata.")
     }
+  }
+
+  if (!is.null(seed)) {
+    if (!is.numeric(seed)) {
+      stop("'seed' must be a positive integer.")
+    }
+    set.seed(seed)
   }
 
   # complement control lists
@@ -543,6 +553,9 @@ plausible_values <- function(SC,
   res[["n_testtakers"]] <-
     colSums(!is.na(valid_responses_per_person[, -1, drop = FALSE]))
   res[["npv"]] <- npv
+  if (!is.null(seed)) {
+    res[["seed"]] <- seed
+  }
   res[["control"]] <- control
   if (rotation) {
     res[["position"]] <- data.frame(ID_t, position)
