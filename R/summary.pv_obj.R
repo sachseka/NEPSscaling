@@ -42,6 +42,8 @@ summary.pv_obj <- function(object, ...) {
     cat("\nItem parameters: \n")
     print(round(get_item_difficulties(pv_obj), 3))
     cat("\nRegression Coefficients: \n")
-    print(round(get_regression_coefficients(pv_obj), 3))
+    df <- get_regression_coefficients(pv_obj)
+    df[, -1] <- round(df[, -1], 3)
+    print(df)
   }
 }

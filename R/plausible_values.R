@@ -492,6 +492,10 @@ plausible_values <- function(SC,
   treeplot <- res[["treeplot"]]
   variable_importance <- res[["variable_importance"]]
 
+  # add standardized regression coefficients
+  regr.coeff <- calculate_standardized_regr_coeff(regr.coeff, datalist,
+                                                  longitudinal, waves)
+
   # linking of longitudinal plausible values ----------------------------------
 
   # linear transformation of longitudinal PVs to pre-defined scale

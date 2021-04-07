@@ -62,25 +62,25 @@ gather_additional_parameters_cross <- function(eap, mod, EAP.rel, regr.coeff,
   # se estimation gives warning "In sqrt(-1/info_pp) : NaNs produced" because
   # item difficulty parameters are fixed --> suppress warnings!
   if (i == 1) {
-    regr.coeff <- suppressWarnings(quiet(TAM::tam.se(mod)$beta))
-    colnames(regr.coeff) <- paste0("imp", i, "_", c("coeff", "se"))
     if (!is.null(bgdata)) {
-      rownames(regr.coeff) <- 
-        c("Intercept", colnames(model.matrix(frmY, bgdata))[-1])
+      regr.coeff <- data.frame(
+        Variable = c("Intercept", colnames(model.matrix(frmY, bgdata))[-1])
+      )
     } else {
-      rownames(regr.coeff) <- "Intercept"
+      regr.coeff <- data.frame(Variable = "Intercept")
     }
     info_crit <- matrix(c(AIC(mod), BIC(mod)), nrow = 2, ncol = 1)
     rownames(info_crit) <- c("AIC", "BIC")
     colnames(info_crit) <- paste0("imp", i)
   } else if (i > 1) {
-    tmp <- suppressWarnings(quiet(TAM::tam.se(mod)$beta))
-    colnames(tmp) <- paste0("imp", i, "_", c("coeff", "se"))
-    regr.coeff <- cbind(regr.coeff, tmp)
     tmp <- matrix(c(AIC(mod), BIC(mod)), nrow = 2, ncol = 1)
     colnames(tmp) <- paste0("imp", i)
     info_crit <- cbind(info_crit, tmp)
   }
+  tmp <- suppressWarnings(quiet(TAM::tam.se(mod)$beta))
+  colnames(tmp) <- paste0("imp", i, "_", c("coeff", "se"))
+  regr.coeff <- cbind(regr.coeff, tmp)
+
   list(eap = eap, EAP.rel = EAP.rel, regr.coeff = regr.coeff,
        info_crit = info_crit)
 }

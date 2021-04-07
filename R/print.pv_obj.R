@@ -24,17 +24,10 @@ print.pv_obj <- function(x, ...) {
     rownames(tmp) <- names(get_eap_reliability(pv_obj = pv_obj))
     print(round(tmp, 3))
     if (nrow(get_regression_coefficients(pv_obj = pv_obj)[[1]]) > 1) {
-      if (get_type(pv_obj = pv_obj) == "longitudinal") {
-        cat("\nVariables in background model: ",
-            paste(get_regression_coefficients(pv_obj = pv_obj)[[1]]$Variable[-1],
-                  collapse = ", "),
-            "\n")
-      } else {
-        cat("\nVariables in background model: ",
-            paste(rownames(get_regression_coefficients(pv_obj = pv_obj)[[1]])[-1],
-                  collapse = ", "),
-            "\n")
-      }
+      cat("\nVariables in background model: ",
+          paste(get_regression_coefficients(pv_obj = pv_obj)[[1]]$Variable[-1],
+                collapse = ", "),
+          "\n")
     } else {
       cat("\nVariables in background model:  none\n")
     }
@@ -46,9 +39,9 @@ print.pv_obj <- function(x, ...) {
     cat("\nEAP reliability: ", tmp, "\n")
     if (nrow(get_regression_coefficients(pv_obj = pv_obj)) > 1) {
       cat("\nVariables in background model: ",
-        paste(rownames(get_regression_coefficients(pv_obj = pv_obj))[-1],
-            collapse = ", "),
-        "\n")
+          paste(get_regression_coefficients(pv_obj = pv_obj)$Variable[-1],
+                collapse = ", "),
+          "\n")
     } else {
       cat("\nVariables in background model:  none\n")
     }

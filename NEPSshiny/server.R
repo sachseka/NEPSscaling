@@ -450,27 +450,31 @@ shinyServer(function(input, output, session) {
     req(values$pv_obj)
     tmp <- get_regression_coefficients(values$pv_obj)
     if (get_type(values$pv_obj) == "longitudinal") {
+      tmp <- lapply(tmp, function(x) x[,-1]) %>%
+        purrr::reduce(`+`) / length(tmp)
       tab <- data.frame(
         Variable = paste(tmp[[1]]$Variable, "Wave",
                          rep(get_wave(values$pv_obj), each = nrow(tmp[[1]]))),
-        N = as.character(rep(get_n_testtakers(values$pv_obj), each = nrow(tmp[[1]])))
+        N = as.character(rep(get_n_testtakers(values$pv_obj), each = nrow(tmp[[1]]))),
+        b = unname(unlist(tmp[, seq(1, ncol(tmp), 3)])),
+        beta = unname(unlist(tmp[, seq(2, ncol(tmp), 3)])),
+        se = unname(unlist(tmp[, seq(3, ncol(tmp), 3)]))
       )
-      tmp <- lapply(tmp, function(x) x[,-1]) %>%
-        purrr::reduce(`+`) / length(tmp)
-      tab[["b"]] <- unname(unlist(tmp[, seq(1, ncol(tmp), 2)]))
-      tab[["se"]] <- unname(unlist(tmp[, seq(2, ncol(tmp), 2)]))
     } else {
-      tab <- as.data.frame(matrix(0, ncol = 4, nrow = nrow(tmp)))
-      for (i in seq(1, ncol(tmp), by = 2)) {
-        tab[, -c(1, 2)] <- (tab[, -c(1, 2)] + tmp[, c(i, i + 1)]) / 2
-      }
-      colnames(tab) <- c("Variable", "N", "b", "se")
-      tab$Variable <- rownames(tmp)
-      tab$N <- as.character(get_n_testtakers(values$pv_obj))
+      tab <- data.frame(
+        Variable = tmp$Variable,
+        N = as.character(get_n_testtakers(values$pv_obj)),
+        b = rowMeans(tmp[, grepl("_coeff$", names(tmp))]),
+        beta = rowMeans(tmp[, grepl("_std$", names(tmp))]),
+        se = rowMeans(tmp[, grepl("_se$", names(tmp))])
+      )
     }
-    tab[["95% CI"]] <- paste0("[", round(tab$b - 1.96 * tab$se, 3),"; ",
-                              round(tab$b + 1.96 * tab$se, 3), "]")
+    tab[["95% CI of b"]] <- paste0("[", round(tab$b - 1.96 * tab$se, 3),"; ",
+                                   round(tab$b + 1.96 * tab$se, 3), "]")
+    # tab[["95% CI of beta"]] <- paste0("[", round(tab$beta - 1.96 * tab$se, 3),"; ",
+    #                                round(tab$beta + 1.96 * tab$se, 3), "]")
     tab$b <- as.character(round(tab$b, 3))
+    tab$beta <- as.character(round(tab$beta, 3))
     tab$se <- as.character(round(tab$se, 3))
     tab
   })
