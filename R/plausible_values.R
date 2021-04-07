@@ -85,6 +85,10 @@
 #' \item{posterior_means}{The overall mean of all persons' abilities for the
 #' EAPs and WLEs (if estimated) as well as across all PVs and per PV
 #' imputation.}
+#' \item{posterior_variances}{The overall variance of all persons' abilities for
+#' the EAPs and WLEs (if estimated) as well as across all PVs and per PV
+#' imputation.}
+#' \item{seed}{Seed for random number generator; if supplied.}
 #' \item{pv}{A list of \code{npv} \code{data.frame}s containing one plausible
 #' value per wave each and the imputed data set that was used to estimate the
 #' plausible value. The data sets are sampled randomly from \code{npv} *
