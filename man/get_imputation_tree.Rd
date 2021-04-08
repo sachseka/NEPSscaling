@@ -2,7 +2,7 @@
 % Please edit documentation in R/getter_functions_for_pv_obj.R
 \name{get_imputation_tree}
 \alias{get_imputation_tree}
-\title{Get tree representation of specific imputation.}
+\title{Get the tree representation of specific imputation.}
 \usage{
 get_imputation_tree(pv_obj, imputation, variable)
 }

@@ -57,7 +57,7 @@ get_type <- function(pv_obj) {
   type
 }
 
-#' Get whether the test rotation has been considered during estimation
+#' Get info whether test rotation has been considered during estimation
 #'
 #' @param pv_obj return object of function \code{NEPSscaling::plausible_values()}
 #' @return whether the test rotation has been considered as a String
@@ -101,19 +101,6 @@ get_min_valid <- function(pv_obj) {
   }
   pv_obj[["min_valid"]]
 }
-
-#' #' Get the estimation model
-#' #'
-#' #' @param pv_obj return object of function \code{NEPSscaling::plausible_values()}
-#' #' @return the estimation model as a String
-#' #'
-#' #' @export
-#' get_model <- function(pv_obj) {
-#'   if (class(pv_obj) != "pv_obj") {
-#'     stop("pv_obj must be of class 'pv_obj'.")
-#'   }
-#'   pv_obj[["model"]]
-#' }
 
 #' Get the number of valid responses (i.e., non-missing) for each test taker
 #'
@@ -168,6 +155,19 @@ get_posterior_means <- function(pv_obj) {
     stop("pv_obj must be of class 'pv_obj'.")
   }
   pv_obj[["posterior_means"]]
+}
+
+#' Get the posterior variances of the EAPs, WLEs, and plausible values
+#'
+#' @param pv_obj return object of function \code{NEPSscaling::plausible_values()}
+#' @return the overall mean of the plausible values as a numeric value
+#'
+#' @export
+get_posterior_variances <- function(pv_obj) {
+  if (class(pv_obj) != "pv_obj") {
+    stop("pv_obj must be of class 'pv_obj'.")
+  }
+  pv_obj[["posterior_variances"]]
 }
 
 #' Get the complete list of estimated plausible values and their respective
@@ -334,7 +334,7 @@ get_n_testtakers <- function(pv_obj) {
 }
 
 
-#' Get information criteria
+#' Get the information criteria
 #'
 #' @param pv_obj return object of function \code{NEPSscaling::plausible_values()}
 #' @return a list of matrices or a matrix of AIC and BIC
@@ -348,7 +348,11 @@ get_info_criteria <- function(pv_obj) {
 }
 
 
+<<<<<<< HEAD
 #' Get names of used imputations.
+=======
+#' Get the names of used imputations.
+>>>>>>> bugfix
 #'
 #' Imputations and the plausible values estimated with them are chosen randomly,
 #' so not all of them might be returned after the estimation. This function
@@ -367,7 +371,11 @@ get_imputation_names <- function(pv_obj) {
 }
 
 
+<<<<<<< HEAD
 #' Get tree representation of specific imputation.
+=======
+#' Get the tree representation of specific imputation.
+>>>>>>> bugfix
 #'
 #' For each imputed variable, a CART was constructed. This function returns its
 #' character representation.
@@ -390,3 +398,27 @@ get_imputation_tree <- function(pv_obj, imputation, variable) {
   cat(tree)
   invisible(tree)
 }
+<<<<<<< HEAD
+=======
+
+
+#' Get exclude_for_wave
+#'
+#' In the longitudinal case, it might not be wanted that all background variables
+#' are used in the background model of the plausible values for all time points.
+#' The list exclude_for_wave contains which variables are NOT used in the
+#' background model of the given wave.
+#'
+#' @param pv_obj return object of function \code{NEPSscaling::plausible_values()}
+#' @return a list of matrices or a matrix of AIC and BIC
+#'
+#' @export
+get_exclude_for_wave <- function(pv_obj) {
+  if (class(pv_obj) != "pv_obj") {
+    stop("pv_obj must be of class 'pv_obj'.")
+  }
+  pv_obj[["exclude_for_wave"]]
+}
+
+
+>>>>>>> bugfix

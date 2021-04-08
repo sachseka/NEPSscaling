@@ -1,6 +1,6 @@
 Package: NEPSscaling
 Title: NEPSscaling -- Tools for Plausible Values Estimation with NEPS data
-Version: 2.1.0
+Version: 2.2.0
 Authors@R: person("Anna", "Scharl", email = "anna.scharl@lifbi.de", role = c("aut", "cre"))
 Description: NEPSscaling allows users of NEPS data to estimate individual 
              competence values in the form of plausible values for NEPS 
@@ -18,9 +18,13 @@ Imports:
     purrr,
     sjlabelled,
     stringr,
-    vctrs,
     ggplot2,
-    rpart
+    forcats,
+    rpart,
+    shiny,
+    shinythemes,
+    bslib,
+    xtable
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

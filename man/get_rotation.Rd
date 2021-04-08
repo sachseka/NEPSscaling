@@ -2,7 +2,7 @@
 % Please edit documentation in R/getter_functions_for_pv_obj.R
 \name{get_rotation}
 \alias{get_rotation}
-\title{Get whether the test rotation has been considered during estimation}
+\title{Get info whether test rotation has been considered during estimation}
 \usage{
 get_rotation(pv_obj)
 }
@@ -13,5 +13,5 @@ get_rotation(pv_obj)
 whether the test rotation has been considered as a String
 }
 \description{
-Get whether the test rotation has been considered during estimation
+Get info whether test rotation has been considered during estimation
 }

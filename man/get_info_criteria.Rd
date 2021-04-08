@@ -2,7 +2,7 @@
 % Please edit documentation in R/getter_functions_for_pv_obj.R
 \name{get_info_criteria}
 \alias{get_info_criteria}
-\title{Get information criteria}
+\title{Get the information criteria}
 \usage{
 get_info_criteria(pv_obj)
 }
@@ -13,5 +13,5 @@ get_info_criteria(pv_obj)
 a list of matrices or a matrix of AIC and BIC
 }
 \description{
-Get information criteria
+Get the information criteria
 }

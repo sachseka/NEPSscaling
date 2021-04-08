@@ -30,11 +30,15 @@ estimate_cross_rasch_corrected_for_rotation <- function(bgdata, imp,
   items <- rownames(xsi.fixed$cross[[domain]][[SC]][[gsub("_", "", waves)]])
 
   pvs <- list(NULL)
-  EAP.rel <- info_crit <- regr.coeff <- NULL
+  EAP.rel <- info_crit <- regr.coeff <- variance <- NULL
   eap <- replicate(times, data.frame(ID_t = ID_t$ID_t), simplify = FALSE)
   for (i in 1:times) {
     res <- prepare_bgdata_frmY(imp, i, frmY)
-    bgdatacom <- res[["bgdatacom"]]
+    if (is.null(res[["bgdatacom"]])) {
+      bgdatacom <- bgdata
+    } else {
+      bgdatacom <- res[["bgdatacom"]]
+    }
     frmY <- res[["frmY"]]
     # estimate IRT model
     mod <- list()
@@ -43,20 +47,10 @@ estimate_cross_rasch_corrected_for_rotation <- function(bgdata, imp,
       resp = resp[, items],
       facets = position,
       formulaA = ~ 0 + item + position,
-      dataY = if (is.null(bgdata)) {
+      dataY = if (is.null(bgdatacom)) {
         NULL
-      } else if (is.null(imp)) {
-        bgdata[
-          bgdata$ID_t %in% resp$ID_t,
-          -which(names(bgdata) == "ID_t"),
-          drop = FALSE
-        ]
       } else {
-        bgdatacom[
-          bgdatacom$ID_t %in% resp$ID_t,
-          -which(names(bgdatacom) == "ID_t"),
-          drop = FALSE
-        ]
+        bgdatacom[, -which(names(bgdatacom) == "ID_t"), drop = FALSE]
       },
       formulaY = frmY,
       pid = resp$ID_t,
@@ -69,17 +63,19 @@ estimate_cross_rasch_corrected_for_rotation <- function(bgdata, imp,
     )
     # post-processing of model
     res <- post_process_cross_tam_results(mod[[1]], npv, control,
-      imp, bgdatacom, eap, i, EAP.rel, regr.coeff, pvs, bgdata, info_crit
+      imp, bgdatacom, eap, i, EAP.rel, regr.coeff, pvs, info_crit, frmY,
+      variance
     )
     eap <- res$eap
     regr.coeff <- res$regr.coeff
     pvs <- res$pvs
     EAP.rel <- res$EAP.rel
     info_crit <- res$info_crit
+    variance <- res$variance
   }
   res <- list(
     eap = eap, pvs = pvs, mod = mod, EAP.rel = EAP.rel,
-    regr.coeff = regr.coeff, info_crit = info_crit
+    regr.coeff = regr.coeff, info_crit = info_crit, variance = variance
   )
   res
 }

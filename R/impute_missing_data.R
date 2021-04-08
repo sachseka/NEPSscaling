@@ -11,20 +11,18 @@ impute_missing_data <- function(bgdata, verbose, control) {
   if (!is.null(bgdata)) {
     if (any(is.na(bgdata))) {
       if (verbose) {
-        cat(
+        message(
           "Begin multiple imputation of missing background data... ",
-          paste(Sys.time()), "\n"
+          paste(Sys.time())
         )
         flush.console()
       }
       res <- CART(X = bgdata, minbucket = control$ML$minbucket,
                   cp = control$ML$cp, nmi = control$ML$nmi, verbose = verbose)
       imp <- res$imp
-      imp <- purrr::map(.x = imp, .f = reformat_bgdata_as_numeric)
       treeplot <- res$treeplot
       variable_importance <- res$variable_importance
     } else {
-      bgdata <- reformat_bgdata_as_numeric(bgdata)
       imp <- NULL
       frmY <- create_formula(bgdata)
     }

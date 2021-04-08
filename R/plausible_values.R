@@ -31,8 +31,17 @@
 #' is TRUE)
 #' @param adjust_school_context logical; whether the school context should be
 #' included in the background models of SC3 and SC4 (the default is TRUE)
+#' @param exclude_for_wave list; only applies to the longitudinal case. If
+#' some variables shall be used for one time point, but not the other, the item
+#' is listed in a character vector for the wave it should NOT be used. E.g.,
+#' \code{list(w3 = "gender")} excludes the variable gender for wave 3. The
+#' assessment waves can be looked up with \code{currently_implemented()}. Please
+#' note that there has to be at least one background variable per specified
+#' wave left. Otherwise, an error will be thrown.
 #' @param verbose logical; whether progress should be displayed in the console
 #' (the default is TRUE)
+#' @param seed integer; seed for random number generators in plausible values
+#' estimation
 #' @param control list of additional options. If \code{EAP = TRUE}, the EAPs
 #' will be returned as well; for \code{WLE = TRUE} WLEs are returned.
 #' Furthermore, additional control options for are collected in the list `ML`.
@@ -76,6 +85,10 @@
 #' \item{posterior_means}{The overall mean of all persons' abilities for the
 #' EAPs and WLEs (if estimated) as well as across all PVs and per PV
 #' imputation.}
+#' \item{posterior_variances}{The overall variance of all persons' abilities for
+#' the EAPs and WLEs (if estimated) as well as across all PVs and per PV
+#' imputation.}
+#' \item{seed}{Seed for random number generator; if supplied.}
 #' \item{pv}{A list of \code{npv} \code{data.frame}s containing one plausible
 #' value per wave each and the imputed data set that was used to estimate the
 #' plausible value. The data sets are sampled randomly from \code{npv} *
@@ -168,7 +181,7 @@
 #' The function will only work with NEPS data. To access NEPS data see
 #' https://www.neps-data.de/en-us/datacenter/dataaccess.aspx.
 #'
-#' @importFrom stats as.formula na.omit AIC BIC predict runif
+#' @importFrom stats as.formula na.omit AIC BIC predict runif model.matrix sd var
 #' @importFrom utils flush.console capture.output
 #' @importFrom rlang .data
 #'
@@ -190,6 +203,8 @@ plausible_values <- function(SC,
                              include_nr = TRUE,
                              verbose = TRUE,
                              adjust_school_context = TRUE,
+                             exclude_for_wave = NULL,
+                             seed = NULL,
                              control = list(
                                EAP = FALSE, WLE = FALSE,
                                ML = list(
@@ -288,6 +303,13 @@ plausible_values <- function(SC,
     }
   }
 
+  if (!is.null(seed)) {
+    if (!is.numeric(seed)) {
+      stop("'seed' must be a positive integer.")
+    }
+    set.seed(seed)
+  }
+
   # complement control lists
   res <- complement_control_lists(
     control[["EAP"]], control[["WLE"]], control[["ML"]]
@@ -310,7 +332,7 @@ plausible_values <- function(SC,
 
   t1 <- Sys.time()
   if (verbose) {
-    cat("Begin pre-processing of data... ", paste(t1), "\n")
+    message("Begin pre-processing of data... ", paste(t1))
     flush.console()
   }
 
@@ -396,14 +418,14 @@ plausible_values <- function(SC,
 
   t3 <- Sys.time()
   if (verbose) {
-    cat("\nBegin estimation... ", paste(t3), "\nThis might take some time.\n")
+    message("\nBegin estimation... ", paste(t3), "\nThis might take some time.")
     flush.console()
   }
 
   if (longitudinal) {
     res <- estimate_longitudinal(
       bgdata, imp, frmY = frmY, resp, PCM, ID_t, waves, type, domain, SC,
-      control, npv
+      control, npv, exclude_for_wave
     )
   } else {
     if (rotation) {
@@ -438,12 +460,13 @@ plausible_values <- function(SC,
   regr.coeff <- res[["regr.coeff"]]
   mod <- res[["mod"]]
   info_crit <- res[["info_crit"]]
+  variance <- res[["variance"]]
 
   # Begin post-processing of estimated data -----------------------------------
 
   t4 <- Sys.time()
   if (verbose) {
-    cat("Finished estimation. Begin post-processing... ", paste(t4), "\n")
+    message("Finished estimation. Begin post-processing... ", paste(t4))
     flush.console()
   }
 
@@ -463,12 +486,17 @@ plausible_values <- function(SC,
   # keep only those regr. coefficients / EAP reliabilities of kept imputations
   res <- discard_not_used_imputations(datalist, regr.coeff, EAP.rel,
                                       longitudinal, info_crit, treeplot,
-                                      variable_importance)
+                                      variable_importance, variance)
   regr.coeff <- res[["regr.coeff"]]
   EAP.rel <- res[["EAP.rel"]]
   info_crit <- res[["info_crit"]]
   treeplot <- res[["treeplot"]]
   variable_importance <- res[["variable_importance"]]
+  variance <- res[["variance"]]
+
+  # add standardized regression coefficients
+  regr.coeff <- calculate_standardized_regr_coeff(regr.coeff, datalist,
+                                                  longitudinal, waves, variance)
 
   # linking of longitudinal plausible values ----------------------------------
 
@@ -502,12 +530,20 @@ plausible_values <- function(SC,
     eap <- res[["eap"]]
   }
 
-  # calculate posterior mean of estimated eaps/plausible values
+  # calculate posterior moments of estimated eaps/plausible values
   MEAN <- calculate_posterior_means(eap,
                                     wle = if (control[["WLE"]]) {wle} else {NULL},
                                     pv, waves, npv)
+  # VAR <- calculate_posterior_variances(eap,
+  #                                   wle = if (control[["WLE"]]) {wle} else {NULL},
+  #                                   pv, waves, npv)
 
   t5 <- Sys.time()
+
+  if (verbose) {
+    message("Done!")
+    flush.console()
+  }
 
   # collect output object -----------------------------------------------------
 
@@ -527,12 +563,16 @@ plausible_values <- function(SC,
   res[["n_testtakers"]] <-
     colSums(!is.na(valid_responses_per_person[, -1, drop = FALSE]))
   res[["npv"]] <- npv
+  if (!is.null(seed)) {
+    res[["seed"]] <- seed
+  }
   res[["control"]] <- control
   if (rotation) {
     res[["position"]] <- data.frame(ID_t, position)
   }
   res[["information_criteria"]] <- info_crit
   res[["posterior_means"]] <- MEAN
+  res[["posterior_variances"]] <- variance #VAR
   res[["pv"]] <- pv
   if (control[["EAP"]]) {
     res[["eap"]] <- eap
@@ -553,6 +593,9 @@ plausible_values <- function(SC,
   }
   if (!is.null(variable_importance)) {
     res[["variable_importance"]] <- variable_importance
+  }
+  if (!is.null(exclude_for_wave)) {
+    res[["exclude_for_wave"]] <- exclude_for_wave
   }
   res[["comp_time"]] <- list(
     initial_time = t0,

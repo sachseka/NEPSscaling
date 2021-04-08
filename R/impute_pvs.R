@@ -8,12 +8,10 @@
 #' @param mod tam.obj
 #' @param imp imputations of bgdata or NULL
 #' @param bgdata data.frame; complete background data or NULL
-#' @param bgdatacom data.frame; completed background data or NULL
 #'
 #' @noRd
 #'
-impute_pvs <- function(mod, npv, control, bgdata, imp, bgdatacom = NULL, 
-                       waves, j) {
+impute_pvs <- function(mod, npv, control, bgdata, imp, waves, j) {
     pmod <- TAM::tam.pv(mod,
                         nplausible = npv,
                         ntheta = control$ML$ntheta,
@@ -27,13 +25,7 @@ impute_pvs <- function(mod, npv, control, bgdata, imp, bgdatacom = NULL,
     tmp_pvs <- TAM::tampv2datalist(
         pmod,
         Y.pid = if (is.null(bgdata)) {NULL} else {"ID_t"},
-        Y = if (is.null(bgdata)) {
-            NULL
-        } else if (is.null(imp)) {
-            bgdata
-        } else {
-            bgdatacom
-        },
+        Y = bgdata,
         pvnames = paste0("PV", waves[j])
     )
     tmp_pvs
