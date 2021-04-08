@@ -12,9 +12,9 @@ summary.pv_obj <- function(object, ...) {
 
   cat("\nMean of Plausible Values: \n")
   print(round(get_posterior_means(pv_obj)$pv$total, 3))
-  cat("\nVariance of Plausible Values: \n")
-  print(round(get_posterior_variances(pv_obj)$pv$total, 3))
   if (get_type(pv_obj = pv_obj) == "longitudinal") {
+    cat("\nVariance of Plausible Values: \n")
+    print(round(rowMeans(as.data.frame(get_posterior_variances(pv_obj))), 3))
     cat("\nItem parameters: \n")
     new_items <- paste0("items_w", get_wave(pv_obj))
     new_xsi <- paste0("xsi_w", get_wave(pv_obj))
@@ -39,6 +39,8 @@ summary.pv_obj <- function(object, ...) {
       print(df)
     }
   } else {
+    cat("\nVariance of Plausible Values: \n")
+    print(round(mean(get_posterior_variances(pv_obj)), 3))
     cat("\nItem parameters: \n")
     print(round(get_item_difficulties(pv_obj), 3))
     cat("\nRegression Coefficients: \n")

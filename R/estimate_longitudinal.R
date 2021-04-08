@@ -39,7 +39,8 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, PCM, ID_t,
   Q <- res[["Q"]]
 
   times <- ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi)
-  pvs <- EAP.rel <- info_crit <- replicate(times, list(), simplify = FALSE)
+  pvs <- EAP.rel <- info_crit <- variance <-
+    replicate(times, list(), simplify = FALSE)
   regr.coeff <- replicate(
       n = times, simplify = FALSE,
       expr = data.frame(Variable = if (!is.null(bgdata)) {
@@ -90,18 +91,19 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, PCM, ID_t,
       res <- post_process_long_tam_results(mod[[j]], npv, control, imp,
                                            bgdatacom, eap, i, j, EAP.rel,
                                            regr.coeff, tmp_bgdata, waves,
-                                           info_crit, frmY)
+                                           info_crit, frmY, variance)
       tmp_pvs[[j]] <- res[["tmp_pvs"]]
       eap <- res[["eap"]]
       regr.coeff <- res[["regr.coeff"]]
       EAP.rel <- res[["EAP.rel"]]
       info_crit <- res[["info_crit"]]
+      variance <- res[["variance"]]
     }
     pvs <- reformat_longitudinal_tmp_pvs(npv, pvs, i, tmp_pvs, bgdata)
     rm(tmp_pvs)
     }
   res <- list(
-    eap = eap, pvs = pvs, EAP.rel = EAP.rel,
+    eap = eap, pvs = pvs, EAP.rel = EAP.rel, variance = variance,
     regr.coeff = regr.coeff, mod = mod, info_crit = info_crit
   )
   res

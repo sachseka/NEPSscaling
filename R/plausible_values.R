@@ -460,6 +460,7 @@ plausible_values <- function(SC,
   regr.coeff <- res[["regr.coeff"]]
   mod <- res[["mod"]]
   info_crit <- res[["info_crit"]]
+  variance <- res[["variance"]]
 
   # Begin post-processing of estimated data -----------------------------------
 
@@ -485,16 +486,17 @@ plausible_values <- function(SC,
   # keep only those regr. coefficients / EAP reliabilities of kept imputations
   res <- discard_not_used_imputations(datalist, regr.coeff, EAP.rel,
                                       longitudinal, info_crit, treeplot,
-                                      variable_importance)
+                                      variable_importance, variance)
   regr.coeff <- res[["regr.coeff"]]
   EAP.rel <- res[["EAP.rel"]]
   info_crit <- res[["info_crit"]]
   treeplot <- res[["treeplot"]]
   variable_importance <- res[["variable_importance"]]
+  variance <- res[["variance"]]
 
   # add standardized regression coefficients
   regr.coeff <- calculate_standardized_regr_coeff(regr.coeff, datalist,
-                                                  longitudinal, waves)
+                                                  longitudinal, waves, variance)
 
   # linking of longitudinal plausible values ----------------------------------
 
@@ -532,9 +534,9 @@ plausible_values <- function(SC,
   MEAN <- calculate_posterior_means(eap,
                                     wle = if (control[["WLE"]]) {wle} else {NULL},
                                     pv, waves, npv)
-  VAR <- calculate_posterior_variances(eap,
-                                    wle = if (control[["WLE"]]) {wle} else {NULL},
-                                    pv, waves, npv)
+  # VAR <- calculate_posterior_variances(eap,
+  #                                   wle = if (control[["WLE"]]) {wle} else {NULL},
+  #                                   pv, waves, npv)
 
   t5 <- Sys.time()
 
@@ -570,7 +572,7 @@ plausible_values <- function(SC,
   }
   res[["information_criteria"]] <- info_crit
   res[["posterior_means"]] <- MEAN
-  res[["posterior_variances"]] <- VAR
+  res[["posterior_variances"]] <- variance #VAR
   res[["pv"]] <- pv
   if (control[["EAP"]]) {
     res[["eap"]] <- eap

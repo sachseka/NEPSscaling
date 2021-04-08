@@ -6,11 +6,12 @@
 #' @param datalist list of imputed data frames + PVs
 #' @param longitudinal logical
 #' @param waves character vector c("_wX", "_wY")
+#' @param variance list (long.) / vector (cross.) of latent variances
 #'
 #' @noRd
 #'
 calculate_standardized_regr_coeff <- function(regr.coeff, datalist,
-                                              longitudinal, waves) {
+                                              longitudinal, waves, variance) {
   used_imp <- determine_used_imputations(datalist)
 
   sdX <- lapply(datalist, function(dat) {
@@ -18,9 +19,9 @@ calculate_standardized_regr_coeff <- function(regr.coeff, datalist,
       model.matrix(~., dat[, !grepl("ID_t|PV", names(dat)), drop = FALSE])[, -1],
       2, sd, na.rm = TRUE)
   })
-  sdY <- lapply(datalist, function(dat) {
-    apply(dat[, grepl("PV", names(dat)), drop = FALSE], 2, sd, na.rm = TRUE)
-  })
+  # sdY <- lapply(datalist, function(dat) {
+  #   apply(dat[, grepl("PV", names(dat)), drop = FALSE], 2, sd, na.rm = TRUE)
+  # })
 
   if (longitudinal) {
     regr_coeff_std <- replicate(length(datalist),
@@ -36,7 +37,11 @@ calculate_standardized_regr_coeff <- function(regr.coeff, datalist,
         for (w in waves) {
           tmp_coeff <- tibble::add_column(
             tmp_coeff,
-            x = c(NA, standardized_coeff(tmp_coeff[-1, paste0("coeff", w)], sdX[[nms]], sdY[[nms]])),
+            x = c(NA, standardized_coeff(
+              tmp_coeff[-1, paste0("coeff", w)],
+              sdX[[nms]],
+              sqrt(variance[[which(used_imp[[2]] == u)]][which(waves == w)]))
+            ),#sdY[[nms]])),
             .after = paste0("coeff", w)
           )
         }
@@ -58,7 +63,10 @@ calculate_standardized_regr_coeff <- function(regr.coeff, datalist,
       tmp_coeff <- regr.coeff[, grepl(u, names(regr.coeff))]
       tmp_coeff <- tibble::add_column(
         tmp_coeff,
-        x = c(NA, standardized_coeff(tmp_coeff[-1, 1], sdX[[nms]], sdY[[nms]])),
+        x = c(NA, standardized_coeff(
+          tmp_coeff[-1, 1],
+          sdX[[nms]],
+          sqrt(variance[which(used_imp[[2]] == u)]))),#sdY[[nms]])),
         .after = paste0(u, "_coeff")
       )
       names(tmp_coeff) <- paste0(nms, c("_coeff", "_coeff_std", "_se"))

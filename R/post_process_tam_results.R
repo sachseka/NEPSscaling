@@ -10,33 +10,35 @@
 #' @param bgdatacom completed background data set
 #' @param eap list of eap values
 #' @param i current iteration over background data imputations
-#' @param EAP.rel list of eap reliability values
+#' @param EAP.rel vector of eap reliability values
 #' @param regr.coeff list of regression coefficients of latent regression
 #' @param pvs list of estimated plausible values
 #' @param info_crit list; AIC, BIC
 #' @param frmY latent regression formula
+#' @param variance vector of latent variances
 #'
 #' @noRd
 
 post_process_cross_tam_results <- function(mod, npv, control, imp,
                                            bgdatacom, eap, i,
                                            EAP.rel, regr.coeff, pvs,
-                                           info_crit, frmY) {
+                                           info_crit, frmY, variance) {
   # impute plausible values
   tmp_pvs <- impute_pvs(mod, npv, control, bgdata = bgdatacom, imp, "", 1)
 
   res <- gather_additional_parameters_cross(eap, mod, EAP.rel, regr.coeff,
                                             info_crit, i, bgdata = bgdatacom,
-                                            frmY)
+                                            frmY, variance)
   eap <- res$eap
   EAP.rel <- res$EAP.rel
   regr.coeff <- res$regr.coeff
   info_crit <- res$info_crit
+  variance <- res$variance
 
   pvs <- reformat_cross_tmp_pvs(pvs, tmp_pvs, bgdata = bgdatacom, npv, i)
 
   list(eap = eap, regr.coeff = regr.coeff, pvs = pvs, EAP.rel = EAP.rel,
-       info_crit = info_crit)
+       info_crit = info_crit, variance = variance)
 }
 
 reformat_cross_tmp_pvs <- function(pvs, tmp_pvs, bgdata, npv, i) {
@@ -52,13 +54,15 @@ reformat_cross_tmp_pvs <- function(pvs, tmp_pvs, bgdata, npv, i) {
 }
 
 gather_additional_parameters_cross <- function(eap, mod, EAP.rel, regr.coeff,
-                                               info_crit, i, bgdata, frmY) {
+                                               info_crit, i, bgdata, frmY,
+                                               variance) {
   eap[[i]] <- suppressWarnings(
     dplyr::left_join(eap[[i]], mod$person[, grep("pid|EAP", names(mod$person))],
                      by = c("ID_t" = "pid"))) %>%
     dplyr::arrange(.data$ID_t)
   colnames(eap[[i]]) <- c("ID_t", "eap", "se")
   EAP.rel <- c(EAP.rel, mod$EAP.rel)
+  variance <- c(variance, mod$variance[1])
   # se estimation gives warning "In sqrt(-1/info_pp) : NaNs produced" because
   # item difficulty parameters are fixed --> suppress warnings!
   if (i == 1) {
@@ -82,7 +86,7 @@ gather_additional_parameters_cross <- function(eap, mod, EAP.rel, regr.coeff,
   regr.coeff <- cbind(regr.coeff, tmp)
 
   list(eap = eap, EAP.rel = EAP.rel, regr.coeff = regr.coeff,
-       info_crit = info_crit)
+       info_crit = info_crit, variance = variance)
 }
 
 
@@ -105,27 +109,30 @@ gather_additional_parameters_cross <- function(eap, mod, EAP.rel, regr.coeff,
 #' @param waves character vector; assessment waves ("_wx", "_wy")
 #' @param info_crit list; AIC, BIC
 #' @param frmY latent regression formula
+#' @param variance list of latent variances
 #'
 #' @noRd
 
 post_process_long_tam_results <- function(mod, npv, control, imp,
                                           bgdatacom, eap, i, j,
                                           EAP.rel, regr.coeff, tmp_bgdata,
-                                          waves, info_crit, frmY) {
+                                          waves, info_crit, frmY, variance) {
   # impute plausible values
   tmp_pvs <- impute_pvs(mod, npv, control, bgdata = bgdatacom, imp, waves, j)
 
   res <- gather_additional_parameters_long(eap, mod, EAP.rel, regr.coeff,
                                            info_crit, i, j, waves,
-                                           bgdata = tmp_bgdata, frmY)
+                                           bgdata = tmp_bgdata, frmY,
+                                           variance)
 
   list(eap = res$eap, regr.coeff = res$regr.coeff, tmp_pvs = tmp_pvs,
-       EAP.rel = res$EAP.rel, info_crit = res$info_crit)
+       EAP.rel = res$EAP.rel, info_crit = res$info_crit,
+       variance = res$variance)
 }
 
 gather_additional_parameters_long <- function(eap, mod, EAP.rel, regr.coeff,
                                               info_crit, i, j, waves, bgdata,
-                                              frmY) {
+                                              frmY, variance) {
   eap[[i]] <- suppressWarnings(
     dplyr::left_join(
       eap[[i]], mod$person[, grep("pid|EAP", names(mod$person))],
@@ -147,15 +154,17 @@ gather_additional_parameters_long <- function(eap, mod, EAP.rel, regr.coeff,
 
   if (j == 1) {
     EAP.rel[[i]] <- mod$EAP.rel
+    variance[[i]] <- mod$variance[1]
     info_crit[[i]] <- matrix(c(AIC(mod), BIC(mod)), nrow = 2, ncol = 1)
     rownames(info_crit[[i]]) <- c("AIC", "BIC")
     colnames(info_crit[[i]]) <- gsub("_", "", waves[j])
   } else {
     EAP.rel[[i]] <- c(EAP.rel[[i]], mod$EAP.rel)
+    variance[[i]] <- c(variance[[i]], mod$variance[1])
     tmp <- matrix(c(AIC(mod), BIC(mod)), nrow = 2, ncol = 1)
     colnames(tmp) <- gsub("_", "", waves[j])
     info_crit[[i]] <- cbind(info_crit[[i]], tmp)
   }
   list(eap = eap, regr.coeff = regr.coeff, EAP.rel = EAP.rel,
-       info_crit = info_crit)
+       info_crit = info_crit, variance = variance)
 }
