@@ -21,8 +21,10 @@ identify_longitudinal_ids <- function (SC, domain, data, waves, eap) {
   } else {
     for (i in seq(2, length(waves))) {
       longitudinal_IDs[[i - 1]] <- data[["ID_t"]][
-        data[[paste0("wave", waves[i - 1])]] == 1 &
-          data[[paste0("wave", waves[i])]] == 1
+        !is.na(data[[wle_names[[SC]][[domain]][[gsub("_", "", waves[i - 1])]]]]) &
+        !is.na(data[[wle_names[[SC]][[domain]][[gsub("_", "", waves[i])]]]])
+        # data[[paste0("wave", waves[i - 1])]] == 1 &
+        #   data[[paste0("wave", waves[i])]] == 1
         # !is.na(eap[, paste0("eap_", gsub("_", "", waves[i-1]))]) &
         #   !is.na(eap[, paste0("eap_", gsub("_", "", waves[i]))])
       ]

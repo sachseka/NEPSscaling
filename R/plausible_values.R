@@ -181,7 +181,7 @@
 #' The function will only work with NEPS data. To access NEPS data see
 #' https://www.neps-data.de/en-us/datacenter/dataaccess.aspx.
 #'
-#' @importFrom stats as.formula na.omit AIC BIC predict runif
+#' @importFrom stats as.formula na.omit AIC BIC predict runif model.matrix sd var
 #' @importFrom utils flush.console capture.output
 #' @importFrom rlang .data
 #'
