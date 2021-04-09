@@ -348,11 +348,7 @@ get_info_criteria <- function(pv_obj) {
 }
 
 
-<<<<<<< HEAD
-#' Get names of used imputations.
-=======
 #' Get the names of used imputations.
->>>>>>> bugfix
 #'
 #' Imputations and the plausible values estimated with them are chosen randomly,
 #' so not all of them might be returned after the estimation. This function
@@ -371,11 +367,7 @@ get_imputation_names <- function(pv_obj) {
 }
 
 
-<<<<<<< HEAD
-#' Get tree representation of specific imputation.
-=======
 #' Get the tree representation of specific imputation.
->>>>>>> bugfix
 #'
 #' For each imputed variable, a CART was constructed. This function returns its
 #' character representation.
@@ -398,8 +390,6 @@ get_imputation_tree <- function(pv_obj, imputation, variable) {
   cat(tree)
   invisible(tree)
 }
-<<<<<<< HEAD
-=======
 
 
 #' Get exclude_for_wave
@@ -419,6 +409,3 @@ get_exclude_for_wave <- function(pv_obj) {
   }
   pv_obj[["exclude_for_wave"]]
 }
-
-
->>>>>>> bugfix
