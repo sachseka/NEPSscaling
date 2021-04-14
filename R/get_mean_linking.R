@@ -4,10 +4,7 @@
 #' @param domain competence domain
 #' @param long_IDs contains sample IDs for the earlier and later time
 #' points
-#' @param eap1 expected a posteriori point estimate at earlier time point
-#' (containing ID_t)
-#' @param eap2 expected a posteriori point estimate at later time point
-#' (containing ID_t)
+#' @param eap expected a posteriori point estimates (containing ID_t)
 #' @param wle1 weighted maximum likelihood estimate at earlier time point
 #' (containing ID_t)
 #' @param wle2 weighted maximum likelihood estimate at later time point
@@ -18,16 +15,17 @@
 #'
 #' @noRd
 
-get_mean_linking <- function(eap1, eap2 = NULL, wle1, wle2 = NULL, pv, long_IDs,
+get_mean_linking <- function(eap, wle1, wle2 = NULL, pv, long_IDs,
                              waves = NULL, w = NULL, SC, domain) {
   MEAN_wle <- NULL
   if (SC == "SC6" && domain == "RE") {
     # eap
-    MEAN_eap <-
-      c(mean(eap1[eap1$ID_t %in% long_IDs[["w3"]], "eap_w3"], na.rm = TRUE),
-        mean(eap1[eap1$ID_t %in% long_IDs[["w5"]], "eap_w5"], na.rm = TRUE),
-        mean(eap1[eap1$ID_t %in% long_IDs[["w3"]], "eap_w9"], na.rm = TRUE),
-        mean(eap1[eap1$ID_t %in% long_IDs[["w5"]], "eap_w9"], na.rm = TRUE))
+    MEAN_eap <- lapply(eap, function(x) {
+      c(mean(x[x$ID_t %in% long_IDs[["w3"]], "eap_w3"], na.rm = TRUE),
+        mean(x[x$ID_t %in% long_IDs[["w5"]], "eap_w5"], na.rm = TRUE),
+        mean(x[x$ID_t %in% long_IDs[["w3"]], "eap_w9"], na.rm = TRUE),
+        mean(x[x$ID_t %in% long_IDs[["w5"]], "eap_w9"], na.rm = TRUE))
+    })
     # wle
     if (!is.null(wle1)) {
       MEAN_wle <-
@@ -48,9 +46,10 @@ get_mean_linking <- function(eap1, eap2 = NULL, wle1, wle2 = NULL, pv, long_IDs,
     }
   } else {
     # eap
-    MEAN_eap <- vector("numeric", 2)
-    MEAN_eap[1] <- mean(eap1[eap1$ID_t %in% long_IDs, 2], na.rm = TRUE)
-    MEAN_eap[2] <- mean(eap2[eap2$ID_t %in% long_IDs, 2], na.rm = TRUE)
+    MEAN_eap <- lapply(eap, function(x) {
+      c(mean(x[x$ID_t %in% long_IDs, paste0("eap", waves[w - 1])], na.rm = TRUE),
+        mean(x[x$ID_t %in% long_IDs, paste0("eap", waves[w])], na.rm = TRUE))
+    })
     # wle
     if (!is.null(wle1)) {
       MEAN_wle <- vector("numeric", 2)

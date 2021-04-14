@@ -4,6 +4,8 @@ test_that("select_used_imputations_long", {
   keep <- 1:3
   EAP.rel <- treeplot <- variable_importance <- regr.coeff <- info_crit <-
     variance <- replicate(5, list(), simplify = FALSE)
+  eap <- replicate(5, data.frame(ID_t = 1:10, eap = 0, se = 1), simplify = FALSE)
+
 
   result <- list(
     regr.coeff = regr.coeff[1:3],
@@ -11,13 +13,14 @@ test_that("select_used_imputations_long", {
     info_crit = info_crit[1:3],
     treeplot = treeplot[1:3],
     variable_importance = variable_importance[1:3],
-    variance = variance[1:3]
+    variance = variance[1:3],
+    eap = eap[1:3]
   )
   names(result$EAP.rel) <- names(result$info_crit) <- names(result$treeplot) <-
     names(result$variable_importance) <- names(result$regr.coeff) <-
-    names(result$variance) <- paste0("imp", 1:3)
+    names(result$variance) <- names(result$eap) <- paste0("imp", 1:3)
   expect_equal(select_used_imputations_long(EAP.rel, regr.coeff, info_crit,
                                             treeplot, variable_importance,
-                                            variance, keep),
+                                            variance, eap, keep),
                result)
 })

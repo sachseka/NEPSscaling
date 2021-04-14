@@ -3,7 +3,7 @@
 #' @param datalist list of data.frames; contains pvs and completed bgdata
 #' @param npv numeric; number of plausible values
 #' @param min_valid numeric; minimum number of required valid responses
-#' @param valid_responses_per_person data.frame; valid responses per person 
+#' @param valid_responses_per_person data.frame; valid responses per person
 #' and wave
 #' @param waves character vector; assessment waves ("_wx", "_wy")
 #' @param eap data.frame; expected a posteriori estimates + standard error
@@ -25,7 +25,7 @@ link_longitudinal_plausible_values <- function(datalist, npv, min_valid,
   eap <- res[["eap"]]
   wle <- res[["wle"]]
   # longitudinal subsamples
-  long_IDs <- identify_longitudinal_ids(SC, domain, data, waves, eap)
+  long_IDs <- identify_longitudinal_ids(SC, domain, data, waves)
   # re-scaling for longitudinal link
   res <- scale_person_estimates(
     pv = datalist, wle = wle, eap = eap, SC = SC, domain = domain,

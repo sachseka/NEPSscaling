@@ -470,8 +470,8 @@ plausible_values <- function(SC,
     flush.console()
   }
 
-  # assumption: eaps are equivalent over all estimations
-  eap <- eap[[1]]
+  # # assumption: eaps are equivalent over all estimations
+  # eap <- eap[[1]]
 
   # estimate WLEs
   if (control[["WLE"]]) {
@@ -486,9 +486,10 @@ plausible_values <- function(SC,
   # keep only those regr. coefficients / EAP reliabilities of kept imputations
   res <- discard_not_used_imputations(datalist, regr.coeff, EAP.rel,
                                       longitudinal, info_crit, treeplot,
-                                      variable_importance, variance)
+                                      variable_importance, variance, eap)
   regr.coeff <- res[["regr.coeff"]]
   EAP.rel <- res[["EAP.rel"]]
+  eap <- res[["eap"]]
   info_crit <- res[["info_crit"]]
   treeplot <- res[["treeplot"]]
   variable_importance <- res[["variable_importance"]]

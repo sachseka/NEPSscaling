@@ -8,10 +8,13 @@
 
 calculate_posterior_means <- function(eap, wle = NULL, pv, waves, npv) {
   MEAN <- list()
-  MEAN[["eap"]] <- colMeans(
-    eap[, seq(2, (1 + 2 * length(waves)), 2), drop = FALSE], na.rm = TRUE
-  )
-  names(MEAN[["eap"]]) <- gsub("_", "", waves)
+  MEAN[["eap"]] <- lapply(eap, function(x) {
+    tmp <- colMeans(
+      x[, seq(2, (1 + 2 * length(waves)), 2), drop = FALSE], na.rm = TRUE
+    )
+    names(tmp) <- gsub("_", "", waves)
+    tmp
+  })
   if (!is.null(wle)) {
     MEAN[["wle"]] <- colMeans(
       wle[, seq(2, (1 + 2 * length(waves)), 2), drop = FALSE], na.rm = TRUE
@@ -19,11 +22,9 @@ calculate_posterior_means <- function(eap, wle = NULL, pv, waves, npv) {
     names(MEAN[["wle"]]) <- gsub("_", "", waves)
   }
   MEAN[["pv"]] <- list(total = list(), imputations = list())
-  for (i in seq(npv)) {
-    MEAN[["pv"]][["imputations"]][[i]] <- colMeans(
-      pv[[i]][, grepl("PV", names(pv[[i]])), drop = FALSE], na.rm = TRUE
-    )
-  }
+  MEAN[["pv"]][["imputations"]] <- lapply(pv, function (x) {
+    colMeans(x[, grepl("PV", names(x)), drop = FALSE], na.rm = TRUE)
+  })
   MEAN[["pv"]][["total"]] <- purrr::reduce(
     MEAN[["pv"]][["imputations"]], `+`
   ) / npv
@@ -40,20 +41,21 @@ calculate_posterior_means <- function(eap, wle = NULL, pv, waves, npv) {
 
 calculate_posterior_variances <- function(eap, wle = NULL, pv, waves, npv) {
   VAR <- list()
-  VAR[["eap"]] <- apply(eap[, seq(2, (1 + 2 * length(waves)), 2), drop = FALSE],
-                        2, var, na.rm = TRUE)
-  names(VAR[["eap"]]) <- gsub("_", "", waves)
+  VAR[["eap"]] <- lapply(eap, function(x) {
+    tmp <- apply(x[, seq(2, (1 + 2 * length(waves)), 2), drop = FALSE],
+                 2, var, na.rm = TRUE)
+    names(tmp) <- gsub("_", "", waves)
+    tmp
+  })
   if (!is.null(wle)) {
     VAR[["wle"]] <- apply(wle[, seq(2, (1 + 2 * length(waves)), 2), drop = FALSE],
                           2, var, na.rm = TRUE)
     names(VAR[["wle"]]) <- gsub("_", "", waves)
   }
   VAR[["pv"]] <- list(total = list(), imputations = list())
-  for (i in seq(npv)) {
-    VAR[["pv"]][["imputations"]][[i]] <-
-      apply(pv[[i]][, grepl("PV", names(pv[[i]])), drop = FALSE],
-            2, var, na.rm = TRUE)
-  }
+  VAR[["pv"]][["imputations"]] <- lapply(pv, function (x) {
+    apply(x[, grepl("PV", names(x)), drop = FALSE], 2, var, na.rm = TRUE)
+  })
   VAR[["pv"]][["total"]] <- purrr::reduce(
     VAR[["pv"]][["imputations"]], `+`
   ) / npv
