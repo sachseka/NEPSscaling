@@ -14,20 +14,5 @@ a data.frame containing the number of valid responses per person
 as an integer value
 }
 \description{
-<<<<<<< HEAD
-#' Get the estimation model
-#'
-#' @param pv_obj return object of function \code{NEPSscaling::plausible_values()}
-#' @return the estimation model as a String
-#'
-#' @export
-get_model <- function(pv_obj) {
-  if (class(pv_obj) != "pv_obj") {
-    stop("pv_obj must be of class 'pv_obj'.")
-  }
-  pv_obj[["model"]]
-}
-=======
->>>>>>> bugfix
 Get the number of valid responses (i.e., non-missing) for each test taker
 }
