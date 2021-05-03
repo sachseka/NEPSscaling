@@ -16,15 +16,16 @@ link_constant[[SC]][["RE"]][["w9"]] <- 0.4989
 # Mathematics
 link_constant[[SC]][["MA"]][["w3"]] <- 0.726# 0.771
 link_constant[[SC]][["MA"]][["w5"]] <- 0.794
-data <- haven::read_sav("../SUFs/SC3/SC3_xTargetCompetencies_D_9-0-0.sav") # no TR
-link_constant[[SC]][["MA"]][["w9"]] <- as.numeric(data %>%
-    filter(wave_w9 == 1 & wave_w5 == 1) %>%
-    select(mag9_sc1u, mag12_sc1u) %>%
-    mutate(const = mag12_sc1u - mag9_sc1u) %>%
-    summarise_at(vars(const), mean, na.rm = TRUE))
+link_constant[[SC]][["MA"]][["w9"]] <- 0.596
+  # as.numeric(data %>%
+  #   filter(wave_w9 == 1 & wave_w5 == 1) %>%
+  #   select(mag9_sc1u, mag12_sc1u) %>%
+  #   mutate(const = mag12_sc1u - mag9_sc1u) %>%
+  #   summarise_at(vars(const), mean, na.rm = TRUE))
 
 # Information and Communication Technology literacy
 link_constant[[SC]][["IC"]][["w5"]] <- 1.042
+data <- haven::read_sav("../SUFs/SC3/SC3_xTargetCompetencies_D_10-0-0.sav") # no TR
 link_constant[[SC]][["IC"]][["w9"]] <- as.numeric(data %>%
     filter(wave_w9 == 1 & wave_w5 == 1) %>%
     select(icg9_sc1u, icg12_sc1u) %>%
@@ -32,11 +33,12 @@ link_constant[[SC]][["IC"]][["w9"]] <- as.numeric(data %>%
     summarise_at(vars(const), mean, na.rm = TRUE)) # !
 
 # Science
-link_constant[[SC]][["SC"]][["w5"]] <- as.numeric(data %>%
-    filter(wave_w2 == 1 & wave_w5 == 1) %>%
-    select(scg6_sc1, scg9_sc1u) %>%
-    mutate(const = scg9_sc1u - scg6_sc1) %>%
-    summarise_at(vars(const), mean, na.rm = TRUE)) # !
+link_constant[[SC]][["SC"]][["w5"]] <- 0.8782
+  # as.numeric(data %>%
+  #   filter(wave_w2 == 1 & wave_w5 == 1) %>%
+  #   select(scg6_sc1, scg9_sc1u) %>%
+  #   mutate(const = scg9_sc1u - scg6_sc1) %>%
+  #   summarise_at(vars(const), mean, na.rm = TRUE)) # !
 link_constant[[SC]][["SC"]][["w8"]] <- as.numeric(data %>%
     filter(wave_w8 == 1 & wave_w5 == 1) %>%
     select(scg9_sc1u, scg11_sc1) %>%
@@ -57,7 +59,6 @@ link_constant[[SC]][["EF"]][["w9"]] <- 0 # via fixed item parameters
 # link_constant[[SC]][["VO"]][["w2"]] <- 0 # !
 
 # Orthography -- does not seem to be linked in the SUFs!
-data <- haven::read_sav("../SUFs/SC3/SC3_xTargetCompetencies_D_9-0-0.sav")
 link_constant[[SC]][["ORA"]][["w3"]] <- as.numeric(data %>%
     filter(wave_w1 == 1 & wave_w3 == 1) %>%
     select(org5_sc1a, org7_sc1a) %>%
@@ -82,14 +83,14 @@ rm(data)
 
 save(link_constant, file = "data-raw/link_constant.RData")
 
-# Corrections because of dropout etc.
-correction <- list()
-load(file = "data-raw/correction.RData")
-correction[[SC]][["RE"]] <- list()
-correction[[SC]][["RE"]][["w7"]] <- 0 # !
-correction[[SC]][["RE"]][["w10"]] <- 0 # !
-
-save(correction, file = "data-raw/correction.RData")
+# # Corrections because of dropout etc.
+# correction <- list()
+# load(file = "data-raw/correction.RData")
+# correction[[SC]][["RE"]] <- list()
+# correction[[SC]][["RE"]][["w7"]] <- 0 # !
+# correction[[SC]][["RE"]][["w10"]] <- 0 # !
+#
+# save(correction, file = "data-raw/correction.RData")
 
 
 # Difference matrix for English w7, w9
@@ -128,60 +129,59 @@ rm(dat, dati, items, position, correct)
 
 save(diffMat, file = "data-raw/diffMat.RData")
 
-# Estimate item parameters for SC3 Science wave 5 (substitute until technical
-# report is published)
-library(haven)
-library(dplyr)
-library(TAM)
-dat <- read_spss("../SUFs/SC3/SC3_xTargetCompetencies_D_9-0-0.sav") %>%
-    arrange(ID_t) %>%
-    select(NEPSscaling:::item_labels$SC3$SC$w5, scg9_sc1, tx80211_w5) %>%
-    filter(!is.na(scg9_sc1)) %>%
-    select(-scg9_sc1)
-position <- dat %>% mutate(tx80211_w5 = ifelse(tx80211_w5 %in% 566:592, 1,
-                                               ifelse(is.na(tx80211_w5), NA, 2))) %>%
-    rename(position = tx80211_w5) %>% select(position)
-dat <- dat %>% select(-tx80211_w5)
-apply(dat, 2, table, useNA = "always")
-dat$scg9042s_sc3g9_c <- recode(as.numeric(dat$scg9042s_sc3g9_c),
-                               `0` = 0, `1` = 0, `2` = 1, `3` = 2,
-                               .default = NA_real_)
-dat$scg9083s_sc3g9_c <- recode(as.numeric(dat$scg9083s_sc3g9_c),
-                               `0` = 0, `1` = 0, `2` = 1, `3` = 2, `4` = 3,
-                               .default = NA_real_)
-dat$scg9611s_sc3g9_c <- recode(as.numeric(dat$scg9611s_sc3g9_c),
-                               `0` = 0, `1` = 0, `2` = 1, `3` = 2,
-                               .default = NA_real_)
-dat$scg9012s_sc3g9_c <- recode(as.numeric(dat$scg9012s_sc3g9_c),
-                               `0` = 0, `1` = 0, `2` = 1, `3` = 2,
-                               .default = NA_real_)
-dat[["scg9043s_sc3g9_c"]][dat[["scg9043s_sc3g9_c"]] == 3] <- 2
-B <- TAM::designMatrices(modeltype = "PCM", resp = dat)$B
-B[apply(dat, 2, max, na.rm = TRUE) > 1, , ] <-
-    0.5 * B[apply(dat, 2, max, na.rm = TRUE) > 1, , ]
-mod <- tam.mml.mfr(resp = dat[!is.na(position$position), ], irtmodel = "PCM2",
-                   verbose = FALSE, B = B,
-                   formulaA = ~ 0 + item + item:step + position,
-                   facets = position[!is.na(position$position), ])
-item_difficulty_SC3_SC_w5 <- mod$xsi.fixed.estimated[1:37, ]
-# tmp <- dplyr::left_join(data.frame(item = NEPSscaling:::item_labels$SC3$SC$w5),
-#                         item_difficulty_SC3_SC_w5 %>%
-#                             as.data.frame() %>%
-#                             mutate(item = rownames(item_difficulty_SC3_SC_w5)),
-#                         by = "item")
-# item_difficulty_SC3_SC_w5 <- cbind(1:nrow(tmp),
-#                                    xsi = tmp$xsi)
-# rownames(item_difficulty_SC3_SC_w5) <- tmp$item
-# rm(tmp)
-save(item_difficulty_SC3_SC_w5,
-     file = "data-raw/item_difficulty_SC3_SC_w5.RData")
-mod <- tam.mml(
-    resp = dat, irtmodel = "PCM2", verbose = FALSE,
-    Q = as.matrix(ifelse(apply(dat, 2, max, na.rm = TRUE) > 1, 0.5, 1))
-)
-item_difficulty_SC3_SC_w5_long <- mod$xsi.fixed.estimated[1:37, ]
-save(item_difficulty_SC3_SC_w5_long,
-     file = "data-raw/item_difficulty_SC3_SC_w5_long.RData")
+# # Estimate item parameters for SC3 Science wave 5
+# library(haven)
+# library(dplyr)
+# library(TAM)
+# dat <- read_spss("../SUFs/SC3/SC3_xTargetCompetencies_D_9-0-0.sav") %>%
+#     arrange(ID_t) %>%
+#     select(NEPSscaling:::item_labels$SC3$SC$w5, scg9_sc1, tx80211_w5) %>%
+#     filter(!is.na(scg9_sc1)) %>%
+#     select(-scg9_sc1)
+# position <- dat %>% mutate(tx80211_w5 = ifelse(tx80211_w5 %in% 566:592, 1,
+#                                                ifelse(is.na(tx80211_w5), NA, 2))) %>%
+#     rename(position = tx80211_w5) %>% select(position)
+# dat <- dat %>% select(-tx80211_w5)
+# apply(dat, 2, table, useNA = "always")
+# dat$scg9042s_sc3g9_c <- recode(as.numeric(dat$scg9042s_sc3g9_c),
+#                                `0` = 0, `1` = 0, `2` = 1, `3` = 2,
+#                                .default = NA_real_)
+# dat$scg9083s_sc3g9_c <- recode(as.numeric(dat$scg9083s_sc3g9_c),
+#                                `0` = 0, `1` = 0, `2` = 1, `3` = 2, `4` = 3,
+#                                .default = NA_real_)
+# dat$scg9611s_sc3g9_c <- recode(as.numeric(dat$scg9611s_sc3g9_c),
+#                                `0` = 0, `1` = 0, `2` = 1, `3` = 2,
+#                                .default = NA_real_)
+# dat$scg9012s_sc3g9_c <- recode(as.numeric(dat$scg9012s_sc3g9_c),
+#                                `0` = 0, `1` = 0, `2` = 1, `3` = 2,
+#                                .default = NA_real_)
+# dat[["scg9043s_sc3g9_c"]][dat[["scg9043s_sc3g9_c"]] == 3] <- 2
+# B <- TAM::designMatrices(modeltype = "PCM", resp = dat)$B
+# B[apply(dat, 2, max, na.rm = TRUE) > 1, , ] <-
+#     0.5 * B[apply(dat, 2, max, na.rm = TRUE) > 1, , ]
+# mod <- tam.mml.mfr(resp = dat[!is.na(position$position), ], irtmodel = "PCM2",
+#                    verbose = FALSE, B = B,
+#                    formulaA = ~ 0 + item + item:step + position,
+#                    facets = position[!is.na(position$position), ])
+# item_difficulty_SC3_SC_w5 <- mod$xsi.fixed.estimated[1:37, ]
+# # tmp <- dplyr::left_join(data.frame(item = NEPSscaling:::item_labels$SC3$SC$w5),
+# #                         item_difficulty_SC3_SC_w5 %>%
+# #                             as.data.frame() %>%
+# #                             mutate(item = rownames(item_difficulty_SC3_SC_w5)),
+# #                         by = "item")
+# # item_difficulty_SC3_SC_w5 <- cbind(1:nrow(tmp),
+# #                                    xsi = tmp$xsi)
+# # rownames(item_difficulty_SC3_SC_w5) <- tmp$item
+# # rm(tmp)
+# save(item_difficulty_SC3_SC_w5,
+#      file = "data-raw/item_difficulty_SC3_SC_w5.RData")
+# mod <- tam.mml(
+#     resp = dat, irtmodel = "PCM2", verbose = FALSE,
+#     Q = as.matrix(ifelse(apply(dat, 2, max, na.rm = TRUE) > 1, 0.5, 1))
+# )
+# item_difficulty_SC3_SC_w5_long <- mod$xsi.fixed.estimated[1:37, ]
+# save(item_difficulty_SC3_SC_w5_long,
+#      file = "data-raw/item_difficulty_SC3_SC_w5_long.RData")
 
 
 # Estimate item parameters for SC3 Science wave 8 (substitute until technical
@@ -221,37 +221,37 @@ save(item_difficulty_SC3_SC_w8,
      file = "data-raw/item_difficulty_SC3_SC_w8.RData")
 
 
-# Estimate item parameters for SC3 math wave 9 (substitute until technical
-# report is published)
-library(haven)
-library(dplyr)
-library(TAM)
-dat <- read_spss("../SUFs/SC3/SC3_xTargetCompetencies_D_9-0-0.sav") %>%
-    arrange(ID_t) %>%
-    select("maa3q071_sc3g12_c", "mag12v101_sc3g12_c", "mag12q121_sc3g12_c",
-           "mag12v122_sc3g12_c", "mag12r011_sc3g12_c", "mag12v061_sc3g12_c",
-           "mag12r091_sc3g12_c", "mag9r051_sc3g12_c", "mag12q081_sc3g12_c",
-           "mag12d021_sc3g12_c", "mag12q051_sc3g12_c", "mag9d201_sc3g12_c",
-           "mag9v121_sc3g12_c", "mas1q021s_sc3g12_c", "mas1d081_sc3g12_c",
-           "maa3d112_sc3g12_c", "mag9r061_sc3g12_c", "maa3r011_sc3g12_c",
-           "mag12d071_sc3g12_c", "mag12r041_sc3g12_c", "mag12v131_sc3g12_c",
-           "mag12d031_sc3g12_c", "maa3d131_sc3g12_c", "maa3d132_sc3g12_c",
-           "mag9v011_sc3g12_c", "maa3r121_sc3g12_c", "mag12q111_sc3g12_c",
-           "maa3q101_sc3g12_c", "mag9q101_sc3g12_c", "mag12v132_sc3g12_c",
-           "mag12_sc1") %>%
-    filter(!is.na(mag12_sc1)) %>%
-    select(-mag12_sc1)
-apply(dat, 2, table, useNA = "always")
-dat$mas1q021s_sc3g12_c <- recode(as.numeric(dat$mas1q021s_sc3g12_c),
-                         `0` = 0, `1` = 0, `2` = 0, `3` = 1, `4` = 2,
-                         .default = NA_real_)
-mod <- tam.mml(
-    resp = dat, irtmodel = "PCM2", verbose = FALSE,
-    Q = as.matrix(ifelse(apply(dat, 2, max, na.rm = TRUE) > 1, 0.5, 1))
-)
-item_difficulty_SC3_MA_w9 <- mod$xsi.fixed.estimated[1:30, ]
-save(item_difficulty_SC3_MA_w9,
-     file = "data-raw/item_difficulty_SC3_MA_w9.RData")
+# # Estimate item parameters for SC3 math wave 9 (substitute until technical
+# # report is published)
+# library(haven)
+# library(dplyr)
+# library(TAM)
+# dat <- read_spss("../SUFs/SC3/SC3_xTargetCompetencies_D_9-0-0.sav") %>%
+#     arrange(ID_t) %>%
+#     select("maa3q071_sc3g12_c", "mag12v101_sc3g12_c", "mag12q121_sc3g12_c",
+#            "mag12v122_sc3g12_c", "mag12r011_sc3g12_c", "mag12v061_sc3g12_c",
+#            "mag12r091_sc3g12_c", "mag9r051_sc3g12_c", "mag12q081_sc3g12_c",
+#            "mag12d021_sc3g12_c", "mag12q051_sc3g12_c", "mag9d201_sc3g12_c",
+#            "mag9v121_sc3g12_c", "mas1q021s_sc3g12_c", "mas1d081_sc3g12_c",
+#            "maa3d112_sc3g12_c", "mag9r061_sc3g12_c", "maa3r011_sc3g12_c",
+#            "mag12d071_sc3g12_c", "mag12r041_sc3g12_c", "mag12v131_sc3g12_c",
+#            "mag12d031_sc3g12_c", "maa3d131_sc3g12_c", "maa3d132_sc3g12_c",
+#            "mag9v011_sc3g12_c", "maa3r121_sc3g12_c", "mag12q111_sc3g12_c",
+#            "maa3q101_sc3g12_c", "mag9q101_sc3g12_c", "mag12v132_sc3g12_c",
+#            "mag12_sc1") %>%
+#     filter(!is.na(mag12_sc1)) %>%
+#     select(-mag12_sc1)
+# apply(dat, 2, table, useNA = "always")
+# dat$mas1q021s_sc3g12_c <- recode(as.numeric(dat$mas1q021s_sc3g12_c),
+#                          `0` = 0, `1` = 0, `2` = 0, `3` = 1, `4` = 2,
+#                          .default = NA_real_)
+# mod <- tam.mml(
+#     resp = dat, irtmodel = "PCM2", verbose = FALSE,
+#     Q = as.matrix(ifelse(apply(dat, 2, max, na.rm = TRUE) > 1, 0.5, 1))
+# )
+# item_difficulty_SC3_MA_w9 <- mod$xsi.fixed.estimated[1:30, ]
+# save(item_difficulty_SC3_MA_w9,
+#      file = "data-raw/item_difficulty_SC3_MA_w9.RData")
 
 # Estimate item parameters for SC3 ict wave 9 (substitute until technical
 # report is published)

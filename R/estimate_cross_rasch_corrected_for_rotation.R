@@ -47,11 +47,7 @@ estimate_cross_rasch_corrected_for_rotation <- function(bgdata, imp,
       resp = resp[, items],
       facets = position,
       formulaA = ~ 0 + item + position,
-      dataY = if (is.null(bgdatacom)) {
-        NULL
-      } else {
-        bgdatacom[, -which(names(bgdatacom) == "ID_t"), drop = FALSE]
-      },
+      dataY = bgdatacom[, -which(names(bgdatacom) == "ID_t"), drop = FALSE],
       formulaY = frmY,
       pid = resp$ID_t,
       irtmodel = "1PL",

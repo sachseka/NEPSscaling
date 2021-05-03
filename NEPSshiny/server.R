@@ -2,12 +2,25 @@
 library(shiny)
 library(xtable)
 
+Start <-function(input, output, session) {
+  onclick(input$Laptop, {
+    session$sendCustomMessage(type = 'testmessage',
+                              message = 'Thank you for clicking')
+  })
+}
 
-server = function(input,output,session) {
-  observe({
-    if (input$navbar == "stop")
-      stopApp()
- })
+Help<- function(input, output, session) {
+ onclick(input$Help, {
+    session$sendCustomMessage(type = 'testmessage',
+                              message = 'Thank you for clicking')
+  })
+}
+
+Information_size1 <- function(input, output, session) {
+  addTooltip(session=session,id="btn",title="Hover pop-up.")
+}
+Information_size2 <- function(input, output, session) {
+  addTooltip(session=session,id="btn2",title="Hello! This is a hover pop-up. You'll have to hover to see the next one.")
 }
 
 filter_data <- function(filter_op, filter_var, filter_val, out) {
@@ -22,6 +35,7 @@ filter_data <- function(filter_op, filter_var, filter_val, out) {
                      type = "error")
   )
 }
+options(shiny.maxRequestSize = 30*1024^2)
 
 export_files <- function(format, name) {
   switch(format,
@@ -40,6 +54,8 @@ shinyServer(function(input, output, session) {
   values <- reactiveValues(
     pv_obj = NULL
   )
+
+
 
   ############################################################################
   #                                    UPLOAD
@@ -187,7 +203,7 @@ shinyServer(function(input, output, session) {
   })
   output$bgdata_display <- renderDataTable(
     bgdata_display(),
-    options = list(pageLength = 50)
+    options = list(pageLength = 25)
   )
 
   # ---------------------------- ESTIMATE PVS --------------------------------

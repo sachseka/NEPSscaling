@@ -47,11 +47,7 @@ estimate_cross_pcm_uncorrected <- function(bgdata, imp, resp,
     mod <- list()
     mod[[1]] <- TAM::tam.mml(
       resp = resp[, items],
-      dataY = if (is.null(bgdatacom)) {
-        NULL
-      } else {
-        bgdatacom[, -which(names(bgdatacom) == "ID_t"), drop = FALSE]
-      },
+      dataY = bgdatacom[, -which(names(bgdatacom) == "ID_t"), drop = FALSE],
       formulaY = frmY,
       pid = resp$ID_t,
       irtmodel = "PCM2",

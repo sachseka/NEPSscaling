@@ -50,11 +50,7 @@ estimate_cross_pcm_corrected_for_rotation <- function(bgdata, imp, frmY = NULL,
       facets = position,
       B = B,
       resp = resp[, items],
-      dataY = if (is.null(bgdatacom)) {
-        NULL
-      } else {
-        bgdatacom[, -which(names(bgdatacom) == "ID_t"), drop = FALSE]
-      },
+      dataY = bgdatacom[, -which(names(bgdatacom) == "ID_t"), drop = FALSE],
       formulaY = frmY,
       pid = resp$ID_t,
       irtmodel = "PCM2",

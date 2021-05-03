@@ -2,7 +2,7 @@
 #'
 #' @param bgdata Background data given by user (either NULL or a data.frame)
 #' @param npv Integer value fo number of plausible values to be returned by
-#'   `NEPScaling::plausible_values()`
+#'   `NEPSscaling::plausible_values()`
 #' @param j numeric; 1 (cross) or number of wave (long)
 #' @param control list of arguments for TAM::tam.pv() routine
 #' @param mod tam.obj

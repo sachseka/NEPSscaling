@@ -72,15 +72,11 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, PCM, ID_t,
       # estimate IRT model
       mod[[j]] <- TAM::tam.mml(
         resp = resp[[j]][, items[[j]]],
-        dataY = if (is.null(tmp_bgdata)) {
-          NULL
-        } else {
-          tmp_bgdata[
+        dataY = tmp_bgdata[
             tmp_bgdata$ID_t %in% resp[[j]]$ID_t,
             -which(names(tmp_bgdata) == "ID_t"),
             drop = FALSE
-          ]
-        },
+          ],
         formulaY = frmY,
         pid = resp[[j]]$ID_t,
         irtmodel = ifelse(PCM[[j]], "PCM2", "1PL"),

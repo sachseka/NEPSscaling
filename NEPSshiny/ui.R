@@ -1,6 +1,9 @@
 library(shinythemes)
 library(shiny)
+library(shinydashboard)
+library(shinydashboardPlus)
 library(bslib)
+library(shinyBS)
 
 
 shinyUI(
@@ -14,10 +17,24 @@ shinyUI(
     title = "NEPSscaling",
     tabPanel(
       fluidRow(
-        column(12, offset = 1, img(height = 50, width = 160, src = "NEPS_Logo_web_de.jpg")),
-        column(12, offset = 1, img(height = 50, width = 55, src = "LIfBi_Logo_solo_RZ_RGB.jpg"))),
-    fluidRow("Instructions for using this app:"),
-    fluidRow("To start the analysis, press:",   icon("laptop"))),
+        column(1, offset = 1, img(height = 50, width = 100, src = "NEPS_reduziert_RGB_v01.png")),
+        column(1, offset = 5, img(height = 50, width = 55, src = "LIfBi_Logo_solo_RZ.png"))),
+    fluidRow(box("To start the analysis, press",
+      title = "Thank you for using the NEPSscaling app!",footer = NULL,status = NULL,
+      solidHeader = TRUE, background = "fuchsia", width = 6, height = NULL,
+      collapsible = FALSE, collapsed = FALSE)),
+    fluidRow(
+      actionButton("Laptop", "Start", icon= icon("laptop")),
+      ),
+
+    fluidRow(box("For further information, press",
+                 title = NULL ,footer = NULL,status = NULL,
+                 solidHeader = TRUE, background = "fuchsia", width = 6, height = NULL,
+                 collapsible = FALSE, collapsed = FALSE)),
+    fluidRow(
+      actionButton("Help", "Help",  icon = icon("question-circle"))
+      ),
+    fluidRow(uiOutput("tab")),
     inverse = FALSE,
     tags$head(
       tags$style(
@@ -29,55 +46,83 @@ shinyUI(
              "
         )
       )
-    ),
+    )),
 
     # print output to shiny: https://stackoverflow.com/questions/30474538/possible-to-show-console-messages-written-with-message-in-a-shiny-ui/30490698#3049069844446666666
     shinyjs::useShinyjs(),
     ## ------------------------------Header-----------------------------------------------------------------
-    navbarMenu(
-      icon("power-off"),
-      tabPanel(
-        "Stop",value="stop",
-        DT::dataTableOutput("table1")
-      ),
-      tabPanel(
-        "Save State",
-        bookmarkButton(),
-        DT::dataTableOutput("table2")
-      ),
-      tabPanel(
-        "Leave",
-        DT::dataTableOutput("table3")
-      )
-    ),
-    navbarMenu(
+      navbarMenu(
       icon("question-circle"),
       tabPanel(
-        "Help",
-        DT::dataTableOutput("table4")
-      ),
-      tabPanel(
-        "About",
-        fluidRow("Informations"),
-        DT::dataTableOutput("table5")
-      ),
-      tabPanel(
-        "Useful Links",
-        DT::dataTableOutput("table6")
+        "Contact",
+        fluidRow("Contact")
       ),
       tabPanel(
         "Background Information Plausible Values",
-        DT::dataTableOutput("table7")
+        fluidRow(
+          tags$dl(
+            tags$dt("Plausible Values"),
+            tags$dd(
+              tags$ul(
+                tags$li("Estimators for latent constructs such as competencies"),
+                tags$li("Set of random draws out of individual respondent's latent competence distribution"),
+                tags$li("Derived from competence test and respondent characteristics (e.g., gender, socio-economic status)"),
+                tags$li("Uncertainty in random draws reflects uncertainty in competence estimation"),
+                tags$li("Background variables should at least contain all variables used for later analysis"),
+                tags$li("Unbiased on a population level, but biased on the individual level because of respondent information (i.e., group-level information)"),
+                tags$li("Special case of multiple imputation: statistical analyses with plausible values have to be performed accordingly")
+              )
+            )
+          ),
+          tags$img(style="max-width: 500px; width: 40%; height: auto;",
+                   src = "structural_model_pvs.png", alt = "Structural model"),
+          tags$dl(
+            tags$dt("Recommended Reading"),
+            tags$dd(
+              tags$ol(
+                tags$li("Scharl, A., Carstensen, C.H., & Gnambs, T. (2020). Estimating Plausible Values with NEPS Data: An Example Using Reading Competence in Starting Cohort 6 (NEPS Survey Paper No. 71). Bamberg: Leibniz Institute for Educational Trajectories, National Educational Panel Study. doi:10.5157/NEPS:SP71:1.0"),
+                tags$li("von Davier, M., Gonzalez, E., & Mislevy, R. (2009). What are plausible values and why are they useful. IERI Monograph Series, 2, 9–36."),
+                tags$li("Lüdtke, O., & Robitzsch, A. (2017). Eine Einführung in die Plausible-Values-Technik für die psychologische Forschung. Diagnostica, 63(3), 193–205. doi:10.1026/0012-1924/a000175"),
+                tags$li("Rubin, D. B. (1987). Multiple imputation for nonresponse in surveys. doi:10.1002/9780470316696"),
+                tags$li("Mislevy, R. J. (1991). Randomization-based inference about latent variables from complex samples. Psychometrika, 56(2), 177–196. doi:10.1007/BF02294457"),
+                tags$li("Meng, X.-L. (1994). Multiple-imputation inferences with uncongenial sources of input. Statistical Science, 538–558. doi:10.1214/ss/1177010269")
+              )
+            )
+          )
+        )
       ),
       tabPanel(
         "Background Information CART",
-        DT::dataTableOutput("table8")
-      ),
-      tabPanel(
-        "Report Issue",
-        DT::dataTableOutput("table9")
-      )
-    ),
+        fluidRow(
+          tags$dl(
+            tags$dt("Classification and Regression Trees"),
+            tags$dd(
+              tags$ul(
+                tags$li("Background variables for plausible values cannot contain missingness, but non-response is pervasive in large scale assessments and surveys"),
+                tags$li("Multiple imputation as an approach to fill in randomly missing data without introducing further bias"),
+                tags$li("Decision trees (e.g., classification and regression trees, CART) can be used to identify a set of plausible responses for the missing data"),
+                tags$li("Variable with missingness is recursively split into subsets; each subset has to be more homogenous than the superset"),
+                tags$li("Splits are made according to a value on a predictor variable (e.g., being female, being older than X years) until a node purity criterion is reached"),
+                tags$li("Prediction for missing values are drawn by following the tree's branches to its nodes and choosing a value from the node following an algorithm"),
+                tags$li("CART is a non-parametric approach and automatically incorporates non-linear relationships in the predicted and predictor variables")
+              )
+            )
+          ),
+          tags$img(style="max-width: 500px; width: 40%; height: auto;",
+                   src = "binary_tree.png", alt = "Binary decision tree"),
+          tags$dl(
+            tags$dt("Recommended Reading"),
+            tags$dd(
+              tags$ol(
+                tags$li("Scharl, A., Carstensen, C.H., & Gnambs, T. (2020). Estimating Plausible Values with NEPS Data: An Example Using Reading Competence in Starting Cohort 6 (NEPS Survey Paper No. 71). Bamberg: Leibniz Institute for Educational Trajectories, National Educational Panel Study. doi:10.5157/NEPS:SP71:1.0"),
+                tags$li("Aßmann, C., Gaasch, C., Pohl, S., & Carstensen, C. H. (2016). Estimation of plausible values considering partially missing background information: A data augmented MCMC approach. In H.-P. Blossfeld, J. Skopek, J. Maurice, & M. Bayer (Eds.), Methodological Issues of Longitudinal Surveys (pp. 503–521). Springer."),
+                tags$li("Loh, W.-Y. (2011). Classification and regression trees. Wiley Interdisciplinary Reviews: Data Mining and Knowledge Discovery, 1(1), 14–23. doi:10.1002/widm.8"),
+                tags$li("Rubin, D. B. (1987). Multiple imputation for nonresponse in surveys. doi:10.1002/9780470316696")
+              )
+            )
+          )
+        )
+      )),
     tabPanel(
       icon("laptop"),
 
@@ -93,10 +138,12 @@ shinyUI(
             condition = "input.conditionedPanels== 1",
             fileInput(inputId = "import_state", label = h3("Import pv_obj"),
                       multiple = FALSE, accept = ".rds"),
+            tipify(actionButton("btn", icon = icon("info"),"Information"), "Upload size up to 30KB", placement="bottom", trigger = "hover"),
             hr(),
             fileInput(inputId = "import_bgdata",
                       label = h3("Import background data"),
                       multiple = FALSE, accept = c(".rds", ".sav", ".dta")),
+            tipify(actionButton("btn2", icon = icon("info"),"Information"), "Upload size up to 30KB", placement="bottom", trigger = "hover"),
             checkboxInput(inputId = "metric", label = "All variables are metric.",
                           value = FALSE),
             selectInput(inputId = "ordinal", label = "Select ordinal variables",
@@ -113,8 +160,7 @@ shinyUI(
             selectInput("export_format", label = "Select export format",
                         choices = c("SPSS", "Stata", "Mplus")),
             downloadButton("export_pv_obj", label = "Export pv_obj"),
-            actionButton("display_bgdata", "Display bgdata"),
-            selectInput("bgdata_select_cols", "Select columns", choices = "",
+              selectInput("bgdata_select_cols", "Select columns", choices = "",
                         multiple = TRUE),
             textInput("bgdata_filter_rows", "Filter"),
             selectInput("bgdata_sort_cases", "Sort by", choices = ""),
@@ -126,12 +172,12 @@ shinyUI(
             condition = "input.conditionedPanels==2",
             h3("Arguments for Plausible Values Estimation"),
             selectInput("select_starting_cohort",
-              label = h3("Starting Cohort"),
+              label = h5("Starting Cohort"),
               choices = 1:6,
               selected = ""
             ),
             selectInput("select_domain",
-              label = h3("Domain"),
+              label = h5("Domain"),
               choices = c(
                 "Mathematics" = "MA", "Reading" = "RE", "Science" = "SC",
                 "Information and Communication Technology" = "IC",
@@ -146,7 +192,7 @@ shinyUI(
               selected = ""
             ),
             selectInput("select_wave",
-              label = h3("Wave"),
+              label = h5("Wave"),
               choices = 1:12,
               selected = ""
             ),
@@ -156,12 +202,12 @@ shinyUI(
             checkboxInput("rotation", label = "Rotation?", value = TRUE),
             checkboxInput("adjust_school_context",
                           label = "Adjust for school context?", value = TRUE),
-            numericInput("npv", label = h3("Number of plausible values"),
+            numericInput("npv", label = h5("Number of plausible values"),
                          value = 10, min= 1),
-            numericInput("nmi", label = h3("Number of imputations"),
+            numericInput("nmi", label = h5("Number of imputations"),
                          value = 10, min= 1),
             numericInput("min_valid",
-                         label = h3("Minimum of valid answers to competence test"),
+                         label = h5("Minimum of valid answers to competence test"),
                          value = 3, min= 1),
             checkboxInput("include_nr",
                           label = "Include number of not-reached missing values as proxy for processing speed?",
@@ -186,20 +232,13 @@ shinyUI(
             radioButtons("checkGroup1",
               label = h3("Visualizations"),
               choices = list(
-                "Distribution of plausible values" = 1,
-                "Imputations" = 2, "Regression weights" = 3
+                "Distribution of plausible values and imputations" = 1,
+                "Regression weights" = 2
               ),
               selected = 1
             ),
-            # Weiteres Conditional Panel
-            radioButtons("checkGroup2",
-              label = h3("Visualizations"),
-              choices = list(
-                "Lables" = 1,
-                "Style" = 2
-              ),
-              selected = 1
-            ),
+            actionButton(inputId = "regression_table", label = "Show regression table"),
+
             h3("Distribution plot"),
             selectInput(inputId = "geom", label = "Select plot type",
                         choices = c("Histogram", "Density plot", "Scatter plot")),
@@ -225,16 +264,6 @@ shinyUI(
             actionButton(inputId = "variable_importance_plot", label = "Display variable importance plot")
           ),
 
-          # Conditional Panel for Explore Estimates
-          conditionalPanel(
-            condition = "input.conditionedPanels==4",
-            "Comparison of mean values",
-            "Quantiles",
-            "Measure Location",
-            "Correlations",
-            "Simple linear regressions"
-          ),
-
           # Conditional Panel for Summary Statistics
           conditionalPanel(
             condition = "input.conditionedPanels==5",
@@ -247,14 +276,6 @@ shinyUI(
               selected = 1
             ),
             hr(),
-            radioButtons("checkGroup4",
-              label = h3(),
-              choices = list(
-                "Lables" = 1,
-                "Style" = 2
-              ),
-              selected = 1
-            ),
             textInput("title", label = h3("Title"), value = "Enter text..."),
 
             hr(),
@@ -313,9 +334,7 @@ shinyUI(
                      downloadButton(outputId = "download_variable_importance",
                                     label = "Download plot")
             ),
-            tabPanel("Explore Estimates", value = 4,
-                     dataTableOutput("imputations_display")),
-            tabPanel("Summary Statistics", value = 5,
+            tabPanel("Summary", value = 5,
                      tableOutput("imputation_table"),
                      textInput("descriptive_name", label = "Table name",
                                value = paste0("descriptives_",
@@ -337,3 +356,7 @@ shinyUI(
 
 enableBookmarking(store = "url")
 #shinyApp(ui, server)
+
+
+
+

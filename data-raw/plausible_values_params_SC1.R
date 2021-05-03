@@ -10,12 +10,12 @@ SC <- "SC1"
 link_constant[[SC]] <- list()
 
 # Mathematics
-data <- haven::read_sav("../SUFs/SC1/SC1_xTargetCompetencies_D_7-0-0.sav") # no TR
-link_constant[[SC]][["MA"]][["w7"]] <- as.numeric(data %>%
-    filter(wave_w7 == 1 & wave_w5 == 1) %>%
-    select(man5_sc1, man7_sc1u) %>%
-    mutate(const = man7_sc1u - man5_sc1) %>%
-    summarise_at(vars(const), mean, na.rm = TRUE))
+# data <- haven::read_sav("../SUFs/SC1/SC1_xTargetCompetencies_D_7-0-0.sav") # no TR
+link_constant[[SC]][["MA"]][["w7"]] <- 2.575#as.numeric(data %>%
+    # filter(wave_w7 == 1 & wave_w5 == 1) %>%
+    # select(man5_sc1, man7_sc1u) %>%
+    # mutate(const = man7_sc1u - man5_sc1) %>%
+    # summarise_at(vars(const), mean, na.rm = TRUE))
 # link_constant[[SC]][["MA"]][["w9"]] <- as.numeric(data %>%
 #     filter(wave_w7 == 1 & wave_w9 == 1) %>%
 #     select(man9_sc1u, man7_sc1u) %>%
@@ -41,7 +41,7 @@ link_constant[[SC]][["MA"]][["w7"]] <- as.numeric(data %>%
 #     mutate(const = von8_sc1u - von6_sc1u) %>%
 #     summarise_at(vars(const), mean, na.rm = TRUE))
 
-rm(data)
+# rm(data)
 
 save(link_constant, file = "data-raw/link_constant.RData")
 
@@ -68,28 +68,28 @@ save(item_difficulty_SC1_CD_w1,
      file = "data-raw/item_difficulty_SC1_CD_w1.RData")
 
 
-# Estimate item parameters for SC1 MA wave 7 (no TR)
-library(haven)
-library(dplyr)
-library(TAM)
-suf <- read_spss("../SUFs/SC1/SC1_xTargetCompetencies_D_7-0-0.sav")
-dat <- suf %>%
-    arrange(ID_t) %>%
-    select("man7z211_c", "man7z201_c", "man5v181_sc1n7_c", "man7z101_c",
-           "man7r111_c", "man7g051_c", "man7g061_c", "man7v011_c", "man7r151_c",
-           "man7g131_c", "man7z041_c", "man7d071_c", "man7g191_c", "man7r121_c",
-           "man7z081_c", "man7v091_c", "man7z171_c", "man7d021_c", "man7z221_c",
-           "man5z081_sc1n7_c", "man7g031_c", "man7z231_c", "man7r181_c", "man7v161_c",
-           "man7z141_c", "man7_sc1") %>%
-    filter(!is.na(man7_sc1)) %>%
-    select(-man7_sc1)
-apply(dat, 2, table, useNA = "always")
-mod <- tam.mml(
-    resp = dat, irtmodel = "1PL", verbose = FALSE
-)
-item_difficulty_SC1_MA_w7 <- mod$xsi.fixed.estimated
-save(item_difficulty_SC1_MA_w7,
-     file = "data-raw/item_difficulty_SC1_MA_w7.RData")
+# # Estimate item parameters for SC1 MA wave 7 (no TR)
+# library(haven)
+# library(dplyr)
+# library(TAM)
+# suf <- read_spss("../SUFs/SC1/SC1_xTargetCompetencies_D_7-0-0.sav")
+# dat <- suf %>%
+#     arrange(ID_t) %>%
+#     select("man7z211_c", "man7z201_c", "man5v181_sc1n7_c", "man7z101_c",
+#            "man7r111_c", "man7g051_c", "man7g061_c", "man7v011_c", "man7r151_c",
+#            "man7g131_c", "man7z041_c", "man7d071_c", "man7g191_c", "man7r121_c",
+#            "man7z081_c", "man7v091_c", "man7z171_c", "man7d021_c", "man7z221_c",
+#            "man5z081_sc1n7_c", "man7g031_c", "man7z231_c", "man7r181_c", "man7v161_c",
+#            "man7z141_c", "man7_sc1") %>%
+#     filter(!is.na(man7_sc1)) %>%
+#     select(-man7_sc1)
+# apply(dat, 2, table, useNA = "always")
+# mod <- tam.mml(
+#     resp = dat, irtmodel = "1PL", verbose = FALSE
+# )
+# item_difficulty_SC1_MA_w7 <- mod$xsi.fixed.estimated
+# save(item_difficulty_SC1_MA_w7,
+#      file = "data-raw/item_difficulty_SC1_MA_w7.RData")
 
 # # Vocabulary waves 4, 6
 # dat <- suf %>%

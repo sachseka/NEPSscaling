@@ -53,6 +53,13 @@ write_pv <- function(pv_obj, path, ext = c("SPSS", "Stata", "Mplus")) {
     }
   }
   if (ext == "Mplus") {
+    write(names(pv_obj[["pv"]][[1]],
+          file = paste0(path,
+                        "SC", pv_obj[["SC"]], "_",
+                        pv_obj[["domain"]], "_",
+                        "w", pv_obj[["wave"]], "_",
+                        pv_obj[["type"]], "_",
+                        "variable_names.txt")))
     for (i in 1:length(pv_obj[["pv"]])) {
       write.table(pv_obj[["pv"]][i],
         file = paste0(path,
@@ -61,7 +68,7 @@ write_pv <- function(pv_obj, path, ext = c("SPSS", "Stata", "Mplus")) {
                       "w", pv_obj[["wave"]], "_",
                       pv_obj[["type"]], "_",
                       "plausible_values_", i, ".dat"), dec = ".",
-        sep = ",", row.names = FALSE
+        sep = "\t", row.names = FALSE, col.names = FALSE
       )
     }
     contents <- paste0("SC", pv_obj[["SC"]], "_",

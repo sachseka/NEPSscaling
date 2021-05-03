@@ -42,7 +42,8 @@ items <- list(
     w7 = c("man7z211_c", "man7z201_c", "man5v181_sc1n7_c", "man7z101_c",
            "man7r111_c", "man7g051_c", "man7g061_c", "man7v011_c", "man7r151_c",
            "man7g131_c", "man7z041_c", "man7d071_c", "man7g191_c", "man7r121_c",
-           "man7z081_c", "man7v091_c", "man7z171_c", "man7d021_c", "man7z221_c",
+           "man7z081_c", "man7v091_c", "man7z171_c", #"man7d021_c",
+           "man7z221_c",
            "man5z081_sc1n7_c", "man7g031_c", "man7z231_c", "man7r181_c", "man7v161_c",
            "man7z141_c"),
     w9 = c()
@@ -55,9 +56,15 @@ rownames(x1w5) <- items$w5
 colnames(x1w5)[1] <- ""
 x1w5[, 2][rownames(x1w5) %in% pcitems("SC1", "MA", "w5")] <-
   x1w5[, 2][rownames(x1w5) %in% pcitems("SC1", "MA", "w5")]/2
-load("data-raw/item_difficulty_SC1_MA_w7.RData")
-x1w7 <- item_difficulty_SC1_MA_w7
-rm(item_difficulty_SC1_MA_w7)
+x1w7 <- cbind(item = 1:length(items$w7),
+              xsi = c(-1.01, -2.58, -1.91, -1.03, -0.83, 1.64, 1.21, -1.65,
+                      -0.01, 0.67, -0.60, -0.19, -0.25, 1.08, -0.47, -0.59,
+                      -0.70, #
+                      0.92, -1.83, -1.46, 0.59, -0.41, 0.48, -1.86))
+rownames(x1w7) <- items$w7
+colnames(x1w7)[1] <- ""
+x1w7[, 2][rownames(x1w7) %in% pcitems("SC1", "MA", "w7")] <-
+  x1w7[, 2][rownames(x1w7) %in% pcitems("SC1", "MA", "w7")]/2
 
 # SC2
 items <- list(
@@ -139,15 +146,15 @@ rownames(x2w6) <- items$w6
 colnames(x2w6)[1] <- ""
 x2w6[, 2][rownames(x2w6) %in% pcitems("SC2", "MA", "w6")] <-
   x2w6[, 2][rownames(x2w6) %in% pcitems("SC2", "MA", "w6")]/2
-# x2w9 <- cbind(item = 1:length(items$w9),
-#               xsi = c()) # TODO
-# rownames(x2w9) <- items$w9
-# colnames(x2w9)[1] <- ""
-# x2w9[, 2][rownames(x2w9) %in% pcitems("SC2", "MA", "w9")] <-
-#   x2w9[, 2][rownames(x2w9) %in% pcitems("SC2", "MA", "w9")]/2
-load("data-raw/item_difficulty_SC2_MA_w9.RData")
-x2w9 <- item_difficulty_SC2_MA_w9
-rm(item_difficulty_SC2_MA_w9)
+x2w9 <- cbind(item = 1:length(items$w9),
+              xsi = c(-1.70, 0.33, 0.34, -0.31, 0.32, 0.15, -0.58, 0.36, -0.37,
+                      0.92, -1.48, 0.98, -0.51, -2.04, 0.83, -1.04, -2.29,
+                      -0.68, 0.55, 0.15, -1.57, -0.51, 0.45, -1.91, 1.62,
+                      -0.66, 0.58, 0.22))
+rownames(x2w9) <- items$w9
+colnames(x2w9)[1] <- ""
+x2w9[, 2][rownames(x2w9) %in% pcitems("SC2", "MA", "w9")] <-
+  x2w9[, 2][rownames(x2w9) %in% pcitems("SC2", "MA", "w9")]/2
 
 
 
@@ -215,11 +222,13 @@ rownames(x3w5) <- items$w5
 colnames(x3w5)[1] <- ""
 x3w5[, 2][rownames(x3w5) %in% pcitems("SC3", "MA", "w5")] <-
   x3w5[, 2][rownames(x3w5) %in% pcitems("SC3", "MA", "w5")]/2
-load("data-raw/item_difficulty_SC3_MA_w9.RData")
-x3w9 <- item_difficulty_SC3_MA_w9
-rownames(x3w9)[14] <- "mas1q02s_sc3g12_c"
-
-rm(item_difficulty_SC3_MA_w9)
+x3w9 <- cbind(item = 1:length(items$w9), # estimated in R
+              xsi = c(-0.34, -0.16, 0.88, 0.06, 0.46, 0.99, 0.76, -0.52, 1.85,
+                      -0.36, 1.11, -0.89, 0.24, 0.33, -1.17, 0.99, 0.28, -0.06,
+                      0.33, -0.51, -0.20, -0.26, -0.67, 0.85, -1.24,
+                      -1.57, -0.25, 0.03, -1.33, -1.74))
+rownames(x3w9) <- items$w9
+colnames(x3w9)[1] <- ""
 
 
 
@@ -273,10 +282,9 @@ rownames(x4w7long) <- items$w7
 colnames(x4w7long)[1] <- ""
 x4w7long[, 2][rownames(x4w7long) %in% pcitems("SC4", "MA", "w7")] <-
   x4w7long[, 2][rownames(x4w7long) %in% pcitems("SC4", "MA", "w7")]/2
-load("data-raw/item_difficulty_SC4_MA_w7.RData")
-x4w7 <- item_difficulty_SC4_MA_w7
-colnames(x4w7) <- c("", "xsi")
-rm(item_difficulty_SC4_MA_w7)
+x4w7 <- x4w7long
+x4w7 <- x4w7[order(rownames(x4w7)), ]
+
 x4w10 <- xsi
 rownames(x4w10) <- NEPSscaling:::item_labels$SC4$MA$w10
 
@@ -1102,7 +1110,8 @@ items <- list(
          "scg61330_c","scg6061s_c","scg60620_c"),
   w5 = c("scg90110_sc3g9_c","scg9012s_sc3g9_c","scg90510_sc3g9_c",
          "scg9052s_sc3g9_c","scg90920_sc3g9_c","scg90930_sc3g9_c",
-         "scg9611s_sc3g9_c","scg96120_sc3g9_c","scg96410_sc3g9_c",
+         #"scg9611s_sc3g9_c",
+         "scg96120_sc3g9_c","scg96410_sc3g9_c",
          "scg96420_sc3g9_c","scg9061s_sc3g9_c","scg90630_sc3g9_c",
          "scg90810_sc3g9_c","scg9083s_sc3g9_c","scg91030_sc3g9_c",
          "scg91040_sc3g9_c","scg91050_sc3g9_c","scg9042s_sc3g9_c",
@@ -1134,12 +1143,21 @@ rownames(x3w2) <- items$w2
 colnames(x3w2)[1] <- ""
 x3w2[, 2][rownames(x3w2) %in% pcitems("SC3", "SC", "w2")] <-
   x3w2[, 2][rownames(x3w2) %in% pcitems("SC3", "SC", "w2")]/2
-load("data-raw/item_difficulty_SC3_SC_w5.RData")
-x3w5 <- item_difficulty_SC3_SC_w5
-rm(item_difficulty_SC3_SC_w5)
-load("data-raw/item_difficulty_SC3_SC_w5_long.RData")
-x3w5long <- item_difficulty_SC3_SC_w5_long
-rm(item_difficulty_SC3_SC_w5_long)
+x3w5long <- cbind(item = 1:length(items$w5),
+              xsi = c(-0.61, -0.94, -0.78, -0.84, 0.26, -0.73, -0.82, -1.30,
+                      -0.36, 0.17, -0.94, -2.13, -1.31, 0.14 ,-1.29, -0.79,
+                      -0.75, -0.98, -1.18, -0.18, -0.42, 0.27, -1.13, -0.22,
+                      0.08, 1.30, 0.80, 1.57, 0.84, #0.95,
+                      0.10, -0.33, -0.84,
+                      -0.46, 2.17, 0.93, -0.14#, 1.38
+                      ))
+rownames(x3w5long) <- items$w5
+colnames(x3w5long)[1] <- ""
+x3w5long[, 2][rownames(x3w5long) %in% pcitems("SC3", "SC", "w5")] <-
+  x3w5long[, 2][rownames(x3w5long) %in% pcitems("SC3", "SC", "w5")]/2
+x3w5 <- x3w5long
+x3w5 <- x3w5[order(rownames(x3w5)), ]
+
 load("data-raw/item_difficulty_SC3_SC_w8.RData")
 x3w8 <- item_difficulty_SC3_SC_w8
 rm(item_difficulty_SC3_SC_w8)

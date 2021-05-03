@@ -60,7 +60,7 @@ test_that("write_pv prints npv data files for Stata/SPSS", {
 })
 
 
-test_that("write_pv prints npv data + 1 content files for Mplus", {
+test_that("write_pv prints npv data + 2 content files for Mplus", {
   skip(message = "write_pv: skipped due to side effects")
   pv_obj <- list()
   pv_obj$domain <- "MA"
@@ -79,11 +79,15 @@ test_that("write_pv prints npv data + 1 content files for Mplus", {
   
   content_file <- "SC1_MA_w1_long_plausible_values_1.dat\nSC1_MA_w1_long_plausible_values_2.dat\nSC1_MA_w1_long_plausible_values_3.dat"
   write_pv(pv_obj, path, "Mplus")
-  expect_equal(length(list.files(path)), 4)
+  expect_equal(length(list.files(path)), 5)
   expect_equal(
     paste(readLines(paste0(path, "SC1_MA_w1_long_content_file.dat")),
           collapse = "\n"),
     content_file)
+  expect_equal(
+    paste(readLines(paste0(path, "SC1_MA_w1_long_variable_names.txt")),
+          collapse = " "),
+    names(pv_obj$pv[[1]])
   
   unlink("tests/tests", recursive = TRUE)
 })

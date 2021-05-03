@@ -1,6 +1,6 @@
 #' Print information about NEPSscaling object
 #'
-#' @param x return object of function \code{NEPScaling::plausible_values()}
+#' @param x return object of function \code{NEPSscaling::plausible_values()}
 #' @param ... unused
 #'
 #' @export
