@@ -566,6 +566,10 @@ shinyServer(function(input, output, session) {
                       dec = ".", sep = ",", row.names = FALSE)
         }
         write(x = paste0(files[-length(files)], collapse = "\n"),
+              file = files[length(files) - 1])
+        write(names(values$pv_obj[["pv"]][[1]]), file = "variable_names.txt")
+        
+        write(x = paste0(files[-length(files)], collapse = "\n"),
               file = files[length(files)])
       }
 
