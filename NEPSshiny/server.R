@@ -636,8 +636,8 @@ shinyServer(function(input, output, session) {
 
   # ------------------------ SAVE TABLES -------------------------------------
 
-  output$download_descriptive <- renderUI({
-    downloadButton('download_descriptive', label = 'Download Descriptives') })
+  # output$download_descriptive <- renderUI({
+  #   downloadButton('download_descriptive', label = 'Download Descriptives') })
 
   output$download_descriptive <- downloadHandler(
     filename = function() {
