@@ -3,7 +3,7 @@
 S3method(print,pv_obj)
 S3method(summary,pv_obj)
 export("%>%")
-export(NEPSscalingGUI)
+export(NEPSshiny)
 export(currently_implemented)
 export(deviations_of_package_from_suf)
 export(display_tree)
