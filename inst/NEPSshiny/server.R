@@ -298,7 +298,7 @@ shinyServer(function(input, output, session) {
       items
     }
   },
-    caption = "Item Difficulty Parameters. SE of fixed parameters is set to 0.",
+    caption = "Item Difficulty Parameters. SE of fixed parameters is set to 0. Position = Estimated rotation effect.",
     caption.placement = getOption("xtable.caption.placement", "top"),
     caption.width = getOption("xtable.caption.width", NULL)
   )
@@ -513,7 +513,7 @@ shinyServer(function(input, output, session) {
   output$imputation_table <- renderTable({
       imputation_table()
     },
-    caption = "Descriptive Statistics of Average Imputated Data Sets",
+    caption = "Descriptive Statistics of Average Imputed Data Sets. * Factor variables.",
     caption.placement = getOption("xtable.caption.placement", "top"),
     caption.width = getOption("xtable.caption.width", NULL)
   )
