@@ -52,6 +52,10 @@ Mode <- function(x) {
 }
 
 shinyServer(function(input, output, session) {
+  session$onSessionEnded(function() {
+    stopApp()
+  })
+
   values <- reactiveValues(
     pv_obj = NULL
   )
