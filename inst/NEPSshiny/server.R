@@ -1,6 +1,7 @@
 
 library(shiny)
 library(xtable)
+# library(NEPSscaling)
 
 Start <-function(input, output, session) {
   onclick(input$Laptop, {
@@ -220,7 +221,7 @@ shinyServer(function(input, output, session) {
     withCallingHandlers(
       {
         shinyjs::html("plausible_values_progress", "")
-        out <- plausible_values(
+        out <- NEPSscaling::plausible_values(
           SC = as.numeric(input$select_starting_cohort),
           domain = input$select_domain,
           wave = as.numeric(input$select_wave),
@@ -274,10 +275,10 @@ shinyServer(function(input, output, session) {
 
   output$item_difficulties <- renderTable({
     req(values$pv_obj)
-    if (get_type(pv_obj = values$pv_obj) == "longitudinal") {
-      new_items <- paste0("items_w", get_wave(values$pv_obj))
-      new_xsi <- paste0("xsi_w", get_wave(values$pv_obj))
-      get_item_difficulties(values$pv_obj) %>%
+    if (NEPSscaling::get_type(pv_obj = values$pv_obj) == "longitudinal") {
+      new_items <- paste0("items_w", NEPSscaling::get_wave(values$pv_obj))
+      new_xsi <- paste0("xsi_w", NEPSscaling::get_wave(values$pv_obj))
+      NEPSscaling::get_item_difficulties(values$pv_obj) %>%
         purrr::map(.f = function(mat) {
           colnames(mat) <- base::make.names(colnames(mat), unique = TRUE)
           mat}) %>%
@@ -291,8 +292,8 @@ shinyServer(function(input, output, session) {
                          .funs = round, digits = 3) %>%
         as.data.frame()
     } else {
-      items <- data.frame(rownames(get_item_difficulties(values$pv_obj)),
-                          round(get_item_difficulties(values$pv_obj), 3))
+      items <- data.frame(rownames(NEPSscaling::get_item_difficulties(values$pv_obj)),
+                          round(NEPSscaling::get_item_difficulties(values$pv_obj), 3))
       names(items) <- c("Items", "xsi", "se")
       items
     }
@@ -313,7 +314,7 @@ shinyServer(function(input, output, session) {
     tmp <- replicate(length(names(out)[-1]),
                      data.frame(ID_t = out[["ID_t"]]), simplify = FALSE)
     names(tmp) <- names(out)[-1]
-    for (i in seq(get_npv(values$pv_obj))) {
+    for (i in seq(NEPSscaling::get_npv(values$pv_obj))) {
       for (var in names(out)[-1]) {
         tmp[[var]] <- dplyr::left_join(tmp[[var]],
                                        values$pv_obj$pv[[i]][, c("ID_t", var)],
@@ -374,7 +375,7 @@ shinyServer(function(input, output, session) {
   cart_plot <- eventReactive(input$cart_plot, {
     req(values$pv_obj, input$imputation, input$variable)
     tryCatch(
-      display_tree(values$pv_obj, input$imputation, input$variable),
+      NEPSscaling::display_tree(values$pv_obj, input$imputation, input$variable),
       error = function(e) {
         showNotification(e$message, type = "error")
       }
@@ -386,7 +387,7 @@ shinyServer(function(input, output, session) {
 
   variable_importance_plot <- eventReactive(input$variable_importance_plot, {
     req(values$pv_obj, input$imputation, input$variable)
-    display_variable_importance(values$pv_obj, input$imputation, input$variable)
+    NEPSscaling::display_variable_importance(values$pv_obj, input$imputation, input$variable)
   })
   output$variable_importance_plot <- renderPlot(variable_importance_plot())
 
@@ -464,14 +465,14 @@ shinyServer(function(input, output, session) {
   # --------------------------- CREATE REGRESSION TABLES ---------------------
   regression_table <- reactive({
     req(values$pv_obj)
-    tmp <- get_regression_coefficients(values$pv_obj)
-    if (get_type(values$pv_obj) == "longitudinal") {
+    tmp <- NEPSscaling::get_regression_coefficients(values$pv_obj)
+    if (NEPSscaling::get_type(values$pv_obj) == "longitudinal") {
       tmp <- lapply(tmp, function(x) x[,-1]) %>%
         purrr::reduce(`+`) / length(tmp)
       tab <- data.frame(
         Variable = paste(tmp[[1]]$Variable, "Wave",
-                         rep(get_wave(values$pv_obj), each = nrow(tmp[[1]]))),
-        N = as.character(rep(get_n_testtakers(values$pv_obj), each = nrow(tmp[[1]]))),
+                         rep(NEPSscaling::get_wave(values$pv_obj), each = nrow(tmp[[1]]))),
+        N = as.character(rep(NEPSscaling::get_n_testtakers(values$pv_obj), each = nrow(tmp[[1]]))),
         b = unname(unlist(tmp[, seq(1, ncol(tmp), 3)])),
         beta = unname(unlist(tmp[, seq(2, ncol(tmp), 3)])),
         se = unname(unlist(tmp[, seq(3, ncol(tmp), 3)]))
@@ -479,7 +480,7 @@ shinyServer(function(input, output, session) {
     } else {
       tab <- data.frame(
         Variable = tmp$Variable,
-        N = as.character(get_n_testtakers(values$pv_obj)),
+        N = as.character(NEPSscaling::get_n_testtakers(values$pv_obj)),
         b = rowMeans(tmp[, grepl("_coeff$", names(tmp))]),
         beta = rowMeans(tmp[, grepl("_std$", names(tmp))]),
         se = rowMeans(tmp[, grepl("_se$", names(tmp))])
@@ -568,7 +569,7 @@ shinyServer(function(input, output, session) {
         write(x = paste0(files[-length(files)], collapse = "\n"),
               file = files[length(files) - 1])
         write(names(values$pv_obj[["pv"]][[1]]), file = "variable_names.txt")
-        
+
         write(x = paste0(files[-length(files)], collapse = "\n"),
               file = files[length(files)])
       }
