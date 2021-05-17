@@ -87,7 +87,7 @@ test_that("write_pv prints npv data + 2 content files for Mplus", {
   expect_equal(
     paste(readLines(paste0(path, "SC1_MA_w1_long_variable_names.txt")),
           collapse = " "),
-    names(pv_obj$pv[[1]])
+    names(pv_obj$pv[[1]]))
   
   unlink("tests/tests", recursive = TRUE)
 })
