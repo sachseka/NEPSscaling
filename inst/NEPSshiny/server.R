@@ -3,19 +3,7 @@ library(shiny)
 library(xtable)
 # library(NEPSscaling)
 
-Start <-function(input, output, session) {
-  onclick(input$Laptop, {
-    session$sendCustomMessage(type = 'testmessage',
-                              message = 'Thank you for clicking')
-  })
-}
 
-Help<- function(input, output, session) {
- onclick(input$Help, {
-    session$sendCustomMessage(type = 'testmessage',
-                              message = 'Thank you for clicking')
-  })
-}
 
 Information_size1 <- function(input, output, session) {
   addTooltip(session=session,id="btn",title="Hover pop-up.")
