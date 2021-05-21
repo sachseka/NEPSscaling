@@ -5,13 +5,6 @@ library(xtable)
 
 
 
-Information_size1 <- function(input, output, session) {
-  addTooltip(session=session,id="btn",title="Hover pop-up.")
-}
-Information_size2 <- function(input, output, session) {
-  addTooltip(session=session,id="btn2",title="Hello! This is a hover pop-up. You'll have to hover to see the next one.")
-}
-
 filter_data <- function(filter_op, filter_var, filter_val, out) {
   switch(filter_op,
     "<" = dplyr::filter(out, .data[[filter_var]] < filter_val),
