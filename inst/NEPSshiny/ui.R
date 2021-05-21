@@ -129,8 +129,7 @@ shinyUI(
                          ),
                          selected = 1
             ),
-            actionButton(inputId = "regression_table", label = "Show regression table"),
-
+            
             h3("Distribution plot"),
             selectInput(inputId = "geom", label = "Select plot type",
                         choices = c("Histogram", "Density plot", "Scatter plot")),
