@@ -4,6 +4,7 @@
 #library(shinydashboardPlus)
 library(bslib)
 library(shinyBS)
+library(shinyjs)
 
 
 shinyUI(
@@ -23,7 +24,6 @@ shinyUI(
         sidebarPanel(
           # Conditional Panel for Manage
           ## https://shiny.rstudio.com/reference/shiny/1.6.0/conditionalPanel.html
-          ## To do: Filter Data hinzufügen
           ## Conditional panel in conditional panel
           conditionalPanel(
             condition = "input.conditionedPanels== 1",
@@ -51,15 +51,20 @@ shinyUI(
             downloadButton("download_pv_obj", label = "Download pv_obj (.rds)"),
             selectInput("export_format", label = "Select export format",
                         choices = c("SPSS", "Stata", "Mplus")),
-            downloadButton("export_pv_obj", label = "Export pv_obj"),
-            selectInput("bgdata_select_cols", "Select columns", choices = "",
-                        multiple = TRUE),
-            textInput("bgdata_filter_rows", "Filter"),
-            selectInput("bgdata_sort_cases", "Sort by", choices = ""),
-            checkboxInput("bgdata_ascending", "Ascending", value = TRUE)
-          ),
-
-          # Conditional Panel for Input Parameter
+            downloadButton("export_pv_obj", label = "Export pv_obj"), 
+            h3("Background data"),
+            useShinyjs(),
+            actionButton(inputId = "Display_Bgdata", label=  "Process background data"), 
+            hidden(
+              selectInput("bgdata_select_cols", "Select columns", choices = "",
+                                                              multiple = TRUE),
+              textInput("bgdata_filter_rows", "Filter"),
+              selectInput("bgdata_sort_cases", "Sort by", choices = ""),
+              checkboxInput("bgdata_ascending", "Ascending", value = TRUE))
+            
+            ),
+          
+        # Conditional Panel for Input Parameter
           conditionalPanel(
             condition = "input.conditionedPanels==2",
             h3("Arguments for Plausible Values Estimation"),
@@ -162,18 +167,10 @@ shinyUI(
                          label = h3("Summaries for"),
                          choices = list(
                            "Plausible values and imputations" = 1,
-                           "Model summaries" = 2
+                           "Item parameters" = 2
                          ),
                          selected = 1
-            ),
-            hr(),
-            textInput("title", label = h3("Title"), value = "Enter text..."),
-
-            hr(),
-            textInput("subtitle", label = h3("Subtitle"), value = "Enter text..."),
-
-            hr(),
-            textInput("caption", label = h3("Caption"), value = "Enter text...")
+            )
           )
         ),
         ## --------------------------------Main Panel-----------------------------------------------------------
