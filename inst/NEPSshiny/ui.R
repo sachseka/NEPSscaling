@@ -126,15 +126,16 @@ shinyUI(
           # Conditional Panel for Visualize Estimates
           conditionalPanel(
             condition = "input.conditionedPanels==3",
-            radioButtons("checkGroup1",
+            radioButtons(inputId = "checkGroup1",
                          label = h3("Visualizations"),
                          choices = list(
                            "Distribution of plausible values and imputations" = 1,
                            "Regression weights" = 2
                          ),
                          selected = 1
-            ),
-            
+            )),
+            conditionalPanel(
+              condition = "input.checkGroup1==1",
             h3("Distribution plot"),
             selectInput(inputId = "geom", label = "Select plot type",
                         choices = c("Histogram", "Density plot", "Scatter plot")),
