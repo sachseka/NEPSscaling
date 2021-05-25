@@ -132,7 +132,7 @@ shinyUI(
                            "Distribution of plausible values and imputations" = 1,
                            "Regression weights" = 2
                          ),
-                         selected = 1
+                         selected = 0
             )),
             conditionalPanel(
               condition = "input.checkGroup1==1",
