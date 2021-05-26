@@ -65,11 +65,17 @@ apply_correction_for_changed_test_rotation <- function(pos, wave, correction,
   }
   eap <- lapply(eap, function(x) {
     x[position[["ID_t"]] %in% x[["ID_t"]] &
-        position[["position"]] %in% pos, paste0("eap_", wave)] + correction
+        position[["position"]] %in% pos, paste0("eap_", wave)] <- 
+      x[position[["ID_t"]] %in% x[["ID_t"]] &
+          position[["position"]] %in% pos, paste0("eap_", wave)] + correction
+    x
   })
   pv <- lapply(pv, function(x) {
     x[position[["ID_t"]] %in% x[["ID_t"]] &
-              position[["position"]] %in% pos, paste0("PV_", wave)] + correction
+              position[["position"]] %in% pos, paste0("PV_", wave)] <- 
+      x[position[["ID_t"]] %in% x[["ID_t"]] &
+          position[["position"]] %in% pos, paste0("PV_", wave)] + correction
+    x
   })
   list(wle = wle, eap = eap, pv = pv)
 }

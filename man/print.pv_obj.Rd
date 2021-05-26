@@ -7,7 +7,7 @@
 \method{print}{pv_obj}(x, ...)
 }
 \arguments{
-\item{x}{return object of function \code{NEPScaling::plausible_values()}}
+\item{x}{return object of function \code{NEPSscaling::plausible_values()}}
 
 \item{...}{unused}
 }

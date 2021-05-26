@@ -22,7 +22,7 @@ test_that("correct dimensions of Q matrix list", {
   expect_equal(nrow(create_loading_matrix_q_longitudinal("SC1", "MA", items)[[1]]),
                20)
   expect_equal(nrow(create_loading_matrix_q_longitudinal("SC1", "MA", items)[[2]]),
-               25)
+               24)
   items <- lapply(xsi.fixed$long[["MA"]][["SC2"]], rownames)
   expect_equal(nrow(create_loading_matrix_q_longitudinal("SC2", "MA", items)[[1]]),
                26)

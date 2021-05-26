@@ -22,7 +22,7 @@ test_that("was_assessed_in_school: cross-sectional", {
   expect_true(was_assessed_in_school(longitudinal = F, SC = "SC2",
                                      wave = sample(c("w3", "w4", "w5", "w6", "w9"), 1, replace = F)))
   expect_true(was_assessed_in_school(longitudinal = F, SC = "SC3",
-                                     wave = sample(paste0("w", 1:9), 1, replace = F)))
+                                     wave = sample(paste0("w", c(1:3, 5:9)), 1, replace = F)))
   expect_true(was_assessed_in_school(longitudinal = F, SC = "SC4",
                                      wave = sample(c("w1", "w2", "w3", "w5", "w7"), 1, replace = F)))
 })

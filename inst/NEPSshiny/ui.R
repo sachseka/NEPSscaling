@@ -4,6 +4,7 @@
 #library(shinydashboardPlus)
 library(bslib)
 library(shinyBS)
+library(shinyjs)
 
 
 shinyUI(
@@ -23,7 +24,6 @@ shinyUI(
         sidebarPanel(
           # Conditional Panel for Manage
           ## https://shiny.rstudio.com/reference/shiny/1.6.0/conditionalPanel.html
-          ## To do: Filter Data hinzufügen
           ## Conditional panel in conditional panel
           conditionalPanel(
             condition = "input.conditionedPanels== 1",
@@ -51,15 +51,20 @@ shinyUI(
             downloadButton("download_pv_obj", label = "Download pv_obj (.rds)"),
             selectInput("export_format", label = "Select export format",
                         choices = c("SPSS", "Stata", "Mplus")),
-            downloadButton("export_pv_obj", label = "Export pv_obj"),
-            selectInput("bgdata_select_cols", "Select columns", choices = "",
-                        multiple = TRUE),
-            textInput("bgdata_filter_rows", "Filter"),
-            selectInput("bgdata_sort_cases", "Sort by", choices = ""),
-            checkboxInput("bgdata_ascending", "Ascending", value = TRUE)
-          ),
-
-          # Conditional Panel for Input Parameter
+            downloadButton("export_pv_obj", label = "Export pv_obj"), 
+            h3("Background data"),
+            useShinyjs(),
+            actionButton(inputId = "Display_Bgdata", label=  "Process background data"), 
+            hidden(
+              selectInput("bgdata_select_cols", "Select columns", choices = "",
+                                                              multiple = TRUE),
+              textInput("bgdata_filter_rows", "Filter"),
+              selectInput("bgdata_sort_cases", "Sort by", choices = ""),
+              checkboxInput("bgdata_ascending", "Ascending", value = TRUE))
+            
+            ),
+          
+        # Conditional Panel for Input Parameter
           conditionalPanel(
             condition = "input.conditionedPanels==2",
             h3("Arguments for Plausible Values Estimation"),
@@ -121,16 +126,16 @@ shinyUI(
           # Conditional Panel for Visualize Estimates
           conditionalPanel(
             condition = "input.conditionedPanels==3",
-            radioButtons("checkGroup1",
+            radioButtons(inputId = "checkGroup1",
                          label = h3("Visualizations"),
                          choices = list(
                            "Distribution of plausible values and imputations" = 1,
                            "Regression weights" = 2
                          ),
-                         selected = 1
-            ),
-            actionButton(inputId = "regression_table", label = "Show regression table"),
-
+                         selected = 0
+            )),
+            conditionalPanel(
+              condition = "input.checkGroup1==1",
             h3("Distribution plot"),
             selectInput(inputId = "geom", label = "Select plot type",
                         choices = c("Histogram", "Density plot", "Scatter plot")),
@@ -147,7 +152,7 @@ shinyUI(
                         choices = c("Gray", "Black and white", "Linedraw", "Light",
                                     "Dark", "Minimal", "Classic", "Void")),
             actionButton("plot", label = "Display plot"),
-            h3("CART plots"),
+            h3("Imputation tree structures"),
             selectInput(inputId = "imputation", label = "Select imputation",
                         choices = ""),
             selectInput(inputId = "variable", label = "Select variable",
@@ -162,19 +167,11 @@ shinyUI(
             radioButtons("checkGroup3",
                          label = h3("Summaries for"),
                          choices = list(
-                           "Plausible values" = 1,
-                           "Imputations" = 2, "Model summaries" = 3
+                           "Plausible values and imputations" = 1,
+                           "Item parameters" = 2
                          ),
                          selected = 1
-            ),
-            hr(),
-            textInput("title", label = h3("Title"), value = "Enter text..."),
-
-            hr(),
-            textInput("subtitle", label = h3("Subtitle"), value = "Enter text..."),
-
-            hr(),
-            textInput("caption", label = h3("Caption"), value = "Enter text...")
+            )
           )
         ),
         ## --------------------------------Main Panel-----------------------------------------------------------
@@ -186,56 +183,70 @@ shinyUI(
             tabPanel("Estimate Plausible Values", value = 2,
                      h3(textOutput("plausible_values_progress"))),
             tabPanel("Visualize Estimates", value = 3,
-                     tableOutput("regression_table"),
-                     textInput("regression_name", label = "Table name",
-                               value = paste0("regression_",
-                                              gsub(":", "-", gsub(" ", "_", Sys.time())))),
-                     # selectInput("regression_format",
-                     #             label = "Select export format",
-                     #             choices = c("LaTeX", "tsv")),
-                     downloadButton(outputId = "download_regression",
-                                    label = "Download table"),
-
-                     plotOutput("plot"),
-                     textInput("plot_name", label = "Plot name",
-                               value = paste0("plot_",
-                                              gsub(":", "-", gsub(" ", "_", Sys.time())))),
-                     selectInput("plot_format",
-                                 label = "Select export format",
-                                 choices = c("png", "RData")),
-                     downloadButton(outputId = "download_plot",
-                                    label = "Download plot"),
-
-                     plotOutput("cart_plot"),
-                     textInput("cart_name", label = "Plot name",
-                               value = paste0("cart_",
-                                              gsub(":", "-", gsub(" ", "_", Sys.time())))),
-                     selectInput("cart_format",
-                                 label = "Select export format",
-                                 choices = c("png", "RData")),
-                     downloadButton(outputId = "download_cart",
-                                    label = "Download plot"),
-
-                     plotOutput("variable_importance_plot"),
-                     textInput("variable_importance_name", label = "Plot name",
-                               value = paste0("variable_importance_",
-                                              gsub(":", "-", gsub(" ", "_", Sys.time())))),
-                     selectInput("variable_importance_format",
-                                 label = "Select export format",
-                                 choices = c("png", "RData")),
-                     downloadButton(outputId = "download_variable_importance",
-                                    label = "Download plot")
-            ),
+                     
+                     conditionalPanel(
+                       condition = "input.checkGroup1==1",
+                       plotOutput("plot"),
+                       textInput("plot_name", label = "Plot name",
+                                 value = paste0("plot_",
+                                                gsub(":", "-", gsub(" ", "_", Sys.time())))),
+                       selectInput("plot_format",
+                                   label = "Select export format",
+                                   choices = c("png", "RData")),
+                       downloadButton(outputId = "download_plot",
+                                      label = "Download plot"),
+                       
+                       plotOutput("cart_plot"),
+                       textInput("cart_name", label = "Plot name",
+                                 value = paste0("cart_",
+                                                gsub(":", "-", gsub(" ", "_", Sys.time())))),
+                       selectInput("cart_format",
+                                   label = "Select export format",
+                                   choices = c("png", "RData")),
+                       downloadButton(outputId = "download_cart",
+                                      label = "Download plot"),
+                       
+                       plotOutput("variable_importance_plot"),
+                       textInput("variable_importance_name", label = "Plot name",
+                                 value = paste0("variable_importance_",
+                                                gsub(":", "-", gsub(" ", "_", Sys.time())))),
+                       selectInput("variable_importance_format",
+                                   label = "Select export format",
+                                   choices = c("png", "RData")),
+                       downloadButton(outputId = "download_variable_importance",
+                                      label = "Download plot")
+                       
+                     ),
+                     conditionalPanel(
+                       condition = "input.checkGroup1==2",
+                       tableOutput("regression_table"),
+                       textInput("regression_name", label = "Table name",
+                                 value = paste0("regression_",
+                                                gsub(":", "-", gsub(" ", "_", Sys.time())))),
+                       # selectInput("regression_format",
+                       #             label = "Select export format",
+                       #             choices = c("LaTeX", "tsv")),
+                       downloadButton(outputId = "download_regression",
+                                      label = "Download table")
+                       )),
             tabPanel("Summary", value = 5,
-                     tableOutput("imputation_table"),
-                     textInput("descriptive_name", label = "Table name",
-                               value = paste0("descriptives_",
-                                              gsub(":", "-", gsub(" ", "_", Sys.time())))),
-                     # selectInput("descriptive_format",
-                     #             label = "Select export format",
-                     #             choices = c("LaTeX", "tsv")),
-                     uiOutput("download_descriptive"),
-                     tableOutput("item_difficulties")),
+                     conditionalPanel(
+                       condition = "input.checkGroup3==1",
+                       tableOutput("imputation_table"),
+                       textInput("descriptive_name", label = "Table name",
+                                 value = paste0("descriptives_",
+                                                gsub(":", "-", gsub(" ", "_", Sys.time())))),
+                       # selectInput("descriptive_format",
+                       #             label = "Select export format",
+                       #             choices = c("LaTeX", "tsv")),
+                       # uiOutput("download_descriptive"),
+                       downloadButton(outputId = "download_descriptive",
+                                      label = "Download Descriptives")
+                     ),
+                     conditionalPanel(
+                       condition = "input.checkGroup3==2",
+                       tableOutput("item_difficulties")
+                       )),
             id = "conditionedPanels"
           )
         )

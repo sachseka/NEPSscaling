@@ -3,11 +3,11 @@
 \name{currently_implemented}
 \alias{currently_implemented}
 \title{Get information about implementation progress of
-\code{NEPScaling::plausible_values()}}
+\code{NEPSscaling::plausible_values()}}
 \usage{
 currently_implemented()
 }
 \description{
 Get information about implementation progress of
-\code{NEPScaling::plausible_values()}
+\code{NEPSscaling::plausible_values()}
 }
