@@ -159,6 +159,16 @@ shinyServer(function(input, output, session) {
   # ---------------------------- DISPLAY BGDATA ------------------------------
   # select columns, filter by values, select rows
   # paged table
+  
+  observeEvent(input$Display_Bgdata, {
+    toggle('bgdata_select_cols') 
+    toggle('bgdata_filter_rows')
+    toggle('bgdata_sort_cases')
+    toggle('bgdata_ascending')
+    output$text <- renderText({"ahh you pressed it"})
+  })
+  
+  
   bgdata_display <- reactive({
     req(bgdata())
     out <- bgdata()
