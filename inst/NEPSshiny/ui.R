@@ -29,13 +29,18 @@ shinyUI(
             condition = "input.conditionedPanels== 1",
             fileInput(inputId = "import_state", label = h3("Import pv_obj"),
                       multiple = FALSE, accept = ".rds"),
-            shinyBS::tipify(actionButton("btn", icon = icon("info"),"Information"), "Upload size up to 30KB", placement="bottom", trigger = "hover"),
-
+            shinyBS::tipify(actionButton("btn", icon = icon("info"),""), 
+                            "Upload size up to 30MB. Accepts '.rds' format.", 
+                            placement="bottom", trigger = "hover"),
+            actionButton(inputId = "remove_pv_obj", label=  "Remove pv_obj"), 
             hr(),
             fileInput(inputId = "import_bgdata",
                       label = h3("Import background data"),
                       multiple = FALSE, accept = c(".rds", ".sav", ".dta")),
-            shinyBS::tipify(actionButton("btn2", icon = icon("info"),"Information"), "Upload size up to 30KB", placement="bottom", trigger = "hover"),
+            shinyBS::tipify(actionButton("btn2", icon = icon("info"),""), 
+                            "Upload size up to 30MB. Accepts '.rds', '.sav', and '.dta' formats.", 
+                            placement="bottom", trigger = "hover"),
+            actionButton(inputId = "remove_bgdata", label=  "Remove background data"), 
             checkboxInput(inputId = "metric", label = "All variables are metric.",
                           value = FALSE),
             selectInput(inputId = "ordinal", label = "Select ordinal variables",
@@ -133,7 +138,7 @@ shinyUI(
                            "Regression weights" = 2
                          ),
                          selected = 0
-            )),
+            ),
             conditionalPanel(
               condition = "input.checkGroup1==1",
             h3("Distribution plot"),
@@ -159,7 +164,7 @@ shinyUI(
                         choices = ""),
             actionButton(inputId = "cart_plot", label = "Display tree plot"),
             actionButton(inputId = "variable_importance_plot", label = "Display variable importance plot")
-          ),
+          )),
 
           # Conditional Panel for Summary Statistics
           conditionalPanel(
