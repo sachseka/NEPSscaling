@@ -6,6 +6,7 @@
 #' importance shall be displayed
 #'
 #' @return barplot of feature importance for imputed variable
+#' @export
 
 display_variable_importance <- function(pv_obj, imputation, variable) {
   pv_obj[["variable_importance"]][[imputation]][[variable]] %>%

@@ -17,6 +17,7 @@ filter_data <- function(filter_op, filter_var, filter_val, out) {
                      type = "error")
   )
 }
+
 options(shiny.maxRequestSize = 30*1024^2)
 
 export_files <- function(format, name) {
@@ -38,7 +39,8 @@ shinyServer(function(input, output, session) {
   })
 
   values <- reactiveValues(
-    pv_obj = NULL
+    pv_obj = NULL,
+    bgdata_raw = NULL
   )
 
 
@@ -92,7 +94,7 @@ shinyServer(function(input, output, session) {
 
   # ---------------------------- UPLOAD BGDATA -------------------------------
   # https://mastering-shiny.org/action-transfer.html
-  bgdata_raw <- reactive({
+  observeEvent(input$import_bgdata, {
     req(input$import_bgdata)
     filetype <- tools::file_ext(input$import_bgdata$datapath)
 
@@ -124,14 +126,14 @@ shinyServer(function(input, output, session) {
                       label = "Sort by", choices = names(out),
                       selected = "")
 
-    out
+    values$bgdata_raw <- out
   })
 
   bgdata <- reactive({
-    req(bgdata_raw())
+    req(values$bgdata_raw)
     nominal <- input$nominal
     ordinal <- input$ordinal
-    out <- bgdata_raw()
+    out <- values$bgdata_raw
 
     if (!input$metric & is.null(nominal) & is.null(ordinal)) {
       showNotification("Please specify the scale levels of the data.",
@@ -278,7 +280,7 @@ shinyServer(function(input, output, session) {
           colnames(mat) <- base::make.names(colnames(mat), unique = TRUE)
           mat}) %>%
         purrr::map(tibble::as_tibble, rownames = "items") %>%
-        purrr::map(dplyr::rename, "pos" = "...1") %>%
+        purrr::map(dplyr::rename, "pos" = "X") %>%
         purrr::map2(.y = new_items, ~dplyr::rename(.x, !!.y := "items")) %>%
         purrr::map2(.y = new_xsi, ~dplyr::rename(.x, !!.y := "xsi")) %>%
         purrr::reduce(dplyr::full_join, by = "pos") %>%
@@ -512,6 +514,42 @@ shinyServer(function(input, output, session) {
     caption.placement = getOption("xtable.caption.placement", "top"),
     caption.width = getOption("xtable.caption.width", NULL)
   )
+  
+  observeEvent(input$remove_pv_obj, {
+    values$pv_obj <- NULL
+    
+    if(is.null(values$bgdata_raw)) {
+      updateSelectInput(session = session, inputId = "ordinal",
+                        label = "Select ordinal variables", choices = "")
+      updateSelectInput(session = session, inputId = "nominal",
+                        label = "Select nominal variables", choices = "")
+      
+      updateSelectInput(session = session, inputId = "bgdata_select_cols",
+                        label = "Select columns", choices = "",
+                        selected = "")
+      updateSelectInput(session = session, inputId = "bgdata_sort_cases",
+                        label = "Sort by", choices = "",
+                        selected = "")
+    }
+  })
+  
+  observeEvent(input$remove_bgdata, {
+    values$bgdata_raw <- NULL
+    
+    if(is.null(values$pv_obj)) {
+      updateSelectInput(session = session, inputId = "ordinal",
+                        label = "Select ordinal variables", choices = "")
+      updateSelectInput(session = session, inputId = "nominal",
+                        label = "Select nominal variables", choices = "")
+      
+      updateSelectInput(session = session, inputId = "bgdata_select_cols",
+                        label = "Select columns", choices = "",
+                        selected = "")
+      updateSelectInput(session = session, inputId = "bgdata_sort_cases",
+                        label = "Sort by", choices = "",
+                        selected = "")
+    }
+  })
 
 
   ############################################################################
