@@ -63,6 +63,7 @@ calculate_standardized_regr_coeff <- function(regr.coeff, datalist,
       .after = paste0(u, "_coeff")
     )
     names(tmp_coeff) <- paste0(u, c("_coeff", "_coeff_std", "_se"))
+    rownames(tmp_coeff) <- regr.coeff$Variable
     regr_coeff_std <- dplyr::left_join(regr_coeff_std,
                                        tmp_coeff %>% tibble::rownames_to_column(),
                                        by = c("Variable" = "rowname"))

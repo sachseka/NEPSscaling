@@ -256,6 +256,7 @@ plausible_values <- function(SC,
   if (!is.character(path)) {
     stop("Path must be a character string.", call. = FALSE)
   }
+  path <- gsub("\\\\", "/", path)
   if (!grepl("/$", path)) {
     path <- paste0(path, "/")
   }

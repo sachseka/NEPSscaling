@@ -40,7 +40,8 @@ shinyServer(function(input, output, session) {
 
   values <- reactiveValues(
     pv_obj = NULL,
-    bgdata_raw = NULL
+    bgdata_raw = NULL,
+    bgdata = NULL
   )
 
 
@@ -129,7 +130,7 @@ shinyServer(function(input, output, session) {
     values$bgdata_raw <- out
   })
 
-  bgdata <- reactive({
+  observe({
     req(values$bgdata_raw)
     nominal <- input$nominal
     ordinal <- input$ordinal
@@ -150,9 +151,9 @@ shinyServer(function(input, output, session) {
       }
     }
 
-    out
+    values$bgdata <- out
   })
-  # output$bgdata <- renderDataTable(head(bgdata()))
+  # output$bgdata <- renderDataTable(head(values$bgdata))
 
   ############################################################################
   #                            MANIPULATE
@@ -172,8 +173,8 @@ shinyServer(function(input, output, session) {
   
   
   bgdata_display <- reactive({
-    req(bgdata())
-    out <- bgdata()
+    req(values$bgdata)
+    out <- values$bgdata
 
     if (isTruthy(input$bgdata_select_cols)) { # variables for selection have been chosen
       sel <- names(out)[names(out) %in% input$bgdata_select_cols]
@@ -223,7 +224,7 @@ shinyServer(function(input, output, session) {
           domain = input$select_domain,
           wave = as.numeric(input$select_wave),
           path = gsub("\\\\", "/", input$path_to_data),
-          bgdata = bgdata(),
+          bgdata = values$bgdata,
           npv = as.numeric(input$npv),
           longitudinal = input$longitudinal,
           rotation = input$rotation,
@@ -518,6 +519,22 @@ shinyServer(function(input, output, session) {
   observeEvent(input$remove_pv_obj, {
     values$pv_obj <- NULL
     
+    updateSelectInput(session, inputId = "imputation",
+                      choices = "",
+                      selected = "")
+    updateSelectInput(session, inputId = "variable",
+                      choices = "",
+                      selected = "")
+    updateSelectInput(session, inputId = "fill",
+                      choices = "",
+                      selected = "")
+    updateSelectInput(session, inputId = "x",
+                      choices = "",
+                      selected = "")
+    updateSelectInput(session, inputId = "y",
+                      choices = "",
+                      selected = "")
+    
     if(is.null(values$bgdata_raw)) {
       updateSelectInput(session = session, inputId = "ordinal",
                         label = "Select ordinal variables", choices = "")
@@ -534,7 +551,7 @@ shinyServer(function(input, output, session) {
   })
   
   observeEvent(input$remove_bgdata, {
-    values$bgdata_raw <- NULL
+    values$bgdata_raw <- values$bgdata <- NULL
     
     if(is.null(values$pv_obj)) {
       updateSelectInput(session = session, inputId = "ordinal",
