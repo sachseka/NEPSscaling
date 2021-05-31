@@ -17,7 +17,28 @@ shinyUI(
     ),
     tabPanel(
       icon("laptop"),
-
+      tags$head(
+        tags$style(
+          HTML(
+          ".shiny-notification {
+             position: fixed;
+             top: calc(50%);
+             left: calc(50%);
+          }
+          .btn-block {
+             display: block;
+             width: 100%;
+             color: #E8E6F4;
+             background-color: #24195D;
+             word-break: break-all;
+             word-wrap: break-word;
+             white-space: normal;
+          }"
+          )
+        )
+      ),
+      # print output to shiny: https://stackoverflow.com/questions/30474538/possible-to-show-console-messages-written-with-message-in-a-shiny-ui/30490698#3049069844446666666
+      shinyjs::useShinyjs(),
 
       ## ---------------------------------sidebar----------------------------------
       sidebarLayout(
@@ -27,47 +48,94 @@ shinyUI(
           ## Conditional panel in conditional panel
           conditionalPanel(
             condition = "input.conditionedPanels== 1",
-            fileInput(inputId = "import_state", label = h3("Import pv_obj"),
-                      multiple = FALSE, accept = ".rds"),
-            shinyBS::tipify(actionButton("btn", icon = icon("info"),""), 
-                            "Upload size up to 30MB. Accepts '.rds' format.", 
-                            placement="bottom", trigger = "hover"),
-            actionButton(inputId = "remove_pv_obj", label=  "Remove pv_obj"), 
+            shinyWidgets::dropdownButton(
+              inputId = "input_pv_obj",
+              # fileInput(inputId = "import_state", 
+              #           label = tags$strong("Import pv_obj"),
+              #           multiple = FALSE, accept = ".rds"),
+              shinyBS::tipify(fileInput(inputId = "import_state", 
+                                        label = tags$strong("Import pv_obj"),
+                                        multiple = FALSE, accept = ".rds"),
+                              #actionButton("btn", icon = icon("info"),""), 
+                              "Upload size up to 30MB. Accepts '.rds' format.", 
+                              placement="bottom", trigger = "hover"),
+              
+              hr(),
+              
+              actionButton(inputId = "remove_pv_obj", label=  "Remove pv_obj"),
+              
+              hr(),
+              
+              tags$strong("Download pv_obj"),
+              textInput(
+                "pv_obj_name", label = "Choose file name",
+                value = paste0("pv_obj_", gsub(":", "-", gsub(" ", "_", Sys.time())))
+              ),
+              downloadButton("download_pv_obj", label = "Download pv_obj (.rds)"),
+              selectInput("export_format", label = "Select export format",
+                          choices = c("SPSS", "Stata", "Mplus")),
+              downloadButton("export_pv_obj", label = "Export pv_obj"),
+
+              circle = FALSE, status = "block", 
+              width = "100%",
+              label = "Manage pv_obj"#,
+              
+              # tooltip = shinyWidgets::tooltipOptions(title = "Click to see inputs !")
+            ), 
             hr(),
-            fileInput(inputId = "import_bgdata",
-                      label = h3("Import background data"),
-                      multiple = FALSE, accept = c(".rds", ".sav", ".dta")),
-            shinyBS::tipify(actionButton("btn2", icon = icon("info"),""), 
-                            "Upload size up to 30MB. Accepts '.rds', '.sav', and '.dta' formats.", 
-                            placement="bottom", trigger = "hover"),
-            actionButton(inputId = "remove_bgdata", label=  "Remove background data"), 
-            checkboxInput(inputId = "metric", label = "All variables are metric.",
-                          value = FALSE),
-            selectInput(inputId = "ordinal", label = "Select ordinal variables",
-                        choices = "No data uploaded yet", multiple = TRUE),
-            selectInput(inputId = "nominal", label = "Select nominal variables",
-                        choices = "No data uploaded yet", multiple = TRUE),
+            shinyWidgets::dropdownButton(
+              inputId = "input_bgdata",
+              # fileInput(inputId = "import_bgdata",
+              #           label = tags$strong("Import background data"),
+              #           multiple = FALSE, accept = c(".rds", ".sav", ".dta")),
+              shinyBS::tipify(fileInput(inputId = "import_bgdata",
+                                        label = tags$strong("Import background data"),
+                                        multiple = FALSE, accept = c(".rds", ".sav", ".dta")),
+                              #actionButton("btn2", icon = icon("info"),""), 
+                              "Upload size up to 30MB. Accepts '.rds', '.sav', and '.dta' formats.", 
+                              placement="bottom", trigger = "hover"),
+              
+              hr(),
+              
+              actionButton(inputId = "remove_bgdata", 
+                           label=  "Remove background data"),
+              
+              hr(),
+              
+              actionButton(inputId = "Display_Bgdata", 
+                           label= "Inspect background data"), 
+              hidden(
+                selectInput("bgdata_select_cols", "Select columns", choices = "",
+                            multiple = TRUE),
+                textInput("bgdata_filter_rows", "Filter"),
+                selectInput("bgdata_sort_cases", "Sort by", choices = ""),
+                checkboxInput("bgdata_ascending", "Ascending", value = TRUE)
+              ),
+              
+              circle = FALSE, status = "block",
+              width = "100%",
+              label = "Manage background data"#,
+              
+              # tooltip = shinyWidgets::tooltipOptions(title = "Click to see inputs !")
+            ), 
             hr(),
-            h3("Download pv_obj"),
-            textInput(
-              "pv_obj_name", label = "Choose file name (pv_obj)",
-              value = paste0("pv_obj_", gsub(":", "-", gsub(" ", "_", Sys.time())))
-            ),
-            downloadButton("download_pv_obj", label = "Download pv_obj (.rds)"),
-            selectInput("export_format", label = "Select export format",
-                        choices = c("SPSS", "Stata", "Mplus")),
-            downloadButton("export_pv_obj", label = "Export pv_obj"), 
-            h3("Background data"),
-            useShinyjs(),
-            actionButton(inputId = "Display_Bgdata", label=  "Process background data"), 
-            hidden(
-              selectInput("bgdata_select_cols", "Select columns", choices = "",
-                                                              multiple = TRUE),
-              textInput("bgdata_filter_rows", "Filter"),
-              selectInput("bgdata_sort_cases", "Sort by", choices = ""),
-              checkboxInput("bgdata_ascending", "Ascending", value = TRUE))
-            
-            ),
+            shinyWidgets::dropdownButton(
+              inputId = "scale_level",
+              checkboxInput(inputId = "metric", 
+                            label = tags$strong("All variables are metric."),
+                            value = FALSE),
+              selectInput(inputId = "ordinal", label = "Select ordinal variables",
+                          choices = "No data uploaded yet", multiple = TRUE),
+              selectInput(inputId = "nominal", label = "Select nominal variables",
+                          choices = "No data uploaded yet", multiple = TRUE),
+              
+              circle = FALSE, status = "block",
+              width = "100%",
+              label = "Set scale levels of background data"#,
+              
+              # tooltip = shinyWidgets::tooltipOptions(title = "Click to see inputs !")
+            )
+          ),
           
         # Conditional Panel for Input Parameter
           conditionalPanel(
@@ -135,45 +203,59 @@ shinyUI(
                          label = h3("Visualizations"),
                          choices = list(
                            "Distribution of plausible values and imputations" = 1,
-                           "Regression weights" = 2
+                           "Imputation tree structures" = 2,
+                           "Variable importance plots for imputations" = 3
                          ),
                          selected = 0
             ),
             conditionalPanel(
               condition = "input.checkGroup1==1",
-            h3("Distribution plot"),
-            selectInput(inputId = "geom", label = "Select plot type",
-                        choices = c("Histogram", "Density plot", "Scatter plot")),
-            selectInput("x", label = "Select variable on x-axis",
-                        choices = ""),
-            selectInput("y", label = "Select variable on y-axis",
-                        choices = ""),
-            selectInput("fill", label = "Select variable for color coding",
-                        choices = ""),
-            textInput(inputId = "title", label = "Plot title"),
-            textInput(inputId = "xlab", label = "Label of x-axis"),
-            textInput(inputId = "ylab", label = "Label of y-axis"),
-            selectInput("theme", label = "Select plot theme",
-                        choices = c("Gray", "Black and white", "Linedraw", "Light",
-                                    "Dark", "Minimal", "Classic", "Void")),
-            actionButton("plot", label = "Display plot"),
-            h3("Imputation tree structures"),
-            selectInput(inputId = "imputation", label = "Select imputation",
-                        choices = ""),
-            selectInput(inputId = "variable", label = "Select variable",
-                        choices = ""),
-            actionButton(inputId = "cart_plot", label = "Display tree plot"),
-            actionButton(inputId = "variable_importance_plot", label = "Display variable importance plot")
-          )),
+              h3("Distribution plot"),
+              selectInput(inputId = "geom", label = "Select plot type",
+                          choices = c("Histogram", "Density plot", "Scatter plot")),
+              selectInput("x", label = "Select variable on x-axis",
+                          choices = ""),
+              selectInput("y", label = "Select variable on y-axis",
+                          choices = ""),
+              selectInput("fill", label = "Select variable for color coding",
+                          choices = ""),
+              textInput(inputId = "title", label = "Plot title"),
+              textInput(inputId = "xlab", label = "Label of x-axis"),
+              textInput(inputId = "ylab", label = "Label of y-axis"),
+              selectInput("theme", label = "Select plot theme",
+                          choices = c("Gray", "Black and white", "Linedraw", "Light",
+                                      "Dark", "Minimal", "Classic", "Void")),
+              actionButton("plot", label = "Display plot")
+              ),
+            conditionalPanel(
+              condition = "input.checkGroup1==2",
+              h3("Imputation tree structures"),
+              selectInput(inputId = "imputation", label = "Select imputation",
+                          choices = ""),
+              selectInput(inputId = "variable", label = "Select variable",
+                          choices = ""),
+              actionButton(inputId = "cart_plot", label = "Display tree plot")
+            ),
+            conditionalPanel(
+              condition = "input.checkGroup1==3",
+              h3("Variable importance plot"),
+              selectInput(inputId = "imputation", label = "Select imputation",
+                          choices = ""),
+              selectInput(inputId = "variable", label = "Select variable",
+                          choices = ""),
+              actionButton(inputId = "variable_importance_plot", label = "Display variable importance plot")
+            )
+          ),
 
           # Conditional Panel for Summary Statistics
           conditionalPanel(
             condition = "input.conditionedPanels==5",
             radioButtons("checkGroup3",
-                         label = h3("Summaries for"),
+                         label = h3("Tables for"),
                          choices = list(
                            "Plausible values and imputations" = 1,
-                           "Item parameters" = 2
+                           "Item parameters" = 2,
+                           "Regression weights" = 3
                          ),
                          selected = 1
             )
@@ -187,8 +269,7 @@ shinyUI(
                      dataTableOutput("bgdata_display")),
             tabPanel("Estimate Plausible Values", value = 2,
                      h3(textOutput("plausible_values_progress"))),
-            tabPanel("Visualize Estimates", value = 3,
-                     
+            tabPanel("Plots", value = 3,
                      conditionalPanel(
                        condition = "input.checkGroup1==1",
                        plotOutput("plot"),
@@ -199,8 +280,10 @@ shinyUI(
                                    label = "Select export format",
                                    choices = c("png", "RData")),
                        downloadButton(outputId = "download_plot",
-                                      label = "Download plot"),
-                       
+                                      label = "Download plot")
+                     ),
+                     conditionalPanel(
+                       condition = "input.checkGroup1==2",
                        plotOutput("cart_plot"),
                        textInput("cart_name", label = "Plot name",
                                  value = paste0("cart_",
@@ -209,8 +292,10 @@ shinyUI(
                                    label = "Select export format",
                                    choices = c("png", "RData")),
                        downloadButton(outputId = "download_cart",
-                                      label = "Download plot"),
-                       
+                                      label = "Download plot")
+                     ),
+                     conditionalPanel(
+                       condition = "input.checkGroup1==3",
                        plotOutput("variable_importance_plot"),
                        textInput("variable_importance_name", label = "Plot name",
                                  value = paste0("variable_importance_",
@@ -220,21 +305,8 @@ shinyUI(
                                    choices = c("png", "RData")),
                        downloadButton(outputId = "download_variable_importance",
                                       label = "Download plot")
-                       
-                     ),
-                     conditionalPanel(
-                       condition = "input.checkGroup1==2",
-                       tableOutput("regression_table"),
-                       textInput("regression_name", label = "Table name",
-                                 value = paste0("regression_",
-                                                gsub(":", "-", gsub(" ", "_", Sys.time())))),
-                       # selectInput("regression_format",
-                       #             label = "Select export format",
-                       #             choices = c("LaTeX", "tsv")),
-                       downloadButton(outputId = "download_regression",
-                                      label = "Download table")
-                       )),
-            tabPanel("Summary", value = 5,
+                     )),
+            tabPanel("Tables", value = 5,
                      conditionalPanel(
                        condition = "input.checkGroup3==1",
                        tableOutput("imputation_table"),
@@ -251,7 +323,18 @@ shinyUI(
                      conditionalPanel(
                        condition = "input.checkGroup3==2",
                        tableOutput("item_difficulties")
-                       )),
+                     ),
+                     conditionalPanel(
+                       condition = "input.checkGroup3==3",
+                       tableOutput("regression_table"),
+                       textInput("regression_name", label = "Table name",
+                                 value = paste0("regression_",
+                                                gsub(":", "-", gsub(" ", "_", Sys.time())))),
+                       # selectInput("regression_format",
+                       #             label = "Select export format",
+                       #             choices = c("LaTeX", "tsv")),
+                       downloadButton(outputId = "download_regression",
+                                      label = "Download table")                     )),
             id = "conditionedPanels"
           )
         )
@@ -259,22 +342,10 @@ shinyUI(
     ),
     title = "NEPSscaling",
     tabPanel(
-    fluidRow(uiOutput("tab")),
-    inverse = FALSE,
-    tags$head(
-      tags$style(
-        HTML(".shiny-notification {
-             position:fixed;
-             top: calc(50%);
-             left: calc(50%);
-             }
-             "
-        )
-      )
-    )),
+      fluidRow(uiOutput("tab")),
+      inverse = FALSE
+    ),
 
-    # print output to shiny: https://stackoverflow.com/questions/30474538/possible-to-show-console-messages-written-with-message-in-a-shiny-ui/30490698#3049069844446666666
-    shinyjs::useShinyjs(),
     ## ------------------------------Header-----------------------------------------------------------------
       navbarMenu(
       icon("question-circle"),
