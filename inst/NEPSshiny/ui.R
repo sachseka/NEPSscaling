@@ -75,7 +75,7 @@ shinyUI(
               selectInput("export_format", label = "Select export format",
                           choices = c("SPSS", "Stata", "Mplus")),
               downloadButton("export_pv_obj", label = "Export pv_obj"),
-
+              
               circle = FALSE, status = "block", 
               width = "100%",
               label = "Manage pv_obj"#,
