@@ -35,11 +35,18 @@ was_assessed_in_school <- function(longitudinal, SC, wave) {
   TRUE
 }
 
-extract_bgdata_variables <- function(bgdatacom, exclude_for_wave, waves, j) {
-  if (gsub("_", "", waves[j]) %in% names(exclude_for_wave)) {
-    exclude <- names(bgdatacom) %in% exclude_for_wave[[gsub("_", "", waves[j])]]
-    if (any(exclude)) {
-      return(bgdatacom[, !exclude])
+extract_bgdata_variables <- function(bgdatacom, exclude, waves, j) {
+  if (is.null(j)) {
+    # cross-sectional
+    excl <- names(bgdatacom) %in% exclude
+    if (any(excl)) {
+      return(bgdatacom[, !excl])
+    }
+  }
+  if (gsub("_", "", waves[j]) %in% names(exclude)) {
+    excl <- names(bgdatacom) %in% exclude[[gsub("_", "", waves[j])]]
+    if (any(excl)) {
+      return(bgdatacom[, !excl])
     }
   }
   bgdatacom

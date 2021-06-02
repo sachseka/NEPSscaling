@@ -18,6 +18,9 @@
 #'   algorithm
 #' @param npv Integer value fo number of plausible values to be returned by
 #'   `NEPScaling::plausible_values()`
+#' @param exclude list of vectors (named after the waves); contains
+#' variables that are NOT to be used in the background model of the specified
+#' wave
 #'
 #' @noRd
 
@@ -25,7 +28,8 @@ estimate_cross_rasch_corrected_for_rotation <- function(bgdata, imp,
                                                         frmY = NULL, resp,
                                                         position, waves,
                                                         ID_t, type, domain,
-                                                        SC, control, npv) {
+                                                        SC, control, npv,
+                                                        exclude) {
   times <- ifelse(is.null(bgdata) || !any(is.na(bgdata)), 1, control$ML$nmi)
   items <- rownames(xsi.fixed$cross[[domain]][[SC]][[gsub("_", "", waves)]])
 
@@ -40,6 +44,13 @@ estimate_cross_rasch_corrected_for_rotation <- function(bgdata, imp,
       bgdatacom <- res[["bgdatacom"]]
     }
     frmY <- res[["frmY"]]
+    
+    # extract bgdata specific for wave
+    if (!is.null(exclude)) {
+      bgdatacom <- extract_bgdata_variables(bgdatacom, exclude, waves, NULL)
+      frmY <- create_formula(bgdatacom)
+    }
+    
     # estimate IRT model
     mod <- list()
 

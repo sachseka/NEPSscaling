@@ -19,7 +19,7 @@
 #'   algorithm
 #' @param npv Integer value fo number of plausible values to be returned by
 #'   `NEPScaling::plausible_values()`
-#' @param exclude_for_wave list of vectors (named after the waves); contains
+#' @param exclude list of vectors (named after the waves); contains
 #' variables that are NOT to be used in the background model of the specified
 #' wave
 #'
@@ -27,7 +27,7 @@
 
 estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, PCM, ID_t,
                                   waves, type, domain, SC, control, npv,
-                                  exclude_for_wave) {
+                                  exclude) {
   items <- lapply(xsi.fixed$long[[domain]][[SC]], rownames)
   if (SC == "SC2" && domain == "SC") {
     items <- items[-length(items)]
@@ -63,8 +63,8 @@ estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, PCM, ID_t,
     for (j in seq(length(waves))) {
       # extract bgdata specific for wave
       tmp_bgdata <- bgdatacom
-      if (!is.null(exclude_for_wave)) {
-        tmp_bgdata <- extract_bgdata_variables(bgdatacom, exclude_for_wave,
+      if (!is.null(exclude)) {
+        tmp_bgdata <- extract_bgdata_variables(bgdatacom, exclude,
                                                waves, j)
         frmY <- create_formula(tmp_bgdata)
       }
