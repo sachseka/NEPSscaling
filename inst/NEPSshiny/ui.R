@@ -111,7 +111,7 @@ shinyUI(
                 selectInput("bgdata_sort_cases", "Sort by", choices = ""),
                 shinyWidgets::prettyCheckbox(
                   inputId = "bgdata_ascending", label = "Ascending",
-                  status = "primary", value = TRUE, shape = "curve"
+                  status = "primary", value = TRUE, shape = "curve", outline = TRUE
                 )
               ),
               
@@ -126,7 +126,7 @@ shinyUI(
               inputId = "scale_level",
               shinyWidgets::prettyCheckbox(
                 inputId = "metric", label = "All variables are metric.",
-                status = "primary", value = FALSE, shape = "curve"
+                status = "primary", value = FALSE, shape = "curve", outline = TRUE
               ),
               selectInput(inputId = "ordinal", label = "Select ordinal variables",
                           choices = "No data uploaded yet", multiple = TRUE),
@@ -181,11 +181,11 @@ shinyUI(
                            value = 10, min = 1),
               shinyWidgets::prettyCheckbox(
                 inputId = "WLE", label = "Return WLEs?",
-                status = "primary", value = FALSE, shape = "curve"
+                status = "primary", value = FALSE, shape = "curve", outline = TRUE
               ),
               shinyWidgets::prettyCheckbox(
                 inputId = "EAP", label = "Return EAPs?",
-                status = "primary", value = FALSE, shape = "curve"
+                status = "primary", value = FALSE, shape = "curve", outline = TRUE
               ),
 
               circle = FALSE, status = "block",
@@ -199,19 +199,19 @@ shinyUI(
               inputId = "model_parameters",
               shinyWidgets::prettyCheckbox(
                 inputId = "longitudinal", label = "Longitudinal?",
-                status = "primary", value = FALSE, shape = "curve"
+                status = "primary", value = FALSE, shape = "curve", outline = TRUE
               ),
               shinyWidgets::prettyCheckbox(
                 inputId = "rotation", 
                 label = tags$text("Consider position of", #br(), 
                                   "competence test?"),
-                status = "primary", value = TRUE, shape = "curve"
+                status = "primary", value = TRUE, shape = "curve", outline = TRUE
               ),
               shinyWidgets::prettyCheckbox(
                 inputId = "adjust_school_context", 
                 label = tags$text("Adjust for school", #br(), 
                                   "context?"),
-                status = "primary", value = TRUE, shape = "curve"
+                status = "primary", value = TRUE, shape = "curve", outline = TRUE
               ),
               numericInput("min_valid",
                            label = "Minimum number of valid answers to competence test",
@@ -222,7 +222,27 @@ shinyUI(
                                   "not-reached missing", #br(), 
                                   "values as proxy for", #br(), 
                                   "processing speed?"),
-                status = "primary", value = TRUE, shape = "curve"
+                status = "primary", value = TRUE, shape = "curve", outline = TRUE
+              ),
+              numericInput("seed",
+                           label = "Seed for random number generator",
+                           value = sample(0:100000, 1),
+                           min = 0),
+              selectInput(inputId = "exclude1", label = "Variables to exclude from bg data (cross)",
+                          choices = ""),
+              hidden(
+                selectInput(inputId = "exclude2",
+                            label = "Variables to exclude (2nd wave)",
+                            choices = ""),
+                selectInput(inputId = "exclude3",
+                            label = "Variables to exclude (3rd wave)",
+                            choices = ""),
+                selectInput(inputId = "exclude4",
+                            label = "Variables to exclude (4th wave)",
+                            choices = ""),
+                selectInput(inputId = "exclude5",
+                            label = "Variables to exclude (5th wave)",
+                            choices = "")
               ),
 
               circle = FALSE, status = "block",
@@ -234,7 +254,7 @@ shinyUI(
             tags$hr(),
             shinyWidgets::prettyCheckbox(
               inputId = "verbose", label = "Progress reports?",
-              status = "primary", value = TRUE, shape = "curve"
+              status = "primary", value = TRUE, shape = "curve", outline = TRUE
             ),
             # other controls: not changeable!,
             hr(),

@@ -126,6 +126,21 @@ shinyServer(function(input, output, session) {
     updateSelectInput(session = session, inputId = "bgdata_sort_cases",
                       label = "Sort by", choices = names(out),
                       selected = "")
+    updateSelectInput(session = session, inputId = "exclude1",
+                      label = "Variables to exclude from bg data (cross)", 
+                      choices = names(out), selected = "")
+    updateSelectInput(session = session, inputId = "exclude2",
+                      label = "Variables to exclude (2nd wave)", 
+                      choices = names(out), selected = "")
+    updateSelectInput(session = session, inputId = "exclude3",
+                      label = "Variables to exclude (3rd wave)", 
+                      choices = names(out), selected = "")
+    updateSelectInput(session = session, inputId = "exclude4",
+                      label = "Variables to exclude (4th wave)", 
+                      choices = names(out), selected = "")
+    updateSelectInput(session = session, inputId = "exclude5",
+                      label = "Variables to exclude (5th wave)", 
+                      choices = names(out), selected = "")
 
     values$bgdata_raw <- out
   })
@@ -210,9 +225,23 @@ shinyServer(function(input, output, session) {
   observeEvent(input$estimate_pv_obj, {
 
     req(
-      bgdata(), input$select_starting_cohort, input$select_domain,
+      values$bgdata, input$select_starting_cohort, input$select_domain,
       input$select_wave, input$path_to_data
     )
+    
+    if (isTruthy(input$longitudinal) & input$longitudinal) {
+      exclude <- list(
+        input$exclude1, input$exclude2, input$exclude3, input$exclude4,
+        input$exclude5
+      )
+      names(exclude) <- NEPSscaling:::create_waves_vars(
+        longitudinal = input$longitudinal, 
+        SC = paste0("SC", input$select_starting_cohort), 
+        domain = input$select_domain, wave = NULL
+      )
+    } else if (isTruthy(input$longitudinal) & !input$longitudinal) {
+      exclude <- input$exclude1
+    }
 
     # print output to shiny to monitor progress:
     # https://stackoverflow.com/questions/30474538/possible-to-show-console-messages-written-with-message-in-a-shiny-ui/30490698#30490698
@@ -232,6 +261,8 @@ shinyServer(function(input, output, session) {
           include_nr = input$include_nr,
           verbose = input$verbose,
           adjust_school_context = input$adjust_school_context,
+          exclude = exclude,
+          seed = input$seed,
           control = list(WLE = input$WLE, EAP = input$EAP,
                          ML = list(nmi = input$nmi))
         )
@@ -547,6 +578,21 @@ shinyServer(function(input, output, session) {
       updateSelectInput(session = session, inputId = "bgdata_sort_cases",
                         label = "Sort by", choices = "",
                         selected = "")
+      updateSelectInput(session = session, inputId = "exclude1",
+                        label = "Variables to exclude from bg data (cross)", 
+                        choices = names(out), selected = "")
+      updateSelectInput(session = session, inputId = "exclude2",
+                        label = "Variables to exclude (2nd wave)", 
+                        choices = names(out), selected = "")
+      updateSelectInput(session = session, inputId = "exclude3",
+                        label = "Variables to exclude (3rd wave)", 
+                        choices = names(out), selected = "")
+      updateSelectInput(session = session, inputId = "exclude4",
+                        label = "Variables to exclude (4th wave)", 
+                        choices = names(out), selected = "")
+      updateSelectInput(session = session, inputId = "exclude5",
+                        label = "Variables to exclude (5th wave)", 
+                        choices = names(out), selected = "")
     }
   })
   
@@ -565,6 +611,21 @@ shinyServer(function(input, output, session) {
       updateSelectInput(session = session, inputId = "bgdata_sort_cases",
                         label = "Sort by", choices = "",
                         selected = "")
+      updateSelectInput(session = session, inputId = "exclude1",
+                        label = "Variables to exclude from bg data (cross)", 
+                        choices = names(out), selected = "")
+      updateSelectInput(session = session, inputId = "exclude2",
+                        label = "Variables to exclude (2nd wave)", 
+                        choices = names(out), selected = "")
+      updateSelectInput(session = session, inputId = "exclude3",
+                        label = "Variables to exclude (3rd wave)", 
+                        choices = names(out), selected = "")
+      updateSelectInput(session = session, inputId = "exclude4",
+                        label = "Variables to exclude (4th wave)", 
+                        choices = names(out), selected = "")
+      updateSelectInput(session = session, inputId = "exclude5",
+                        label = "Variables to exclude (5th wave)", 
+                        choices = names(out), selected = "")
     }
   })
 
@@ -768,4 +829,13 @@ shinyServer(function(input, output, session) {
     values$tables_conditional_visible
   })
   outputOptions(output, "tables_conditional_visible", suspendWhenHidden = FALSE)
+  
+  # ---------- Hide-able exclude argument in longitudinal case ----------------
+  
+  observeEvent(input$longitudinal, {
+    toggle('exclude2', condition = input$longitudinal) 
+    toggle('exclude3', condition = input$longitudinal)
+    toggle('exclude4', condition = input$longitudinal)
+    toggle('exclude5', condition = input$longitudinal)
+  })
 })
