@@ -109,7 +109,10 @@ shinyUI(
                             multiple = TRUE),
                 textInput("bgdata_filter_rows", "Filter"),
                 selectInput("bgdata_sort_cases", "Sort by", choices = ""),
-                checkboxInput("bgdata_ascending", "Ascending", value = TRUE)
+                shinyWidgets::prettyCheckbox(
+                  inputId = "bgdata_ascending", label = "Ascending",
+                  status = "primary", value = TRUE, shape = "curve"
+                )
               ),
               
               circle = FALSE, status = "block",
@@ -121,9 +124,10 @@ shinyUI(
             hr(),
             shinyWidgets::dropdownButton(
               inputId = "scale_level",
-              checkboxInput(inputId = "metric", 
-                            label = tags$strong("All variables are metric."),
-                            value = FALSE),
+              shinyWidgets::prettyCheckbox(
+                inputId = "metric", label = "All variables are metric.",
+                status = "primary", value = FALSE, shape = "curve"
+              ),
               selectInput(inputId = "ordinal", label = "Select ordinal variables",
                           choices = "No data uploaded yet", multiple = TRUE),
               selectInput(inputId = "nominal", label = "Select nominal variables",
@@ -139,15 +143,15 @@ shinyUI(
           
         # Conditional Panel for Input Parameter
           conditionalPanel(
-            condition = "input.conditionedPanels==2",
-            h3("Arguments for Plausible Values Estimation"),
+            condition = "input.conditionedPanels==2", 
+            h4("Arguments for Plausible Values Estimation"),
             selectInput("select_starting_cohort",
-                        label = h5("Starting Cohort"),
+                        label = "Starting cohort",
                         choices = 1:6,
                         selected = ""
             ),
             selectInput("select_domain",
-                        label = h5("Domain"),
+                        label = "Competence domain",
                         choices = c(
                           "Mathematics" = "MA", "Reading" = "RE", "Science" = "SC",
                           "Information and Communication Technology" = "IC",
@@ -162,35 +166,76 @@ shinyUI(
                         selected = ""
             ),
             selectInput("select_wave",
-                        label = h5("Wave"),
+                        label = "Assessment wave",
                         choices = 1:12,
                         selected = ""
             ),
             textInput(inputId = "path_to_data", label = "Directory with SUFs",
                       value = getwd()),
-            checkboxInput("longitudinal", label = "Longitudinal?", value = FALSE),
-            checkboxInput("rotation", label = "Rotation?", value = TRUE),
-            checkboxInput("adjust_school_context",
-                          label = "Adjust for school context?", value = TRUE),
-            numericInput("npv", label = h5("Number of plausible values"),
-                         value = 10, min= 1),
-            numericInput("nmi", label = h5("Number of imputations"),
-                         value = 10, min= 1),
-            numericInput("min_valid",
-                         label = h5("Minimum of valid answers to competence test"),
-                         value = 3, min= 1),
-            checkboxInput("include_nr",
-                          label = "Include number of not-reached missing values as proxy for processing speed?",
-                          value = TRUE),
-            checkboxInput("WLE",
-                          label = "Estimate WLEs?",
-                          value = FALSE),
-            checkboxInput("EAP",
-                          label = "Return EAPs?",
-                          value = FALSE),
-            checkboxInput("verbose",
-                          label = "Progress reports?",
-                          value = TRUE),
+            
+            shinyWidgets::dropdownButton(
+              inputId = "output_parameters",
+              numericInput("npv", label = "Number of plausible values",
+                           value = 10, min = 1),
+              numericInput("nmi", label = "Number of imputations",
+                           value = 10, min = 1),
+              shinyWidgets::prettyCheckbox(
+                inputId = "WLE", label = "Return WLEs?",
+                status = "primary", value = FALSE, shape = "curve"
+              ),
+              shinyWidgets::prettyCheckbox(
+                inputId = "EAP", label = "Return EAPs?",
+                status = "primary", value = FALSE, shape = "curve"
+              ),
+
+              circle = FALSE, status = "block",
+              width = "100%",
+              label = "Output parameters"#,
+              
+              # tooltip = shinyWidgets::tooltipOptions(title = "Click to see inputs !")
+            ),
+            tags$hr(),
+            shinyWidgets::dropdownButton(
+              inputId = "model_parameters",
+              shinyWidgets::prettyCheckbox(
+                inputId = "longitudinal", label = "Longitudinal?",
+                status = "primary", value = FALSE, shape = "curve"
+              ),
+              shinyWidgets::prettyCheckbox(
+                inputId = "rotation", 
+                label = tags$text("Consider position of", #br(), 
+                                  "competence test?"),
+                status = "primary", value = TRUE, shape = "curve"
+              ),
+              shinyWidgets::prettyCheckbox(
+                inputId = "adjust_school_context", 
+                label = tags$text("Adjust for school", #br(), 
+                                  "context?"),
+                status = "primary", value = TRUE, shape = "curve"
+              ),
+              numericInput("min_valid",
+                           label = "Minimum number of valid answers to competence test",
+                           value = 3, min = 0),
+              shinyWidgets::prettyCheckbox(
+                inputId = "include_nr",
+                label = tags$text("Include number of", #br(), 
+                                  "not-reached missing", #br(), 
+                                  "values as proxy for", #br(), 
+                                  "processing speed?"),
+                status = "primary", value = TRUE, shape = "curve"
+              ),
+
+              circle = FALSE, status = "block",
+              width = "100%",
+              label = "Model parameters"#,
+              
+              # tooltip = shinyWidgets::tooltipOptions(title = "Click to see inputs !")
+            ),
+            tags$hr(),
+            shinyWidgets::prettyCheckbox(
+              inputId = "verbose", label = "Progress reports?",
+              status = "primary", value = TRUE, shape = "curve"
+            ),
             # other controls: not changeable!,
             hr(),
             actionButton("estimate_pv_obj", label = "Start estimation")
@@ -199,18 +244,8 @@ shinyUI(
           # Conditional Panel for Visualize Estimates
           conditionalPanel(
             condition = "input.conditionedPanels==3",
-            radioButtons(inputId = "checkGroup1",
-                         label = h3("Visualizations"),
-                         choices = list(
-                           "Distribution of plausible values and imputations" = 1,
-                           "Imputation tree structures" = 2,
-                           "Variable importance plots for imputations" = 3
-                         ),
-                         selected = 0
-            ),
-            conditionalPanel(
-              condition = "input.checkGroup1==1",
-              h3("Distribution plot"),
+            shinyWidgets::dropdownButton(
+              inputId = "plots_distribution_plot",
               selectInput(inputId = "geom", label = "Select plot type",
                           choices = c("Histogram", "Density plot", "Scatter plot")),
               selectInput("x", label = "Select variable on x-axis",
@@ -225,39 +260,57 @@ shinyUI(
               selectInput("theme", label = "Select plot theme",
                           choices = c("Gray", "Black and white", "Linedraw", "Light",
                                       "Dark", "Minimal", "Classic", "Void")),
-              actionButton("plot", label = "Display plot")
-              ),
-            conditionalPanel(
-              condition = "input.checkGroup1==2",
-              h3("Imputation tree structures"),
-              selectInput(inputId = "imputation", label = "Select imputation",
-                          choices = ""),
-              selectInput(inputId = "variable", label = "Select variable",
-                          choices = ""),
-              actionButton(inputId = "cart_plot", label = "Display tree plot")
+              actionButton("plot", label = "Display plot"),
+              
+              circle = FALSE, status = "block",
+              width = "100%",
+              label = "Plots of plausible values and imputations"#,
+              
+              # tooltip = shinyWidgets::tooltipOptions(title = "Click to see inputs !")
             ),
-            conditionalPanel(
-              condition = "input.checkGroup1==3",
-              h3("Variable importance plot"),
+            hr(),
+            shinyWidgets::dropdownButton(
+              inputId = "plots_tree_structure",
               selectInput(inputId = "imputation", label = "Select imputation",
                           choices = ""),
               selectInput(inputId = "variable", label = "Select variable",
                           choices = ""),
-              actionButton(inputId = "variable_importance_plot", label = "Display variable importance plot")
+              actionButton(inputId = "cart_plot", label = "Display tree plot"),
+              
+              circle = FALSE, status = "block",
+              width = "100%",
+              label = "Imputation tree structures"#,
+              
+              # tooltip = shinyWidgets::tooltipOptions(title = "Click to see inputs !")
+            ),
+            hr(),
+            shinyWidgets::dropdownButton(
+              inputId = "plots_variable_importance",
+              selectInput(inputId = "imputation", label = "Select imputation",
+                          choices = ""),
+              selectInput(inputId = "variable", label = "Select variable",
+                          choices = ""),
+              actionButton(inputId = "variable_importance_plot", label = "Display variable importance plot"),
+              
+              circle = FALSE, status = "block",
+              width = "100%",
+              label = "Variable importance plots for imputations"#,
+              
+              # tooltip = shinyWidgets::tooltipOptions(title = "Click to see inputs !")
             )
           ),
 
           # Conditional Panel for Summary Statistics
           conditionalPanel(
             condition = "input.conditionedPanels==5",
-            radioButtons("checkGroup3",
-                         label = h3("Tables for"),
+            shinyWidgets::radioGroupButtons("checkGroup3",
                          choices = list(
                            "Plausible values and imputations" = 1,
                            "Item parameters" = 2,
                            "Regression weights" = 3
                          ),
-                         selected = 1
+                         direction = "vertical",
+                         individual = TRUE
             )
           )
         ),
@@ -271,7 +324,8 @@ shinyUI(
                      h3(textOutput("plausible_values_progress"))),
             tabPanel("Plots", value = 3,
                      conditionalPanel(
-                       condition = "input.checkGroup1==1",
+                       condition = "output.plots_conditional_visible==1", # possible to use dropdownButton in this form: input.scale_level_state==TRUE
+                       tags$h3("Distribution plots"),
                        plotOutput("plot"),
                        textInput("plot_name", label = "Plot name",
                                  value = paste0("plot_",
@@ -283,7 +337,8 @@ shinyUI(
                                       label = "Download plot")
                      ),
                      conditionalPanel(
-                       condition = "input.checkGroup1==2",
+                       condition = 'output.plots_conditional_visible==2',
+                       tags$h3("Imputation tree plots"),
                        plotOutput("cart_plot"),
                        textInput("cart_name", label = "Plot name",
                                  value = paste0("cart_",
@@ -295,7 +350,8 @@ shinyUI(
                                       label = "Download plot")
                      ),
                      conditionalPanel(
-                       condition = "input.checkGroup1==3",
+                       condition = "output.plots_conditional_visible==3",
+                       tags$h3("Variable importance plots"),
                        plotOutput("variable_importance_plot"),
                        textInput("variable_importance_name", label = "Plot name",
                                  value = paste0("variable_importance_",
@@ -309,6 +365,7 @@ shinyUI(
             tabPanel("Tables", value = 5,
                      conditionalPanel(
                        condition = "input.checkGroup3==1",
+                       tags$h3("Descriptive table"),
                        tableOutput("imputation_table"),
                        textInput("descriptive_name", label = "Table name",
                                  value = paste0("descriptives_",
@@ -322,10 +379,12 @@ shinyUI(
                      ),
                      conditionalPanel(
                        condition = "input.checkGroup3==2",
+                       tags$h3("Item difficulties"),
                        tableOutput("item_difficulties")
                      ),
                      conditionalPanel(
                        condition = "input.checkGroup3==3",
+                       tags$h3("Regression weights"),
                        tableOutput("regression_table"),
                        textInput("regression_name", label = "Table name",
                                  value = paste0("regression_",

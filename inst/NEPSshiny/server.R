@@ -730,4 +730,42 @@ shinyServer(function(input, output, session) {
                   quote = FALSE, row.names = FALSE)
     }
   )
+  
+  
+  
+  ############################################################################
+  #                            UTILS
+  ############################################################################
+  
+  # -------------------- Plots conditional panels ----------------------------
+  
+  observeEvent(input$plots_distribution_plot_state, {
+    values$plots_conditional_visible <- 1
+  })
+  observeEvent(input$plots_tree_structure_state, {
+    values$plots_conditional_visible <- 2
+  })
+  observeEvent(input$plots_variable_importance_state, {
+    values$plots_conditional_visible <- 3
+  })
+  output$plots_conditional_visible <- renderText({
+    values$plots_conditional_visible
+  })
+  outputOptions(output, "plots_conditional_visible", suspendWhenHidden = FALSE)
+  
+  # -------------------- Tables conditional panels ----------------------------
+  
+  observeEvent(input$plots_distribution_plot_state, {
+    values$tables_conditional_visible <- 1
+  })
+  observeEvent(input$plots_tree_structure_state, {
+    values$tables_conditional_visible <- 2
+  })
+  observeEvent(input$plots_variable_importance_state, {
+    values$tables_conditional_visible <- 3
+  })
+  output$tables_conditional_visible <- renderText({
+    values$tables_conditional_visible
+  })
+  outputOptions(output, "tables_conditional_visible", suspendWhenHidden = FALSE)
 })
