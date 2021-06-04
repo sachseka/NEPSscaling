@@ -228,7 +228,7 @@ shinyUI(
                            label = "Seed for random number generator",
                            value = sample(0:100000, 1),
                            min = 0),
-              selectInput(inputId = "exclude1", label = "Variables to exclude from bg data (cross)",
+              selectInput(inputId = "exclude1", label = "Variables to exclude from bg data",
                           choices = ""),
               hidden(
                 selectInput(inputId = "exclude2",
