@@ -50,15 +50,11 @@ shinyUI(
             condition = "input.conditionedPanels== 1",
             shinyWidgets::dropdownButton(
               inputId = "input_pv_obj",
-              # fileInput(inputId = "import_state", 
-              #           label = tags$strong("Import pv_obj"),
-              #           multiple = FALSE, accept = ".rds"),
-              shinyBS::tipify(fileInput(inputId = "import_state", 
-                                        label = tags$strong("Import pv_obj"),
-                                        multiple = FALSE, accept = ".rds"),
-                              #actionButton("btn", icon = icon("info"),""), 
-                              "Upload size up to 30MB. Accepts '.rds' format.", 
-                              placement="bottom", trigger = "hover"),
+              fileInput(inputId = "import_state",
+                        label = tags$strong("Import pv_obj"),
+                        multiple = FALSE, accept = ".rds"),
+              tags$span(style = "font-size: 0.75em;", 
+                        "Upload size up to 30MB. Accepts '.rds' format."),
               
               hr(),
               
@@ -85,16 +81,12 @@ shinyUI(
             hr(),
             shinyWidgets::dropdownButton(
               inputId = "input_bgdata",
-              # fileInput(inputId = "import_bgdata",
-              #           label = tags$strong("Import background data"),
-              #           multiple = FALSE, accept = c(".rds", ".sav", ".dta")),
-              shinyBS::tipify(fileInput(inputId = "import_bgdata",
-                                        label = tags$strong("Import background data"),
-                                        multiple = FALSE, accept = c(".rds", ".sav", ".dta")),
-                              #actionButton("btn2", icon = icon("info"),""), 
-                              "Upload size up to 30MB. Accepts '.rds', '.sav', and '.dta' formats.", 
-                              placement="bottom", trigger = "hover"),
-              
+              fileInput(inputId = "import_bgdata",
+                        label = tags$strong("Import background data"),
+                        multiple = FALSE, accept = c(".rds", ".sav", ".dta")),
+              tags$span(style = "font-size: 0.75em;", 
+                        "Upload size up to 30MB. Accepts '.rds', '.sav', and '.dta' formats."),
+
               hr(),
               
               actionButton(inputId = "remove_bgdata", 
