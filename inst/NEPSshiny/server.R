@@ -1,8 +1,6 @@
 
 library(shiny)
 library(xtable)
-# library(NEPSscaling)
-
 
 
 filter_data <- function(filter_op, filter_var, filter_val, out) {
@@ -150,27 +148,26 @@ shinyServer(function(input, output, session) {
         out[, sel] <- lapply(out[, sel], as.factor)
       }
     }
-    
+
     choices <- colnames(out[, -which(names(out) == "ID_t")])
     updateSelectInput(session = session, inputId = "exclude1",
-                      label = "Variables to exclude from bg data", 
+                      label = "Variables to exclude from bg data",
                       choices = choices, selected = "")
     updateSelectInput(session = session, inputId = "exclude2",
-                      label = "Variables to exclude (2nd wave)", 
+                      label = "Variables to exclude (2nd wave)",
                       choices = choices, selected = "")
     updateSelectInput(session = session, inputId = "exclude3",
-                      label = "Variables to exclude (3rd wave)", 
+                      label = "Variables to exclude (3rd wave)",
                       choices = choices, selected = "")
     updateSelectInput(session = session, inputId = "exclude4",
-                      label = "Variables to exclude (4th wave)", 
+                      label = "Variables to exclude (4th wave)",
                       choices = choices, selected = "")
     updateSelectInput(session = session, inputId = "exclude5",
-                      label = "Variables to exclude (5th wave)", 
+                      label = "Variables to exclude (5th wave)",
                       choices = choices, selected = "")
 
     values$bgdata <- out
   })
-  # output$bgdata <- renderDataTable(head(values$bgdata))
 
   ############################################################################
   #                            MANIPULATE
@@ -179,16 +176,16 @@ shinyServer(function(input, output, session) {
   # ---------------------------- DISPLAY BGDATA ------------------------------
   # select columns, filter by values, select rows
   # paged table
-  
+
   observeEvent(input$Display_Bgdata, {
-    toggle('bgdata_select_cols') 
-    toggle('bgdata_filter_rows')
-    toggle('bgdata_sort_cases')
-    toggle('bgdata_ascending')
+    shinyjs::toggle('bgdata_select_cols')
+    shinyjs::toggle('bgdata_filter_rows')
+    shinyjs::toggle('bgdata_sort_cases')
+    shinyjs::toggle('bgdata_ascending')
     output$text <- renderText({"ahh you pressed it"})
   })
-  
-  
+
+
   bgdata_display <- reactive({
     req(values$bgdata)
     out <- values$bgdata
@@ -230,7 +227,7 @@ shinyServer(function(input, output, session) {
       values$bgdata, input$select_starting_cohort, input$select_domain,
       input$select_wave, input$path_to_data
     )
-    
+
     if (isTruthy(input$longitudinal) & input$longitudinal) {
       exclude <- list(
         input$exclude1, input$exclude2, input$exclude3, input$exclude4,
@@ -238,8 +235,8 @@ shinyServer(function(input, output, session) {
       )
       names(exclude) <- gsub("_", "",
                              NEPSscaling:::create_waves_vars(
-                               longitudinal = input$longitudinal, 
-                               SC = paste0("SC", input$select_starting_cohort), 
+                               longitudinal = input$longitudinal,
+                               SC = paste0("SC", input$select_starting_cohort),
                                domain = input$select_domain, wave = NULL
                              ))
     } else if (isTruthy(input$longitudinal) & !input$longitudinal) {
@@ -521,8 +518,6 @@ shinyServer(function(input, output, session) {
     }
     tab[["95% CI of b"]] <- paste0("[", round(tab$b - 1.96 * tab$se, 3),"; ",
                                    round(tab$b + 1.96 * tab$se, 3), "]")
-    # tab[["95% CI of beta"]] <- paste0("[", round(tab$beta - 1.96 * tab$se, 3),"; ",
-    #                                round(tab$beta + 1.96 * tab$se, 3), "]")
     tab$b <- as.character(round(tab$b, 3))
     tab$beta <- as.character(round(tab$beta, 3))
     tab$se <- as.character(round(tab$se, 3))
@@ -550,10 +545,10 @@ shinyServer(function(input, output, session) {
     caption.placement = getOption("xtable.caption.placement", "top"),
     caption.width = getOption("xtable.caption.width", NULL)
   )
-  
+
   observeEvent(input$remove_pv_obj, {
     values$pv_obj <- NULL
-    
+
     updateSelectInput(session, inputId = "imputation",
                       choices = "",
                       selected = "")
@@ -569,13 +564,13 @@ shinyServer(function(input, output, session) {
     updateSelectInput(session, inputId = "y",
                       choices = "",
                       selected = "")
-    
-    if(is.null(values$bgdata_raw)) {
+
+    if (is.null(values$bgdata_raw)) {
       updateSelectInput(session = session, inputId = "ordinal",
                         label = "Select ordinal variables", choices = "")
       updateSelectInput(session = session, inputId = "nominal",
                         label = "Select nominal variables", choices = "")
-      
+
       updateSelectInput(session = session, inputId = "bgdata_select_cols",
                         label = "Select columns", choices = "",
                         selected = "")
@@ -583,32 +578,32 @@ shinyServer(function(input, output, session) {
                         label = "Sort by", choices = "",
                         selected = "")
       updateSelectInput(session = session, inputId = "exclude1",
-                        label = "Variables to exclude from bg data", 
+                        label = "Variables to exclude from bg data",
                         choices = "", selected = "")
       updateSelectInput(session = session, inputId = "exclude2",
-                        label = "Variables to exclude (2nd wave)", 
+                        label = "Variables to exclude (2nd wave)",
                         choices = "", selected = "")
       updateSelectInput(session = session, inputId = "exclude3",
-                        label = "Variables to exclude (3rd wave)", 
+                        label = "Variables to exclude (3rd wave)",
                         choices = "", selected = "")
       updateSelectInput(session = session, inputId = "exclude4",
-                        label = "Variables to exclude (4th wave)", 
+                        label = "Variables to exclude (4th wave)",
                         choices = "", selected = "")
       updateSelectInput(session = session, inputId = "exclude5",
-                        label = "Variables to exclude (5th wave)", 
+                        label = "Variables to exclude (5th wave)",
                         choices = "", selected = "")
     }
   })
-  
+
   observeEvent(input$remove_bgdata, {
     values$bgdata_raw <- values$bgdata <- NULL
-    
-    if(is.null(values$pv_obj)) {
+
+    if (is.null(values$pv_obj)) {
       updateSelectInput(session = session, inputId = "ordinal",
                         label = "Select ordinal variables", choices = "")
       updateSelectInput(session = session, inputId = "nominal",
                         label = "Select nominal variables", choices = "")
-      
+
       updateSelectInput(session = session, inputId = "bgdata_select_cols",
                         label = "Select columns", choices = "",
                         selected = "")
@@ -616,19 +611,19 @@ shinyServer(function(input, output, session) {
                         label = "Sort by", choices = "",
                         selected = "")
       updateSelectInput(session = session, inputId = "exclude1",
-                        label = "Variables to exclude from bg data", 
+                        label = "Variables to exclude from bg data",
                         choices = "", selected = "")
       updateSelectInput(session = session, inputId = "exclude2",
-                        label = "Variables to exclude (2nd wave)", 
+                        label = "Variables to exclude (2nd wave)",
                         choices = "", selected = "")
       updateSelectInput(session = session, inputId = "exclude3",
-                        label = "Variables to exclude (3rd wave)", 
+                        label = "Variables to exclude (3rd wave)",
                         choices = "", selected = "")
       updateSelectInput(session = session, inputId = "exclude4",
-                        label = "Variables to exclude (4th wave)", 
+                        label = "Variables to exclude (4th wave)",
                         choices = "", selected = "")
       updateSelectInput(session = session, inputId = "exclude5",
-                        label = "Variables to exclude (5th wave)", 
+                        label = "Variables to exclude (5th wave)",
                         choices = "", selected = "")
     }
   })
@@ -756,29 +751,12 @@ shinyServer(function(input, output, session) {
 
   # ------------------------ SAVE TABLES -------------------------------------
 
-  # output$download_descriptive <- renderUI({
-  #   downloadButton('download_descriptive', label = 'Download Descriptives') })
-
   output$download_descriptive <- downloadHandler(
     filename = function() {
-      # req(input$descriptive_name, input$descriptive_format)
-      # ext <- switch(input$descriptive_format,
-      #               "tsv" = ".tsv",
-      #               "LaTeX" = ".tex")
-      # paste0(input$descriptive_name, ext)
       req(input$descriptive_name)
       paste0(input$descriptive_name, ".tsv")
     },
     content = function(file) {
-      # if (input$descriptive_format == "tsv") {
-      #   vroom::vroom_write(imputation_table(), file, progress = FALSE)
-      # } else {
-      #   vroom::vroom_write_lines(
-      #     xtable(imputation_table(),
-      #            caption = "Descriptive statistics",
-      #            label = "tab:desc"),
-      #     file)
-      # }
       write.table(x = imputation_table(), file = file, sep = "\t",
                   quote = FALSE, row.names = FALSE)
     }
@@ -795,15 +773,15 @@ shinyServer(function(input, output, session) {
                   quote = FALSE, row.names = FALSE)
     }
   )
-  
-  
-  
+
+
+
   ############################################################################
   #                            UTILS
   ############################################################################
-  
+
   # -------------------- Plots conditional panels ----------------------------
-  
+
   observeEvent(input$plots_distribution_plot_state, {
     values$plots_conditional_visible <- 1
   })
@@ -817,9 +795,9 @@ shinyServer(function(input, output, session) {
     values$plots_conditional_visible
   })
   outputOptions(output, "plots_conditional_visible", suspendWhenHidden = FALSE)
-  
+
   # -------------------- Tables conditional panels ----------------------------
-  
+
   observeEvent(input$plots_distribution_plot_state, {
     values$tables_conditional_visible <- 1
   })
@@ -833,18 +811,18 @@ shinyServer(function(input, output, session) {
     values$tables_conditional_visible
   })
   outputOptions(output, "tables_conditional_visible", suspendWhenHidden = FALSE)
-  
+
   # ---------- Hide-able exclude argument in longitudinal case ----------------
-  
+
   observeEvent(input$longitudinal, {
-    toggle('exclude2', condition = input$longitudinal) 
-    toggle('exclude3', condition = input$longitudinal)
-    toggle('exclude4', condition = input$longitudinal)
-    toggle('exclude5', condition = input$longitudinal)
+    shinyjs::toggle('exclude2', condition = input$longitudinal)
+    shinyjs::toggle('exclude3', condition = input$longitudinal)
+    shinyjs::toggle('exclude4', condition = input$longitudinal)
+    shinyjs::toggle('exclude5', condition = input$longitudinal)
   })
-  
+
   # -------------------- select domain and wave input -----------------------
-  
+
   observeEvent(input$select_starting_cohort, {
     values$domains_for_sc <-  if (input$select_starting_cohort == 1) {
       c("MA", "CD", "SC")#, "VO")
@@ -860,7 +838,7 @@ shinyServer(function(input, output, session) {
       c("MA", "RE", "SC", "IC")
     }
   })
-  
+
   observeEvent(c(input$select_starting_cohort, input$select_domain), {
     values$waves_for_domain_and_sc <- if (input$select_starting_cohort == 1) {
       if (input$select_domain == "MA") {c(5, 7)#, 9)
@@ -907,14 +885,14 @@ shinyServer(function(input, output, session) {
       } else if (input$select_domain %in% c("SC", "IC")) {5}
     }
   })
-  
+
   observe({
-    updateSelectInput(session = session, inputId = "select_domain", 
+    updateSelectInput(session = session, inputId = "select_domain",
                       choices = values$domains_for_sc)
   })
-  
+
   observe({
-    updateSelectInput(session = session, inputId = "select_wave", 
+    updateSelectInput(session = session, inputId = "select_wave",
                       choices = values$waves_for_domain_and_sc)
   })
 

@@ -1,19 +1,11 @@
-#library(shinythemes)
-#library(shiny)
-#library(shinydashboard)
-#library(shinydashboardPlus)
-library(bslib)
-library(shinyBS)
-library(shinyjs)
-
 
 shinyUI(
-  navbarPage(id="navbar",
-   theme = bs_theme(
+  navbarPage(id = "navbar",
+   theme = bslib::bs_theme(
       bg = "#E8E6F4", fg = "black", primary = "#24195D", secondary = "#1D0E46",
       "font-size-base" = "1.25rem",
-      base_font = font_google("Open Sans"),
-      code_font = font_google("Open Sans")
+      base_font = bslib::font_google("Open Sans"),
+      code_font = bslib::font_google("Open Sans")
     ),
     tabPanel(
       icon("laptop"),
@@ -37,7 +29,8 @@ shinyUI(
           )
         )
       ),
-      # print output to shiny: https://stackoverflow.com/questions/30474538/possible-to-show-console-messages-written-with-message-in-a-shiny-ui/30490698#3049069844446666666
+      # print output to shiny:
+      # https://stackoverflow.com/questions/30474538/possible-to-show-console-messages-written-with-message-in-a-shiny-ui/30490698#3049069844446666666
       shinyjs::useShinyjs(),
 
       ## ---------------------------------sidebar----------------------------------
@@ -53,15 +46,15 @@ shinyUI(
               fileInput(inputId = "import_state",
                         label = tags$strong("Import pv_obj"),
                         multiple = FALSE, accept = ".rds"),
-              tags$span(style = "font-size: 0.75em;", 
+              tags$span(style = "font-size: 0.75em;",
                         "Upload size up to 30MB. Accepts '.rds' format."),
-              
+
               hr(),
-              
-              actionButton(inputId = "remove_pv_obj", label=  "Remove pv_obj"),
-              
+
+              actionButton(inputId = "remove_pv_obj", label =  "Remove pv_obj"),
+
               hr(),
-              
+
               tags$strong("Download pv_obj"),
               textInput(
                 "pv_obj_name", label = "Choose file name",
@@ -71,32 +64,30 @@ shinyUI(
               selectInput("export_format", label = "Select export format",
                           choices = c("SPSS", "Stata", "Mplus")),
               downloadButton("export_pv_obj", label = "Export pv_obj"),
-              
-              circle = FALSE, status = "block", 
+
+              circle = FALSE, status = "block",
               width = "100%",
-              label = "Manage pv_obj"#,
-              
-              # tooltip = shinyWidgets::tooltipOptions(title = "Click to see inputs !")
-            ), 
+              label = "Manage pv_obj"
+            ),
             hr(),
             shinyWidgets::dropdownButton(
               inputId = "input_bgdata",
               fileInput(inputId = "import_bgdata",
                         label = tags$strong("Import background data"),
                         multiple = FALSE, accept = c(".rds", ".sav", ".dta")),
-              tags$span(style = "font-size: 0.75em;", 
+              tags$span(style = "font-size: 0.75em;",
                         "Upload size up to 30MB. Accepts '.rds', '.sav', and '.dta' formats."),
 
               hr(),
-              
-              actionButton(inputId = "remove_bgdata", 
-                           label=  "Remove background data"),
-              
+
+              actionButton(inputId = "remove_bgdata",
+                           label = "Remove background data"),
+
               hr(),
-              
-              actionButton(inputId = "Display_Bgdata", 
-                           label= "Inspect background data"), 
-              hidden(
+
+              actionButton(inputId = "Display_Bgdata",
+                           label = "Inspect background data"),
+              shinyjs::hidden(
                 selectInput("bgdata_select_cols", "Select columns", choices = "",
                             multiple = TRUE),
                 textInput("bgdata_filter_rows", "Filter"),
@@ -106,13 +97,11 @@ shinyUI(
                   status = "primary", value = TRUE, shape = "curve", outline = TRUE
                 )
               ),
-              
+
               circle = FALSE, status = "block",
               width = "100%",
-              label = "Manage background data"#,
-              
-              # tooltip = shinyWidgets::tooltipOptions(title = "Click to see inputs !")
-            ), 
+              label = "Manage background data"
+            ),
             hr(),
             shinyWidgets::dropdownButton(
               inputId = "scale_level",
@@ -124,18 +113,16 @@ shinyUI(
                           choices = "No data uploaded yet", multiple = TRUE),
               selectInput(inputId = "nominal", label = "Select nominal variables",
                           choices = "No data uploaded yet", multiple = TRUE),
-              
+
               circle = FALSE, status = "block",
               width = "100%",
-              label = "Set scale levels of background data"#,
-              
-              # tooltip = shinyWidgets::tooltipOptions(title = "Click to see inputs !")
+              label = "Set scale levels of background data"
             )
           ),
-          
+
         # Conditional Panel for Input Parameter
           conditionalPanel(
-            condition = "input.conditionedPanels==2", 
+            condition = "input.conditionedPanels==2",
             h4("Arguments for Plausible Values Estimation"),
             selectInput("select_starting_cohort",
                         label = "Starting cohort",
@@ -164,7 +151,7 @@ shinyUI(
             ),
             textInput(inputId = "path_to_data", label = "Directory with SUFs",
                       value = getwd()),
-            
+
             shinyWidgets::dropdownButton(
               inputId = "output_parameters",
               numericInput("npv", label = "Number of plausible values",
@@ -182,9 +169,7 @@ shinyUI(
 
               circle = FALSE, status = "block",
               width = "100%",
-              label = "Output parameters"#,
-              
-              # tooltip = shinyWidgets::tooltipOptions(title = "Click to see inputs !")
+              label = "Output parameters"
             ),
             tags$hr(),
             shinyWidgets::dropdownButton(
@@ -194,14 +179,14 @@ shinyUI(
                 status = "primary", value = FALSE, shape = "curve", outline = TRUE
               ),
               shinyWidgets::prettyCheckbox(
-                inputId = "rotation", 
-                label = tags$text("Consider position of", #br(), 
+                inputId = "rotation",
+                label = tags$text("Consider position of", #br(),
                                   "competence test?"),
                 status = "primary", value = TRUE, shape = "curve", outline = TRUE
               ),
               shinyWidgets::prettyCheckbox(
-                inputId = "adjust_school_context", 
-                label = tags$text("Adjust for school", #br(), 
+                inputId = "adjust_school_context",
+                label = tags$text("Adjust for school", #br(),
                                   "context?"),
                 status = "primary", value = TRUE, shape = "curve", outline = TRUE
               ),
@@ -210,9 +195,9 @@ shinyUI(
                            value = 3, min = 0),
               shinyWidgets::prettyCheckbox(
                 inputId = "include_nr",
-                label = tags$text("Include number of", #br(), 
-                                  "not-reached missing", #br(), 
-                                  "values as proxy for", #br(), 
+                label = tags$text("Include number of", #br(),
+                                  "not-reached missing", #br(),
+                                  "values as proxy for", #br(),
                                   "processing speed?"),
                 status = "primary", value = TRUE, shape = "curve", outline = TRUE
               ),
@@ -222,7 +207,7 @@ shinyUI(
                            min = 0),
               selectInput(inputId = "exclude1", label = "Variables to exclude from bg data",
                           choices = ""),
-              hidden(
+              shinyjs::hidden(
                 selectInput(inputId = "exclude2",
                             label = "Variables to exclude (2nd wave)",
                             choices = ""),
@@ -239,9 +224,7 @@ shinyUI(
 
               circle = FALSE, status = "block",
               width = "100%",
-              label = "Model parameters"#,
-              
-              # tooltip = shinyWidgets::tooltipOptions(title = "Click to see inputs !")
+              label = "Model parameters"
             ),
             tags$hr(),
             shinyWidgets::prettyCheckbox(
@@ -273,12 +256,10 @@ shinyUI(
                           choices = c("Gray", "Black and white", "Linedraw", "Light",
                                       "Dark", "Minimal", "Classic", "Void")),
               actionButton("plot", label = "Display plot"),
-              
+
               circle = FALSE, status = "block",
               width = "100%",
-              label = "Plots of plausible values and imputations"#,
-              
-              # tooltip = shinyWidgets::tooltipOptions(title = "Click to see inputs !")
+              label = "Plots of plausible values and imputations"
             ),
             hr(),
             shinyWidgets::dropdownButton(
@@ -288,12 +269,10 @@ shinyUI(
               selectInput(inputId = "variable", label = "Select variable",
                           choices = ""),
               actionButton(inputId = "cart_plot", label = "Display tree plot"),
-              
+
               circle = FALSE, status = "block",
               width = "100%",
-              label = "Imputation tree structures"#,
-              
-              # tooltip = shinyWidgets::tooltipOptions(title = "Click to see inputs !")
+              label = "Imputation tree structures"
             ),
             hr(),
             shinyWidgets::dropdownButton(
@@ -303,12 +282,10 @@ shinyUI(
               selectInput(inputId = "variable", label = "Select variable",
                           choices = ""),
               actionButton(inputId = "variable_importance_plot", label = "Display variable importance plot"),
-              
+
               circle = FALSE, status = "block",
               width = "100%",
-              label = "Variable importance plots for imputations"#,
-              
-              # tooltip = shinyWidgets::tooltipOptions(title = "Click to see inputs !")
+              label = "Variable importance plots for imputations"
             )
           ),
 
@@ -336,7 +313,7 @@ shinyUI(
                      h3(textOutput("plausible_values_progress"))),
             tabPanel("Plots", value = 3,
                      conditionalPanel(
-                       condition = "output.plots_conditional_visible==1", # possible to use dropdownButton in this form: input.scale_level_state==TRUE
+                       condition = "output.plots_conditional_visible==1",
                        tags$h3("Distribution plots"),
                        plotOutput("plot"),
                        textInput("plot_name", label = "Plot name",
@@ -382,10 +359,6 @@ shinyUI(
                        textInput("descriptive_name", label = "Table name",
                                  value = paste0("descriptives_",
                                                 gsub(":", "-", gsub(" ", "_", Sys.time())))),
-                       # selectInput("descriptive_format",
-                       #             label = "Select export format",
-                       #             choices = c("LaTeX", "tsv")),
-                       # uiOutput("download_descriptive"),
                        downloadButton(outputId = "download_descriptive",
                                       label = "Download Descriptives")
                      ),
@@ -401,9 +374,6 @@ shinyUI(
                        textInput("regression_name", label = "Table name",
                                  value = paste0("regression_",
                                                 gsub(":", "-", gsub(" ", "_", Sys.time())))),
-                       # selectInput("regression_format",
-                       #             label = "Select export format",
-                       #             choices = c("LaTeX", "tsv")),
                        downloadButton(outputId = "download_regression",
                                       label = "Download table")                     )),
             id = "conditionedPanels"
@@ -496,11 +466,4 @@ shinyUI(
         column(1, offset = 5, img(height = 50, width = 55, src = "LIfBi_Logo_solo_RZ.png"))))
     )
 )
-
-
-enableBookmarking(store = "url")
-#shinyApp(ui, server)
-
-
-
 
