@@ -25,6 +25,15 @@ shinyUI(
              word-break: break-all;
              word-wrap: break-word;
              white-space: normal;
+          }
+          .btn-group-container-sw {
+             display: flex;
+          }
+          .radiobtn {
+             margin-top: 30px;
+             margin-bottom: 30px;
+             flex: 1;
+             background-color: #24195D;
           }"
           )
         )
@@ -298,8 +307,8 @@ shinyUI(
                            "Item parameters" = 2,
                            "Regression weights" = 3
                          ),
-                         direction = "vertical",
-                         individual = TRUE
+                         direction = "vertical"#,
+                         # individual = TRUE
             )
           )
         ),
