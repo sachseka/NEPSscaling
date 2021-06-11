@@ -1,4 +1,4 @@
-#' extract correct number of plausible values (npv) from pvs object
+#' extract correct number of further info about PV model
 #'
 #' @param datalist list of data.frames; contains npv PVs and completed bgdata
 #' @param regr.coeff list of matrices or matrix; contains latent regression
@@ -12,8 +12,10 @@
 #' @param variance list (long.) / vector (cross.) of latent variances
 #' @param eap list of data.frames containing ID_t, eap(s) and se(s)
 #'
+#' @return list of regression coefficients, eap reliabilities, info criteria,
+#' tree representations, variable importances, variances and eaps -- each with
+#' imputations not selected with PV data.frame sampling removed
 #' @noRd
-
 discard_not_used_imputations <- function(datalist, regr.coeff, EAP.rel,
                                          longitudinal, info_crit, treeplot,
                                          variable_importance, variance, eap) {
@@ -39,6 +41,12 @@ discard_not_used_imputations <- function(datalist, regr.coeff, EAP.rel,
   res
 }
 
+#' determine imputations still left after PV sampling
+#'
+#' @param datalist list of data.frames; contains npv PVs and completed bgdata
+#'
+#' @return list of string and integer representation of the kept imputations
+#' @noRd
 determine_used_imputations <- function(datalist) {
   # for list data structures
   keep <- names(datalist)
@@ -53,6 +61,23 @@ determine_used_imputations <- function(datalist) {
   list(keep, keep2)
 }
 
+#' extract correct number of further info about PV model
+#'
+#' @param regr.coeff list of matrices or matrix; contains latent regression
+#' coefficients
+#' @param EAP.rel list of vectors or vector; contains EAP reliabilities
+#' @param info_crit list of matrices or matrix; AIC, BIC
+#' @param treeplot list of tree structure plots per imputation
+#' @param variable_importance list of matrices with importance statistics for
+#' predictor variables per imputation
+#' @param variance list (long.) / vector (cross.) of latent variances
+#' @param eap list of data.frames containing ID_t, eap(s) and se(s)
+#' @param keep vector of integers; represents imputations to keep
+#'
+#' @return list of regression coefficients, eap reliabilities, info criteria,
+#' tree representations, variable importances, variances and eaps -- each with
+#' imputations not selected with PV data.frame sampling removed
+#' @noRd
 select_used_imputations_long <- function(EAP.rel, regr.coeff, info_crit,
                                          treeplot, variable_importance,
                                          variance, eap, keep) {
@@ -76,6 +101,23 @@ select_used_imputations_long <- function(EAP.rel, regr.coeff, info_crit,
        variance = variance, eap = eap)
 }
 
+#' extract correct number of further info about PV model
+#'
+#' @param regr.coeff list of matrices or matrix; contains latent regression
+#' coefficients
+#' @param EAP.rel list of vectors or vector; contains EAP reliabilities
+#' @param info_crit list of matrices or matrix; AIC, BIC
+#' @param treeplot list of tree structure plots per imputation
+#' @param variable_importance list of matrices with importance statistics for
+#' predictor variables per imputation
+#' @param variance list (long.) / vector (cross.) of latent variances
+#' @param eap list of data.frames containing ID_t, eap(s) and se(s)
+#' @param keep list of string and integer representation of the kept imputations
+#'
+#' @return list of regression coefficients, eap reliabilities, info criteria,
+#' tree representations, variable importances, variances and eaps -- each with
+#' imputations not selected with PV data.frame sampling removed
+#' @noRd
 select_used_imputations_cross <- function(EAP.rel, regr.coeff, info_crit,
                                           treeplot, variable_importance,
                                           variance, eap, keep) {

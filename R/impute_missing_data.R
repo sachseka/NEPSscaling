@@ -4,6 +4,9 @@
 #' @param verbose logical; whether stuff should be printed to the console
 #' @param control list of arguments for mice algorithm
 #'
+#' @return list containing the imputations, the formula for the latent regression,
+#' the incomplete background data, the list of imputation tree plots, the list
+#' of variable importance statistics
 #' @noRd
 
 impute_missing_data <- function(bgdata, verbose, control) {
@@ -29,10 +32,6 @@ impute_missing_data <- function(bgdata, verbose, control) {
   }
   list(imp = imp, frmY = frmY, bgdata = bgdata, treeplot = treeplot,
        variable_importance = variable_importance)
-}
-
-reformat_bgdata_as_numeric <- function(dat) {
-  as.data.frame(lapply(dat, as.numeric))
 }
 
 

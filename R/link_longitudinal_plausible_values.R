@@ -12,8 +12,8 @@
 #' @param SC character; starting cohort ("SCx")
 #' @param domain character; abbr. of competence domain (e.g., "MA")
 #'
+#' @return list of mean shifted pv, wle and eap
 #' @noRd
-
 link_longitudinal_plausible_values <- function(datalist, npv, min_valid,
                                                valid_responses_per_person,
                                                waves, eap, wle,

@@ -5,9 +5,11 @@
 #' @param cp minimum complexity parameter per split
 #' @param nmi number of imputations to be returned
 #' @param verbose logical whether progress is to be printed
-#' @return list of imputations and related variables
+#'
+#' @return list of list of imputations and related variables (in nmi data.frames),
+#' list of nmi lists of string representations of imputation trees per variable,
+#' and list of nmi lists of vectors of variable importance per variable
 #' @noRd
-
 CART <- function(
   X,
   minbucket = 5,

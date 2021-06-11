@@ -4,10 +4,13 @@
 #' @param npv Integer value fo number of plausible values to be returned by
 #'   `NEPSscaling::plausible_values()`
 #' @param i numeric; number of current imputation
-#' @param pvs list of lists; output containing the pvs of all waves in one
+#' @param pvs list of lists; containing a slot for the pvs of all waves in one
 #' data.frame per imputation
-#' @param tmp_pvs list; contains the raw estimation of TAM::tam.pv()
+#' @param tmp_pvs list; structure: tmp_pvs$wave$npv; contains the raw estimation
+#' of TAM::tam.pv() nested in assessment waves
 #'
+#' @return list of data.frames containing the plausible values with completed
+#' background data sets
 #' @noRd
 
 reformat_longitudinal_tmp_pvs <- function(npv, pvs, i, tmp_pvs, bgdata) {

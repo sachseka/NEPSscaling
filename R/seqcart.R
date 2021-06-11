@@ -1,7 +1,7 @@
 #' CART imputation algorithm
 #'
-#' @param dataimp data to be imputed
-#' @param misord vector of variable names to be imputed
+#' @param dataimp data.frame; to be imputed
+#' @param misord vector of variable names of variables to be imputed
 #' @param INDOBS indicator matrix of observed data
 #' @param INDMIS indicator matrix of missing data
 #' @param control1 minimum number of observations per split

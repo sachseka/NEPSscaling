@@ -9,8 +9,10 @@
 #' @param wave character; wave of test assessment ("wx")
 #' @param waves character; waves of test assessment in the longitudinal case
 #' ("_wx", "_wy")
+#'
+#' @return list of not-reached proxies, original data with missing values set
+#' to NA, and updated include_nr indicator
 #' @noRd
-
 not_reached_as_proxy <- function(include_nr, longitudinal, data, SC, domain,
                                  wave, waves) {
   nr <- NULL
@@ -25,6 +27,13 @@ not_reached_as_proxy <- function(include_nr, longitudinal, data, SC, domain,
   list(nr = nr, data = data, include_nr = ifelse(is.null(nr), FALSE, TRUE))
 }
 
+#' remove proxies with constant value for all test takers
+#'
+#' @param nr data.frame containing not reached proxies
+#' @param sel list of character vector(s) of response items for the current wave
+#'
+#' @return updated not-reached proxies
+#' @noRd
 remove_constant_not_reached <- function(nr, sel) {
   # ID_t always > 1 value -> ignore in check for constant nr values
   if (any(lapply(lapply(nr, unique), length) == 1)) {
@@ -44,6 +53,16 @@ remove_constant_not_reached <- function(nr, sel) {
   nr
 }
 
+#' determine the response items to calculate the proxy over
+#'
+#' @param longitudinal logical; whether longitudinal pvs are to be estimated
+#' @param data data.frame; xTargetCompetencies
+#' @param SC character; starting cohort ("SCx")
+#' @param domain character; abbr. of competence domain (e.g. "RE", "SC")
+#' @param wave character; wave of test assessment ("wx")
+#'
+#' @return list of vector(s) of response item names
+#' @noRd
 determine_response_items <- function(SC, domain, data, wave, longitudinal) {
   sel <- lapply(item_labels[[SC]][[domain]],
                 function(it) {names(data) %in% it})
@@ -57,6 +76,19 @@ determine_response_items <- function(SC, domain, data, wave, longitudinal) {
   sel
 }
 
+#' not reached missing values as proxy for processing time and sets user defined
+#' missing values as NA
+#'
+#' @param longitudinal logical; whether longitudinal pvs are to be estimated
+#' @param data data.frame; xTargetCompetencies
+#' @param SC character; starting cohort ("SCx")
+#' @param domain character; abbr. of competence domain (e.g. "RE", "SC")
+#' @param sel list of character vector(s); response variable names per wave
+#' @param waves character; waves of test assessment in the longitudinal case
+#' ("_wx", "_wy")
+#'
+#' @return data.frame of not-reached proxies (ID_t + one column per wave)
+#' @noRd
 calculate_not_reached_per_person <- function(data, sel, waves, SC, domain,
                                              longitudinal) {
   # in the longitudinal case, missing test taking for later time points

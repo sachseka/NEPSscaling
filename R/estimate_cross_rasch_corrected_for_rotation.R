@@ -22,8 +22,10 @@
 #' variables that are NOT to be used in the background model of the specified
 #' wave
 #'
+#' @return list of list of eap data.frames, list of pvs (one list per imputation
+#' with one data.frame per PV), list of TAM model, vector of EAP.rel, matrix
+#' of regression coefficients, vector of variances, matrix of info criteria
 #' @noRd
-
 estimate_cross_rasch_corrected_for_rotation <- function(bgdata, imp,
                                                         frmY = NULL, resp,
                                                         position, waves,
@@ -44,13 +46,13 @@ estimate_cross_rasch_corrected_for_rotation <- function(bgdata, imp,
       bgdatacom <- res[["bgdatacom"]]
     }
     frmY <- res[["frmY"]]
-    
+
     # extract bgdata specific for wave
     if (!is.null(exclude)) {
       bgdatacom <- extract_bgdata_variables(bgdatacom, exclude, waves, NULL)
       frmY <- create_formula(bgdatacom)
     }
-    
+
     # estimate IRT model
     mod <- list()
 

@@ -35,7 +35,7 @@ add_contextual_info <- function(path, SC, domain, waves, bgdata, data) {
 #' @param domain competence domain; String
 #' @param waves String vector
 #'
-#' @return character vector
+#' @return character vector of WLE names assessed in school for SC and domain
 #' @noRd
 get_wle_vnames <- function(waves, SC, domain) {
   wle_vnames <- list(
@@ -143,6 +143,12 @@ get_school_id_data <- function(path) {
 }
 
 
+#' convert long format to wide format
+#'
+#' @param school_data data.frame with wave and school ID info in long format
+#'
+#' @return school_data in wide format
+#' @noRd
 convert_to_wide <- function(school_data) {
   school_data %>%
     tidyr::pivot_wider(names_from = "wave",
@@ -152,6 +158,14 @@ convert_to_wide <- function(school_data) {
 }
 
 
+#' calculate school average WLEs
+#'
+#' @param school_data data.frame with ID_t and averaged WLEs info in wide format
+#' @param waves character vector; assessment waves (e.g. "_wx") for SCHOOL
+#' @param wle_vnames character vector; WLE names assessed in SCHOOL
+#'
+#' @return school_data with averaged WLEs
+#' @noRd
 calculate_school_average <- function(school_data, waves, wle_vnames) {
   school_waves <-
     names(school_data)[names(school_data) %in% paste0("school", waves)]
@@ -169,6 +183,13 @@ calculate_school_average <- function(school_data, waves, wle_vnames) {
 }
 
 
+#' convert long format to wide format
+#'
+#' @param bgdata data.frame of bgdata with ID_t
+#' @param school_data data.frame with ID_t and averaged WLEs info in wide format
+#'
+#' @return bgdata now containing averaged WLEs
+#' @noRd
 combine_with_bgdata <- function(bgdata, school_data) {
   bgdata <- dplyr::left_join(bgdata,
                              school_data %>%

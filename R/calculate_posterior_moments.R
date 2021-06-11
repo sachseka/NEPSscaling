@@ -4,8 +4,10 @@
 #' @param pv list of data.frames; contains completed bgdata and pvs
 #' @param waves character vector; assessment waves ("_wx", "_wy")
 #' @param npv numeric; number of plausible values
+#'
+#' @return list of posterior means for eaps (list of numeric vectors), wles
+#' (numeric vector), and pvs (list of numeric vectors)
 #' @noRd
-
 calculate_posterior_means <- function(eap, wle = NULL, pv, waves, npv) {
   MEAN <- list()
   MEAN[["eap"]] <- lapply(eap, function(x) {
@@ -37,8 +39,10 @@ calculate_posterior_means <- function(eap, wle = NULL, pv, waves, npv) {
 #' @param pv list of data.frames; contains completed bgdata and pvs
 #' @param waves character vector; assessment waves ("_wx", "_wy")
 #' @param npv numeric; number of plausible values
+#'
+#' @return list of posterior variances for eaps (list of numeric vectors), wles
+#' (numeric vector), and pvs (list of numeric vectors)
 #' @noRd
-
 calculate_posterior_variances <- function(eap, wle = NULL, pv, waves, npv) {
   VAR <- list()
   VAR[["eap"]] <- lapply(eap, function(x) {

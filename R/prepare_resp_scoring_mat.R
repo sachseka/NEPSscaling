@@ -8,6 +8,8 @@
 #' @param SC character; starting cohort ("SCx")
 #' @param domain character; competence domain (e.g., "RE", "MA")
 #'
+#' @return list of updated response data.frame (polytomous categories collapsed
+#' according to main scaling) and Q matrix
 #' @noRd
 prepare_resp_q_longitudinal <- function(PCM, resp, items, waves, SC, domain) {
   Q <- create_loading_matrix_q_longitudinal(SC, domain, items)
@@ -25,6 +27,19 @@ prepare_resp_q_longitudinal <- function(PCM, resp, items, waves, SC, domain) {
   list(resp = resp, Q = Q)
 }
 
+#' apply half scoring for polytomous items to Q matrix
+#'
+#' @param SC character; starting cohort ("SCx")
+#' @param domain character; competence domain (e.g., "RE", "MA")
+#' @param i integer; index for assessment wave
+#' @param Q list of matrices; one for each assessment waves, design matrices
+#' @param items list of character vectors; one for each assessment wave,
+#' response item names
+#' @param ind list of character vectors; one for each assessment wave, polytomous
+#' response item names
+#'
+#' @return updated Q (list of design matrices)
+#' @noRd
 half_score_q_matrix <- function(SC, domain, i, Q, items, ind) {
   if (SC == "SC4" & domain == "SC" & i == 1) {
     Q[[i]][which(items[[i]] %in% ind[[1]]), ] <- 2 / 3
@@ -43,6 +58,8 @@ half_score_q_matrix <- function(SC, domain, i, Q, items, ind) {
 #' @param SC character; starting cohort ("SCx")
 #' @param domain character; competence domain (e.g., "RE", "MA")
 #'
+#' @return list of updated response data.frame (polytomous categories collapsed
+#' according to main scaling) and B design array
 #' @noRd
 prepare_resp_b_cross <- function(resp, items, waves, SC, domain) {
   resp <- collapse_categories_pcm(
@@ -54,6 +71,19 @@ prepare_resp_b_cross <- function(resp, items, waves, SC, domain) {
   list(resp = resp, B = B)
 }
 
+#' apply half scoring for polytomous items to B array
+#'
+#' @param SC character; starting cohort ("SCx")
+#' @param domain character; competence domain (e.g., "RE", "MA")
+#' @param B numeric array; see TAM for detailed description; first dimension
+#' contains response variables
+#' @param items list of character vectors; one for each assessment wave,
+#' response item names
+#' @param ind list of character vectors; one for each assessment wave, polytomous
+#' response item names
+#'
+#' @return updated B array
+#' @noRd
 half_score_b_array <- function(SC, domain, waves, B, items, ind) {
   if (SC == "SC4" & domain == "SC" & waves == "_w1") {
     B[which(items %in% ind[[1]]), , ] <-

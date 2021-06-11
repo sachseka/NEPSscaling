@@ -6,8 +6,8 @@
 #' @param waves_ character vector; assessment waves ("wx", "wy")
 #' @param w numeric; current wave
 #'
+#' @return numeric scalar linking term corrected to conform to the SUF WLEs
 #' @noRd
-
 correct_linking_term <- function(term, SC, domain, waves_, w) {
   # estimated WLE means around 0 (as befitting the model),
   # estimated correlations with SUF >> 0.95

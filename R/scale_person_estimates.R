@@ -1,15 +1,18 @@
 #' Re-scale plausible values to fit linked distributions:
 #' The mean difference of the longitudinal sample must be the linking constant
-#' @param pv plausible values
-#' @param wle Warm's weighted maximum likelihood estimate
+#' @param pv list of data.frames; plausible values with completed background data
+#' @param wle data.frame; Warm's weighted maximum likelihood estimate
 #' @param eap list of data.frames; expected a posteriori point estimate
-#' @param SC starting cohort
-#' @param domain competence domain
-#' @param waves all waves for a specific SC/domain
-#' @param long_IDs for SC6/RE contains longitudinal subsamples for
+#' @param SC string; starting cohort ("SCx")
+#' @param domain string; competence domain (e.g. "RE", "IC")
+#' @param waves string vector; all waves for a specific SC/domain
+#' (e.g. c("_w1", "_w3"))
+#' @param long_IDs list of IDs; for SC6/RE contains longitudinal subsamples for
 #' original and refreshment samples separately; else contains sample IDs for
 #' time points 1 and 2 (index 1), 2 and 3 (index 2), 3 and 4 (index 3) asf.
 #'
+#' @return list of pv, eap and wle; each data.frame's estimates have been linked,
+#' i.e., shifted in the mean to belong to the same scale
 #' @noRd
 
 scale_person_estimates <- function(pv, wle, eap, SC, domain, waves, long_IDs) {
@@ -55,16 +58,17 @@ scale_person_estimates <- function(pv, wle, eap, SC, domain, waves, long_IDs) {
 
 #' Re-scale plausible values to fit linked distributions for SC6
 #' (incl. refreshment sample)
-#' @param pv plausible values
-#' @param wle Warm's weighted maximum likelihood estimate
-#' @param eap expected a posteriori point estimate
-#' @param SC starting cohort
-#' @param domain competence domain
-#' @param wave all waves for a specific SC/domain
-#' @param long_IDs for SC6/RE contains longitudinal subsamples for
+#' @param pv list of data.frames; plausible values with completed background data
+#' @param wle data.frame; Warm's weighted maximum likelihood estimate
+#' @param eap list of data.frames; expected a posteriori point estimate
+#' @param SC string; starting cohort ("SCx")
+#' @param domain string; competence domain (e.g. "RE", "IC")
+#' @param long_IDs list of IDs; for SC6/RE contains longitudinal subsamples for
 #' original and refreshment samples separately; else contains sample IDs for
 #' time points 1 and 2 (index 1), 2 and 3 (index 2), 3 and 4 (index 3) asf.
 #'
+#' @return list of pv, eap and wle; each data.frame's estimates have been linked,
+#' i.e., shifted in the mean to belong to the same scale
 #' @noRd
 
 rescale_sc6_reading <- function(SC, domain, long_IDs, eap, pv, wle) {
@@ -76,7 +80,18 @@ rescale_sc6_reading <- function(SC, domain, long_IDs, eap, pv, wle) {
 }
 
 
-
+#' Calculate link term
+#' from link constant and means of each assessment wave
+#'
+#' @param MEAN list of vector of means (structure: MEAN$competence_estimate$wave)
+#' @param SC string; starting cohort ("SCx")
+#' @param domain string; competence domain (e.g. "RE", "IC")
+#' @param waves_ string vector; all waves for a specific SC/domain
+#' (e.g. c("w1", "w3"))
+#' @param w index for the current assessment wave
+#'
+#' @return list of link terms for pv, eap, wle
+#' @noRd
 calculate_link_terms <- function(MEAN, SC, domain, waves_, w) {
   term <- list()
   if (SC == "SC6" & domain == "RE") {
@@ -115,6 +130,20 @@ calculate_link_terms <- function(MEAN, SC, domain, waves_, w) {
   term
 }
 
+
+#' Re-scale plausible values to fit linked distributions:
+#' The mean difference of the longitudinal sample must be the linking constant
+#' @param pv list of data.frames; plausible values with completed background data
+#' @param wle data.frame; Warm's weighted maximum likelihood estimate
+#' @param eap list of data.frames; expected a posteriori point estimate
+#' @param term list of link terms for eap, wle, pv
+#' @param w index of current assessment wave
+#' @param waves string vector; all waves for a specific SC/domain
+#' (e.g. c("_w1", "_w3"))
+#'
+#' @return list of pv, eap and wle; each data.frame's estimates have been linked,
+#' i.e., shifted in the mean to belong to the same scale
+#' @noRd
 apply_linking <- function(eap, pv, wle, term, waves, w) {
   for (i in seq(length(eap))) {
     eap[[i]][, paste0("eap", waves[w])] <-
@@ -130,6 +159,20 @@ apply_linking <- function(eap, pv, wle, term, waves, w) {
   list(eap = eap, pv = pv, wle = wle)
 }
 
+
+#' Re-scale plausible values to fit linked distributions:
+#' The mean difference of the longitudinal sample must be the linking constant
+#' @param pv list of data.frames; plausible values with completed background data
+#' @param wle data.frame; Warm's weighted maximum likelihood estimate
+#' @param eap list of data.frames; expected a posteriori point estimate
+#' @param term list of link terms for eap, wle, pv
+#' @param long_IDs list of IDs; for SC6/RE contains longitudinal subsamples for
+#' original and refreshment samples separately; else contains sample IDs for
+#' time points 1 and 2 (index 1), 2 and 3 (index 2), 3 and 4 (index 3) asf.
+#'
+#' @return list of pv, eap and wle; each data.frame's estimates have been linked,
+#' i.e., shifted in the mean to belong to the same scale
+#' @noRd
 apply_linking_resc6 <- function(eap, pv, wle, term, long_IDs) {
   for (i in seq(length(eap))) {
     eap[[i]][eap[[i]][["ID_t"]] %in% long_IDs[["w3"]], "eap_w9"] <-

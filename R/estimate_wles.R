@@ -4,6 +4,7 @@
 #' @param waves character vector; assessment waves ("_wx", "_wy")
 #' @param mod tam.obj; estimated irt model
 #'
+#' @return list of WLE data.frame, and WLE reliability (numeric) per wave
 #' @noRd
 
 estimate_wles <- function(longitudinal, waves, mod) {

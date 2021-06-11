@@ -4,8 +4,9 @@
 #' @param domain String representation of current competency domain
 #' @param items list of item names per wave
 #'
+#' @return list of loading matrices Q (one for each assessment wave, with as
+#' many rows as there are items in the model)
 #' @noRd
-
 create_loading_matrix_q_longitudinal <- function(SC, domain, items) {
   Q <- list()
   for (l in seq(length(items))) {

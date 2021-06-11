@@ -8,8 +8,9 @@
 #' @param items_not_reached data.frame; number of items not reached per person
 #' @param min_valid numeric; minimum number of required responses per person
 #'
+#' @return list of original data, bgdata and ID_t (all data.frames with same
+#' number of rows)
 #' @noRd
-
 pre_process_background_data <- function(bgdata, data, include_nr,
                                         items_not_reached, min_valid) {
   if (!is.null(bgdata)) {
@@ -28,6 +29,16 @@ pre_process_background_data <- function(bgdata, data, include_nr,
 }
 
 
+#' remove test takers with less than min_valid valid responses OR add missing
+#' test takers to response data if min_valid == 0
+#'
+#' @param bgdata data.frame or NULL; contains background data and ID_t
+#' @param data data.frame; xTargetCompetencies
+#' @param min_valid numeric; minimum number of required responses per person
+#'
+#' @return list of original data, bgdata (all data.frames with same number of
+#' rows -- either more if min_valid == 0 or less otherwise)
+#' @noRd
 adjust_for_min_value <- function(min_valid, bgdata, data) {
   if (min_valid > 0) {
     # keep only those with competence data in background data
@@ -45,6 +56,13 @@ adjust_for_min_value <- function(min_valid, bgdata, data) {
   list(bgdata = bgdata, data = data)
 }
 
+#' add missing test takers to bgdata
+#'
+#' @param bgdata data.frame or NULL; contains background data and ID_t
+#' @param data data.frame; xTargetCompetencies
+#'
+#' @return updated bgdata data.frame
+#' @noRd
 substitute_missing_persons_in_bgdata <- function(bgdata, data) {
   # append subjects in response data who are not present in background data
   if (nrow(bgdata) < nrow(data)) {
@@ -59,6 +77,12 @@ substitute_missing_persons_in_bgdata <- function(bgdata, data) {
   bgdata
 }
 
+#' remove columns from bgdata if they are completely NA
+#'
+#' @param bgdata data.frame or NULL; contains background data and ID_t
+#'
+#' @return updated bgdata data.frame
+#' @noRd
 remove_columns_without_data_from_bgdata <- function(bgdata) {
   if (any(colSums(!is.na(bgdata)) == 0)) {
     vars <- paste(names(bgdata)[which(colSums(!is.na(bgdata)) == 0)],
@@ -70,6 +94,16 @@ remove_columns_without_data_from_bgdata <- function(bgdata) {
   bgdata
 }
 
+#' add not-reached proxy to bgdata
+#'
+#' @param bgdata data.frame or NULL; contains background data and ID_t
+#' @param ID_t data.frame; contains only ID_t
+#' @param include_nr logical; whether not-reached missings are to be used
+#' as processing time proxies
+#' @param items_not_reached data.frame; number of items not reached per person
+#'
+#' @return updated bgdata data.frame
+#' @noRd
 add_not_reached_to_bgdata <- function(bgdata, ID_t, items_not_reached,
                                       include_nr) {
   if (include_nr) {

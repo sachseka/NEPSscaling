@@ -9,8 +9,9 @@
 #' @param bgdata data.frame or NULL; background data
 #' @param ID_t data.frame; ID_t of test takers (only column)
 #'
+#' @return list of position data.frame, rotation indicator, original data.frame,
+#' resp data.frame, ID_t data.frame and bgdata data.frame
 #' @noRd
-
 get_test_rotation_info_cross_sec <- function(rotation, data, SC, wave,
                                              domain, resp, bgdata, ID_t) {
   position <- create_facet(data, SC, wave, domain)
@@ -28,6 +29,15 @@ get_test_rotation_info_cross_sec <- function(rotation, data, SC, wave,
 }
 
 
+#' test rotation / testlet position for cross-sectional estimation
+#'
+#' @param data data.frame; xTargetCompetencies etc.
+#' @param SC character; starting cohort ("SCx")
+#' @param wave character; wave of assessment ("wx")
+#' @param domain character; abbr. of competence domain (e.g. "MA")
+#'
+#' @return position data.frame also containing ID_t
+#' @noRd
 create_facet <- function(data, SC, wave, domain) {
   position <- data[, "ID_t", drop = FALSE]
   # construct facet to correct for rotation design
@@ -58,10 +68,32 @@ create_facet <- function(data, SC, wave, domain) {
   position
 }
 
+
+#' test rotation / testlet position for cross-sectional estimation
+#'
+#' @param rotation logical; whether test rotation is to be considered
+#' @param position data.frame; position indicator + ID_t
+#'
+#' @return boolean whether rotation is still to be considered
+#' @noRd
 adjust_rotation_indicator <- function(rotation, position) {
   rotation & length(unique(position[["position"]])) > 1
 }
 
+
+#' test rotation / testlet position for cross-sectional estimation
+#'
+#' @param rotation logical; whether test rotation is to be considered
+#' @param data data.frame; xTargetCompetencies etc.
+#' @param resp data.frame; response data + ID_t
+#' @param bgdata data.frame or NULL; background data
+#' @param ID_t data.frame; ID_t of test takers (only column)
+#' @param position data.frame; position indicator + ID_t
+#'
+#' @return list of position data.frame, original data.frame,
+#' resp data.frame, ID_t data.frame and bgdata data.frame; the latters' rows
+#' are filtered to conform to the position data.frame
+#' @noRd
 adjust_data_with_rotation_info <- function(data, resp, ID_t, bgdata, position) {
   data <- data[data[["ID_t"]] %in% position[["ID_t"]], , drop = FALSE]
   resp <- resp[resp[["ID_t"]] %in% position[["ID_t"]], , drop = FALSE]

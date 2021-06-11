@@ -1,7 +1,7 @@
 #' set pvs etc. of persons with not enough valid information to NA
 #' cross-sectional case
 #'
-#' @param pv list of data.frames; contains the background data and
+#' @param pv list of data.frames; contains the completed background data and
 #' estimated pv
 #' @param eap list of data.frames; contains expected a posteriori estimates
 #' @param wle data.frame; contains weighted maximum likelihood estimates
@@ -9,6 +9,8 @@
 #' @param min_valid numeric; minimum number of required valid responses
 #' @param npv numeric; number of plausible values to be estimated
 #'
+#' @return list of pv, eap and wle; in each data.frame, persons with less than
+#' min_valid responses have been set to NA
 #' @noRd
 
 set_not_enough_valid_resp_NA <- function(pv, eap, wle,
@@ -39,15 +41,18 @@ set_not_enough_valid_resp_NA <- function(pv, eap, wle,
 #' longitudinal case
 #'
 #' @param npv numeric; number of plausible values to be estimated
-#' @param eap data.frame; contains expected a posteriori estimates
+#' @param eap list of data.frames; contains expected a posteriori estimates
 #' @param wle data.frame; contains weighted maximum likelihood estimates
 #' @param valid_responses_per_person data.frame; valid responses per person
-#' with one column per wave
+#' with one column per assessment wave
 #' @param min_valid numeric; minimum number of required valid responses
 #' @param waves character vector; contains assment waves ("_wx", "_wy", ...)
-#' @param datalist list of data.frames; contains the background data and
-#' estimated pvs
+#' @param datalist list of data.frames; contains the completed background data
+#' and estimated pvs
 #'
+#' @return list of datalist, eap and wle; in each data.frame, persons with less
+#' than  min_valid responses have been set to NA. This has been performed for
+#' each assessment wave independently
 #' @noRd
 
 set_not_enough_valid_resp_NA_long <- function(npv, waves, eap, wle, min_valid,

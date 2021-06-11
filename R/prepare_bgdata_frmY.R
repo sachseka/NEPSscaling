@@ -1,11 +1,12 @@
 #' Prepare bgdata and frmY
 #'
 #' @param imp list of imputed data sets
-#' @param i index
-#' @param frmY formula if imputation is unnecessary
+#' @param i index for imputations
+#' @param frmY formula for latent regression
 #'
+#' @return list of completed background data (may be NULL) and regression
+#' formula for latent regression
 #' @noRd
-
 prepare_bgdata_frmY <- function(imp, i, frmY) {
   if (!is.null(imp)) {
     bgdatacom <- imp[[i]]

@@ -17,8 +17,11 @@
 #' @param frmY latent regression formula
 #' @param variance vector of latent variances
 #'
+#' @return list of list of eaps, list of regression coefficients (data.frame
+#' with waves as columns), list of pvs (one list per imputation with one
+#' data.frame per PV), vector of EAP.rel, matrix of info criteria (matrix with
+#' AIC and BIC in the rows and waves in the columns), vector of variances
 #' @noRd
-
 post_process_cross_tam_results <- function(mod, npv, control, imp,
                                            bgdatacom, eap, i,
                                            EAP.rel, regr.coeff, pvs,
@@ -41,6 +44,17 @@ post_process_cross_tam_results <- function(mod, npv, control, imp,
        info_crit = info_crit, variance = variance)
 }
 
+#' reformate cross-sectional PVs
+#'
+#' @param pvs list of one list per imputation containing a data.frame per PV
+#' @param tmp_pvs list of raw PV imputations (containing npv data.frames with
+#' PVs and completed background data)
+#' @param bgdata data.frame or NULL
+#' @param npv integer; number of plausible values to estimate
+#' @param i integer; index for imputations
+#'
+#' @return updated list of one list per imputation containing a data.frame per PV
+#' @noRd
 reformat_cross_tmp_pvs <- function(pvs, tmp_pvs, bgdata, npv, i) {
   pvs[[i]] <- lapply(tmp_pvs, function(x) {
     x[, -which(colnames(x) == "pweights")]
@@ -53,6 +67,23 @@ reformat_cross_tmp_pvs <- function(pvs, tmp_pvs, bgdata, npv, i) {
   pvs
 }
 
+
+#' gather all parameters for output (without PVs)
+#'
+#' @param mod estimated TAM model
+#' @param bgdata completed background data set
+#' @param eap list of eap values (data.frames)
+#' @param i current iteration over background data imputations
+#' @param EAP.rel vector of eap reliability values
+#' @param regr.coeff list of regression coefficients of latent regression
+#' @param info_crit matrix; AIC, BIC
+#' @param frmY latent regression formula
+#' @param variance vector of latent variances
+#'
+#' @return list of list of eaps, list of regression coefficients (data.frame
+#' with waves as columns), vector of EAP.rel, matrix of info criteria (matrix with
+#' AIC and BIC in the rows and waves in the columns), vector of variances
+#' @noRd
 gather_additional_parameters_cross <- function(eap, mod, EAP.rel, regr.coeff,
                                                info_crit, i, bgdata, frmY,
                                                variance) {
@@ -107,12 +138,16 @@ gather_additional_parameters_cross <- function(eap, mod, EAP.rel, regr.coeff,
 #' @param regr.coeff list of regression coefficients of latent regression
 #' @param tmp_bgdata background data (can have fewer columns than bgdata)
 #' @param waves character vector; assessment waves ("_wx", "_wy")
-#' @param info_crit list; AIC, BIC
+#' @param info_crit list of matrices; AIC, BIC
 #' @param frmY latent regression formula
 #' @param variance list of latent variances
 #'
+#' @return list of list of eaps, list of regression coefficients (data.frame
+#' with waves as columns), list of pvs (one list per imputation with one
+#' data.frame per PV), vector of EAP.rel, list of matrices of info criteria
+#' (matrix with AIC and BIC in the rows and waves in the columns), list of
+#' vector of variances
 #' @noRd
-
 post_process_long_tam_results <- function(mod, npv, control, imp,
                                           bgdatacom, eap, i, j,
                                           EAP.rel, regr.coeff, tmp_bgdata,
@@ -130,6 +165,26 @@ post_process_long_tam_results <- function(mod, npv, control, imp,
        variance = res$variance)
 }
 
+
+#' gather parameters (longtiduinal, except PVs)
+#'
+#' @param mod estimated TAM model
+#' @param bgdata completed background data set
+#' @param eap list of eap values (data.frames)
+#' @param i current iteration over background data imputations
+#' @param j current iteration over assessment waves
+#' @param EAP.rel list of eap reliability values
+#' @param regr.coeff list of regression coefficients of latent regression
+#' @param waves character vector; assessment waves ("_wx", "_wy")
+#' @param info_crit list of matrices; AIC, BIC
+#' @param frmY latent regression formula
+#' @param variance list of latent variances
+#'
+#' @return list of list of eaps, list of regression coefficients (data.frame
+#' with waves as columns), vector of EAP.rel, list of matrices of info criteria
+#' (matrix with AIC and BIC in the rows and waves in the columns), list of
+#' vector of variances
+#' @noRd
 gather_additional_parameters_long <- function(eap, mod, EAP.rel, regr.coeff,
                                               info_crit, i, j, waves, bgdata,
                                               frmY, variance) {

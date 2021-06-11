@@ -1,17 +1,19 @@
 #' Get mean value for linking longitudinal scales
 #'
-#' @param SC starting cohort
-#' @param domain competence domain
-#' @param long_IDs contains sample IDs for the earlier and later time
-#' points
-#' @param eap expected a posteriori point estimates (containing ID_t)
-#' @param wle1 weighted maximum likelihood estimate at earlier time point
+#' @param SC String; starting cohort ("SCx")
+#' @param domain String; competence domain (e.g., "MA", "IC")
+#' @param long_IDs list of IDs (for SC6 reading) or numeric vector; contains
+#' sample IDs for the earlier and later time points
+#' @param eap list of data.frames; expected a posteriori point estimates
 #' (containing ID_t)
-#' @param wle2 weighted maximum likelihood estimate at later time point
+#' @param wle1 data.frame; weighted maximum likelihood estimate at earlier time point
 #' (containing ID_t)
-#' @param waves character; waves of longitudinal competence assessment
-#' @param w current wave of assessment
-#' @return the means of the current two waves
+#' @param wle2 data.frame; weighted maximum likelihood estimate at later time point
+#' (containing ID_t) or NULL for SC6 reading
+#' @param waves character; waves of longitudinal competence assessment (e.g.,
+#' c("_w1", "_w3"))
+#' @param w integer; current wave of assessment
+#' @return the means of the current two waves in a list for eap, wle, pv
 #'
 #' @noRd
 

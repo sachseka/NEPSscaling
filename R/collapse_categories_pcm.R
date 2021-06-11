@@ -6,8 +6,9 @@
 #' @param wave String representation of current wave of test assessment
 #' @param domain String representation of current competency domain
 #'
+#' @return updated resp data.frame with polytomous items collapsed according to
+#' main scaling
 #' @noRd
-
 collapse_categories_pcm <- function(resp, SC, wave, domain) {
   if (SC == "SC6") {
     if (domain == "RE") {

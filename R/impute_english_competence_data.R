@@ -5,6 +5,7 @@
 #' @param SC character; starting cohort ("SCx")
 #' @param wave character; assessment wave ("wx")
 #'
+#' @return response data.frame with imputed item responses
 #' @noRd
 
 impute_english_competence_data <- function(resp, SC, wave) {

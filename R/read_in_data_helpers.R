@@ -1,4 +1,13 @@
-
+#' determine file path to data to be imported
+#'
+#' @param path character string; path to SUF data provided by user
+#' @param SC character string; starting cohort ("SCx")
+#' @param domain charachter string; competence domain (e.g., "RE", "MA")
+#' @param school logical; indicator whether the data to be imported is school
+#' identifiers (not competence data0)
+#'
+#' @return path to file as a character string
+#' @noRd
 determine_file_path <- function(path, SC, domain, school = FALSE) {
   files <- list.files(path = path)
   if (school) {
@@ -14,6 +23,15 @@ determine_file_path <- function(path, SC, domain, school = FALSE) {
   filepath
 }
 
+#' create appropriate error message for data import
+#'
+#' @param filepath character string; path to SUF data completed by the package
+#' @param filetype character string; file format of SUF data ("SPSS" or "Stata")
+#' @param school logical; indicator whether the data to be imported is school
+#' identifiers (not competence data0)
+#'
+#' @return error message for school identifier or competence data
+#' @noRd
 create_error_msg <- function(filepath, filetype, school = FALSE) {
   if (school) {
     return(paste0(
@@ -27,6 +45,17 @@ create_error_msg <- function(filepath, filetype, school = FALSE) {
   )
 }
 
+#' import data
+#'
+#' @param filepath character string; path to SUF data completed by the package
+#' @param filetype character string; file format of SUF data ("SPSS" or "Stata")
+#' @param error_msg character string; error message for data import
+#' @param school logical; indicator whether the data to be imported is school
+#' identifiers (not competence data0)
+#'
+#' @return data.frame of competence (with custom values for missing values) OR
+#' school identifier data (with missing values set to NA)
+#' @noRd
 import_data <- function(filetype, filepath, error_msg, school = FALSE) {
   if (filetype == "sav") {
     data <-

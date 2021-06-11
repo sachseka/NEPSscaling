@@ -4,6 +4,7 @@
 #' @param SC character; starting cohort ("SCx")
 #' @param domain character; abbr. of competence domain (e.g. "MA")
 #'
+#' @return data.frame containing ID_t and and testlet position indicator; or NULL
 #' @noRd
 
 get_rotation_change_info_longitudinal <- function(SC, domain, data) {

@@ -8,6 +8,9 @@
 #' @param wle data.frame; estimated weighted maximum likelihood estimates
 #' @param eap list of data.frames; estimated expected a posteriori values
 #' @param pv list of data.frames; estimated plausible values
+#'
+#' @return list of eaps (list of data.frames), wle (data.frame), pvs (list of
+#' data.frames) corrected for change in test positions
 #' @noRd
 correct_for_changed_test_rotation <- function(SC, domain, position, wle, eap, pv) {
   res <- set_correction_term(SC, domain, nrow(eap[[1]]), position)
@@ -19,6 +22,16 @@ correct_for_changed_test_rotation <- function(SC, domain, position, wle, eap, pv
   res
 }
 
+#' correction term
+#'
+#' @param SC character; starting cohort ("SCx")
+#' @param domain character; abbr. of competence domain (e.g. "MA")
+#' @param position data.frame; contains the test rotation for each person
+#' @param n_eap integer vector; number of test takers
+#'
+#' @return list of correction term (numeric), position indicator (pos) of test
+#' takers with changed rotation, wave to be corrected in
+#' @noRd
 set_correction_term <- function(SC, domain, n_eap, position) {
   if (SC == "SC4") {
     # correct longitudinal values for change in rotation design
@@ -55,6 +68,24 @@ set_correction_term <- function(SC, domain, n_eap, position) {
   list(correction = correction, pos = pos, wave = wave)
 }
 
+
+#' in some starting cohorts, the test rotation (e.g. MA-RE and RE-MA) was changed
+#' in later assessments (e.g. only MA-RE). In the longitudinal case, this change
+#' needs to be corrected for the position effect due to fatigue etc.
+#'
+#' @param pos integer; position indicator for test takers with changed rotation
+#' design
+#' @param wave character; wave to be corrected in
+#' @param correction numeric (matrix); contains correction term for test takers
+#' with changed rotation design
+#' @param wle data.frame; estimated weighted maximum likelihood estimates
+#' @param eap list of data.frames; estimated expected a posteriori values
+#' @param pv list of data.frames; estimated plausible values
+#' @param position data.frame; contains the test rotation for each person
+#'
+#' @return list of eaps (list of data.frames), wle (data.frame), pvs (list of
+#' data.frames) corrected for change in test positions
+#' @noRd
 apply_correction_for_changed_test_rotation <- function(pos, wave, correction,
                                                        wle, eap, pv, position) {
   if (!is.null(wle)) {
@@ -65,14 +96,14 @@ apply_correction_for_changed_test_rotation <- function(pos, wave, correction,
   }
   eap <- lapply(eap, function(x) {
     x[position[["ID_t"]] %in% x[["ID_t"]] &
-        position[["position"]] %in% pos, paste0("eap_", wave)] <- 
+        position[["position"]] %in% pos, paste0("eap_", wave)] <-
       x[position[["ID_t"]] %in% x[["ID_t"]] &
           position[["position"]] %in% pos, paste0("eap_", wave)] + correction
     x
   })
   pv <- lapply(pv, function(x) {
     x[position[["ID_t"]] %in% x[["ID_t"]] &
-              position[["position"]] %in% pos, paste0("PV_", wave)] <- 
+              position[["position"]] %in% pos, paste0("PV_", wave)] <-
       x[position[["ID_t"]] %in% x[["ID_t"]] &
           position[["position"]] %in% pos, paste0("PV_", wave)] + correction
     x

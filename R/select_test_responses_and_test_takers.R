@@ -7,6 +7,9 @@
 #' @param wave character; wave of test ("wx")
 #' @param min_valid numeric; minimum number of valid test responses per person
 #'
+#' @return list of response data.frame (a list with one data.frame for each
+#' assessment in the longitudinal case) and xTargetCompetencies; only participants
+#' with min_valid valid responses are returned
 #' @noRd
 
 select_test_responses_and_test_takers <- function(longitudinal, SC, domain,
@@ -49,6 +52,17 @@ select_test_responses_and_test_takers <- function(longitudinal, SC, domain,
 }
 
 
+#' actual selection of items and test takers
+#'
+#' @param SC character; starting cohort ("SCx")
+#' @param domain character; abbr. for competence domain (e.g. "MA", "RE")
+#' @param data data.frame; xTargetCompetencies
+#' @param wave character; wave of test ("wx")
+#' @param min_valid numeric; minimum number of valid test responses per person
+#'
+#' @return response data.frame; only participants with min_valid valid responses
+#' are returned
+#' @noRd
 select_data <- function(data, SC, domain, wave, min_valid) {
   resp <- data[, c("ID_t", item_labels[[SC]][[domain]][[wave]])]
   resp <- resp[rowSums(!is.na(resp[, -1])) >= min_valid, ]
@@ -56,6 +70,18 @@ select_data <- function(data, SC, domain, wave, min_valid) {
   resp
 }
 
+
+#' selection of subsample in SC6 reading (cross)
+#'
+#' before items and test takers are selected, the respective subsample is
+#' extracted
+#'
+#' @param data data.frame; xTargetCompetencies
+#' @param wave character; wave of test ("wx")
+#'
+#' @return response data.frame; only participants with min_valid valid responses
+#' are returned
+#' @noRd
 select_correct_cross_sc6_reading_subsample <- function(data, wave) {
   if (wave == "w3") {
     data <- data[data[["wave_w3"]] == 1, ]
@@ -65,6 +91,16 @@ select_correct_cross_sc6_reading_subsample <- function(data, wave) {
   data
 }
 
+
+#' aggregation of individual ST items to PC items
+#'
+#' they were published in their sub-item form in the SUF instead of as PC items
+#'
+#' @param resp data.frame; xTargetCompetencies
+#'
+#' @return response data.frame with aggregated items; individual items are
+#' dropped
+#' @noRd
 aggregate_scientific_thinking_items <- function(resp) {
   names(resp)[which(names(resp) == "stg12cmt06_c")] <- "stg12mt06_c"
   names(resp)[which(names(resp) == "stg12cpd03_c")] <- "stg12pd03_c"

@@ -17,13 +17,15 @@
 #' @param control List of control variables for plausible values estimation
 #'   algorithm
 #' @param npv Integer value fo number of plausible values to be returned by
-#'   `NEPScaling::plausible_values()`
+#'   `NEPSscaling::plausible_values()`
 #' @param exclude list of vectors (named after the waves); contains
 #' variables that are NOT to be used in the background model of the specified
 #' wave
 #'
+#' @return list of list of eap data.frames, list of pvs (one list per imputation
+#' with one data.frame per PV), list of TAM model, vector of EAP.rel, matrix
+#' of regression coefficients, vector of variances, matrix of info criteria
 #' @noRd
-
 estimate_cross_rasch_uncorrected <- function(bgdata, imp, resp,
                                              waves, frmY = NULL,
                                              ID_t, type, domain,
@@ -41,13 +43,13 @@ estimate_cross_rasch_uncorrected <- function(bgdata, imp, resp,
       bgdatacom <- res[["bgdatacom"]]
     }
     frmY <- res[["frmY"]]
-    
+
     # extract bgdata specific for wave
     if (!is.null(exclude)) {
       bgdatacom <- extract_bgdata_variables(bgdatacom, exclude, waves, NULL)
       frmY <- create_formula(bgdatacom)
     }
-    
+
     # estimate IRT model
     mod <- list()
 

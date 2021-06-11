@@ -3,10 +3,11 @@
 #' @param longitudinal logical indicating type of estimation
 #' @param SC starting cohort; string
 #' @param domain competence domain; string
-#' @param wave
+#' @param wave character string of wave ("wx"); important for cross-sectional
+#' case
 #'
+#' @return character vector of assessment waves per SC and domain of form "_wx"
 #' @noRd
-
 create_waves_vars <- function(longitudinal, SC, domain, wave) {
   # create auxiliary waves variable for longitudinal estimation
   if (longitudinal) {

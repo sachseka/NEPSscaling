@@ -5,6 +5,8 @@
 #' @param npv numeric; number of plausible values
 #' @param pvs list of data.frames; contains completed bgdata and pvs
 #'
+#' @return list of npv data.frames named after the nested combination of which
+#' imputation and which PV
 #' @noRd
 
 extract_correct_number_of_pvs <- function(bgdata, control, npv, pvs) {

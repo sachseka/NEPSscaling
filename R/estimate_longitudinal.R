@@ -4,7 +4,7 @@
 #' @param bgdata Background data given by user (either NULL or a data.frame)
 #' @param imp Imputed background data (either NULL if is.null(bgdata) or no
 #'   missing data is in background data)
-#' @param resp List of matrices of item responses given by test takers
+#' @param resp List of data.frames of item responses given by test takers
 #' @param waves Waves in which the competencies have been assessed (Strings in
 #'   the form "_wX")
 #' @param frmY Formula detailing how the background data is to be used for
@@ -18,11 +18,13 @@
 #' @param control List of control variables for plausible values estimation
 #'   algorithm
 #' @param npv Integer value fo number of plausible values to be returned by
-#'   `NEPScaling::plausible_values()`
+#'   `NEPSscaling::plausible_values()`
 #' @param exclude list of vectors (named after the waves); contains
 #' variables that are NOT to be used in the background model of the specified
 #' wave
 #'
+#' @return list of various constructs related to the estimation, e.g. PVs,
+#' information criteria and regression coefficients
 #' @noRd
 
 estimate_longitudinal <- function(bgdata, imp, frmY = NULL, resp, PCM, ID_t,

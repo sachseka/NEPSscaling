@@ -4,6 +4,8 @@
 #' @param SC character; starting cohort ("SCx")
 #' @param domain character; abbr. of competence domain (e.g. "MA")
 #'
+#' @return data.frame with columns denoting the DIF group membership of the
+#' participants
 #' @noRd
 
 get_item_split_info <- function(SC, domain, data) {

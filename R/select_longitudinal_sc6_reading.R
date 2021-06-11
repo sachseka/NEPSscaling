@@ -5,6 +5,7 @@
 #' @param domain character; abbr. of competence domain (e.g., "RE")
 #' @param min_valid numeric; minimum number of required valid responses
 #'
+#' @return list of response data.frames for the three reading measurements
 #' @noRd
 
 select_longitudinal_sc6_reading <- function(data, SC, domain, min_valid) {

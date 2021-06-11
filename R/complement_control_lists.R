@@ -5,8 +5,8 @@
 #' @param c_W control list for WLE estimation and return
 #' @param c_T control list for TAM and mice estimation
 #'
+#' @return control list complemented for missing entries
 #' @noRd
-
 complement_control_lists <- function(c_E, c_W, c_T) {
   res <- list()
 

@@ -4,6 +4,7 @@
 #' @param wave String representation of current wave of test assessment
 #' @param domain String representation of current competency domain
 #'
+#' @return charachter vector of polytomous variable names
 #' @noRd
 
 get_indicators_for_half_scoring <- function(SC, domain, wave) {

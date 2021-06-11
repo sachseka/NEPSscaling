@@ -2,7 +2,7 @@
 #'
 #' @param tree rpart object
 #' @param variable string; name of imputed variable
-#' @return ggplot2 plot object
+#' @return string representation as given back by rpart print
 #' @noRd
 
 create_tree_plot <- function(tree, variable) {#, is_factor) {

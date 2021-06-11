@@ -4,10 +4,8 @@
 #' @param resp list of data.frames or data.frames; contains responses and ID_t
 #' @param waves character vector; assessment waves ("_wx", "_wy", ...)
 #'
-#' @return data.frame
-#'
+#' @return data.frame containing ID_t and nvalid per wave
 #' @noRd
-
 calculate_number_of_valid_responses <- function(longitudinal, resp, waves) {
   if (longitudinal) {
     n.valid <-

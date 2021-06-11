@@ -9,8 +9,9 @@
 #' @param imp imputations of bgdata or NULL
 #' @param bgdata data.frame; complete background data or NULL
 #'
+#' @return list of raw PV imputations (containing npv data.frames with PVs and
+#' completed background data)
 #' @noRd
-#'
 impute_pvs <- function(mod, npv, control, bgdata, imp, waves, j) {
     pmod <- TAM::tam.pv(mod,
                         nplausible = npv,

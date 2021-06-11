@@ -1,11 +1,15 @@
 #' If large DIF occurred during the original scaling procedure, items may have
-#' been split accordingly 
+#' been split accordingly
 #' @param testletSetting data.frame; contains info about group memberships
-#' @param resp data.frame; response data
+#' @param resp data.frame in the cross-sectional case; list of data.frames in the
+#' longitudinal case; response data
 #' @param longitudinal logical; whether estimation is to be longitudinal
-#' @param wave character; indicates wave with split in cross-sectional case
-#' because there is no selection prior to here
+#' @param wave character of form "wx" where x denotes the assessment wave;
+#' indicates wave with split in cross-sectional case because there is no
+#' selection prior to here
 #'
+#' @return (in the longitudinal case, a list of) data.frame of responses with
+#' a fixed number of items split by a DIF criterion
 #' @noRd
 split_SC4_math_items <- function(testletSetting, resp, longitudinal, wave) {
   if (longitudinal) {
@@ -85,13 +89,17 @@ split_SC4_math_items <- function(testletSetting, resp, longitudinal, wave) {
 }
 
 #' If large DIF occurred during the original scaling procedure, items may have
-#' been split accordingly 
+#' been split accordingly
 #' @param testletSetting data.frame; contains info about group memberships
-#' @param resp data.frame; response data
+#' @param resp data.frame in the cross-sectional case; list of data.frames in the
+#' longitudinal case; response data
 #' @param longitudinal logical; whether estimation is to be longitudinal
-#' @param wave character; indicates wave with split in cross-sectional case
-#' because there is no selection prior to here
+#' @param wave character of form "wx" where x denotes the assessment wave;
+#' indicates wave with split in cross-sectional case because there is no
+#' selection prior to here
 #'
+#' @return (in the longitudinal case, a list of) data.frame of responses with
+#' a fixed number of items split by a DIF criterion
 #' @noRd
 split_SC2_reading_items <- function(testletSetting, resp, longitudinal, wave) {
   if (longitudinal) {

@@ -5,6 +5,10 @@
 #' @param data data.frame; xTargetCompetencies
 #' @param waves character vector; longitudinal assessment waves ("_wx", ...)
 #'
+#' @return list containing (number of waves) - 1 vectors indicatinng the
+#' belonging to the respective longitudinal subsample for each person (i.e.,
+#' vector 1 contains the indicators for people common to measurement points 1
+#' and 2, vector 2 for people common to MPs 2 and 4 and so on)
 #' @noRd
 
 identify_longitudinal_ids <- function (SC, domain, data, waves) {

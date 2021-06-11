@@ -8,8 +8,9 @@
 #' @param waves character vector c("_wX", "_wY")
 #' @param variance list (long.) / vector (cross.) of latent variances
 #'
+#' @return long: list of data.frames augmented by std. regr., cross: data.frame
+#' augmented by std. regr.
 #' @noRd
-#'
 calculate_standardized_regr_coeff <- function(regr.coeff, datalist,
                                               longitudinal, waves, variance) {
   used_imp <- determine_used_imputations(datalist)
@@ -71,6 +72,15 @@ calculate_standardized_regr_coeff <- function(regr.coeff, datalist,
   regr_coeff_std
 }
 
+
+#' calculate standardized coefficients
+#'
+#' @param b unstandardized coefficient
+#' @param sdX standard deviation of predictor
+#' @param sdY standard deviation of dependent variable
+#'
+#' @return standardized regression coefficient
+#' @noRd
 standardized_coeff <- function(b, sdX, sdY) {
   b * sdX / sdY
 }
