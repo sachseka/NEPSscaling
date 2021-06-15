@@ -390,7 +390,7 @@ shinyUI(
         )
       ),
     ),
-    title = "NEPSscaling",
+    title = HTML("NEPS<em>scaling</em>"),
     tabPanel(
       fluidRow(uiOutput("tab")),
       inverse = FALSE
@@ -401,71 +401,84 @@ shinyUI(
       icon("question-circle"),
       tabPanel(
         "Contact",
-        fluidRow("Contact")
+        fluidRow(
+          column(8,
+                 HTML("If you have any questions or comments regarding NEPS<em>scaling</em>, please contact one of the following:"),
+                 tags$ul(
+                   tags$li("The project Scaling and Test Design of the LIfBi, responsible for developing NEPSscaling: skalierung(at)lifbi.de"),
+                   tags$li("The NEPSforum: https://forum.lifbi.de/"),
+                   tags$li("The Research Data Center: fdz(at)lifbi.de")
+                 )
+         )
+        )
       ),
       tabPanel(
         "Background Information Plausible Values",
         fluidRow(
-          tags$dl(
-            tags$dt("Plausible Values"),
-            tags$dd(
-              tags$ul(
-                tags$li("Estimators for latent constructs such as competencies"),
-                tags$li("Set of random draws out of individual respondent's latent competence distribution"),
-                tags$li("Derived from competence test and respondent characteristics (e.g., gender, socio-economic status)"),
-                tags$li("Uncertainty in random draws reflects uncertainty in competence estimation"),
-                tags$li("Background variables should at least contain all variables used for later analysis"),
-                tags$li("Unbiased on a population level, but biased on the individual level because of respondent information (i.e., group-level information)"),
-                tags$li("Special case of multiple imputation: statistical analyses with plausible values have to be performed accordingly")
-              )
-            )
-          ),
-          tags$img(style="max-width: 500px; width: 40%; height: auto;",
-                   src = "structural_model_pvs.png", alt = "Structural model"),
-          tags$dl(
-            tags$dt("Recommended Reading"),
-            tags$dd(
-              tags$ol(
-                tags$li("Scharl, A., Carstensen, C.H., & Gnambs, T. (2020). Estimating Plausible Values with NEPS Data: An Example Using Reading Competence in Starting Cohort 6 (NEPS Survey Paper No. 71). Bamberg: Leibniz Institute for Educational Trajectories, National Educational Panel Study. doi:10.5157/NEPS:SP71:1.0"),
-                tags$li("von Davier, M., Gonzalez, E., & Mislevy, R. (2009). What are plausible values and why are they useful. IERI Monograph Series, 2, 9–36."),
-                tags$li("Lüdtke, O., & Robitzsch, A. (2017). Eine Einführung in die Plausible-Values-Technik für die psychologische Forschung. Diagnostica, 63(3), 193–205. doi:10.1026/0012-1924/a000175"),
-                tags$li("Rubin, D. B. (1987). Multiple imputation for nonresponse in surveys. doi:10.1002/9780470316696"),
-                tags$li("Mislevy, R. J. (1991). Randomization-based inference about latent variables from complex samples. Psychometrika, 56(2), 177–196. doi:10.1007/BF02294457"),
-                tags$li("Meng, X.-L. (1994). Multiple-imputation inferences with uncongenial sources of input. Statistical Science, 538–558. doi:10.1214/ss/1177010269")
-              )
-            )
+          column(12,
+                 tags$dl(
+                   tags$dt("Plausible Values"),
+                   tags$dd(
+                     tags$ul(
+                       tags$li("Estimators for latent constructs such as competencies"),
+                       tags$li("Set of random draws out of individual respondent's latent competence distribution"),
+                       tags$li("Derived from competence test and respondent characteristics (e.g., gender, socio-economic status)"),
+                       tags$li("Uncertainty in random draws reflects uncertainty in competence estimation"),
+                       tags$li("Background variables should at least contain all variables used for later analysis"),
+                       tags$li("Unbiased on a population level, but biased on the individual level because of respondent information (i.e., group-level information)"),
+                       tags$li("Special case of multiple imputation: statistical analyses with plausible values have to be performed accordingly")
+                     )
+                   )
+                 ),
+                 tags$img(style="max-width: 500px; width: 40%; height: auto;",
+                          src = "structural_model_pvs.png", alt = "Structural model"),
+                 tags$dl(
+                   tags$dt("Recommended Reading"),
+                   tags$dd(
+                     tags$ol(
+                       tags$li("Scharl, A., Carstensen, C.H., & Gnambs, T. (2020). Estimating Plausible Values with NEPS Data: An Example Using Reading Competence in Starting Cohort 6 (NEPS Survey Paper No. 71). Bamberg: Leibniz Institute for Educational Trajectories, National Educational Panel Study. doi:10.5157/NEPS:SP71:1.0"),
+                       tags$li("von Davier, M., Gonzalez, E., & Mislevy, R. (2009). What are plausible values and why are they useful. IERI Monograph Series, 2, 9–36."),
+                       tags$li("Lüdtke, O., & Robitzsch, A. (2017). Eine Einführung in die Plausible-Values-Technik für die psychologische Forschung. Diagnostica, 63(3), 193–205. doi:10.1026/0012-1924/a000175"),
+                       tags$li("Rubin, D. B. (1987). Multiple imputation for nonresponse in surveys. doi:10.1002/9780470316696"),
+                       tags$li("Mislevy, R. J. (1991). Randomization-based inference about latent variables from complex samples. Psychometrika, 56(2), 177–196. doi:10.1007/BF02294457"),
+                       tags$li("Meng, X.-L. (1994). Multiple-imputation inferences with uncongenial sources of input. Statistical Science, 538–558. doi:10.1214/ss/1177010269")
+                     )
+                   )
+                 )
           )
         )
       ),
       tabPanel(
         "Background Information CART",
         fluidRow(
-          tags$dl(
-            tags$dt("Classification and Regression Trees"),
-            tags$dd(
-              tags$ul(
-                tags$li("Background variables for plausible values cannot contain missingness, but non-response is pervasive in large scale assessments and surveys"),
-                tags$li("Multiple imputation as an approach to fill in randomly missing data without introducing further bias"),
-                tags$li("Decision trees (e.g., classification and regression trees, CART) can be used to identify a set of plausible responses for the missing data"),
-                tags$li("Variable with missingness is recursively split into subsets; each subset has to be more homogenous than the superset"),
-                tags$li("Splits are made according to a value on a predictor variable (e.g., being female, being older than X years) until a node purity criterion is reached"),
-                tags$li("Prediction for missing values are drawn by following the tree's branches to its nodes and choosing a value from the node following an algorithm"),
-                tags$li("CART is a non-parametric approach and automatically incorporates non-linear relationships in the predicted and predictor variables")
-              )
-            )
-          ),
-          tags$img(style="max-width: 500px; width: 40%; height: auto;",
-                   src = "binary_tree.png", alt = "Binary decision tree"),
-          tags$dl(
-            tags$dt("Recommended Reading"),
-            tags$dd(
-              tags$ol(
-                tags$li("Scharl, A., Carstensen, C.H., & Gnambs, T. (2020). Estimating Plausible Values with NEPS Data: An Example Using Reading Competence in Starting Cohort 6 (NEPS Survey Paper No. 71). Bamberg: Leibniz Institute for Educational Trajectories, National Educational Panel Study. doi:10.5157/NEPS:SP71:1.0"),
-                tags$li("Aßmann, C., Gaasch, C., Pohl, S., & Carstensen, C. H. (2016). Estimation of plausible values considering partially missing background information: A data augmented MCMC approach. In H.-P. Blossfeld, J. Skopek, J. Maurice, & M. Bayer (Eds.), Methodological Issues of Longitudinal Surveys (pp. 503–521). Springer."),
-                tags$li("Loh, W.-Y. (2011). Classification and regression trees. Wiley Interdisciplinary Reviews: Data Mining and Knowledge Discovery, 1(1), 14–23. doi:10.1002/widm.8"),
-                tags$li("Rubin, D. B. (1987). Multiple imputation for nonresponse in surveys. doi:10.1002/9780470316696")
-              )
-            )
+          column(12,
+                 tags$dl(
+                   tags$dt("Classification and Regression Trees"),
+                   tags$dd(
+                     tags$ul(
+                       tags$li("Background variables for plausible values cannot contain missingness, but non-response is pervasive in large scale assessments and surveys"),
+                       tags$li("Multiple imputation as an approach to fill in randomly missing data without introducing further bias"),
+                       tags$li("Decision trees (e.g., classification and regression trees, CART) can be used to identify a set of plausible responses for the missing data"),
+                       tags$li("Variable with missingness is recursively split into subsets; each subset has to be more homogenous than the superset"),
+                       tags$li("Splits are made according to a value on a predictor variable (e.g., being female, being older than X years) until a node purity criterion is reached"),
+                       tags$li("Prediction for missing values are drawn by following the tree's branches to its nodes and choosing a value from the node following an algorithm"),
+                       tags$li("CART is a non-parametric approach and automatically incorporates non-linear relationships in the predicted and predictor variables")
+                     )
+                   )
+                 ),
+                 tags$img(style="max-width: 500px; width: 40%; height: auto;",
+                          src = "binary_tree.png", alt = "Binary decision tree"),
+                 tags$dl(
+                   tags$dt("Recommended Reading"),
+                   tags$dd(
+                     tags$ol(
+                       tags$li("Scharl, A., Carstensen, C.H., & Gnambs, T. (2020). Estimating Plausible Values with NEPS Data: An Example Using Reading Competence in Starting Cohort 6 (NEPS Survey Paper No. 71). Bamberg: Leibniz Institute for Educational Trajectories, National Educational Panel Study. doi:10.5157/NEPS:SP71:1.0"),
+                       tags$li("Aßmann, C., Gaasch, C., Pohl, S., & Carstensen, C. H. (2016). Estimation of plausible values considering partially missing background information: A data augmented MCMC approach. In H.-P. Blossfeld, J. Skopek, J. Maurice, & M. Bayer (Eds.), Methodological Issues of Longitudinal Surveys (pp. 503–521). Springer."),
+                       tags$li("Loh, W.-Y. (2011). Classification and regression trees. Wiley Interdisciplinary Reviews: Data Mining and Knowledge Discovery, 1(1), 14–23. doi:10.1002/widm.8"),
+                       tags$li("Rubin, D. B. (1987). Multiple imputation for nonresponse in surveys. doi:10.1002/9780470316696")
+                     )
+                   )
+                 )
           )
         )
       )),
