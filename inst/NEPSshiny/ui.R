@@ -51,19 +51,40 @@ shinyUI(
           conditionalPanel(
             condition = "input.conditionedPanels== 1",
             shinyWidgets::dropdownButton(
-              inputId = "input_pv_obj",
-              fileInput(inputId = "import_state",
-                        label = tags$strong("Import pv_obj"),
-                        multiple = FALSE, accept = ".rds"),
+              inputId = "input_bgdata",
+              fileInput(inputId = "import_bgdata",
+                        label = tags$strong("Import background data"),
+                        multiple = FALSE, accept = c(".rds", ".sav", ".dta")),
               tags$span(style = "font-size: 0.75em;",
-                        "Upload size up to 30MB. Accepts '.rds' format."),
-
+                        "Upload size up to 30MB. Accepts '.rds', '.sav', and '.dta' formats."),
+              
               hr(),
-
-              actionButton(inputId = "remove_pv_obj", label =  "Remove pv_obj"),
-
+              
+              actionButton(inputId = "remove_bgdata",
+                           label = "Remove background data"),
+              
               hr(),
-
+              
+              actionButton(inputId = "Display_Bgdata",
+                           label = "Inspect background data"),
+              shinyjs::hidden(
+                selectInput("bgdata_select_cols", "Select columns", choices = "",
+                            multiple = TRUE),
+                textInput("bgdata_filter_rows", "Filter"),
+                selectInput("bgdata_sort_cases", "Sort by", choices = ""),
+                shinyWidgets::prettyCheckbox(
+                  inputId = "bgdata_ascending", label = "Ascending",
+                  status = "primary", value = TRUE, shape = "curve", outline = TRUE
+                )
+              ),
+              
+              circle = FALSE, status = "block",
+              width = "100%",
+              label = "Manage background data"
+            ),
+            hr(),
+            shinyWidgets::dropdownButton(
+              
               tags$strong("Download pv_obj"),
               textInput(
                 "pv_obj_name", label = "Choose file name",
@@ -77,40 +98,19 @@ shinyUI(
               circle = FALSE, status = "block",
               width = "100%",
               label = "Manage pv_obj"
-            ),
+            ,
             hr(),
-            shinyWidgets::dropdownButton(
-              inputId = "input_bgdata",
-              fileInput(inputId = "import_bgdata",
-                        label = tags$strong("Import background data"),
-                        multiple = FALSE, accept = c(".rds", ".sav", ".dta")),
-              tags$span(style = "font-size: 0.75em;",
-                        "Upload size up to 30MB. Accepts '.rds', '.sav', and '.dta' formats."),
-
-              hr(),
-
-              actionButton(inputId = "remove_bgdata",
-                           label = "Remove background data"),
-
-              hr(),
-
-              actionButton(inputId = "Display_Bgdata",
-                           label = "Inspect background data"),
-              shinyjs::hidden(
-                selectInput("bgdata_select_cols", "Select columns", choices = "",
-                            multiple = TRUE),
-                textInput("bgdata_filter_rows", "Filter"),
-                selectInput("bgdata_sort_cases", "Sort by", choices = ""),
-                shinyWidgets::prettyCheckbox(
-                  inputId = "bgdata_ascending", label = "Ascending",
-                  status = "primary", value = TRUE, shape = "curve", outline = TRUE
-                )
-              ),
-
-              circle = FALSE, status = "block",
-              width = "100%",
-              label = "Manage background data"
-            ),
+            inputId = "input_pv_obj",
+            fileInput(inputId = "import_state",
+                      label = tags$strong("Import pv_obj"),
+                      multiple = FALSE, accept = ".rds"),
+            tags$span(style = "font-size: 0.75em;",
+                      "Upload size up to 30MB. Accepts '.rds' format."),
+            
+            hr(),
+            
+            actionButton(inputId = "remove_pv_obj", label =  "Remove pv_obj")),
+            
             hr(),
             shinyWidgets::dropdownButton(
               inputId = "scale_level",
@@ -158,7 +158,7 @@ shinyUI(
                         choices = 1:12,
                         selected = ""
             ),
-            textInput(inputId = "path_to_data", label = "Directory with SUFs",
+            textInput(inputId = "path_to_data", label = "Directory with competence data (SUFs)",
                       value = getwd()),
 
             shinyWidgets::dropdownButton(
@@ -178,38 +178,36 @@ shinyUI(
 
               circle = FALSE, status = "block",
               width = "100%",
-              label = "Output parameters"
+              label = "Customize output parameters"
             ),
             tags$hr(),
             shinyWidgets::dropdownButton(
               inputId = "model_parameters",
               shinyWidgets::prettyCheckbox(
-                inputId = "longitudinal", label = "Longitudinal?",
+                inputId = "longitudinal", label = "Use of longitudinal competence tests?",
                 status = "primary", value = FALSE, shape = "curve", outline = TRUE
               ),
               shinyWidgets::prettyCheckbox(
                 inputId = "rotation",
-                label = tags$text("Consider position of", #br(),
+                label = tags$text("Include position of", #br(),
                                   "competence test?"),
                 status = "primary", value = TRUE, shape = "curve", outline = TRUE
               ),
               shinyWidgets::prettyCheckbox(
                 inputId = "adjust_school_context",
-                label = tags$text("Adjust for school", #br(),
+                label = tags$text("Include proxy for school", #br(),
                                   "context?"),
                 status = "primary", value = TRUE, shape = "curve", outline = TRUE
               ),
-              numericInput("min_valid",
-                           label = "Minimum number of valid answers to competence test",
-                           value = 3, min = 0),
               shinyWidgets::prettyCheckbox(
                 inputId = "include_nr",
-                label = tags$text("Include number of", #br(),
-                                  "not-reached missing", #br(),
-                                  "values as proxy for", #br(),
-                                  "processing speed?"),
+                label = tags$text("Include proxy for processing", #br(),
+                                  "speed?"),
                 status = "primary", value = TRUE, shape = "curve", outline = TRUE
               ),
+              numericInput("min_valid",
+                           label = "Minimum number of valid answers to competence test(s)",
+                           value = 3, min = 0),
               numericInput("seed",
                            label = "Seed for random number generator",
                            value = sample(0:100000, 1),
@@ -233,7 +231,7 @@ shinyUI(
 
               circle = FALSE, status = "block",
               width = "100%",
-              label = "Model parameters"
+              label = "Customize model parameters"
             ),
             tags$hr(),
             shinyWidgets::prettyCheckbox(
@@ -268,7 +266,7 @@ shinyUI(
 
               circle = FALSE, status = "block",
               width = "100%",
-              label = "Plots of plausible values and imputations"
+              label = "Plots for plausible values and imputations"
             ),
             hr(),
             shinyWidgets::dropdownButton(
@@ -303,7 +301,7 @@ shinyUI(
             condition = "input.conditionedPanels==5",
             shinyWidgets::radioGroupButtons("checkGroup3",
                          choices = list(
-                           "Plausible values and imputations" = 1,
+                           "Tables for plausible values and imputations" = 1,
                            "Item parameters" = 2,
                            "Regression weights" = 3
                          ),
@@ -388,7 +386,7 @@ shinyUI(
             id = "conditionedPanels"
           )
         )
-      ),
+      )
     ),
     title = HTML("NEPS<em>scaling</em>"),
     tabPanel(
@@ -399,6 +397,30 @@ shinyUI(
     ## ------------------------------Header-----------------------------------------------------------------
       navbarMenu(
       icon("question-circle"),
+      tabPanel("NEPSscaling", 
+               fluidRow(
+                 column(6, 
+                        tags$dl(
+                          tags$dt("The NEPSscaling package"), 
+                          tags$dd( 
+                            tags$ul(
+                              tags$li("Helps NEPS data users to estimate plausible values for the major competence domains"),
+                              tags$li("The estimation by plausible_values() is based on the psychometric results described in the respective technical reports of the substudies."),
+                              tags$li("To further ensure comparability between the plausible values and the WLEs, any corrections of the WLEs (e.g., for sample dropout, changes in the booklet rotation design, or linking) are acknowledged by the function (see the respective technical reports for potential corrections applied)")
+ )
+                            ))
+                        )
+                 )),
+      tabPanel("Citation", 
+        fluidRow(
+          column(6, 
+                 tags$dl(
+                   tags$dt("Citing the NEPSscaling package"), 
+                   tags$dd("Scharl, A., Carstensen, C. H., & Gnambs, T. (2020). Estimating Plausible Values with NEPS Data: An Example Using Reading Competence in Starting Cohort 6. NEPS Survey Papers. https://doi.org/10.5157/NEPS:SP71:1.0" 
+                     )
+                 )
+        ))),
+      
       tabPanel(
         "Contact",
         fluidRow(
