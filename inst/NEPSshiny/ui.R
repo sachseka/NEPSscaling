@@ -3,12 +3,14 @@ shinyUI(
   navbarPage(id = "navbar",
    theme = bslib::bs_theme(
       bg = "#E8E6F4", fg = "black", primary = "#24195D", secondary = "#1D0E46",
-      "font-size-base" = "1.25rem",
+      "font-size-base" = "1.5rem",
       base_font = bslib::font_google("Open Sans"),
       code_font = bslib::font_google("Open Sans")
-    ),
-    tabPanel(
-      icon("laptop"),
+    ), 
+      tabPanel(
+      fluidRow(
+      column(2, offset = 1, img(height = 50, width = 100, src = "NEPSscaling_Logo_3.png")))
+      ,
       tags$head(
         tags$style(
           HTML(
@@ -301,8 +303,8 @@ shinyUI(
             condition = "input.conditionedPanels==5",
             shinyWidgets::radioGroupButtons("checkGroup3",
                          choices = list(
-                           "Tables for plausible values and imputations" = 1,
-                           "Item parameters" = 2,
+                           "Descriptive tables for plausible values and imputations" = 1,
+                           "Descriptive tables for item parameters" = 2,
                            "Regression weights" = 3
                          ),
                          direction = "vertical"#,
@@ -371,8 +373,13 @@ shinyUI(
                      ),
                      conditionalPanel(
                        condition = "input.checkGroup3==2",
-                       tags$h3("Item difficulties"),
-                       tableOutput("item_difficulties")
+                       tags$h3("Item parameters"),
+                       tableOutput("item_difficulties"),
+                       textInput("difficulties_name", label = "Table name",
+                                 value = paste0("difficulties_",
+                                                gsub(":", "-", gsub(" ", "_", Sys.time())))),
+                       downloadButton(outputId = "download_difficulties",
+                                      label = "Download table")
                      ),
                      conditionalPanel(
                        condition = "input.checkGroup3==3",
@@ -388,7 +395,7 @@ shinyUI(
         )
       )
     ),
-    title = HTML("NEPS<em>scaling</em>"),
+    title = NULL,
     tabPanel(
       fluidRow(uiOutput("tab")),
       inverse = FALSE
@@ -396,10 +403,10 @@ shinyUI(
 
     ## ------------------------------Header-----------------------------------------------------------------
       navbarMenu(
-      icon("question-circle"),
+        tags$i(class = "far fa-question-circle", style="font-size: 36px"),
       tabPanel("NEPSscaling", 
                fluidRow(
-                 column(6, 
+                 column(12, 
                         tags$dl(
                           tags$dt("The NEPSscaling package"), 
                           tags$dd( 
@@ -413,7 +420,7 @@ shinyUI(
                  )),
       tabPanel("Citation", 
         fluidRow(
-          column(6, 
+          column(8, 
                  tags$dl(
                    tags$dt("Citing the NEPSscaling package"), 
                    tags$dd("Scharl, A., Carstensen, C. H., & Gnambs, T. (2020). Estimating Plausible Values with NEPS Data: An Example Using Reading Competence in Starting Cohort 6. NEPS Survey Papers. https://doi.org/10.5157/NEPS:SP71:1.0" 
@@ -504,10 +511,41 @@ shinyUI(
           )
         )
       )),
-    tabPanel(
-      fluidRow(
-        column(1, offset = 1, img(height = 50, width = 100, src = "NEPS_reduziert_RGB_v01.png")),
-        column(1, offset = 5, img(height = 50, width = 55, src = "LIfBi_Logo_solo_RZ.png"))))
-    )
-)
+ tabPanel(
+        column(1, offset = 1, img(height = 40, width = 90, src = "NEPS_reduziert_RGB_v01.png")), 
+        tabPanel("National Educational Panel Study",
+                 fluidRow(
+                   column(12,
+                          tags$dl(
+                            tags$dt("For information about the NEPS, visit the website"),
+                            tags$dd(
+                              tags$ul(
+                                tags$a(href="https://www.neps-data.de/", 
+                                       "German"),
+                                tags$a(href="https://www.neps-data.de/Mainpage", 
+                                       "English")
+                                )))))
+                 ) 
+     ), 
+ tabPanel(
+   fluidRow(column(1, offset = 5, img(height = 40, width = 45, src = "LIfBi_Logo_solo_RZ.png"))), 
+   tabPanel("Leibnitz Institute for Educational Trajectories",
+            fluidRow(
+              column(12,
+                     tags$dl(
+                       tags$dt("For information about the LIfBi, visit the website"),
+                       tags$dd(
+                         tags$ul(
+                           tags$a(href="https://www.lifbi.de/", 
+                                  "German"),
+                           tags$a(href="https://www.lifbi.de/LIfBi-Home", 
+                                  "English")
+                           
+                         )
+                         )))))
+   )  ))
+     
+   
+ 
+  
 

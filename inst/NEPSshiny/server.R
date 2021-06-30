@@ -3,6 +3,8 @@ library(shiny)
 library(xtable)
 
 
+
+
 filter_data <- function(filter_op, filter_var, filter_val, out) {
   switch(filter_op,
     "<" = dplyr::filter(out, .data[[filter_var]] < filter_val),
@@ -762,6 +764,16 @@ shinyServer(function(input, output, session) {
     }
   )
 
+  output$download_difficulties <- downloadHandler(
+    filename = function() {
+      req(input$difficulties_name)
+      paste0(input$difficulties_name, ".tsv")
+    },
+    content = function(file) {
+      write.table(x = difficulties_table(), file = file, sep = "\t",
+                  quote = FALSE, row.names = FALSE)
+    }
+  )
 
   output$download_regression <- downloadHandler(
     filename = function() {
