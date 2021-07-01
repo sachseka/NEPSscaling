@@ -19,7 +19,7 @@ plausible_values(
   include_nr = TRUE,
   verbose = TRUE,
   adjust_school_context = TRUE,
-  exclude_for_wave = NULL,
+  exclude = NULL,
   seed = NULL,
   control = list(EAP = FALSE, WLE = FALSE, ML = list(nmi = 10L, ntheta = 2000,
     normal.approx = FALSE, samp.regr = FALSE, theta.model = FALSE, np.adj = 8, na.grid =
@@ -71,7 +71,7 @@ is TRUE)}
 \item{adjust_school_context}{logical; whether the school context should be
 included in the background models of SC3 and SC4 (the default is TRUE)}
 
-\item{exclude_for_wave}{list; only applies to the longitudinal case. If
+\item{exclude}{vector (cross-sectional) or list (longitudinal). If
 some variables shall be used for one time point, but not the other, the item
 is listed in a character vector for the wave it should NOT be used. E.g.,
 \code{list(w3 = "gender")} excludes the variable gender for wave 3. The

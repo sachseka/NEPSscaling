@@ -7,12 +7,15 @@
 write_pv(pv_obj, path, ext = c("SPSS", "Stata", "Mplus"))
 }
 \arguments{
-\item{pv_obj}{return object of function \code{NEPScaling::plausible_values()}}
+\item{pv_obj}{return object of function \code{NEPSscaling::plausible_values()}}
 
-\item{path}{path to the directory where the plausible values are going to
-be saved to}
+\item{path}{path to the directory to save the plausible values to}
 
-\item{ext}{format (either SPSS, Stata (version 14) or Mplus compatible)}
+\item{ext}{format (either "SPSS", "Stata" (version 14) or "Mplus" compatible)}
+}
+\value{
+A data set per imputed plausible value in the specified format and
+for Mplus a content and variable names file.
 }
 \description{
 Function to write pv_obj to file
@@ -20,7 +23,7 @@ Function to write pv_obj to file
 \examples{
 \dontrun{
 rm(list = ls())
-library(NEPScaling)
+library(NEPSscaling)
 # the pv_obj results was created by plausible_values()
 path <- "chosen/directory/"
 write_pv(results, path, "Mplus")
