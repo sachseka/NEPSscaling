@@ -6,10 +6,10 @@
 #' @format A data frame with 3000 rows and 5 variables:
 #' \describe{
 #'   \item{ID_t}{target IDs}
-#'   \item{age}{age of the subjects; split in younger (1) and older (0)}
-#'   \item{gender}{gender of the subjects, 1 female}
-#'   \item{nbooks}{number of books at home; 1 more than 100}
-#'   \item{migration}{migration background; 1 yes}
+#'   \item{age}{age of the subjects; split in younger (2) and older (1)}
+#'   \item{gender}{gender of the subjects, 1 male, 2 female}
+#'   \item{nbooks}{number of books at home; 1 at most, 2 more than 100}
+#'   \item{migration}{migration background; 1 no, 2 yes}
 #' }
 "bgdata_sc6"
 
@@ -22,9 +22,9 @@
 #' \describe{
 #'   \item{ID_t}{target IDs}
 #'   \item{grade}{grade in German class; from 1 (very good) to 6 (very poor/fail)}
-#'   \item{gender}{gender of the subjects, 1 female}
-#'   \item{nbooks}{number of books at home; 1 more than 100}
-#'   \item{migration}{migration background; 1 yes}
+#'   \item{gender}{gender of the subjects, 1 male, 2 female}
+#'   \item{nbooks}{number of books at home; 1 at most, 2 more than 100}
+#'   \item{migration}{migration background; 1 no, 2 yes}
 #' }
 "bgdata_sc3"
 

@@ -170,9 +170,13 @@
 #'   \item{mag9v121_sc3g12_c}{...}
 #'   \item{mas1d081_sc3g12_c}{...}
 #'   \item{mas1q02s_sc3g12_c}{...}
-#'   \item{mag5_sc1}{simulated math WLE}
-#'   \item{mag7_sc1}{simulated math WLE}
-#'   \item{mag9_sc1}{simulated math WLE}
-#'   \item{mag12_sc1}{simulated math WLE}
+#'   \item{mag5_sc1}{simulated math WLE; cross-sectional}
+#'   \item{mag7_sc1}{simulated math WLE; cross-sectional}
+#'   \item{mag9_sc1}{simulated math WLE; cross-sectional}
+#'   \item{mag12_sc1}{simulated math WLE; cross-sectional}
+#'   \item{mag5_sc1u}{simulated math WLE; longitudinal}
+#'   \item{mag7_sc1u}{simulated math WLE; longitudinal}
+#'   \item{mag9_sc1u}{simulated math WLE; longitudinal}
+#'   \item{mag12_sc1u}{simulated math WLE; longitudinal}
 #' }
 "xTargetCompetencies_sc3"
