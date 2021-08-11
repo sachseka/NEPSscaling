@@ -22,6 +22,7 @@ Imports:
     rlang,
     rpart,
     shiny,
+    shinyjs,
     shinyWidgets,
     bslib,
     psych,

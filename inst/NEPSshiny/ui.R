@@ -28,6 +28,10 @@ shinyUI(
              word-wrap: break-word;
              white-space: normal;
           }
+          .btn-block:hover {
+             color: #E8E6F4;
+             background-color: #24195D;
+          }
           .btn-group-container-sw {
              display: flex;
           }
@@ -35,6 +39,11 @@ shinyUI(
              margin-top: 30px;
              margin-bottom: 30px;
              flex: 1;
+             color: #E8E6F4;
+             background-color: #24195D;
+          }
+          .radiobtn:hover {
+             color: #E8E6F4;
              background-color: #24195D;
           }"
           )
@@ -69,10 +78,12 @@ shinyUI(
               
               actionButton(inputId = "Display_Bgdata",
                            label = "Inspect background data"),
+              tags$span(style = "font-size: 0.75em;",
+                        "The changes affect the display of the background data only."),
               shinyjs::hidden(
                 selectInput("bgdata_select_cols", "Select columns", choices = "",
                             multiple = TRUE),
-                textInput("bgdata_filter_rows", "Filter"),
+                textInput("bgdata_filter_rows", "Filter", placeholder = "e.g., var1 == 1"),
                 selectInput("bgdata_sort_cases", "Sort by", choices = ""),
                 shinyWidgets::prettyCheckbox(
                   inputId = "bgdata_ascending", label = "Ascending",
