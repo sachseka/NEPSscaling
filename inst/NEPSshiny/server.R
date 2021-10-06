@@ -837,17 +837,32 @@ shinyServer(function(input, output, session) {
 
   observeEvent(input$select_starting_cohort, {
     values$domains_for_sc <-  if (input$select_starting_cohort == 1) {
-      c("MA", "CD", "SC")#, "VO")
+      c("Mathematics" = "MA", "Cognitive Development" = "CD", "Science" = "SC")#, "VO")
     } else if (input$select_starting_cohort == 2) {
-      c("MA", "RE", "SC", "IC", "NR", "NT", "ORA", "ORB", "VO", "GR")
+      c("Mathematics" = "MA", "Reading" = "RE", "Science" = "SC", 
+	    "Information and Communication Technology" = "IC", 
+		"Native Russian" = "NR", "Native Turkish" = "NT", 
+		"Orthography A" = "ORA","Orthography B" = "ORB", "Grammar" = "GR",
+        "Vocabulary" = "VO")
     } else if (input$select_starting_cohort == 3) {
-      c("MA", "RE", "SC", "IC", "EF", "NR", "NT", "ST", "ORA", "ORB", "LI")
+      c("Mathematics" = "MA", "Reading" = "RE", "Science" = "SC", 
+	    "Information and Communication Technology" = "IC", 
+		"English as a Foreign Language" = "EF", "Native Russian" = "NR", 
+		"Native Turkish" = "NT", "Scientific Thinking" = "ST", 
+		"Orthography A" = "ORA","Orthography B" = "ORB", 
+		"Listening Comprehension" = "LI")
     } else if (input$select_starting_cohort == 4) {
-      c("MA", "RE", "SC", "IC", "EF", "NR", "NT", "ST")
+      c("Mathematics" = "MA", "Reading" = "RE", "Science" = "SC", 
+	    "Information and Communication Technology" = "IC", 
+		"English as a Foreign Language" = "EF", "Native Russian" = "NR", 
+		"Native Turkish" = "NT", "Scientific Thinking" = "ST")
     } else if (input$select_starting_cohort == 5) {
-      c("MA", "RE", "SC", "IC", "EF", "BA")
+      c("Mathematics" = "MA", "Reading" = "RE", "Science" = "SC", 
+	    "Information and Communication Technology" = "IC", 
+		"English as a Foreign Language" = "EF", "Business Administration" = "BA")
     } else if (input$select_starting_cohort == 6) {
-      c("MA", "RE", "SC", "IC")
+      c("Mathematics" = "MA", "Reading" = "RE", "Science" = "SC", 
+	    "Information and Communication Technology" = "IC")
     }
   })
 
