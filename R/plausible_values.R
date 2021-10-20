@@ -526,8 +526,10 @@ plausible_values <- function(SC,
   variance <- res[["variance"]]
 
   # add standardized regression coefficients
-  regr.coeff <- calculate_standardized_regr_coeff(regr.coeff, datalist,
-                                                  longitudinal, waves, variance)
+  if (!is.null(bgdata)) {
+    regr.coeff <- calculate_standardized_regr_coeff(regr.coeff, datalist,
+                                                    longitudinal, waves, variance)
+  }
 
   # linking of longitudinal plausible values ----------------------------------
 
