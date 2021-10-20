@@ -141,7 +141,7 @@ get_indicators_for_half_scoring <- function(SC, domain, wave) {
                  "efg10002s_sc3g10_c", "efg10008s_sc3g10_c",
                  "efg10098s_sc3g10_c", "efg10075s_sc3g10_c")
       } else if (wave == "w9") {
-        ind <- c("efg10022s_sc3g12_c", "efg12b00s_sc3g12_c", "efg10108s_sc3g12_c")
+        ind <- c("efg12a00s_sc3g12_c", "efg12b00s_sc3g12_c", "efg12c00s_sc3g12_c")#c("efg10022s_sc3g12_c", "efg12b00s_sc3g12_c", "efg10108s_sc3g12_c")
       }
     } else if (domain == "ST") {
       ind <- c("stg12nhs_sc3g12_c", "stg12egs_sc3g12_c", "stg12mts_sc3g12_c",
