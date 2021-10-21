@@ -667,6 +667,9 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
         resp[["mag9r14s_c"]][resp[["mag9r14s_c"]] == 2] <- 1
         resp[["mag9r14s_c"]][resp[["mag9r14s_c"]] == 3] <- 2
         resp[["mag9r14s_c"]][resp[["mag9r14s_c"]] == 4] <- 3
+      } else if (wave == "w9") {
+        resp[["mas1q02s_sc3g12_c"]][resp[["mas1q02s_sc3g12_c"]] %in% c(1, 2, 3)] <- 0
+        resp[["mas1q02s_sc3g12_c"]][resp[["mas1q02s_sc3g12_c"]] == 4] <- 1
       }
     } else if (domain == "RE"){
       if (wave == "w1") {
@@ -732,37 +735,37 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
         # resp[["scg6103s_c"]][resp[["scg6103s_c"]] == 2] <- 0
         # resp[["scg6103s_c"]][resp[["scg6103s_c"]] == 3] <- 0
         # resp[["scg6103s_c"]][resp[["scg6103s_c"]] == 4] <- 1
-        # 
+        #
         # resp[["scg6142s_c"]][resp[["scg6142s_c"]] == 1] <- 0
         # resp[["scg6142s_c"]][resp[["scg6142s_c"]] == 2] <- 0
         # resp[["scg6142s_c"]][resp[["scg6142s_c"]] == 3] <- 0
         # resp[["scg6142s_c"]][resp[["scg6142s_c"]] == 4] <- 1
-        # 
+        #
         # resp[["scg6144s_c"]][resp[["scg6144s_c"]] == 1] <- 0
         # resp[["scg6144s_c"]][resp[["scg6144s_c"]] == 2] <- 0
         # resp[["scg6144s_c"]][resp[["scg6144s_c"]] == 3] <- 0
         # resp[["scg6144s_c"]][resp[["scg6144s_c"]] == 4] <- 1
-        # 
+        #
         # resp[["scg6661s_c"]][resp[["scg6661s_c"]] == 1] <- 0
         # resp[["scg6661s_c"]][resp[["scg6661s_c"]] == 2] <- 1
         # resp[["scg6661s_c"]][resp[["scg6661s_c"]] == 3] <- 2
         # resp[["scg6661s_c"]][resp[["scg6661s_c"]] == 4] <- 3
-        # 
+        #
         # resp[["scg6664s_c"]][resp[["scg6664s_c"]] == 1] <- 0
         # resp[["scg6664s_c"]][resp[["scg6664s_c"]] == 2] <- 0
         # resp[["scg6664s_c"]][resp[["scg6664s_c"]] == 3] <- 0
         # resp[["scg6664s_c"]][resp[["scg6664s_c"]] == 4] <- 1
-        # 
+        #
         # resp[["scg6111s_c"]][resp[["scg6111s_c"]] == 1] <- 0
         # resp[["scg6111s_c"]][resp[["scg6111s_c"]] == 2] <- 0
         # resp[["scg6111s_c"]][resp[["scg6111s_c"]] == 3] <- 0
         # resp[["scg6111s_c"]][resp[["scg6111s_c"]] == 4] <- 1
-        # 
+        #
         # resp[["scg6113s_c"]][resp[["scg6113s_c"]] == 1] <- 0
         # resp[["scg6113s_c"]][resp[["scg6113s_c"]] == 2] <- 0
         # resp[["scg6113s_c"]][resp[["scg6113s_c"]] == 3] <- 1
         # resp[["scg6113s_c"]][resp[["scg6113s_c"]] == 4] <- 2
-        # 
+        #
         # resp[["scg6061s_c"]][resp[["scg6061s_c"]] == 1] <- 0
         # resp[["scg6061s_c"]][resp[["scg6061s_c"]] == 2] <- 0
         # resp[["scg6061s_c"]][resp[["scg6061s_c"]] == 3] <- 0
