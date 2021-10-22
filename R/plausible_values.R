@@ -289,7 +289,7 @@ plausible_values <- function(SC,
   if (!grepl("/$", path)) {
     path <- paste0(path, "/")
   }
-  if (is.null(item_labels[[SC]][[domain]][[wave]])) {
+  if (is.null(item_labels[[domain]][[SC]][[wave]])) {
     stop(paste0(
       "There were no competence tests for ", SC, " ", domain, " ",
       wave, ". Please check the NEPS documentation at https://neps-data.de."
@@ -320,7 +320,7 @@ plausible_values <- function(SC,
   if (min_valid < 0) {
     stop("min_valid must be greater than or equal to 0.", call. = FALSE)
   }
-  if (min_valid >= length(item_labels[[SC]][[domain]][[wave]])) {
+  if (min_valid >= length(item_labels[[domain]][[SC]][[wave]])) {
     stop("min_valid is too high. It excludes all possible test takers.",
          call. = FALSE)
   }
