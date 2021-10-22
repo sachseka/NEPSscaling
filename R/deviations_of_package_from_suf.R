@@ -13,7 +13,7 @@ NEPSscaling (SUF - Package) despite high correlations of the estimates
 Starting Cohort 2:
 - Grammar, wave 3 (cross-sectional): 1.701*
 - Reading, wave 9 (cross-sectional): -0.368
-- Mathematics, wave 9 (longitudinal): -0.237
+- Mathematics, wave 9 (longitudinal): -0.239
 
 Starting Cohort 3:
 - Mathematics, wave 3 (cross-sectional): 0.722*

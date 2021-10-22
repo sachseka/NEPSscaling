@@ -1204,12 +1204,13 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
         resp[["mag4d14s_c"]][resp[["mag4d14s_c"]] == 4] <- 0
         resp[["mag4d14s_c"]][resp[["mag4d14s_c"]] == 5] <- 1
       } else if (wave == "w9") {
-        # TODO: without TR!!!
         resp[["mag7d06s_c"]][resp[["mag7d06s_c"]] %in% c(1, 2, 3)] <- 0
-        resp[["mag7d06s_c"]][resp[["mag7d06s_c"]] %in% c(4, 5)] <- 1
+        resp[["mag7d06s_c"]][resp[["mag7d06s_c"]] == 4] <- 1
+        resp[["mag7d06s_c"]][resp[["mag7d06s_c"]] == 5] <- 2
 
-        resp[["mag7r02s_sc2g7_c"]][resp[["mag7r02s_sc2g7_c"]] %in% c(1, 2)] <- 0
-        resp[["mag7r02s_sc2g7_c"]][resp[["mag7r02s_sc2g7_c"]] == 3] <- 1
+        resp[["mag7r02s_sc2g7_c"]][resp[["mag7r02s_sc2g7_c"]] == 1] <- 0
+        resp[["mag7r02s_sc2g7_c"]][resp[["mag7r02s_sc2g7_c"]] == 2] <- 1
+        resp[["mag7r02s_sc2g7_c"]][resp[["mag7r02s_sc2g7_c"]] == 3] <- 2
       }
     }
   } else if (SC == "SC1") {
