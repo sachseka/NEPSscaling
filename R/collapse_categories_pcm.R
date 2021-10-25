@@ -841,12 +841,13 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
         resp[["icg12060s_sc3g12_c"]][resp[["icg12060s_sc3g12_c"]] %in% 1:3] <- 0
         resp[["icg12060s_sc3g12_c"]][resp[["icg12060s_sc3g12_c"]] == 4] <- 1
         # 9
-        resp[["icg12013s_sc3g12_c"]][resp[["icg12013s_sc3g12_c"]] == 1] <- 0
-        resp[["icg12013s_sc3g12_c"]][resp[["icg12013s_sc3g12_c"]] %in% 2:3] <- 1
+        resp[["icg12013s_sc3g12_c"]][resp[["icg12013s_sc3g12_c"]] %in% 1:2] <- 0
+        resp[["icg12013s_sc3g12_c"]][resp[["icg12013s_sc3g12_c"]] == 3] <- 1
         #10
-        resp[["ica4018s_sc3g12_c"]][resp[["ica4018s_sc3g12_c"]] %in% 2:5] <- 2
-        resp[["ica4018s_sc3g12_c"]][resp[["ica4018s_sc3g12_c"]] %in% 6:7] <- 3
-        resp[["ica4018s_sc3g12_c"]][resp[["ica4018s_sc3g12_c"]] == 8] <- 4
+        resp[["ica4018s_sc3g12_c"]][resp[["ica4018s_sc3g12_c"]] == 1] <- 0
+        resp[["ica4018s_sc3g12_c"]][resp[["ica4018s_sc3g12_c"]] %in% 2:5] <- 1
+        resp[["ica4018s_sc3g12_c"]][resp[["ica4018s_sc3g12_c"]] %in% 6:7] <- 2
+        resp[["ica4018s_sc3g12_c"]][resp[["ica4018s_sc3g12_c"]] == 8] <- 3
         #11
         resp[["icg12016s_sc3g12_c"]][resp[["icg12016s_sc3g12_c"]] %in% 1:2] <- 0
         resp[["icg12016s_sc3g12_c"]][resp[["icg12016s_sc3g12_c"]] == 3] <- 1
@@ -861,17 +862,18 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
         resp[["icg12138s_sc3g12_c"]][resp[["icg12138s_sc3g12_c"]] == 3] <- 1
         resp[["icg12138s_sc3g12_c"]][resp[["icg12138s_sc3g12_c"]] == 4] <- 2
         #23
-        resp[["icg12047s_sc3g12_c"]][resp[["icg12047s_sc3g12_c"]] %in% 1:6] <- 0
-        resp[["icg12047s_sc3g12_c"]][resp[["icg12047s_sc3g12_c"]] == 7] <- 1
-        resp[["icg12047s_sc3g12_c"]][resp[["icg12047s_sc3g12_c"]] == 8] <- 2
-        resp[["icg12047s_sc3g12_c"]][resp[["icg12047s_sc3g12_c"]] == 9] <- 3
-        resp[["icg12047s_sc3g12_c"]][resp[["icg12047s_sc3g12_c"]] == 10] <- 4
+        resp[["icg12047s_sc3g12_c"]][resp[["icg12047s_sc3g12_c"]] %in% 1:2] <- 0
+        resp[["icg12047s_sc3g12_c"]][resp[["icg12047s_sc3g12_c"]] == 3] <- 1
+        resp[["icg12047s_sc3g12_c"]][resp[["icg12047s_sc3g12_c"]] == 4] <- 2
+        resp[["icg12047s_sc3g12_c"]][resp[["icg12047s_sc3g12_c"]] == 5] <- 3
+        resp[["icg12047s_sc3g12_c"]][resp[["icg12047s_sc3g12_c"]] == 6] <- 4
         #25
-        resp[["icg12046s_sc3g12_c"]][resp[["icg12046s_sc3g12_c"]] %in% 1:2] <- 0
-        resp[["icg12046s_sc3g12_c"]][resp[["icg12046s_sc3g12_c"]] == 3] <- 1
-        resp[["icg12046s_sc3g12_c"]][resp[["icg12046s_sc3g12_c"]] == 4] <- 2
-        resp[["icg12046s_sc3g12_c"]][resp[["icg12046s_sc3g12_c"]] == 5] <- 3
-        resp[["icg12046s_sc3g12_c"]][resp[["icg12046s_sc3g12_c"]] == 6] <- 4
+        resp[["icg12046s_sc3g12_c"]][resp[["icg12046s_sc3g12_c"]] == 1] <- 0
+        resp[["icg12046s_sc3g12_c"]][resp[["icg12046s_sc3g12_c"]] == 2] <- 1
+        resp[["icg12046s_sc3g12_c"]][resp[["icg12046s_sc3g12_c"]] == 3] <- 2
+        resp[["icg12046s_sc3g12_c"]][resp[["icg12046s_sc3g12_c"]] == 4] <- 3
+        resp[["icg12046s_sc3g12_c"]][resp[["icg12046s_sc3g12_c"]] == 5] <- 4
+        resp[["icg12046s_sc3g12_c"]][resp[["icg12046s_sc3g12_c"]] == 6] <- 5
         #26
         resp[["ica4021s_sc3g12_c"]][resp[["ica4021s_sc3g12_c"]] %in% 1:4] <- 0
         resp[["ica4021s_sc3g12_c"]][resp[["ica4021s_sc3g12_c"]] == 5] <- 1
@@ -890,20 +892,20 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
         resp[["icg12050s_sc3g12_c"]][resp[["icg12050s_sc3g12_c"]] == 5] <- 1
         resp[["icg12050s_sc3g12_c"]][resp[["icg12050s_sc3g12_c"]] == 6] <- 2
         #30
-        resp[["icg12054s_sc3g12_c"]][resp[["icg12054s_sc3g12_c"]] == 1] <- 0
-        resp[["icg12054s_sc3g12_c"]][resp[["icg12054s_sc3g12_c"]] == 2] <- 1
-        resp[["icg12054s_sc3g12_c"]][resp[["icg12054s_sc3g12_c"]] == 3] <- 2
-        resp[["icg12054s_sc3g12_c"]][resp[["icg12054s_sc3g12_c"]] == 4] <- 3
+        resp[["icg12054s_sc3g12_c"]][resp[["icg12054s_sc3g12_c"]] %in% 1:3] <- 0
+        resp[["icg12054s_sc3g12_c"]][resp[["icg12054s_sc3g12_c"]] == 3] <- 1
+        resp[["icg12054s_sc3g12_c"]][resp[["icg12054s_sc3g12_c"]] == 4] <- 2
         #31
         resp[["icg12109s_sc3g12_c"]][resp[["icg12109s_sc3g12_c"]] == 1] <- 0
         resp[["icg12109s_sc3g12_c"]][resp[["icg12109s_sc3g12_c"]] == 2] <- 1
         resp[["icg12109s_sc3g12_c"]][resp[["icg12109s_sc3g12_c"]] == 3] <- 2
         resp[["icg12109s_sc3g12_c"]][resp[["icg12109s_sc3g12_c"]] == 4] <- 3
         #32
-        resp[["icg12119s_sc3g12_c"]][resp[["icg12119s_sc3g12_c"]] %in% 1:2] <- 0
-        resp[["icg12119s_sc3g12_c"]][resp[["icg12119s_sc3g12_c"]] == 3] <- 1
-        resp[["icg12119s_sc3g12_c"]][resp[["icg12119s_sc3g12_c"]] == 4] <- 2
-        resp[["icg12119s_sc3g12_c"]][resp[["icg12119s_sc3g12_c"]] == 5] <- 3
+        resp[["icg12119s_sc3g12_c"]][resp[["icg12119s_sc3g12_c"]] == 1] <- 0
+        resp[["icg12119s_sc3g12_c"]][resp[["icg12119s_sc3g12_c"]] == 2] <- 1
+        resp[["icg12119s_sc3g12_c"]][resp[["icg12119s_sc3g12_c"]] == 3] <- 2
+        resp[["icg12119s_sc3g12_c"]][resp[["icg12119s_sc3g12_c"]] == 4] <- 4
+        resp[["icg12119s_sc3g12_c"]][resp[["icg12119s_sc3g12_c"]] == 5] <- 4
       }
     } else if (domain == "EF") {
       if (wave == "w7") {
