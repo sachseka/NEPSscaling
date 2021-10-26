@@ -82,6 +82,12 @@ shinyServer(function(input, output, session) {
     updateSelectInput(session, inputId = "variable",
                       choices = names(out$treeplot[[1]]),
                       selected = "")
+    updateSelectInput(session, inputId = "imputation_var_imp",
+                      choices = names(out$treeplot),
+                      selected = "")
+    updateSelectInput(session, inputId = "variable_var_imp",
+                      choices = names(out$treeplot[[1]]),
+                      selected = "")
     updateSelectInput(session, inputId = "fill",
                       choices = unique(c(input$nominal, input$ordinal)),
                       selected = "")
@@ -289,6 +295,12 @@ shinyServer(function(input, output, session) {
     updateSelectInput(session, inputId = "variable",
                       choices = names(out$treeplot[[1]]),
                       selected = "")
+    updateSelectInput(session, inputId = "imputation_var_imp",
+                      choices = names(out$treeplot),
+                      selected = "")
+    updateSelectInput(session, inputId = "variable_var_imp",
+                      choices = names(out$treeplot[[1]]),
+                      selected = "")
     updateSelectInput(session, inputId = "fill",
                       choices = unique(c(input$nominal, input$ordinal)),
                       selected = "")
@@ -428,8 +440,10 @@ shinyServer(function(input, output, session) {
   # ------------------- CREATE VARIABLE IMPORTANCE PLOT ----------------------
 
   variable_importance_plot <- eventReactive(input$variable_importance_plot, {
-    req(values$pv_obj, input$imputation, input$variable)
-    NEPSscaling::display_variable_importance(values$pv_obj, input$imputation, input$variable)
+    req(values$pv_obj, input$imputation_var_imp, input$variable_var_imp)
+    NEPSscaling::display_variable_importance(values$pv_obj,
+                                             input$imputation_var_imp,
+                                             input$variable_var_imp)
   })
   output$variable_importance_plot <- renderPlot(variable_importance_plot())
 
@@ -566,6 +580,12 @@ shinyServer(function(input, output, session) {
                       choices = "",
                       selected = "")
     updateSelectInput(session, inputId = "variable",
+                      choices = "",
+                      selected = "")
+    updateSelectInput(session, inputId = "imputation_var_imp",
+                      choices = "",
+                      selected = "")
+    updateSelectInput(session, inputId = "variable_var_imp",
                       choices = "",
                       selected = "")
     updateSelectInput(session, inputId = "fill",
