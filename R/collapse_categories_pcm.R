@@ -823,7 +823,6 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
       if (wave == "w5") {
         # collapsed in SUF, but still cell frequencies < 200
       } else if (wave == "w9") {
-        # no TR
         #1
         resp[["icg12018s_sc3g12_c"]][resp[["icg12018s_sc3g12_c"]] %in% 1:3] <- 0
         resp[["icg12018s_sc3g12_c"]][resp[["icg12018s_sc3g12_c"]] == 4] <- 1
@@ -888,9 +887,10 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
         resp[["icg12048s_sc3g12_c"]][resp[["icg12048s_sc3g12_c"]] == 4] <- 2
         resp[["icg12048s_sc3g12_c"]][resp[["icg12048s_sc3g12_c"]] == 5] <- 3
         #29
-        resp[["icg12050s_sc3g12_c"]][resp[["icg12050s_sc3g12_c"]] %in% 1:4] <- 0
-        resp[["icg12050s_sc3g12_c"]][resp[["icg12050s_sc3g12_c"]] == 5] <- 1
-        resp[["icg12050s_sc3g12_c"]][resp[["icg12050s_sc3g12_c"]] == 6] <- 2
+        resp[["icg12050s_sc3g12_c"]][resp[["icg12050s_sc3g12_c"]] %in% 1:3] <- 0
+        resp[["icg12050s_sc3g12_c"]][resp[["icg12050s_sc3g12_c"]] == 4] <- 1
+        resp[["icg12050s_sc3g12_c"]][resp[["icg12050s_sc3g12_c"]] == 5] <- 2
+        resp[["icg12050s_sc3g12_c"]][resp[["icg12050s_sc3g12_c"]] == 6] <- 3
         #30
         resp[["icg12054s_sc3g12_c"]][resp[["icg12054s_sc3g12_c"]] %in% 1:3] <- 0
         resp[["icg12054s_sc3g12_c"]][resp[["icg12054s_sc3g12_c"]] == 3] <- 1
@@ -904,7 +904,7 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
         resp[["icg12119s_sc3g12_c"]][resp[["icg12119s_sc3g12_c"]] == 1] <- 0
         resp[["icg12119s_sc3g12_c"]][resp[["icg12119s_sc3g12_c"]] == 2] <- 1
         resp[["icg12119s_sc3g12_c"]][resp[["icg12119s_sc3g12_c"]] == 3] <- 2
-        resp[["icg12119s_sc3g12_c"]][resp[["icg12119s_sc3g12_c"]] == 4] <- 4
+        resp[["icg12119s_sc3g12_c"]][resp[["icg12119s_sc3g12_c"]] == 4] <- 3
         resp[["icg12119s_sc3g12_c"]][resp[["icg12119s_sc3g12_c"]] == 5] <- 4
       }
     } else if (domain == "EF") {
