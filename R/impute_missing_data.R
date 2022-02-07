@@ -12,7 +12,7 @@
 #' @noRd
 
 impute_missing_data <- function(bgdata, verbose, control, nmi) {
-  imp <- frmY <- treeplot <- variable_importance <- NULL
+  imp <- frmY <- treeplot <- variable_importance <- indmis <- NULL
   if (!is.null(bgdata)) {
     if (any(is.na(bgdata))) {
       if (verbose) {
@@ -27,13 +27,13 @@ impute_missing_data <- function(bgdata, verbose, control, nmi) {
       imp <- res$imp
       treeplot <- res$treeplot
       variable_importance <- res$variable_importance
+      indmis <- res$indmis
     } else {
-      imp <- NULL
       frmY <- create_formula(bgdata)
     }
   }
   list(imp = imp, frmY = frmY, bgdata = bgdata, treeplot = treeplot,
-       variable_importance = variable_importance)
+       variable_importance = variable_importance, indmis = indmis)
 }
 
 

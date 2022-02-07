@@ -443,6 +443,7 @@ plausible_values <- function(SC,
   bgdata <- res[["bgdata"]]
   variable_importance <- res[["variable_importance"]]
   treeplot <- res[["treeplot"]]
+  indmis <- res[["indmis"]]
 
   # begin estimation of plausible values --------------------------------------
 
@@ -631,6 +632,7 @@ plausible_values <- function(SC,
   if (!is.null(exclude)) {
     res[["exclude"]] <- exclude
   }
+  res[["indmis"]] <- indmis
   res[["comp_time"]] <- list(
     initial_time = t0,
     input_check = t1 - t0,
