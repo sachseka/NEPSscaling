@@ -14,19 +14,24 @@
 impute_missing_data <- function(bgdata, verbose, control, nmi) {
   imp <- frmY <- treeplot <- variable_importance <- NULL
   if (!is.null(bgdata)) {
-    if (any(is.na(bgdata))) {
-      if (verbose) {
-        message(
-          "Begin multiple imputation of missing background data... ",
-          paste(Sys.time())
-        )
-        flush.console()
-      }
-      res <- CART(X = bgdata, minbucket = control$ML$minbucket,
-                  cp = control$ML$cp, nmi = nmi, verbose = verbose)
-      imp <- res$imp
-      treeplot <- res$treeplot
-      variable_importance <- res$variable_importance
+    if (is.list(bgdata)) {
+      imp <- bgdata
+      bgdata <- bgdata[[1]]
+    } else {
+      if (any(is.na(bgdata))) {
+        if (verbose) {
+          message(
+            "Begin multiple imputation of missing background data... ",
+            paste(Sys.time())
+          )
+          flush.console()
+        }
+        res <- CART(X = bgdata, minbucket = control$ML$minbucket,
+                    cp = control$ML$cp, nmi = nmi, verbose = verbose)
+        imp <- res$imp
+        treeplot <- res$treeplot
+        variable_importance <- res$variable_importance
+    }
     } else {
       imp <- NULL
       frmY <- create_formula(bgdata)
