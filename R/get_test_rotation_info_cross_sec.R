@@ -99,7 +99,7 @@ adjust_data_with_rotation_info <- function(data, resp, ID_t, bgdata, position) {
   resp <- resp[resp[["ID_t"]] %in% position[["ID_t"]], , drop = FALSE]
   ID_t <- ID_t[ID_t[["ID_t"]] %in% position[["ID_t"]], , drop = FALSE]
   if (!is.null(bgdata)) {
-    if (is.list(bgdata)) {
+    if (inherits(bgdata, "list") ) {
       for (i in 1:length(bgdata)) {
         bgdata[[i]] <-
           bgdata[[i]][bgdata[[i]][["ID_t"]] %in% position[["ID_t"]], ,

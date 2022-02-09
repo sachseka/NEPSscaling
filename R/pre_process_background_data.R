@@ -14,7 +14,7 @@
 pre_process_background_data <- function(bgdata, data, include_nr,
                                         items_not_reached, min_valid) {
   if (!is.null(bgdata)) {
-    if (is.list(bgdata)) {
+    if (inherits(bgdata, "list") ) {
       for (i in 1:length(bgdata)) {
         res <- adjust_for_min_value(min_valid, bgdata[[i]], data)
         bgdata[[i]] <- res$bgdata
@@ -31,7 +31,7 @@ pre_process_background_data <- function(bgdata, data, include_nr,
     }
   }
   ID_t <- data[, "ID_t", drop = FALSE]
-  if (is.list(bgdata)) {
+  if (inherits(bgdata, "list") ) {
     for (i in 1:length(bgdata)) {
       bgdata[[i]] <- add_not_reached_to_bgdata(bgdata[[i]], ID_t,
                                                items_not_reached, include_nr)

@@ -328,7 +328,7 @@ plausible_values <- function(SC,
          call. = FALSE)
   }
   if (!is.null(bgdata)) {
-    if (is.list(bgdata)) {
+    if (inherits(bgdata, "list") ) {
       if (length(bgdata) != nmi) {
         stop(paste0(
           "The number of imputed data sets does not equal the specified ",

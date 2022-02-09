@@ -14,7 +14,7 @@
 impute_missing_data <- function(bgdata, verbose, control, nmi) {
   imp <- frmY <- treeplot <- variable_importance <- NULL
   if (!is.null(bgdata)) {
-    if (is.list(bgdata)) {
+    if (inherits(bgdata, "list") ) {
       imp <- bgdata
       bgdata <- bgdata[[1]]
     } else {
@@ -31,10 +31,10 @@ impute_missing_data <- function(bgdata, verbose, control, nmi) {
         imp <- res$imp
         treeplot <- res$treeplot
         variable_importance <- res$variable_importance
-    }
-    } else {
-      imp <- NULL
-      frmY <- create_formula(bgdata)
+      } else {
+        imp <- NULL
+        frmY <- create_formula(bgdata)
+      }
     }
   }
   list(imp = imp, frmY = frmY, bgdata = bgdata, treeplot = treeplot,
