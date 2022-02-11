@@ -47,6 +47,8 @@
 #' (the default is TRUE)
 #' @param seed integer; seed for random number generators in plausible values
 #' estimation
+#' @param returnAll logical; if TRUE all estimated PVs during nested imputation
+#' are returned, otherwise only \code{npv} PVs are returned. Defaults to FALSE.
 #' @param control list of additional options. If \code{EAP = TRUE}, the EAPs
 #' will be returned as well; for \code{WLE = TRUE} WLEs are returned.
 #' Furthermore, additional control options for are collected in the list `ML`.
@@ -238,6 +240,7 @@ plausible_values <- function(SC,
                              adjust_school_context = TRUE,
                              exclude = NULL,
                              seed = NULL,
+                             returnAll = FALSE,
                              control = list(
                                EAP = FALSE, WLE = FALSE,
                                ML = list(
@@ -545,7 +548,9 @@ plausible_values <- function(SC,
   }
 
   # extract correct number of plausible values from pvs object
-  datalist <- extract_correct_number_of_pvs(bgdata, nmi, npv, pvs)
+  res <- extract_correct_number_of_pvs(bgdata, nmi, npv, pvs, returnAll)
+  datalist <- res[["datalist"]]
+  npv <- res[["npv"]]
 
   # keep only those regr. coefficients / EAP reliabilities of kept imputations
   res <- discard_not_used_imputations(datalist, regr.coeff, EAP.rel,
