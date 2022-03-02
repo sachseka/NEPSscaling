@@ -45,9 +45,18 @@ set_correction_term <- function(SC, domain, n_eap, position) {
     # RE: add 0.174 to all participants who took reading second (position == 2)
     # NOTE: might not be necessary because this was done to calculate the link
     # constant!!! TODO
-    correction <- 0.174
-    pos <- 2
-    wave <- "w6"
+    # SC w8: add 0.044 to pos 1, subtract 0.044 from pos 2
+    if (domain == "RE") {
+      correction <- 0.174
+      pos <- 2
+      wave <- "w6"
+    } else if (domain == "SC") {
+      correction <- matrix(0.044, n_eap, 1)
+      correction[position[["position"]] == 2, ] <-
+        -correction[position[["position"]] == 2, ]
+      pos <- c(1, 2)
+      wave <- "w8"
+    }
   } else if (SC == "SC2") {
     # correct longitudinal values for change in rotation design
     # VO: add 0.03 to all participants who took vocab test --> all children (wave 1)

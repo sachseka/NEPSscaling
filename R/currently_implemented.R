@@ -31,7 +31,7 @@ Vocabulary: waves 1, 3 and 5
 Reading: waves 1, 3, 6 and 9
 Math: waves 1, 3, 5 and 9
 ICT: waves 2, 5 and 9
-Science: waves 2, 5 and 9
+Science: waves 2, 5 and 8
 Orthography (A - whole word, B - structural unit): waves 1, 3 and 5
 Native Russian: waves 3 and 6
 Native Turkish: waves 3 and 6

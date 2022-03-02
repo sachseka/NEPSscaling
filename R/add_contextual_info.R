@@ -63,7 +63,7 @@ get_wle_vnames <- function(waves, SC, domain) {
           RE = c("reg5_sc1u", "reg7_sc1u", "reg9_sc1u", "reg12_sc1u"),
           ORA = c("org5_sc1a", "org7_sc1a", "org9_sc1a"),
           ORB = c("org5_sc1b", "org7_sc1b", "org9_sc1b"),
-          SC = c("scg6_sc1", "scg9_sc1u", "scg11_sc1"),
+          SC = c("scg6_sc1", "scg9_sc1u", "scg11_sc1u"),
           IC = c("icg6_sc1u", "icg9_sc1u", "icg12_sc1u"),
           NT = c("ntg7_sc1", "ntg9_sc3g9_sc1"),
           NR = c("nrg7_sc1", "nrg9_sc3g9_sc1"),
