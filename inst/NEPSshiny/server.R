@@ -429,7 +429,7 @@ shinyServer(function(input, output, session) {
   cart_plot <- eventReactive(input$cart_plot, {
     req(values$pv_obj, input$imputation, input$variable)
     tryCatch(
-      NEPSscaling::display_tree(values$pv_obj, input$imputation, input$variable),
+      NEPSscaling::display_imputation_tree(values$pv_obj, input$imputation, input$variable),
       error = function(e) {
         showNotification(e$message, type = "error")
       }
