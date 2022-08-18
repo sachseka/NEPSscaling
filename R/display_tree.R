@@ -13,7 +13,7 @@
 #'
 #' @export
 
-display_tree <- function(pv_obj, imputation, variable) {
+display_imputation_tree <- function(pv_obj, imputation, variable) {
   tree <- pv_obj[["treeplot"]][[imputation]][[variable]]
 
   tree <- strsplit(x = tree, split = "\n")[[1]][-c(1, 2, 4, 5)]
