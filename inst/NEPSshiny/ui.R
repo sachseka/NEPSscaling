@@ -98,31 +98,31 @@ shinyUI(
             hr(),
             shinyWidgets::dropdownButton(
 
-              tags$strong("Download pv_obj"),
+              tags$strong("Download PV object"),
               textInput(
                 "pv_obj_name", label = "Choose file name",
                 value = paste0("pv_obj_", gsub(":", "-", gsub(" ", "_", Sys.time())))
               ),
-              downloadButton("download_pv_obj", label = "Download pv_obj (.rds)"),
+              downloadButton("download_pv_obj", label = "Download PV object(.rds)"),
               selectInput("export_format", label = "Select export format",
                           choices = c("SPSS", "Stata", "Mplus")),
-              downloadButton("export_pv_obj", label = "Export pv_obj"),
+              downloadButton("export_pv_obj", label = "Export PV object"),
 
               circle = FALSE, status = "block",
               width = "100%",
-              label = "Manage pv_obj"
+              label = "Manage plausible value object"
             ,
             hr(),
             inputId = "input_pv_obj",
             fileInput(inputId = "import_state",
-                      label = tags$strong("Import pv_obj"),
+                      label = tags$strong("Import PV object"),
                       multiple = FALSE, accept = ".rds"),
             tags$span(style = "font-size: 0.75em;",
                       "Upload size up to 30MB. Accepts '.rds' format."),
 
             hr(),
 
-            actionButton(inputId = "remove_pv_obj", label =  "Remove pv_obj")),
+            actionButton(inputId = "remove_pv_obj", label =  "Remove PV object")),
 
             hr(),
             shinyWidgets::dropdownButton(
@@ -225,7 +225,7 @@ shinyUI(
                            label = "Seed for random number generator",
                            value = sample(0:100000, 1),
                            min = 0),
-              selectInput(inputId = "exclude1", label = "Variables to exclude from bg data",
+              selectInput(inputId = "exclude1", label = "Variables to exclude from background data (for estimation only)",
                           choices = "", multiple = TRUE),
               shinyjs::hidden(
                 selectInput(inputId = "exclude2",
