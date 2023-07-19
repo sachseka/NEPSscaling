@@ -22,6 +22,7 @@ plausible_values(
   adjust_school_context = TRUE,
   exclude = NULL,
   seed = NULL,
+  returnAll = FALSE,
   control = list(EAP = FALSE, WLE = FALSE, ML = list(ntheta = 2000, normal.approx =
     FALSE, samp.regr = FALSE, theta.model = FALSE, np.adj = 8, na.grid = 5, minbucket =
     5, cp = 1e-04))
@@ -44,7 +45,10 @@ data}
 \item{bgdata}{data frame containing background variables. Categorical
 variables have to be specified as factors. If \code{bgdata = NULL}, plausible
 values are estimated without a background model. Missing data in the
-covariates is imputed using sequential classification and regression trees.}
+covariates is imputed using sequential classification and regression trees.
+If pre-imputed background data is to be used, it has to be formatted as a
+list of \code{nmi} data.frames containing at least ID_t and 1 further variable;
+categorical variables have to be specified as factors as well.}
 
 \item{npv}{numeric; number of plausible values to be estimated; defaults to
 10.}
@@ -85,6 +89,9 @@ wave left. Otherwise, an error will be thrown.}
 
 \item{seed}{integer; seed for random number generators in plausible values
 estimation}
+
+\item{returnAll}{logical; if TRUE all estimated PVs during nested imputation
+are returned, otherwise only \code{npv} PVs are returned. Defaults to FALSE.}
 
 \item{control}{list of additional options. If \code{EAP = TRUE}, the EAPs
 will be returned as well; for \code{WLE = TRUE} WLEs are returned.
