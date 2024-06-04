@@ -18,6 +18,12 @@ create_waves_vars <- function(longitudinal, SC, domain, wave) {
       if (domain == "MA") {
         waves <- c("_w3", "_w9")
       }
+      if (domain == "SC") {
+        waves <- c("_w5","_w14")
+      }
+      if (domain == "IC") {
+        waves <- c("_w5", "_w14")
+      }
     }
     if (SC == "SC5" && domain %in% c("RE", "MA")) {
       waves <- c("_w1", "_w12")
@@ -30,10 +36,10 @@ create_waves_vars <- function(longitudinal, SC, domain, wave) {
          waves <- c("_w1", "_w7", "_w10")
       }
       if (domain == "IC") {
-        waves <- c("_w1", "_w7")
+        waves <- c("_w1", "_w7", "_w14")
       }
       if (domain == "SC") {
-        waves <- c("_w1", "_w5")
+        waves <- c("_w1", "_w5", "_w14")
       }
       if (domain == "EF") {
         waves <- c("_w3", "_w7")
