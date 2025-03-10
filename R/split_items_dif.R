@@ -187,3 +187,116 @@ split_SC2_reading_items <- function(testletSetting, resp, longitudinal, wave) {
   }
   resp
 }
+
+#' If large DIF occurred during the original scaling procedure, items may have
+#' been split accordingly
+#' @param testletSetting data.frame; contains info about group memberships
+#' @param resp data.frame in the cross-sectional case; list of data.frames in the
+#' longitudinal case; response data
+#' @param longitudinal logical; whether estimation is to be longitudinal
+#' @param wave character of form "wx" where x denotes the assessment wave;
+#' indicates wave with split in cross-sectional case because there is no
+#' selection prior to here
+#'
+#' @return (in the longitudinal case, a list of) data.frame of responses with
+#' a fixed number of items split by a DIF criterion
+#' @noRd
+#' 
+#' #split_SC4_science_items <- function(testletSetting, resp, longitudinal, wave) {
+#  if (longitudinal) {
+#    resp[[2]] <- tibble::add_column(resp[[2]],
+#                                    sca51010_sc4a14_c_m = ifelse(
+#                                      !testletSetting[["female"]][
+#                                        testletSetting[["ID_t"]] %in% resp[[2]][["ID_t"]]
+#                                      ], resp[[2]][["sca51010_sc4a14_c"]], NA
+#                                    ),
+#                                    .after = "sca51010_sc4a14_c"
+#    )
+#    resp[[2]] <- tibble::add_column(resp[[2]],
+#                                    sca51010_sc4a14_c_f = ifelse(
+#                                      testletSetting[["female"]][
+#                                        testletSetting[["ID_t"]] %in% resp[[2]][["ID_t"]]
+#                                      ], resp[[2]][["sca51010_sc4a14_c"]], NA
+#                                    ),
+#                                    .after = "sca51010_sc4a14_c_m"
+#    )
+#    resp[[2]][["sca51010_sc4a14_c"]] <- NULL
+#    } else {
+#    if (wave == "w14") {
+#      resp <- tibble::add_column(resp,
+#                                 sca51010_sc4a14_c_m = ifelse(
+#                                   !testletSetting[["female"]][
+#                                     testletSetting[["ID_t"]] %in% resp[["ID_t"]]
+#                                   ], resp[["sca51010_sc4a14_c"]], NA
+#                                 ),
+#                                 .after = "sca51010_sc4a14_c"
+#      )
+#      resp <- tibble::add_column(resp,
+#                                 sca51010_sc4a14_c_f = ifelse(
+#                                   testletSetting[["female"]][
+#                                     testletSetting[["ID_t"]] %in% resp[["ID_t"]]
+#                                   ], resp[["sca51010_sc4a14_c"]], NA
+#                                 ),
+#                                 .after = "sca51010_sc4a14_c_m"
+#      )
+#      resp[["sca51010_sc4a14_c"]] <- NULL
+#      }
+#  }
+#  resp
+#}
+
+#' If large DIF occurred during the original scaling procedure, items may have
+#' been split accordingly
+#' @param testletSetting data.frame; contains info about group memberships
+#' @param resp data.frame in the cross-sectional case; list of data.frames in the
+#' longitudinal case; response data
+#' @param longitudinal logical; whether estimation is to be longitudinal
+#' @param wave character of form "wx" where x denotes the assessment wave;
+#' indicates wave with split in cross-sectional case because there is no
+#' selection prior to here
+#'
+#' @return (in the longitudinal case, a list of) data.frame of responses with
+#' a fixed number of items split by a DIF criterion
+#' @noRd
+#split_SC6_science_items <- function(testletSetting, resp, longitudinal, wave) {
+#  if (longitudinal) {
+#    resp[[2]] <- tibble::add_column(resp[[2]],
+#                                    sca51010_sc6a14_c_m = ifelse(
+#                                      !testletSetting[["female"]][
+#                                        testletSetting[["ID_t"]] %in% resp[[2]][["ID_t"]]
+#                                      ], resp[[2]][["sca51010_sc6a14_c"]], NA
+#                                    ),
+#                                    .after = "sca51010_sc6a14_c"
+#    )
+#    resp[[2]] <- tibble::add_column(resp[[2]],
+#                                    sca51010_sc6a14_c_f = ifelse(
+#                                      testletSetting[["female"]][
+#                                        testletSetting[["ID_t"]] %in% resp[[2]][["ID_t"]]
+#                                     ], resp[[2]][["sca51010_sc6a14_c"]], NA
+#                                    ),
+#                                    .after = "sca51010_sc6a14_c_m"
+#    )
+#    resp[[2]][["sca51010_sc6a14_c"]] <- NULL
+#  } else {
+#    if (wave == "w14") {
+#      resp <- tibble::add_column(resp,
+#                                 sca51010_sc6a14_c_m = ifelse(
+#                                   !testletSetting[["female"]][
+#                                     testletSetting[["ID_t"]] %in% resp[["ID_t"]]
+#                                   ], resp[["sca51010_sc6a14_c"]], NA
+#                                 ),
+#                                 .after = "sca51010_sc6a14_c"
+#      )
+#      resp <- tibble::add_column(resp,
+#                                 sca51010_sc6a14_c_f = ifelse(
+#                                   testletSetting[["female"]][
+#                                     testletSetting[["ID_t"]] %in% resp[["ID_t"]]
+#                                   ], resp[["sca51010_sc6a14_c"]], NA
+#                                 ),
+#                                 .after = "sca51010_sc6a14_c_m"
+#      )
+#      resp[["sca51010_sc6a14_c"]] <- NULL
+#    }
+#  }
+#  resp
+#}

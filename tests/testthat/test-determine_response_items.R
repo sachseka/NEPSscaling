@@ -25,7 +25,7 @@ test_that("determine_response_items: cross-sectional", {
   data <- as.data.frame(
     matrix(data = 0, nrow = 10, ncol = 4)
   )
-  names(data) <- c("sck10420_c", "scg10820_c", "scg30109_c", "scg9611s_c")
+  names(data) <- c("sck10420_c", "scg10820_c", "scg30109_c", "scg9611s_sc2g7_c")
   result <- list(w9 = c(F, F, F, T))
   expect_equal(
     determine_response_items(SC = "SC2", domain = "SC", data = data, wave = "w9", longitudinal = F),

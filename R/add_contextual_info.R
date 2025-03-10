@@ -74,8 +74,8 @@ get_wle_vnames <- function(waves, SC, domain) {
       SC4 = list(
           MA = c("mag9_sc1u", "mag12_sc1u"),
           RE = c("reg9_sc1u", "reg12_sc1u"),
-          SC = c("scg9_sc1u", "scg11_sc1u"),
-          IC = c("icg9_sc1u", "icg12_sc1u"),
+          SC = c("scg9_sc1u", "scg11_sc1u", "sca14_sc1u"),
+          IC = c("icg9_sc1u", "icg12_sc1u", "ica14_sc1u"),
           NT = c("ntg9_sc1u"),
           NR = c("nrg9_sc1u"),
           EF = c("efg10_sc1u", "efg12_sc1u"),
@@ -111,12 +111,12 @@ get_wle_vnames <- function(waves, SC, domain) {
       SC4 = list(
           MA = c(w1 = "mag9_sc1", w7 = "mag12_sc1"),
           RE = c(w2 = "reg9_sc1", w7 = "reg12_sc1"),
-          SC = c(w1 = "scg9_sc1", w5 = "scg11_sc1"),
-          IC = c(w1 = "icg9_sc1", w7 = "icg12_sc1"),
+          SC = c(w1 = "scg9_sc1", w5 = "scg11_sc1", w14 ="sca14_sc1"),
+          IC = c(w1 = "icg9_sc1", w7 = "icg12_sc1", w14 ="ica14_sc1"),
           NT = c(w2 = "ntg9_sc1"),
           NR = c(w2 = "nrg9_sc1"),
           EF = c(w3 = "efg10_sc1", w7 = "efg12_sc1"),
-          ST = c(w7 = "stg12_sc1u")
+          ST = c(w7 = "stg12_sc1")
       )
     )
   )
@@ -140,7 +140,7 @@ get_school_id_data <- function(path) {
   filetype <- tools::file_ext(filepath)
   error_msg <- create_error_msg(filepath, filetype, school = TRUE)
   school_data <- import_data(filetype, filepath, error_msg, school = TRUE)
-  school_data <- dplyr::select(school_data, .data$ID_t, .data$wave, .data$ID_i)
+  school_data <- dplyr::select(school_data, ID_t, wave, ID_i)
   # missing school id: students did not participate in wave/test
   school_data$ID_i[school_data$ID_i < 0] <- NA
   # convert from long into wide format

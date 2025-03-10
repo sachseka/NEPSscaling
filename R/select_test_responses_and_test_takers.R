@@ -18,7 +18,13 @@ select_test_responses_and_test_takers <- function(longitudinal, SC, domain,
   if (longitudinal) {
     if (SC == "SC6" && domain == "RE") {
       resp <- select_longitudinal_sc6_reading(data, SC, domain, min_valid)
-    } else {
+    }
+    if (SC == "SC2" && domain == "SC") {
+      resp <- list()
+      for (i in seq(length(item_labels[[domain]][[SC]])-1)) {
+        resp[[i]] <- select_data(data, SC, domain, wave = waves_[i], min_valid)
+    }}
+    else {
       resp <- list()
       for (i in seq(length(item_labels[[domain]][[SC]]))) {
         resp[[i]] <- select_data(data, SC, domain, wave = waves_[i], min_valid)
@@ -45,9 +51,10 @@ select_test_responses_and_test_takers <- function(longitudinal, SC, domain,
     resp <- select_data(data, SC, domain, wave, min_valid)
     data <- data[data[["ID_t"]] %in% resp[["ID_t"]], ]
     data <- data[order(data[["ID_t"]]), ]
-    if (SC == "SC4" & domain == "ST") {
-      resp <- aggregate_scientific_thinking_items(resp)
-    } else if (SC == "SC2" & domain == "GR" & wave == "w3") {
+    #if (SC == "SC4" & domain == "ST") {
+    # resp <- aggregate_scientific_thinking_items(resp)
+    #}    else
+    if (SC == "SC2" & domain == "GR" & wave == "w3") {
       resp <- aggregate_grammar_items(resp)
     }
     if (SC %in% c("SC3", "SC4") & domain == "EF") {
@@ -106,19 +113,19 @@ select_correct_cross_sc6_reading_subsample <- function(data, wave) {
 #'
 #' @return response data.frame with aggregated items; individual items are
 #' dropped
-#' @noRd
-aggregate_scientific_thinking_items <- function(resp) {
-  names(resp)[which(names(resp) == "stg12cmt06_c")] <- "stg12mt06_c"
-  names(resp)[which(names(resp) == "stg12cpd03_c")] <- "stg12pd03_c"
-  items <-
-    c("stg12nhs_c", "stg12egs_c", "stg12mts_c", "stg12cws_c", "stg12pds_c")
-  for (i in items) {
-    resp[[i]] <- rowSums(resp[, grep(substr(i, 1, 7), names(resp))],
-                         na.rm = TRUE)
-  }
-  resp <- resp[, c("ID_t", items)]
-  resp
-}
+
+#aggregate_scientific_thinking_items <- function(resp) {
+#  names(resp)[which(names(resp) == "stg12cmt06_c")] <- "stg12mt06_c"
+#  names(resp)[which(names(resp) == "stg12cpd03_c")] <- "stg12pd03_c"
+#  items <-
+#    c("stg12nhs_c", "stg12egs_c", "stg12mts_c", "stg12cws_c", "stg12pds_c")
+#  for (i in items) {
+#    resp[[i]] <- rowSums(resp[, grep(substr(i, 1, 7), names(resp))],
+#                         na.rm = TRUE)
+#  }
+#  resp <- resp[, c("ID_t", items)]
+#  resp
+#}
 
 #' aggregation of individual GR items to PC items (SC2)
 #'

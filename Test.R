@@ -1,232 +1,39 @@
-#' Function for estimating plausible values with NEPS competence data and NEPS
-#' scaled item parameters
-#'
-#' @param SC numeric. The starting cohort used for the analysis is indicated by
-#' an integer value (e.g., starting cohort one = 1).
-#' @param domain character. The competence domain of interest is indicated by
-#' the domain abbreviation as used in the variable names (see Fuß, D., Gnambs,
-#' T., Lockl, K., & Attig, M., 2019).
-#' @param wave numeric. The wave of competence testing is indicated by an
-#' integer value (e.g., wave one = 1).
-#' @param path character; file path leading to the location of the competence
-#' data
-#' @param bgdata data frame containing background variables. Categorical
-#' variables have to be specified as factors. If \code{bgdata = NULL}, plausible
-#' values are estimated without a background model. Missing data in the
-#' covariates is imputed using sequential classification and regression trees.
-#' If pre-imputed background data is to be used, it has to be formatted as a
-#' list of \code{nmi} data.frames containing at least ID_t and 1 further variable;
-#' categorical variables have to be specified as factors as well.
-#' @param npv numeric; number of plausible values to be estimated; defaults to
-#' 10.
-#' @param nmi numeric; denotes the number of multiple imputations for missing
-#' covariate data (defaults to 10).
-#' @param min_valid numeric; minimum number of valid responses for a test
-#' takers to be included in the estimation process. Defaults to 3 following NEPS
-#' scaling standards (see Pohl & Carstensen, 2012).
-#' @param longitudinal logical. TRUE indicating that a unidimensional model
-#' per measurement points is to be estimated and subsequently linked to form
-#' longitudinal estimates. Defaults to FALSE.
-#' @param rotation logical. TRUE indicating that the competence scores should
-#' be corrected for the rotation design of the booklets. Defaults to TRUE. If
-#' both longitudinal and rotation are TRUE, test rotation is ignored and the
-#' argument rotation is set to FALSE automatically.
-#' @param include_nr logical; whether the number of not-reached items as a proxy
-#' for processing speed should be included in the background model (the default
-#' is TRUE)
-#' @param adjust_school_context logical; whether the school context should be
-#' included in the background models of SC3 and SC4 (the default is TRUE)
-#' @param exclude vector (cross-sectional) or list (longitudinal). If
-#' some variables shall be used for one time point, but not the other, the item
-#' is listed in a character vector for the wave it should NOT be used. E.g.,
-#' \code{list(w3 = "gender")} excludes the variable gender for wave 3. The
-#' assessment waves can be looked up with \code{currently_implemented()}. Please
-#' note that there has to be at least one background variable per specified
-#' wave left. Otherwise, an error will be thrown.
-#' @param verbose logical; whether progress should be displayed in the console
-#' (the default is TRUE)
-#' @param seed integer; seed for random number generators in plausible values
-#' estimation
-#' @param returnAll logical; if TRUE all estimated PVs during nested imputation
-#' are returned, otherwise only \code{npv} PVs are returned. Defaults to FALSE.
-#' @param control list of additional options. If \code{EAP = TRUE}, the EAPs
-#' will be returned as well; for \code{WLE = TRUE} WLEs are returned.
-#' Furthermore, additional control options for are collected in the list `ML`.
-#' `minbucket` defines the minimum number of observations in any terminal CART
-#' node (defaults to 5), `cp` determines the minimum decrease of overall lack of
-#' fit by each CART split (defaults to 0.0001).
-#'
-#' @return \code{plausible_values()} returns an object of class \code{pv_obj}
-#' containing:
-#' \describe{
-#' \item{SC}{Starting cohort that plausible values were estimated for}
-#' \item{domain}{Competence domain that plausible values were estimated for}
-#' \item{wave}{Wave(s) that plausible values were estimated for}
-#' \item{type}{Whether cross-sectional ("cross") or longitudinal ("long")
-#' plausible values were estimated}
-#' \item{rotation}{In most assessments the position of the competence test was
-#' rotated with another competence domain. If this was the case for the
-#' specific estimation, this variable indicates whether the correction was
-#' applied. Depending on the estimation context, this variable may have been
-#' automatically set by the function and thus differ from user input}
-#' \item{min_valid}{The minimum number of answers a test taker must have given}
-#' \item{n_testtakers}{The number of persons for who plausible values are
-#' estimated (per waves)}
-#' \item{include_nr}{Whether the number of not-reached missing values per
-#' person is to be used as a proxy for processing time}
-#' \item{adjust_school_context}{Whether the WLE competence value mean per school
-#' is to be used to approximate the multi-level structure of the data. Only
-#' applies to cohorts/waves that were assessed in school}
-#' \item{path}{The path leading to the SUF competence data}
-#' \item{valid_responses_per_person}{A \code{data.frame} containing the
-#' \code{ID_t} and the number of valid responses given by the respective
-#' individual}
-#' \item{npv}{The number of plausible values that are returned by the function}
-#' \item{control}{The control variables that were applied to fine-tune the
-#' estimation algorithms}
-#' \item{position}{A \code{data.frame} containing the \code{ID_t} and the
-#' position the respective individual received the testlet in (first or second).
-#' Only applies if a rotated design has been estimated.}
-#' \item{posterior_means}{The overall mean of all persons' abilities for the
-#' EAPs and WLEs (if estimated) as well as across all PVs and per PV
-#' imputation.}
-#' \item{posterior_variances}{The overall variance of all persons' abilities for
-#' the EAPs and WLEs (if estimated) as well as across all PVs and per PV
-#' imputation.}
-#' \item{seed}{Seed for random number generator; if supplied.}
-#' \item{pv}{A list of \code{npv} \code{data.frame}s containing one plausible
-#' value per wave each and the imputed data set that was used to estimate the
-#' plausible value. The data sets are sampled randomly from \code{npv} *
-#' \code{nmi} estimated data sets. Accordingly, some imputations might not be
-#' present in the output data. This extends to reliability estimates and latent
-#' regression coefficients that are also estimated per model / imputed data set.
-#' Additionally, if \code{include_nr} was specified, the background model is
-#' enriched by the number of not reached items (\code{not_reached}) per test
-#' taker as a proxy for response times. Furthermore, if
-#' \code{adjust_school_context} was specified, the background model is enriched
-#' by the average competence per school.}
-#' \item{eap}{A \code{data.frame} containing the \code{ID_t} and the ability
-#' EAP value for the respective individual}
-#' \item{treeplot}{A \code{list} containing the ggplot objects for the
-#' constructed CART trees per imputation}
-#' \item{variable_importance}{A \code{list} containing the variable importance
-#' statistics for the predictor variables per imputation}
-#' \item{EAP_rel}{The EAP reliability is returned for each sampled model}
-#' \item{wle}{A \code{data.frame} containing the \code{ID_t} and the ability
-#' WLE value for the respective individual}
-#' \item{WLE_rel}{The WLE reliability is returned}
-#' \item{regr_coeff}{The regression coefficients of the latent regression of
-#' the ability are returned for each sampled model.}
-#' \item{items}{The fixed item difficulty parameters and the SE per item are
-#' returned as a `data.frame`. The SE and, if rotation == TRUE, position
-#' effect (e.g., position1 signifies the effect of receiving the test in
-#' first position) are estimated by the package.}
-#' \item{comp_time}{The total computation time as well as computation times for
-#' the various steps are returned}
-#' }
-#'
-#' @references Albert, J. H. (1992). Bayesian estimation of normal ogive item
-#' response curves using Gibbs sampling. \emph{Journal of Educational
-#' Statistics}, \emph{17}(3), 251-269.
-#' @references Azur, M. J., Stuart, E. A., Frangakis, C., & Leaf, P. J. (2011).
-#' Multiple imputation by chained equations: what is it and how does it work?
-#' \emph{International Journal of Methods in Psychiatric Research, 20}(1), 40-49.
-#' @references Blossfeld, H.-P., Rossbach, H.-G., & von Maurice,  J. (Eds.)
-#' (2011). Education as a Lifelong Process - The German National Educational
-#' Panel Study (NEPS). \emph{Zeitschrift fuer Erziehungswissenschaft,
-#' Sonderheft 14}.
-#' @references Burgette, L. F., & Reiter, J. P. (2010). Multiple imputation for
-#' missing data via sequential regression trees. \emph{American Journal of
-#' Epidemiology}, \emph{172}(9), 1070-1076.
-#' @references Mislevy, R. J. (1991). Randomization-based inference about latent
-#' variables from complex samples. \emph{Psychometrika, 56}(2), 177-196.
-#' @references Pohl, S., & Carstensen, C. H. (2012). NEPS technical report -
-#' Scaling the data of the competence tests.
-#' @references Scharl, A., Carstensen, C. H., & Gnambs, T. (2020).
-#' \emph{Estimating Plausible Values with NEPS Data: An Example Using Reading
-#' Competence in Starting Cohort 6 (NEPS Survey Paper No. 71)}. Leibniz
-#' Institute for Educational Trajectories, National Educational Panel Study.
-#' https://doi.org/10.5157/NEPS:SP71:1.0
-#' @references Tanner, M. A., & Wong, W. H. (1987). The calculation of posterior
-#' distributions by data augmentation. \emph{Journal of the American Statistical
-#' Association}, \emph{82}(398), 528-549.
-#' @references Weirich, S., Haag, N., Hecht, M., Boehme, K., Siegle, T., &
-#' Luedtke, O. (2014). Nested multiple imputation in large-scale assessments.
-#' \emph{Large-Scale Assessments in Education, 2}(1), 9.
-#'
-#' @examples
-#' \dontrun{
-#' rm(list = ls())
-#' library(NEPSscaling)
-#' library(foreign)
-#' ## LONGITUDINAL ESTIMATION FOR "SC3"
-#' ## read in data object for conditioning variables
-#' data("bgdata_sc3")
-#' ## define path to NEPS competence data
-#' path <- "Usr/NEPS-data/"
-#' setwd(path)
-#' ## save simulated target competencies to path
-#' data("xTargetCompetencies_sc3")
-#' write.dta(
-#'   dataframe = xTargetCompetencies_sc3,
-#'   file = "SC3_xTargetCompetencies_sim.dta"
-#' )
-#' ## save simulated school ids to path
-#' data("CohortProfile_sc3")
-#' write.dta(
-#'   dataframe = CohortProfile_sc3,
-#'   file = "SC3_CohortProfile.dta"
-#' )
-#' ## estimate default number of 10 plausible values
-#' ## note: the example background data is completely observed!
-#' result <- plausible_values(
-#'   SC = 3,
-#'   domain = "MA",
-#'   # longitudinal = TRUE,
-#'   wave = 1,
-#'   bgdata = bgdata_sc3,
-#'   path = path
-#' )
-#'
-#' ## CROSS-SECTIONal ESTIMATION FOR "SC6"
-#' ## read in data object for conditioning variables
-#' data("bgdata_sc6")
-#' ## define path to NEPS competence data
-#' path <- "Usr/NEPS-data/"
-#' setwd(path)
-#' ## save simulated target competencies to path
-#' data("xTargetCompetencies_sc6")
-#' write.dta(
-#'   dataframe = xTargetCompetencies_sc6,
-#'   file = "SC6_xTargetCompetencies_sim.dta"
-#' )
-#' ## estimate default number of 10 plausible values
-#' ## note: the example background data is completely observed!
-#' result <- plausible_values(
-#'   SC = 6,
-#'   domain = "RE",
-#'   wave = 3,
-#'   bgdata = bgdata_sc6,
-#'   path = path
-#' )
-#' }
-#'
-#' @note For an extensive example, see the accompanying NEPS Survey Paper.
-#' The function will only work with NEPS data. To access NEPS data see
-#' https://www.neps-data.de/en-us/datacenter/dataaccess.aspx.
-#'
-#' @importFrom stats as.formula na.omit AIC BIC predict runif model.matrix sd var
-#' @importFrom utils flush.console capture.output
-#' @importFrom rlang .data
-#'
-#' @export
+path<- "Z:/Projektgruppen_(08)/Kompetenzen_BA_Hiwi_(p000012)/Methoden/Plausible Values/SUFs/SC1"
 
+plausible_values(1,"MA",9, path)
+
+
+path<- "Z:/Projektgruppen_(08)/Kompetenzen_BA_Hiwi_(p000012)/Methoden/Plausible Values/SUFs/SC2/"
+
+plausible_values(2,"MA",9, path,bgdata=NULL)
+
+library(haven)
+data <- read_sav("Z:/Projektgruppen_(08)/Kompetenzen_BA_Hiwi_(p000012)/Methoden/Plausible Values/SUFs/SC5/SC5_xTargetCompetencies_D_18-0-0.sav")
+
+resp <- data[, c("ID_t", item_labels[["RE"]][["SC6"]][["w9"]])]
+resp <- resp[rowSums(!is.na(resp[, -1])) >= 3, ]
+resp <- resp[order(resp[["ID_t"]]), ]
+resp
+
+impute_english_competence_data <- function(resp, SC, wave) {
+  resp[is.na(resp)] <- 0
+  dm <- diffMat[["SC4"]][["w3"]][["diff"]][
+    diffMat[["SC4"]][["w3"]][["diff"]][["ID_t"]] %in% resp[["ID_t"]], ]
+  setNA <- diffMat[["SC4"]][["w3"]][["ind_NA"]][
+    diffMat[["SC4"]][["w3"]][["ind_NA"]][["ID_t"]] %in% resp[["ID_t"]], ]
+  resp[, -1] <- resp[, -1] + dm[order(dm[["ID_t"]]), -1]
+  for (i in 2:ncol(resp)) {
+    resp[setNA[[i]], i] <- NA
+  }
+  resp
+}
+
+
+SC="2"
+wave="9"
+domain="RE"
 plausible_values <- function(SC,
-                             domain = c(
-                               "MA", "RE", "SC", "IC", "LI", "EF",
-                               "NR", "NT", "ORA", "ORB", "ST", "BA", "CD",
-                               "GR", "VO"
-                             ),
+                             domain,
                              wave,
                              path,
                              bgdata = NULL,
@@ -237,7 +44,7 @@ plausible_values <- function(SC,
                              min_valid = 3L,
                              include_nr = TRUE,
                              verbose = TRUE,
-                             adjust_school_context = TRUE,
+                             adjust_school_context = FALSE,
                              exclude = NULL,
                              seed = NULL,
                              returnAll = FALSE,
@@ -280,9 +87,9 @@ plausible_values <- function(SC,
 
   # convert SC and wave to character strings to index internal lists more
   # comfortably
-  SC <- paste0("SC", SC)
-  wave <- paste0("w", wave)
-
+  SC <- paste0("SC", 4)
+  wave <- paste0("w", 14)
+  domain <- "SC"
   domain <- toupper(domain)
   domain <- match.arg(domain)
 
@@ -317,7 +124,7 @@ plausible_values <- function(SC,
     ), call. = FALSE)
   }
   if (longitudinal && SC == "SC1" && domain == "MA" && wave == "w9") {
-    stop(paste0("Please note that Starting Cohort 1's maths tests can only ",
+    stop(paste0("Please note that Starting Cohort 1's science tests can only ",
                 "be linked longitudinally up to wave 7. Wave 9 test data does ",
                 "not share any common test information and can, thus, not be ",
                 "connected to previous assessment waves. It can only be ",
@@ -330,18 +137,6 @@ plausible_values <- function(SC,
                 "connected to previous assessment waves. It can only be ",
                 "analysed cross-sectionally."), call. = FALSE)
   }
-  #if (longitudinal && SC == "SC2" && domain == "GR" && wave == "w3") {
-  #  stop(paste0("Please note that Starting Cohort 2's grammar tests cannot ",
-  #              "be linked in this NEPSscaling version (3.1.4) as it depends on SUF version SC2 10-0-0 ",
-  #              "and an error was detected in this SUF version. Therefore, it is not possible to estimate longitudinal PVs using this NEPSscaling version.",
-  #              "The error will be corrected in the next package version."), call. = FALSE)
-  #}
-  #if (longitudinal && SC == "SC2" && domain == "GR" && wave == "w1") {
-  #  stop(paste0("Please note that Starting Cohort 2's grammar tests cannot ",
-  #              "be linked in this NEPSscaling version (3.1.4) as it depends on SUF version SC2 10-0-0 ",
-  #              "and an error was detected in this SUF version. Therefore, it is not possible to estimate longitudinal PVs using this NEPSscaling version.",
-  #              "The error will be corrected in the next package version."), call. = FALSE)
-  #}
   if (min_valid < 0) {
     stop("min_valid must be greater than or equal to 0.", call. = FALSE)
   }
@@ -425,8 +220,8 @@ plausible_values <- function(SC,
   data <- read_in_competence_data(path, SC, domain)
 
   # number of not-reached items as processing time proxy
-  res <- not_reached_as_proxy(include_nr, longitudinal, data, SC, domain, wave,
-                              waves)
+  res <- not_reached_as_proxy(include_nr, longitudinal, data, SC, domain, wave,waves
+                              )
   items_not_reached <- res[["nr"]]
   data <- res[["data"]]
   include_nr <- res[["include_nr"]]
@@ -483,25 +278,24 @@ plausible_values <- function(SC,
     resp <-
       split_SC4_math_items(
         get_item_split_info(SC, domain, data), resp, longitudinal, wave)
-  }#else if (SC == "SC4" && domain == "SC") {
-  #  resp <-
-  #    split_SC4_science_items(
-  #      get_item_split_info(SC, domain, data), resp, longitudinal, wave)
-  #}
-  else if (SC == "SC2" && domain == "RE") {
+  }else if (SC == "SC4" && domain == "SC") {
+    resp <-
+      split_SC4_science_items(
+        get_item_split_info(SC, domain, data), resp, longitudinal, wave)
+  }  else if (SC == "SC2" && domain == "RE") {
     resp <-
       split_SC2_reading_items(
         get_item_split_info(SC, domain, data), resp, longitudinal, wave)
-  }#else if (SC == "SC6" && domain == "SC") {
-  #  resp <-
-  #    split_SC6_science_items(
-  #      get_item_split_info(SC, domain, data), resp, longitudinal, wave)
-  #}
+  }else if (SC == "SC6" && domain == "SC") {
+    resp <-
+      split_SC6_science_items(
+        get_item_split_info(SC, domain, data), resp, longitudinal, wave)
+  }
 
   # multiple imputation of missing covariate data -----------------------------
 
   t2 <- Sys.time()
-  res <- impute_missing_data(bgdata, verbose, control, nmi)
+  res <- impute_missing_data(NULL, verbose, control, nmi)
   imp <- res[["imp"]]
   frmY <- res[["frmY"]]
   bgdata <- res[["bgdata"]]
@@ -519,19 +313,19 @@ plausible_values <- function(SC,
 
   if (longitudinal) {
     res <- estimate_longitudinal(
-      bgdata, imp, frmY = frmY, resp, PCM, ID_t, waves, type, domain, SC,
+      bgdata, imp, frmY = frmY, resp, PCM, ID_t, waves, "cross", domain, SC,
       control, npv, nmi, exclude
     )
   } else {
     if (rotation) {
       if (PCM) {
         res <- estimate_cross_pcm_corrected_for_rotation(
-          bgdata, imp, frmY = frmY, waves, ID_t, resp, type, domain, SC,
+          bgdata, imp, frmY = frmY, waves, ID_t, resp, "cross", domain, SC,
           control, npv, nmi, position, exclude
         )
       } else {
         res <- estimate_cross_rasch_corrected_for_rotation(
-          bgdata, imp, frmY = frmY, resp, position, waves, ID_t, type, domain,
+          bgdata, imp, frmY = frmY, resp, position, waves, ID_t, "cross", domain,
           SC, control, npv, nmi, exclude
         )
       }
@@ -543,7 +337,7 @@ plausible_values <- function(SC,
         )
       } else {
         res <- estimate_cross_rasch_uncorrected(
-          bgdata, imp, resp, waves, frmY = frmY, ID_t, type, domain, SC,
+          bgdata, imp, resp, waves, frmY = frmY, ID_t, "cross", domain, SC,
           control, npv, nmi, exclude
         )
       }
@@ -653,7 +447,7 @@ plausible_values <- function(SC,
   res[["wave"]] <- as.numeric(gsub("_w", "", waves))
   res[["type"]] <- type
   res[["rotation"]] <- ifelse(rotation, "Corrected For Test Position",
-    "No Correction For Test Position"
+                              "No Correction For Test Position"
   )
   res[["min_valid"]] <- min_valid
   res[["include_nr"]] <- include_nr
@@ -711,5 +505,6 @@ plausible_values <- function(SC,
   class(res) <- "pv_obj"
   res
 }
+
 
 

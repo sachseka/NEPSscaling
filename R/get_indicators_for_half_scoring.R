@@ -16,6 +16,8 @@ get_indicators_for_half_scoring <- function(SC, domain, wave) {
         ind <- c("scn6130s_c", "sck1102s_sc1n6_c", "sck1162s_sc1n6_c")
       } else if (wave == "w8") {
         ind <- c("scg1652s_sc1n8_c", "scg1011s_sc1n8_c")
+      }else if (wave == "w10") {
+        ind <- c("scg3131s_sc1n10_c ", "scg3091s_sc1n10_c ")
       }
     } else if (domain == "MA") {
       if (wave == "w5") {
@@ -23,7 +25,7 @@ get_indicators_for_half_scoring <- function(SC, domain, wave) {
       } else if (wave == "w7") {
         ind <- c()
       } else if (wave == "w9") {
-        ind <- c()
+        ind <- c("man9d11s_c", "mag1d09s_sc1n9_c","mag2g12s_sc1n9_c", "man9d03s_c")
       }
     }
   } else if (SC == "SC2") {
@@ -35,9 +37,9 @@ get_indicators_for_half_scoring <- function(SC, domain, wave) {
                  "reg5042s_sc2g4_c", "reg5052s_sc2g4_c", "reg5055s_sc2g4_c")
       } else if (wave == "w9") {
         ind <- c("reg7013s_sc2g7_c", "reg7015s_sc2g7_c", "reg7016s_sc2g7_c",
-                 "reg7023s_sc2g7_c", "reg7024s_sc2g7_c", "reg7024s_sc2g7_c_d",
-                 "reg7026s_sc2g7_c", "reg7033s_sc2g7_c", "reg7033s_sc2g7_c_d",
-                 "reg7045s_sc2g7_c", "reg7045s_sc2g7_c_d", "reg7051s_sc2g7_c",
+                 "reg7023s_sc2g7_c", "reg7024s_sc2g7_c", "reg7024s_sc2g7_c",
+                 "reg7026s_sc2g7_c", "reg7033s_sc2g7_c", "reg7033s_sc2g7_c",
+                 "reg7045s_sc2g7_c", "reg7045s_sc2g7_c", "reg7051s_sc2g7_c",
                  "reg7053s_sc2g7_c", "reg7055s_sc2g7_c", "reg7063s_sc2g7_c",
                  "reg7066s_sc2g7_c", "reg7071s_sc2g7_c", "reg7075s_sc2g7_c")
       }
@@ -176,6 +178,11 @@ get_indicators_for_half_scoring <- function(SC, domain, wave) {
         ind <- c("scg11083s_c", "scg11032s_c", "scg11652s_c", "scg11602s_c",
                  "scg11123s_c", "scs5131s_sc4g11_c")
       }
+      else if (wave == "w14") {
+        ind <- c("scs3643s_sc4a14_c", "sca14051s_c", "sca14101s_c", "sca14021s_c", "sca14121s_c",
+                 "sca14609s_c", "scg11021s_sc4a14_c", "scg11022s_sc4a14_c", "sca5091s_sc4a14_c", "sca14603s_c","sca14071s_c",
+                 "sca14081s_c", "sca14608s_c", "sca14111s_c")
+      }
     } else if (domain == "RE") {
       if (wave == "w2") {
         ind <- c("reg9016s_c", "reg9017s_c", "reg9033s_c", "reg9047s_c")
@@ -210,6 +217,14 @@ get_indicators_for_half_scoring <- function(SC, domain, wave) {
                  "icg12138s_c", "icg12047s_c", "icg12046s_c", "ica5021s_c",
                  "ica5052s_c", "icg12048s_c", "icg12050s_c", "icg12054s_c",
                  "icg12109s_c", "icg12119s_c")
+      }
+      else if (wave == "w14") {
+        ind <- c("ica5052s_sc4a14_c", "icg12018s_sc4a14_c","ica5017s_sc4a14_c","icg12054s_sc4a14_c","ica5015s_sc4a14_c","icg12107s_sc4a14_c",
+                 "ica5050s_sc4a14_c","ica5021s_sc4a14_c","icg12028s_sc4a14_c","icg12138s_sc4a14_c",
+                 "ica5004s_sc4a14_c","icg12047s_sc4a14_c","icg12109s_sc4a14_c",
+                 "ica14s05s_c","ica14s12s_c","ica14s14s_c","ica14s40s_c","ica14s07s_c","ica14s15s_c",
+                 "ica14s21s_c","ica14s63s_c","ica14s08s_c","ica14s16s_c","ica14s60s_c","ica14s64s_c",
+                 "ica14s03s_c","ica14s20s_c")
       }
     } else if (domain == "ST") {
       ind <- c("stg12nhs_c", "stg12egs_c", "stg12mts_c", "stg12cws_c",
@@ -272,13 +287,25 @@ get_indicators_for_half_scoring <- function(SC, domain, wave) {
       if (wave == "w5") {
         ind <- c("sca5652s_c", "sca5091s_c")
       }
+      else if (wave == "w14") {
+        ind <- c("scs3643s_sc4a14_c", "sca14051s_c", "sca14101s_c", "sca14021s_c", "sca14121s_c",
+                 "sca14609s_c", "scg11021s_sc4a14_c", "scg11022s_sc4a14_c", "sca5091s_sc4a14_c", "sca14603s_c","sca14071s_c",
+                 "sca14081s_c", "sca14608s_c", "sca14111s_c")
+      }
     } else if (domain == "IC") {
       if (wave == "w5") {
         ind <- c("ica5004s_c", "ica5017s_c", "ica5018s_c", "ica5015s_c",
                  "ica5016s_c", "ica5020s_c", "ica5050s_c", "ica5047s_c",
                  "ica5021s_c", "ica5052s_c")
       }
-    }
+    else if (wave == "w14") {
+      ind <- c("ica5052s_sc4a14_c", "icg12018s_sc4a14_c","ica5017s_sc4a14_c","icg12054s_sc4a14_c","ica5015s_sc4a14_c","icg12107s_sc4a14_c",
+               "ica5050s_sc4a14_c","ica5021s_sc4a14_c","icg12028s_sc4a14_c","icg12138s_sc4a14_c",
+               "ica5004s_sc4a14_c","icg12047s_sc4a14_c","icg12109s_sc4a14_c",
+               "ica14s05s_c","ica14s12s_c","ica14s14s_c","ica14s40s_c","ica14s07s_c","ica14s15s_c",
+               "ica14s21s_c","ica14s63s_c","ica14s08s_c","ica14s16s_c","ica14s60s_c","ica14s64s_c",
+               "ica14s03s_c","ica14s20s_c")
+    }}
   }
   ind
 }

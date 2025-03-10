@@ -9,7 +9,14 @@
 #' @noRd
 
 get_item_split_info <- function(SC, domain, data) {
-  testletSetting <- NULL
+  #testletSetting <- NULL
+  #if (SC == "SC6" & domain == "SC"){
+  #  testletSetting <- data.frame(
+  #    ID_t = data[["ID_t"]],
+  #    female = ifelse(data[["tx80501"]] %in% 2, TRUE,
+  #                    ifelse(is.na(data[["tx80501"]]), NA, FALSE))
+  #  )
+  #}
   if (SC == "SC4" & domain == "MA") {
     testletSetting <- data.frame(
       ID_t = data[["ID_t"]],
@@ -20,6 +27,10 @@ get_item_split_info <- function(SC, domain, data) {
                       ifelse(is.na(data[["tx80211_w7"]]), NA, FALSE))
     )
   }
+  #if (SC == "SC4" & domain == "SC"){
+  #  #testletSetting<- NEPSscaling:::gender_info_SC4_SC_w14
+  #  testletSetting<-gender_info_SC4_SC_w14
+  #  }
   if (SC == "SC2" & domain == "RE") {
     testletSetting <- data.frame(
       ID_t = data[["ID_t"]],

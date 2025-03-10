@@ -3,7 +3,7 @@ context("reshape_data")
 test_that("imputation == 'all'", {
   indmis <- data.frame(
     ID_t = 1:13,
-    matrix(rep(0:1, 169), nrow = 13, ncol = 13)
+    matrix(rep(0:1, length.out =169), nrow = 13, ncol = 13)
   )
   names(indmis) <- c("ID_t", LETTERS[1:13])
   pv <- data.frame(
@@ -15,6 +15,7 @@ test_that("imputation == 'all'", {
     indmis = indmis,
     pv = replicate(5, pv, simplify = FALSE)
   )
+  names(pv_obj[["pv"]]) <- seq_along(pv_obj[["pv"]])
   result <- data.frame(
     ID_t = rep(1:13, each = 5*13),
     variable = rep(rep(LETTERS[1:13], each = 5), 13),
@@ -28,6 +29,7 @@ test_that("imputation == 'all'", {
   }
   result$missing[sel] <- "imputed"
   result$missing <- as.factor(result$missing)
+
   expect_equivalent(reshape_data(pv_obj, imputation = "all"),
                     result)
 })
@@ -35,7 +37,7 @@ test_that("imputation == 'all'", {
 test_that("imputation == 1:3", {
   indmis <- data.frame(
     ID_t = 1:13,
-    matrix(rep(0:1, 169), nrow = 13, ncol = 13)
+    matrix(rep(0:1, length.out =169), nrow = 13, ncol = 13)
   )
   names(indmis) <- c("ID_t", LETTERS[1:13])
   pv <- data.frame(

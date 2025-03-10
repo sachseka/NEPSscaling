@@ -22,8 +22,8 @@ extract_correct_number_of_pvs <- function(bgdata, nmi, npv, pvs, returnAll) {
         colnames(pvs[[i]][[j]])
       )]
       datalist[[d]] <- datalist[[d]] %>%
-        dplyr::select(.data$ID_t, dplyr::everything()) %>%
-        dplyr::arrange(.data$ID_t)
+        dplyr::select(ID_t, dplyr::everything()) %>%
+        dplyr::arrange(ID_t)
       names(datalist)[d] <- paste0("imp", i, "pv", j)
       d <- d + 1
     }

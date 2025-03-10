@@ -12,8 +12,8 @@ cross-sectional and longitudinal research
 (if multiple waves are implemented).
 
 == SC1 ==
-Math: waves 5 and 7
-Science: waves 6 and 8
+Math: waves 5, 7 and 9
+Science: waves 6, 8 and 10
 Cognitive Development: wave 1
 
 == SC2 ==
@@ -42,8 +42,8 @@ Listening comprehension (German): wave 6
 == SC4 ==
 Reading: waves 2, 7 and 10
 Math: waves 1, 7 and 10
-ICT: waves 1 and 7
-Science: waves 1 and 5
+ICT: waves 1, 7 and 14
+Science: waves 1, 5 and 14
 Native Russian: wave 2
 Native Turkish: wave 2
 English as a foreign language: waves 3 and 7
@@ -60,7 +60,7 @@ English as a foreign language: wave 12
 == SC6 ==
 Reading: waves 3/5 and 9
 Math: waves 3 and 9
-ICT: wave 5
-Science: wave 5\n"
+ICT: wave 5 and 14
+Science: wave 5 and 14\n"
 )
 }

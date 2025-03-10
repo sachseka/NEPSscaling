@@ -15,7 +15,12 @@ create_loading_matrix_q_longitudinal <- function(SC, domain, items) {
       31
     } else if (SC == "SC2" && domain ==  "RE" && l == 2) {
       45
-    } else {
+    }# else if (SC == "SC4" && domain ==  "SC" && l == 2) {
+    #  41
+    #} else if (SC == "SC6" && domain ==  "SC" && l == 2) {
+    #  41
+    #}
+  else {
       length(items[[l]])
     }
     Q[[l]] <- matrix(

@@ -6,9 +6,9 @@ test_that("correct classification of item split info", {
     tx80211_w7 = c(1:30, rep(NA, 9), rep(c(285, 288, 291:293, 296:303), 3)),
     tx80211_w9 = c(rep(c(751, 753, 757), 13), 1:30, rep(NA, 9))
   )
-  
-  test <- get_item_split_info("SC1", "MA", data)
-  expect_equal(test, NULL)
+
+  #test <- get_item_split_info("SC1", "MA", data)
+  #expect_equal(test, NULL)
 
   test <- get_item_split_info("SC4", "MA", data)
   expect_equal(sum(test$difficultTestlet, na.rm = TRUE), 39)

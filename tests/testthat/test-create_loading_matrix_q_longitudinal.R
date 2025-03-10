@@ -10,7 +10,7 @@ test_that("correct dimensions of Q matrix list", {
   # length of list of Qs
   items <- lapply(xsi.fixed$long[["MA"]][["SC1"]], rownames)
   expect_equal(length(create_loading_matrix_q_longitudinal("SC1", "MA", items)),
-               2)
+               3)
   items <- lapply(xsi.fixed$long[["RE"]][["SC2"]], rownames)
   expect_equal(length(create_loading_matrix_q_longitudinal("SC2", "RE", items)),
                2)

@@ -85,9 +85,9 @@ create_waves_vars <- function(longitudinal, SC, domain, wave) {
     }
     if (SC == "SC1") {
       if (domain == "MA") {
-        waves <- c("_w5", "_w7")#, "_w9")
+        waves <- c("_w5", "_w7", "_w9")
       } else if (domain == "SC") {
-        waves <- c("_w6", "_w8")
+        waves <- c("_w6", "_w8", "_w10")
       } else if (domain == "CD") {
         waves <- c("_w1")
       }

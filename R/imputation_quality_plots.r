@@ -65,9 +65,9 @@ stripplot <- function(pv_obj) {
 #' @noRd
 reshape_data <- function(pv_obj, imputation = "all") {
   if (is.character(imputation) && imputation == "all") {
-    imputation <- 1:length(pv_obj[["pv"]])
+    imputation <- names(pv_obj[["pv"]])
   }
-  dat1 <- lapply(imputation, function(x) {
+  dat1 <- dplyr::bind_rows(lapply(imputation, function(x) {
     pv_obj[["pv"]][[x]] %>%
       dplyr::select(!dplyr::contains("PV")) %>%
       dplyr::mutate(dplyr::across(dplyr::everything(), as.numeric)) %>%
@@ -77,8 +77,12 @@ reshape_data <- function(pv_obj, imputation = "all") {
         values_to = "value"
       ) %>%
       dplyr::mutate(imputation = as.factor(x))
-  })
-  dat1 <- dplyr::bind_rows(dat1)
+      }))
+  #if (length(dat1) > 0) {
+  #  dat1 <- dplyr::bind_rows(dat1)
+  #} else {
+  #  stop("dat1 is empty, check input data")
+  #}
   dat2 <- pv_obj[["indmis"]] %>%
     dplyr::select(!dplyr::contains("PV")) %>%
     dplyr::mutate(dplyr::across(dplyr::everything(), as.numeric),
