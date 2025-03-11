@@ -541,8 +541,7 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
       } else if (wave == "w7") {
         # Already collapsed in SUF!
         resp[["icg12013s_c"]][resp[["icg12013s_c"]] == 1] <- 0
-        resp[["icg12013s_c"]][resp[["icg12013s_c"]] == 2] <- 0
-        resp[["icg12013s_c"]][resp[["icg12013s_c"]] == 3] <- 1
+        resp[["icg12013s_c"]][resp[["icg12013s_c"]] == 2] <- 1
 
         #resp[["icg12018s_c"]][resp[["icg12018s_c"]] %in% c(1, 2, 3)] <- 0
         #resp[["icg12018s_c"]][resp[["icg12018s_c"]] == 4] <- 1
@@ -715,6 +714,11 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
         resp[["scg9052s_c"]][resp[["scg9052s_c"]] == 2] <- 1
         resp[["scg9052s_c"]][resp[["scg9052s_c"]] == 3] <- 2
         resp[["scg9052s_c"]][resp[["scg9052s_c"]] == 4] <- 3
+
+        #resp[["scg9042s_c"]][resp[["scg9042s_c"]] == 1] <- 0
+        #resp[["scg9042s_c"]][resp[["scg9042s_c"]] == 2] <- 1
+        #resp[["scg9042s_c"]][resp[["scg9042s_c"]] == 3] <- 2
+        #resp[["scg9042s_c"]][resp[["scg9042s_c"]] == 4] <- 3
 
         #resp[["scg9052s_c"]][resp[["scg9052s_c"]] == 1] <- 0
       } else if (wave == "w5") {
@@ -1446,10 +1450,10 @@ collapse_categories_pcm <- function(resp, SC, wave, domain) {
       }
     } else if (domain == "SC") {
       if (wave == "w1") {
-        #item does not need to be collapsed (according to TR)
-        #resp[["sck1023s_c"]][resp[["sck1023s_c"]] %in% c(0, 1, 2)] <- 0
-        #resp[["sck1023s_c"]][resp[["sck1023s_c"]] == 3] <- 1
-        #resp[["sck1023s_c"]][resp[["sck1023s_c"]] == 4] <- 2
+        #
+        resp[["sck1023s_c"]][resp[["sck1023s_c"]] %in% c(0, 1, 2)] <- 0
+        resp[["sck1023s_c"]][resp[["sck1023s_c"]] == 3] <- 1
+        resp[["sck1023s_c"]][resp[["sck1023s_c"]] == 4] <- 2
 
         # data already collapsed in SUF (according to TR)
       } else if (wave == "w3") {
