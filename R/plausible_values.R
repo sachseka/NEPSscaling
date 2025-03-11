@@ -367,7 +367,7 @@ plausible_values <- function(SC,
           "ID_t must be included in all imputed bgdata sets."
         ), call. = FALSE)
       }
-      if (any(sapply(bgdata, ncol)) < 2) {
+      if (any(sapply(bgdata, ncol) < 2)) {
         stop(paste0(
           "The list of imputed bgdata sets must include at least one variable ",
           "apart from ID_t."
